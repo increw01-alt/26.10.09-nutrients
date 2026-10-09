@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko" data-root="./">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="assets/js/tailwind.config.js"></script>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js" defer></script>
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/affiliate.js"></script>
+  <script src="assets/js/layout.js"></script>
+  <title>영양제 제품 찾기 — 식약처 신고 건강기능식품 성분별 검색 | 서플노트</title>
+  <meta name="description" content="식품의약품안전처에 신고된 건강기능식품을 성분·기능성·제형별로 찾고 쿠팡, 11번가, G마켓 등 쇼핑몰에서 바로 확인하세요. 신규·변경 제품은 매일 자동 반영됩니다.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://supplenote.example.com/products.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="서플노트">
+  <meta property="og:title" content="영양제 제품 찾기 — 식약처 신고 건강기능식품 성분별 검색 | 서플노트">
+  <meta property="og:description" content="식품의약품안전처에 신고된 건강기능식품을 성분·기능성·제형별로 찾고 쿠팡, 11번가, G마켓 등 쇼핑몰에서 바로 확인하세요. 신규·변경 제품은 매일 자동 반영됩니다.">
+  <meta property="og:url" content="https://supplenote.example.com/products.html">
+  <meta property="og:image" content="assets/images/og-default.svg">
+  <meta name="twitter:card" content="summary_large_image">
+  <script src="assets/js/pages/products.js"></script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"홈","item":"https://supplenote.example.com/"},{"@type":"ListItem","position":2,"name":"제품 찾기","item":"https://supplenote.example.com/products.html"}]}</script>
+</head>
+<body data-page="products" data-path="products.html" class="min-h-screen antialiased">
+  <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:font-bold focus:text-brand-700">본문으로 건너뛰기</a>
+  <div id="site-header"></div>
+
+  <main id="main" class="mx-auto max-w-7xl px-4 py-10 sm:px-6">
+    <nav class="text-xs text-ink-500" aria-label="경로"><a class="hover:text-brand-700" href="index.html">홈</a> › <span class="text-ink-800">제품 찾기</span></nav>
+    <p class="mt-4 text-sm font-bold text-brand-700">제품 찾기</p>
+    <h1 class="mt-1 text-3xl font-extrabold tracking-tight text-ink-900 sm:text-4xl">식약처 신고 건강기능식품, 성분별로 찾기</h1>
+    <p class="mt-3 max-w-2xl text-ink-600">식품안전나라 건강기능식품 품목제조신고 데이터를 성분별로 연결했습니다. 제품을 고른 뒤 쇼핑몰 버튼을 누르면 해당 검색 결과로 바로 이동합니다.</p>
+    <div id="data-status" class="mt-6"></div>
+    <div id="changelog" class="mt-4 hidden rounded-2xl border border-ink-100 bg-white p-4"></div>
+
+    <div class="mt-6 grid gap-3 rounded-2xl border border-ink-100 bg-white p-4 shadow-card md:grid-cols-12">
+      <div class="relative md:col-span-6"><label for="product-search" class="sr-only">제품 검색</label><i data-lucide="search" class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400"></i><input id="product-search" type="search" placeholder="제품명·업체명·기능성·원재료 검색" class="w-full rounded-xl border border-ink-200 py-2.5 pl-10 pr-4 text-sm outline-none focus:border-brand-400 focus:ring-4 focus:ring-brand-100"></div>
+      <div class="md:col-span-3"><label for="filter-ingredient" class="sr-only">성분 필터</label><select id="filter-ingredient" class="w-full rounded-xl border border-ink-200 bg-white px-3 py-2.5 text-sm font-semibold text-ink-700 outline-none focus:border-brand-400"><option>불러오는 중…</option></select></div>
+      <div class="md:col-span-3"><label for="filter-shape" class="sr-only">제형 필터</label><select id="filter-shape" class="w-full rounded-xl border border-ink-200 bg-white px-3 py-2.5 text-sm font-semibold text-ink-700 outline-none focus:border-brand-400"><option value="">모든 형태</option></select></div>
+    </div>
+    <div id="quick-ingredients" class="scroll-x mt-3 flex gap-2 overflow-x-auto pb-1"></div>
+
+    <div class="mt-6 flex items-center justify-between text-sm text-ink-500"><span id="product-count">불러오는 중…</span><span class="hidden sm:inline">최근 신고순</span></div>
+    <div id="product-list" class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"><div class="skeleton h-64"></div><div class="skeleton h-64"></div><div class="skeleton h-64"></div></div>
+    <div id="product-empty" class="mt-10 hidden rounded-2xl border border-dashed border-ink-200 p-10 text-center"><p class="font-bold text-ink-700">조건에 맞는 제품이 없습니다</p><p class="mt-1 text-sm text-ink-500">검색어나 필터를 바꿔 보세요.</p></div>
+    <nav id="pagination" class="mt-8 flex flex-wrap justify-center gap-1.5" aria-label="페이지"></nav>
+
+    <section class="mt-16 grid gap-4 md:grid-cols-3"><div class="rounded-2xl border border-ink-100 bg-white p-5"><i data-lucide="database" class="h-6 w-6 text-brand-600"></i><h2 class="mt-3 font-bold text-ink-900">공공데이터 기반</h2><p class="mt-1 text-sm text-ink-600">식약처 식품안전나라 OpenAPI의 품목제조신고 정보를 수집해 성분별로 자동 분류합니다.</p></div><div class="rounded-2xl border border-ink-100 bg-white p-5"><i data-lucide="refresh-cw" class="h-6 w-6 text-brand-600"></i><h2 class="mt-3 font-bold text-ink-900">매일 자동 갱신</h2><p class="mt-1 text-sm text-ink-600">신규 등록·정보 변경·삭제 제품을 비교해 변경 이력으로 남기고 최신 상태를 유지합니다.</p></div><div class="rounded-2xl border border-ink-100 bg-white p-5"><i data-lucide="shopping-cart" class="h-6 w-6 text-brand-600"></i><h2 class="mt-3 font-bold text-ink-900">구매처 바로 연결</h2><p class="mt-1 text-sm text-ink-600">쿠팡·11번가·G마켓·네이버쇼핑 검색 결과로 이동합니다. 가격·재고는 각 쇼핑몰 기준입니다.</p></div></section>
+  </main>
+  <div id="site-footer"></div>
+</body>
+</html>

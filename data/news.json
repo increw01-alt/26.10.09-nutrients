@@ -1,0 +1,15 @@
+{
+  "_meta": {
+    "source": "sample",
+    "sourceLabel": "샘플 데이터",
+    "note": "사이트 동작 확인용 샘플입니다. scripts/fetch_news.py 가 실행되면 구글 뉴스 RSS(키 불필요) 또는 네이버 뉴스 검색 API(키 설정 시)로 수집한 실제 기사로 교체됩니다. 아래 링크는 각 기관의 공식 홈페이지로 연결됩니다.",
+    "updatedAt": "2026-10-09T00:00:00+09:00",
+    "queries": ["건강기능식품", "영양제", "식약처 건강기능식품", "비타민 연구"]
+  },
+  "items": [
+    {"id": "sample-news-1", "title": "[샘플] 식약처, 건강기능식품 기능성 원료 인정 현황 안내 — 실제 데이터 수집 시 교체됩니다", "link": "https://www.mfds.go.kr", "source": "식품의약품안전처", "publishedAt": "2026-10-08T09:00:00+09:00", "summary": "이 항목은 샘플입니다. 자동 수집 스크립트가 실행되면 식약처 관련 최신 보도자료·공지로 교체됩니다.", "category": "mfds", "query": "식약처 건강기능식품"},
+    {"id": "sample-news-2", "title": "[샘플] 영양제 올바른 섭취법 — 실제 뉴스 수집 시 교체됩니다", "link": "https://www.foodsafetykorea.go.kr", "source": "식품안전나라", "publishedAt": "2026-10-07T09:00:00+09:00", "summary": "이 항목은 샘플입니다. 건강기능식품 관련 일반 뉴스가 이 자리에 표시됩니다.", "category": "news", "query": "영양제"},
+    {"id": "sample-news-3", "title": "[샘플] 비타민 D와 뼈 건강 연구 동향 — 실제 연구 뉴스 수집 시 교체됩니다", "link": "https://www.mfds.go.kr", "source": "샘플", "publishedAt": "2026-10-06T09:00:00+09:00", "summary": "이 항목은 샘플입니다. '연구·논문' 키워드가 포함된 기사가 이 분류에 표시됩니다.", "category": "research", "query": "비타민 연구"},
+    {"id": "sample-news-4", "title": "[샘플] 건강기능식품 시장 동향 — 실제 뉴스 수집 시 교체됩니다", "link": "https://www.foodsafetykorea.go.kr", "source": "샘플", "publishedAt": "2026-10-05T09:00:00+09:00", "summary": "이 항목은 샘플입니다.", "category": "news", "query": "건강기능식품"}
+  ]
+}

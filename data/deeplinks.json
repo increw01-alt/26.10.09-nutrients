@@ -1,0 +1,7 @@
+{
+  "_meta": {
+    "note": "scripts/build_affiliate_links.py 가 쿠팡 파트너스 API 키가 설정된 경우 검색어별 제휴 딥링크를 생성해 저장합니다. 비어 있으면 assets/js/affiliate.js 가 설정값으로 링크를 직접 조립합니다.",
+    "updatedAt": null
+  },
+  "coupang": {}
+}

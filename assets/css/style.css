@@ -1,0 +1,81 @@
+/* 서플노트 공통 스타일 — Tailwind 유틸리티로 표현하기 어려운 부분만 정의 */
+:root {
+  --brand: #0d9488;
+  --brand-deep: #0f766e;
+  --ink: #1b2024;
+  --bg: #f7faf9;
+}
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body { background: var(--bg); color: var(--ink); font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif; letter-spacing: -0.01em; word-break: keep-all; overflow-wrap: anywhere; }
+[x-cloak], .hidden-init { display: none !important; }
+
+/* 배경 장식 */
+.bg-mesh { position: relative; isolation: isolate; overflow: hidden; }
+.bg-mesh::before, .bg-mesh::after { content: ""; position: absolute; z-index: -1; border-radius: 9999px; filter: blur(70px); opacity: .55; pointer-events: none; }
+.bg-mesh::before { width: 520px; height: 520px; left: -140px; top: -180px; background: radial-gradient(circle at 30% 30%, #99f6e0, #ccfbef 60%, transparent 70%); }
+.bg-mesh::after { width: 460px; height: 460px; right: -120px; top: 40px; background: radial-gradient(circle at 60% 40%, #fde68a, #fef3c7 55%, transparent 70%); opacity: .45; }
+.grid-dots { background-image: radial-gradient(rgba(13,148,136,.14) 1px, transparent 1px); background-size: 22px 22px; }
+
+/* 궁합 배지 */
+.badge { display: inline-flex; align-items: center; gap: .35rem; font-weight: 700; font-size: .75rem; line-height: 1; padding: .4rem .65rem; border-radius: 9999px; border: 1px solid transparent; white-space: nowrap; }
+.badge-synergy { background: #ecfdf5; color: #047857; border-color: #a7f3d0; }
+.badge-caution { background: #fffbeb; color: #b45309; border-color: #fde68a; }
+.badge-avoid { background: #fff1f2; color: #be123c; border-color: #fecdd3; }
+.badge-neutral { background: #f1f5f9; color: #475569; border-color: #e2e8f0; }
+.card-synergy { border-color: #a7f3d0; background: linear-gradient(180deg, #f0fdf4 0%, #ffffff 60%); }
+.card-caution { border-color: #fde68a; background: linear-gradient(180deg, #fffbeb 0%, #ffffff 60%); }
+.card-avoid { border-color: #fecdd3; background: linear-gradient(180deg, #fff1f2 0%, #ffffff 60%); }
+.card-neutral, .card-unknown { border-color: #e2e8f0; background: #ffffff; }
+.dot-synergy { background: #10b981; } .dot-caution { background: #f59e0b; } .dot-avoid { background: #f43f5e; } .dot-neutral, .dot-unknown { background: #cbd5e1; }
+
+/* 칩 */
+.chip { display: inline-flex; align-items: center; gap: .4rem; border-radius: 9999px; border: 1px solid #d9dde0; background: #fff; padding: .45rem .85rem; font-size: .85rem; font-weight: 600; color: #3f474f; cursor: pointer; transition: all .15s ease; }
+.chip:hover { border-color: #5eead4; color: #0f766e; background: #f0fdf9; }
+.chip.active, .chip[aria-pressed="true"] { background: #0f766e; border-color: #0f766e; color: #fff; }
+
+/* 카드 호버 */
+.card-hover { transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
+.card-hover:hover { transform: translateY(-3px); box-shadow: 0 16px 36px -16px rgba(13,148,136,.35); border-color: #99f6e0; }
+
+/* 본문 리스트 */
+.list-check li, .list-warn li, .list-dot li { position: relative; padding-left: 1.6rem; margin: .45rem 0; line-height: 1.65; }
+.list-check li::before { content: "✓"; position: absolute; left: 0; top: .05rem; color: #0d9488; font-weight: 800; }
+.list-warn li::before { content: "!"; position: absolute; left: .15rem; top: .05rem; width: 1.1rem; height: 1.1rem; border-radius: 9999px; background: #fef3c7; color: #b45309; font-weight: 800; font-size: .75rem; text-align: center; line-height: 1.1rem; }
+.list-dot li::before { content: ""; position: absolute; left: .35rem; top: .7rem; width: .4rem; height: .4rem; border-radius: 9999px; background: #94a3b8; }
+
+/* 궁합 매트릭스 */
+.matrix { border-collapse: separate; border-spacing: 4px; }
+.matrix th, .matrix td { text-align: center; font-size: .72rem; }
+.matrix th { font-weight: 700; color: #3f474f; padding: .3rem; max-width: 92px; }
+.matrix td { width: 44px; height: 44px; border-radius: .6rem; font-weight: 800; }
+.matrix td a { display: flex; width: 100%; height: 100%; align-items: center; justify-content: center; border-radius: .6rem; color: inherit; text-decoration: none; }
+.cell-synergy { background: #d1fae5; color: #047857; } .cell-caution { background: #fef3c7; color: #b45309; } .cell-avoid { background: #ffe4e6; color: #be123c; } .cell-neutral { background: #f1f5f9; color: #64748b; } .cell-unknown { background: #f8fafc; color: #cbd5e1; } .cell-self { background: #e2e8f0; }
+
+/* 검색 오버레이 */
+.search-overlay { position: fixed; inset: 0; z-index: 90; background: rgba(16,19,22,.5); backdrop-filter: blur(4px); display: flex; align-items: flex-start; justify-content: center; padding: 10vh 1rem 1rem; }
+.search-panel { width: 100%; max-width: 40rem; background: #fff; border-radius: 1.25rem; box-shadow: 0 30px 80px -20px rgba(0,0,0,.4); overflow: hidden; }
+.search-panel input { width: 100%; padding: 1.1rem 1.25rem 1.1rem 3rem; font-size: 1.05rem; outline: none; border-bottom: 1px solid #eef0f1; }
+.search-result { display: flex; align-items: center; gap: .9rem; padding: .8rem 1.25rem; text-decoration: none; color: inherit; }
+.search-result:hover, .search-result.focus { background: #f0fdf9; }
+
+/* 모바일 메뉴 애니메이션 */
+.mobile-menu { transition: max-height .25s ease, opacity .2s ease; max-height: 0; opacity: 0; overflow: hidden; }
+.mobile-menu.open { max-height: 480px; opacity: 1; }
+
+/* 스켈레톤 */
+.skeleton { background: linear-gradient(90deg, #eef0f1 25%, #f7f8f8 37%, #eef0f1 63%); background-size: 400% 100%; animation: shimmer 1.4s ease infinite; border-radius: .75rem; }
+@keyframes shimmer { 0% { background-position: 100% 0; } 100% { background-position: 0 0; } }
+
+/* 등장 애니메이션 */
+.fade-up { animation: fadeUp .5s ease both; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .fade-up, .card-hover, .skeleton { animation: none !important; transition: none !important; } }
+
+/* 스크롤바 */
+.scroll-x { scrollbar-width: thin; }
+.scroll-x::-webkit-scrollbar { height: 6px; } .scroll-x::-webkit-scrollbar-thumb { background: #d9dde0; border-radius: 9999px; }
+
+/* 쇼핑 버튼 아이콘 */
+.shop-btn svg { width: .9rem; height: .9rem; }
+/* 인쇄 */
+@media print { header, footer, .no-print { display: none !important; } body { background: #fff; } }

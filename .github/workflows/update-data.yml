@@ -1,0 +1,77 @@
+name: Update data (products · news · deeplinks · static pages)
+
+on:
+  schedule:
+    - cron: "15 18 * * *"        # 매일 03:15 KST
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: "수동 실행 사유"
+        required: false
+        default: "manual"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-data
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Fetch news
+        timeout-minutes: 5
+        env:
+          NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+          NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+        run: python scripts/fetch_news.py
+
+      - name: Fetch products (MFDS)
+        timeout-minutes: 15
+        env:
+          CI: "true"
+          FOODSAFETY_API_KEY: ${{ secrets.FOODSAFETY_API_KEY }}
+          FOODSAFETY_MAX_ROWS: ${{ vars.FOODSAFETY_MAX_ROWS }}
+        run: python scripts/fetch_products.py
+
+      - name: Build Coupang deeplinks
+        timeout-minutes: 5
+        env:
+          COUPANG_ACCESS_KEY: ${{ secrets.COUPANG_ACCESS_KEY }}
+          COUPANG_SECRET_KEY: ${{ secrets.COUPANG_SECRET_KEY }}
+          COUPANG_SUB_ID: ${{ vars.COUPANG_SUB_ID }}
+        run: python scripts/build_affiliate_links.py
+
+      - name: Build static pages & sitemap
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}
+        run: python scripts/build_site.py
+
+      - name: Commit & push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A data i sitemap.xml
+          if git diff --cached --quiet; then
+            echo "변경 사항 없음"
+            exit 0
+          fi
+          git commit -m "chore(data): 자동 데이터 갱신 $(date -u +'%Y-%m-%d %H:%M UTC')"
+          git push
