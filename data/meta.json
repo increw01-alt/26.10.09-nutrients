@@ -1,5 +1,5 @@
 {
-  "builtAt": "2026-10-09T10:47:43+09:00",
+  "builtAt": "2026-10-10T07:35:00+09:00",
   "ingredients": 37,
   "pairs": 97,
   "products": {
@@ -8,8 +8,8 @@
     "total": 18
   },
   "news": {
-    "source": "sample",
-    "updatedAt": "2026-10-09T00:00:00+09:00",
-    "total": 4
+    "source": "live",
+    "updatedAt": "2026-10-10T07:34:59+09:00",
+    "total": 60
   }
 }
