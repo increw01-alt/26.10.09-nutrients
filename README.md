@@ -69,10 +69,11 @@ Windows PowerShell 도 동일하게 `python -m http.server 8080` 으로 실행�
    - `linkprice.affiliateId` / `enabled: true`, 머천트 코드 확인
    - `coupang.enabled: true` (딥링크는 아래 스크립트가 생성)
    - 네이버 서치어드바이저·구글 서치콘솔 확인 코드
-2. **HTML 의 `https://supplenote.example.com`** 을 실제 도메인으로 일괄 치환
+2. **도메인 연결 후** 임시 주소 `https://26-10-09-nutrients.pages.dev` 를 실제 도메인으로 일괄 치환
    ```bash
-   grep -rl "supplenote.example.com" --include="*.html" --include="*.txt" --include="*.xml" . | xargs sed -i 's#https://supplenote.example.com#https://your-domain.com#g'
+   grep -rl "26-10-09-nutrients.pages.dev" --include="*.html" --include="*.js" --include="*.txt" . | xargs sed -i 's#https://26-10-09-nutrients.pages.dev#https://your-domain.com#g'
    ```
+   Cloudflare Pages 에서는 **Custom domains → Set up a custom domain** 으로 도메인을 추가하면 DNS·SSL 이 자동 설정되며, 기존 `pages.dev` 주소는 자동으로 새 도메인으로 리다이렉트되지 않으므로 치환 후 커밋이 필요합니다.
    (WSL/Linux 기준. 이후 `python scripts/build_site.py` 를 실행하면 `i/*.html` 과 `sitemap.xml` 은 자동 반영)
 3. `about.html` 의 문의 이메일, `assets/images/og-default.svg` 교체(선택)
 

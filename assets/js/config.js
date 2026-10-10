@@ -6,7 +6,7 @@ window.SITE = {
   name: "서플노트",                              // TODO: 브랜드명
   nameEn: "SuppleNote",
   tagline: "영양제 정보 · 궁합 · 복용 가이드",
-  url: "https://supplenote.example.com",         // TODO: 실제 배포 도메인 (canonical·OG·sitemap에 사용)
+  url: "https://26-10-09-nutrients.pages.dev",         // TODO: 실제 배포 도메인 (canonical·OG·sitemap에 사용)
   description: "영양제 성분별 효능·권장량·주의사항과 영양제 간 궁합을 한눈에. 식약처 건강기능식품 정보와 최신 뉴스를 함께 제공합니다.",
   contactEmail: "contact@example.com",           // TODO: 문의 이메일
   ogImage: "assets/images/og-default.svg",       // 소셜 공유 썸네일 (PNG 1200x630 권장, 교체 가능)

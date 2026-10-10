@@ -84,6 +84,8 @@ def fetch_google(query: str) -> list[dict]:
         summary = strip_tags(it.findtext("description") or "")
         if summary.startswith(title):
             summary = summary[len(title):].strip(" -·|")
+        if summary == source or len(summary) < 8:
+            summary = ""
         out.append({
             "id": item_id(link, title), "title": title, "link": link, "source": source or "Google News",
             "publishedAt": to_iso(it.findtext("pubDate") or ""), "summary": summary[:200],

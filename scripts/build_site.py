@@ -105,7 +105,7 @@ def render_page(it: dict, core: dict, cfg: dict) -> str:
             {"@type": "ListItem", "position": 2, "name": "성분 사전", "item": f"{cfg['url']}/ingredients.html"},
             {"@type": "ListItem", "position": 3, "name": it["name"], "item": url}]},
         {"@type": "Article", "headline": f"{it['name']} 효능·권장량·궁합", "description": desc, "mainEntityOfPage": url,
-         "author": {"@type": "Organization", "name": cfg["name"]}, "publisher": {"@type": "Organization", "name": cfg["name"]}, "dateModified": now_iso()[:10]},
+         "author": {"@type": "Organization", "name": cfg["name"]}, "publisher": {"@type": "Organization", "name": cfg["name"]}, "dateModified": core.get("updated_at") or now_iso()[:10]},
     ]}
     if it.get("faq"):
         ld["@graph"].append({"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": f["q"], "acceptedAnswer": {"@type": "Answer", "text": f["a"]}} for f in it["faq"]]})
@@ -177,11 +177,12 @@ def render_page(it: dict, core: dict, cfg: dict) -> str:
 '''
 
 
-def build_sitemap(ingredients: list[dict], cfg: dict) -> None:
+def build_sitemap(ingredients: list[dict], cfg: dict, data_date: str) -> None:
     today = now_iso()[:10]
-    urls = [(f"{cfg['url']}/{p}", "weekly" if p in ("index.html", "news.html", "products.html") else "monthly", "1.0" if p == "index.html" else "0.8") for p in STATIC_PAGES]
-    urls += [(f"{cfg['url']}/i/{it['id']}.html", "monthly", "0.7") for it in ingredients]
-    body = "".join(f"  <url><loc>{esc(u)}</loc><lastmod>{today}</lastmod><changefreq>{c}</changefreq><priority>{p}</priority></url>\n" for u, c, p in urls)
+    dynamic = ("index.html", "news.html", "products.html")
+    urls = [(f"{cfg['url']}/{p}", "daily" if p in dynamic else "monthly", "1.0" if p == "index.html" else "0.8", today if p in dynamic else data_date) for p in STATIC_PAGES]
+    urls += [(f"{cfg['url']}/i/{it['id']}.html", "monthly", "0.7", data_date) for it in ingredients]
+    body = "".join(f"  <url><loc>{esc(u)}</loc><lastmod>{d}</lastmod><changefreq>{c}</changefreq><priority>{p}</priority></url>\n" for u, c, p, d in urls)
     (ROOT / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + body + "</urlset>\n", encoding="utf-8")
     log.info("sitemap.xml: %d URL", len(urls))
 
@@ -193,8 +194,9 @@ def main() -> int:
     if not ingredients or not interactions:
         raise SystemExit("data/ingredients.json 또는 interactions.json 을 읽을 수 없습니다.")
     validate(ingredients, interactions)
+    data_date = ingredients["_meta"].get("updatedAt") or now_iso()[:10]
     core = {"categories": ingredients["_meta"]["categories"], "by_id": {i["id"]: i for i in ingredients["items"]},
-            "pairs": interactions["pairs"], "types": interactions["_meta"]["types"]}
+            "pairs": interactions["pairs"], "types": interactions["_meta"]["types"], "updated_at": data_date}
 
     OUT_DIR.mkdir(exist_ok=True)
     wanted = set()
@@ -208,7 +210,7 @@ def main() -> int:
             log.info("삭제된 성분 페이지 정리: %s", stale.name)
     log.info("성분 페이지 %d개 생성 (i/)", len(wanted))
 
-    build_sitemap(ingredients["items"], cfg)
+    build_sitemap(ingredients["items"], cfg, data_date)
     products = read_json(DATA_DIR / "products.json", {"_meta": {}, "items": []})
     news = read_json(DATA_DIR / "news.json", {"_meta": {}, "items": []})
     write_json(DATA_DIR / "meta.json", {
