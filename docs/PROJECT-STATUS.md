@@ -71,7 +71,7 @@ data/
 | 도메인 `영양제.kr` 연결 (Cloudflare) | 완료 |
 | canonical·OG·sitemap 정식 도메인 반영 | 완료 |
 | 식품안전나라 API 키 (`FOODSAFETY_API_KEY`) | 완료 — C003, I-0040, I-0050, I0030 승인 |
-| 구글 서치콘솔·네이버 서치어드바이저 등록 | 미완 — sitemap 제출 후 확인 코드를 `assets/js/config.js` 에 입력 |
+| 구글 서치콘솔·네이버 서치어드바이저 등록 | 미완 — 확인 코드를 `assets/js/config.js` 에 입력하고 `python scripts/build_site.py` 로 `index.html` 에 반영한 뒤 배포, 이후 sitemap 제출 (구글은 Cloudflare DNS TXT 방식도 가능) |
 | 링크프라이스 (`config.js` → `linkprice.affiliateId`, `enabled: true`) | 미완 — 11번가·G마켓 버튼은 현재 일반 검색 링크 |
 | 쿠팡 파트너스 (`COUPANG_ACCESS_KEY`, `COUPANG_SECRET_KEY` Secret) | 미완 — 쿠팡 버튼은 현재 일반 검색 링크 |
 | 네이버 뉴스 API (`NAVER_CLIENT_ID`, `NAVER_CLIENT_SECRET`) | 선택 |

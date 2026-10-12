@@ -176,7 +176,7 @@ python scripts/build_site.py
 
 ## 검색엔진 등록
 - `sitemap.xml` 을 구글 서치콘솔·네이버 서치어드바이저에 제출
-- `config.js` 의 `naverSiteVerification` / `googleSiteVerification` 에 확인 코드 입력
+- `config.js` 의 `naverSiteVerification` / `googleSiteVerification` 에 확인 코드 입력 → `python scripts/build_site.py` 실행 → 커밋·푸시 (빌드가 `index.html` 머리에 정적 메타태그로 넣어 주며, 검색엔진 확인 크롤러는 JS 를 실행하지 않으므로 이 절차가 필요)
 
 ## 주의
 - 성분 정보는 식약처 기능성 고시·한국인 영양소 섭취기준(2020)을 참고해 일반 성인 기준으로 요약한 것으로 의학적 조언이 아닙니다. 수치·문구는 공개 전 한 번 더 검토를 권장합니다.

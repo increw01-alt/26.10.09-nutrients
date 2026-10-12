@@ -3,5 +3,4 @@ Allow: /
 Disallow: /scripts/
 Disallow: /config/
 
-# TODO: 실제 도메인으로 교체
 Sitemap: https://xn--og5b1hx9c.kr/sitemap.xml

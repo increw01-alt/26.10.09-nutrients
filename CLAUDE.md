@@ -4,7 +4,7 @@
 
 ## 꼭 지킬 것
 - 스택: 정적 HTML + Tailwind CSS(CDN) + Pretendard + Vanilla JS. 빌드 도구·프레임워크를 추가하지 않는다.
-- 생성 파일은 직접 고치지 않는다: `i/*.html`, `guide/*.html`, `guides.html`, `sitemap.xml`, `data/meta.json` 은 `python scripts/build_site.py` 가 만든다. 데이터(`data/ingredients.json`, `data/interactions.json`, `data/guides.json`)나 템플릿(`scripts/build_site.py`)을 고친 뒤 빌드한다.
+- 생성 파일은 직접 고치지 않는다: `i/*.html`, `guide/*.html`, `guides.html`, `sitemap.xml`, `data/meta.json` 은 `python scripts/build_site.py` 가 만든다. `index.html` 의 `site-verification` 마커 사이(검색엔진 소유 확인 메타태그)도 빌드가 `config.js` 값으로 채우므로 손으로 넣지 않는다. 데이터(`data/ingredients.json`, `data/interactions.json`, `data/guides.json`)나 템플릿(`scripts/build_site.py`)을 고친 뒤 빌드한다.
 - 브랜드·도메인·제휴 ID 는 `assets/js/config.js` 한 곳에서 관리한다. HTML 의 canonical·OG 주소는 퓨니코드 `https://xn--og5b1hx9c.kr` 를 쓴다.
 - 건강 정보 표현은 식약처 인정 기능성 범위("~에 도움을 줄 수 있음")를 지키고 질병 치료·예방·완치 표현을 쓰지 않는다. 근거 없는 수치·수상·보증을 만들지 않는다.
 - 응답과 커밋 메시지는 한국어로 쓴다.

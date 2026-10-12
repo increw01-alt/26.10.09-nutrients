@@ -183,8 +183,7 @@
       if (canonical) canonical.href = base + "/" + path.replace(/^\/+/, "");
       var og = document.querySelector('meta[property="og:url"]'); if (og) og.content = canonical ? canonical.href : base;
       var ogi = document.querySelector('meta[property="og:image"]'); if (ogi && !/^https?:/.test(ogi.content)) ogi.content = base + "/" + (S.ogImage || "").replace(/^\/+/, "");
-      if (S.naverSiteVerification) { var n = document.createElement("meta"); n.name = "naver-site-verification"; n.content = S.naverSiteVerification; document.head.appendChild(n); }
-      if (S.googleSiteVerification) { var g = document.createElement("meta"); g.name = "google-site-verification"; g.content = S.googleSiteVerification; document.head.appendChild(g); }
+      // 소유 확인 메타태그는 검색엔진이 원본 HTML 에서 읽어야 하므로 JS 로 넣지 않고 build_site.py 가 index.html 에 정적으로 삽입한다.
     } catch (e) { /* 무시 */ }
   }
 

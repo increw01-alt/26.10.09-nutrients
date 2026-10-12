@@ -34,7 +34,33 @@ def site_config() -> dict:
     def grab(key: str, default: str = "") -> str:
         m = re.search(rf'{key}:\s*"([^"]*)"', src)
         return m.group(1) if m else default
-    return {"name": grab("name", "영양제.kr"), "url": (env("SITE_URL") or grab("url")).rstrip("/"), "description": grab("description")}
+    return {"name": grab("name", "영양제.kr"), "url": (env("SITE_URL") or grab("url")).rstrip("/"), "description": grab("description"),
+            "googleSiteVerification": grab("googleSiteVerification"), "naverSiteVerification": grab("naverSiteVerification")}
+
+
+VERIFY_START, VERIFY_END = "<!-- site-verification:start", "<!-- site-verification:end -->"
+
+
+def inject_verification(cfg: dict) -> None:
+    """config.js 의 소유 확인 코드를 index.html <head> 의 마커 사이에 정적 메타태그로 넣습니다.
+    (검색엔진 소유 확인 크롤러는 JS 를 실행하지 않으므로 원본 HTML 에 있어야 합니다.)"""
+    path = ROOT / "index.html"
+    html_src = path.read_text(encoding="utf-8")
+    a, b = html_src.find(VERIFY_START), html_src.find(VERIFY_END)
+    if a < 0 or b < 0 or b < a:
+        log.warning("index.html 에 site-verification 마커가 없어 소유 확인 태그를 넣지 못했습니다.")
+        return
+    head_end = html_src.find("-->", a) + 3            # 시작 마커 주석의 끝
+    tags = []
+    if cfg.get("googleSiteVerification"):
+        tags.append(f'  <meta name="google-site-verification" content="{esc(cfg["googleSiteVerification"])}">')
+    if cfg.get("naverSiteVerification"):
+        tags.append(f'  <meta name="naver-site-verification" content="{esc(cfg["naverSiteVerification"])}">')
+    block = "\n" + "".join(t + "\n" for t in tags) + "  "   # 끝 마커의 들여쓰기 유지
+    new_src = html_src[:head_end] + block + html_src[b:]
+    if new_src != html_src:
+        path.write_text(new_src, encoding="utf-8")
+        log.info("index.html 소유 확인 메타태그 %d개 반영", len(tags))
 
 
 def validate(ingredients: dict, interactions: dict) -> None:
@@ -427,6 +453,7 @@ def main() -> int:
 
     guides = build_guides(core, cfg)
     build_sitemap(ingredients["items"], cfg, data_date, guides)
+    inject_verification(cfg)
     products = read_json(DATA_DIR / "products.json", {"_meta": {}, "items": []})
     news = read_json(DATA_DIR / "news.json", {"_meta": {}, "items": []})
     materials = read_json(DATA_DIR / "materials.json", {"_meta": {}, "items": []})
