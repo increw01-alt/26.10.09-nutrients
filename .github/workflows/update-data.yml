@@ -48,6 +48,7 @@ jobs:
         env:
           CI: "true"
           FOODSAFETY_API_KEY: ${{ secrets.FOODSAFETY_API_KEY }}
+          FOODSAFETY_SERVICE: ${{ vars.FOODSAFETY_SERVICE }}
           FOODSAFETY_MAX_ROWS: ${{ vars.FOODSAFETY_MAX_ROWS }}
         run: python scripts/fetch_products.py
 
