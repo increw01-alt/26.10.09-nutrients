@@ -102,9 +102,14 @@ def api_get(key: str, service: str, start: int, end: int) -> dict:
 
 def normalize(row: dict, ingredient_ids: list[str]) -> dict:
     name = (row.get("PRDLST_NM") or "").strip()
-    raw_date = (row.get("PRMS_DT") or "").strip()
-    reg = f"{raw_date[:4]}-{raw_date[4:6]}-{raw_date[6:8]}" if re.fullmatch(r"\d{8}", raw_date) else raw_date
+
+    def ymd(v: str) -> str:
+        v = (v or "").strip()
+        return f"{v[:4]}-{v[4:6]}-{v[6:8]}" if re.fullmatch(r"\d{8}", v) else v
+
+    reg = ymd(row.get("PRMS_DT"))
     return {
+        "lastUpdated": ymd(row.get("LAST_UPDT_DTM")),
         "id": (row.get("PRDLST_REPORT_NO") or f"{row.get('LCNS_NO','')}-{name}").strip(),
         "name": name,
         "company": (row.get("BSSH_NM") or "").strip(),
@@ -131,7 +136,7 @@ def diff_changelog(old_items: list[dict], new_items: list[dict]) -> dict:
             entries.append({"type": "added", "name": p["name"], "company": p["company"], "id": pid})
         else:
             o = old[pid]
-            for field, label in (("name", "제품명"), ("function", "기능성"), ("rawMaterials", "원재료"), ("caution", "주의사항")):
+            for field, label in (("name", "제품명"), ("function", "기능성"), ("rawMaterials", "원재료"), ("caution", "주의사항"), ("intake", "섭취방법"), ("lastUpdated", "식약처 정보 갱신")):
                 if (o.get(field) or "") != (p.get(field) or ""):
                     entries.append({"type": "changed", "name": p["name"], "company": p["company"], "id": pid, "field": label})
                     break

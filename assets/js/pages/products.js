@@ -11,11 +11,12 @@
     var q = p.shopQuery || p.name.replace(/^\[샘플\]\s*/, "");
     return '<article class="flex flex-col rounded-2xl border border-ink-100 bg-white p-5 shadow-card fade-up">' +
       '<div class="flex items-start justify-between gap-2"><div class="min-w-0"><h2 class="font-extrabold leading-snug text-ink-900">' + esc(p.name) + '</h2><p class="mt-1 text-xs text-ink-500">' + esc(p.company || "") + (p.shape ? ' · ' + esc(p.shape) : "") + '</p></div>' + (p.isNew ? '<span class="shrink-0 rounded-full bg-brand-600 px-2 py-0.5 text-[10px] font-bold text-white">NEW</span>' : "") + "</div>" +
-      '<p class="mt-3 line-clamp-3 text-sm leading-relaxed text-ink-600">' + esc(p.function || "") + '</p>' +
+      '<p class="mt-3 line-clamp-3 whitespace-pre-line text-sm leading-relaxed text-ink-600">' + esc(p.function || "") + '</p>' +
       (ings.length ? '<div class="mt-3 flex flex-wrap gap-1.5">' + ings.slice(0, 5).map(function (i) { return '<a href="' + D.ingredientUrl(i.id) + '" class="rounded-md bg-brand-50 px-2 py-0.5 text-[11px] font-bold text-brand-700 hover:bg-brand-100">' + esc(i.name) + '</a>'; }).join("") + (ings.length > 5 ? '<span class="text-[11px] text-ink-400">+' + (ings.length - 5) + '</span>' : "") + "</div>" : "") +
-      '<details class="mt-3 text-xs text-ink-500"><summary class="cursor-pointer font-semibold text-ink-600 hover:text-brand-700">신고 정보 더보기</summary><dl class="mt-2 space-y-1.5 rounded-lg bg-ink-50 p-3">' +
+      '<details class="mt-3 text-xs text-ink-500"><summary class="cursor-pointer font-semibold text-ink-600 hover:text-brand-700">신고 정보 더보기</summary><dl class="mt-2 space-y-1.5 whitespace-pre-line rounded-lg bg-ink-50 p-3">' +
         (p.reportNo ? '<div><dt class="inline font-bold">신고번호</dt> <dd class="inline">' + esc(p.reportNo) + '</dd></div>' : "") +
         (p.registeredAt ? '<div><dt class="inline font-bold">신고일</dt> <dd class="inline">' + esc(D.fmtDate(p.registeredAt)) + '</dd></div>' : "") +
+        (p.lastUpdated ? '<div><dt class="inline font-bold">식약처 정보 갱신</dt> <dd class="inline">' + esc(D.fmtDate(p.lastUpdated)) + '</dd></div>' : "") +
         (p.intake ? '<div><dt class="inline font-bold">섭취방법</dt> <dd class="inline">' + esc(p.intake) + '</dd></div>' : "") +
         (p.caution ? '<div><dt class="inline font-bold">주의사항</dt> <dd class="inline">' + esc(p.caution) + '</dd></div>' : "") +
         (p.rawMaterials ? '<div><dt class="inline font-bold">원재료</dt> <dd class="inline">' + esc(p.rawMaterials) + '</dd></div>' : "") +
