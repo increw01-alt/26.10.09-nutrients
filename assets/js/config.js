@@ -11,7 +11,7 @@ window.SITE = {
   contactEmail: "contact@example.com",           // TODO: 문의 이메일
   ogImage: "assets/images/og-default.svg",       // 소셜 공유 썸네일 (PNG 1200x630 권장, 교체 가능)
   // 검색엔진 소유 확인 메타태그 값 (없으면 빈 문자열 유지)
-  naverSiteVerification: "",                     // 네이버 서치어드바이저 HTML 태그의 content 값 → python scripts/build_site.py 실행 시 index.html 에 삽입
+  naverSiteVerification: "ea7f0a747323533a9bc41af6ff79b0e82413bfd6",                     // 네이버 서치어드바이저 HTML 태그의 content 값 → python scripts/build_site.py 실행 시 index.html 에 삽입
   googleSiteVerification: ""                     // 구글 서치콘솔 HTML 태그의 content 값 (DNS 방식으로 확인했다면 비워 둬도 됨)
 };
 
