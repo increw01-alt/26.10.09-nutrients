@@ -63,18 +63,35 @@ project/
 │  └─ deploy-pages.yml        # GitHub Pages 배포 (Cloudflare 사용 시 삭제 가능)
 ├─ requirements.txt
 ├─ docs/PROJECT-STATUS.md     # 프로젝트 현황·작업 이력 정리
+├─ CLAUDE.md                  # Claude Code 작업 지침
+├─ dev.ps1 · dev.bat · dev.sh # 로컬 개발 서버 실행 스크립트 (Windows / WSL·mac)
 └─ README.md
 ```
 
-## 바로 실행하기
+## 로컬 개발 환경 만들기 (Windows)
 
-```bash
-# 정적 사이트라 아무 웹서버로 열면 됩니다 (file:// 로는 JSON fetch 가 막히므로 서버 사용)
-python3 -m http.server 8080
-# → http://localhost:8080
-```
+1. [Git](https://git-scm.com/download/win) 과 [Python 3.12+](https://www.python.org/downloads/) 설치 (Python 설치 시 "Add python.exe to PATH" 체크)
+2. PowerShell 에서 원하는 상위 폴더로 이동해 복제
+   ```powershell
+   cd "C:\Users\OK\Desktop\블로그이미지"
+   git clone https://github.com/increw01-alt/26.10.09-nutrients.git "26.10.12 영양제.kr"
+   cd "26.10.12 영양제.kr"
+   ```
+3. 로컬 서버 실행 — 폴더의 `dev.bat` 을 더블클릭하거나 PowerShell 에서 `.\dev.ps1` (브라우저가 http://localhost:8080 으로 열립니다)
+   - 데이터를 고친 뒤에는 `.\dev.ps1 -Build` (또는 `dev.bat build`) 로 성분·가이드 페이지를 다시 생성
+   - WSL2 Ubuntu·macOS 에서는 `./dev.sh --build`
+4. 수정 → 확인 → 커밋 → 푸시하면 Cloudflare Pages 가 자동 배포합니다
+   ```powershell
+   git add -A
+   git commit -m "feat: 변경 내용"
+   git push
+   ```
+   자동 수집 커밋이 매일 원격에 쌓이므로 작업 시작 전 `git pull` 을 먼저 하세요.
 
-Windows PowerShell 도 동일하게 `python -m http.server 8080` 으로 실행됩니다.
+정적 사이트라 아무 웹서버로 열면 됩니다. `file://` 로 직접 열면 JSON 불러오기가 막히므로 꼭 서버로 여세요.
+
+### Claude Code 로 이어서 작업하기
+이 폴더에서 Claude Code(데스크톱 앱 또는 `claude` CLI)를 실행하면 `CLAUDE.md` 의 작업 지침과 `docs/PROJECT-STATUS.md` 의 현황을 읽고 바로 이어서 작업할 수 있습니다.
 
 ## 처음 설정 (5분)
 
