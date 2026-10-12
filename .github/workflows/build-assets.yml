@@ -47,7 +47,9 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          if git diff --quiet; then echo "변경 없음"; exit 0; fi
+          # data/meta.json 의 builtAt 시각만 바뀐 경우는 커밋하지 않음 (실제 CSS·아이콘·HTML 변경이 있을 때만)
           git add -A
+          git reset -q data/meta.json
+          if git diff --cached --quiet; then echo "변경 없음"; exit 0; fi
           git commit -m "chore(assets): Tailwind CSS·아이콘 번들 재생성"
           git push
