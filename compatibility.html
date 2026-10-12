@@ -25,65 +25,108 @@
   <meta property="og:url" content="https://xn--og5b1hx9c.kr/compatibility.html">
   <meta property="og:image" content="assets/images/og-default.svg">
   <meta name="twitter:card" content="summary_large_image">
+  <script src="assets/js/illus.js"></script>
   <script src="assets/js/schedule.js"></script>
   <script src="assets/js/pages/compat.js"></script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"영양제 궁합 체크","applicationCategory":"HealthApplication","operatingSystem":"Web","url":"https://xn--og5b1hx9c.kr/compatibility.html","description":"영양제 성분 간 궁합과 복용 시간표를 확인하는 무료 도구","offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"홈","item":"https://xn--og5b1hx9c.kr/"},{"@type":"ListItem","position":2,"name":"궁합 체크","item":"https://xn--og5b1hx9c.kr/compatibility.html"}]}</script>
 </head>
 <body data-page="compat" data-path="compatibility.html" class="min-h-screen antialiased">
   <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:font-bold focus:text-brand-700">본문으로 건너뛰기</a>
   <div id="site-header"></div>
 
   <main id="main">
-    <section class="bg-mesh border-b border-ink-100">
-      <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6">
+    <!-- Hero -->
+    <section class="bg-mesh">
+      <div class="mx-auto max-w-7xl px-4 pb-8 pt-8 sm:px-6 sm:pt-12 lg:pb-12">
         <nav class="text-xs text-ink-500" aria-label="경로"><a class="hover:text-brand-700" href="index.html">홈</a> › <span class="text-ink-800">궁합 체크</span></nav>
-        <h1 class="mt-3 text-3xl font-extrabold tracking-tight text-ink-900 sm:text-4xl">영양제 궁합 체크</h1>
-        <p class="mt-3 max-w-2xl text-ink-600">먹고 있는 영양제를 모두 선택하세요. 조합별 궁합과 이유, 그리고 간격을 고려한 하루 복용 시간표를 바로 만들어 드립니다.</p>
-        <div id="presets" class="mt-5 flex flex-wrap gap-2 text-xs">
-          <span class="self-center font-bold text-ink-400">바로 해보기:</span>
-          <button type="button" class="chip" data-preset="vitamin-d,calcium,magnesium,vitamin-k">뼈 건강 4종</button>
-          <button type="button" class="chip" data-preset="iron,vitamin-c,calcium">철분 + 비타민C + 칼슘</button>
-          <button type="button" class="chip" data-preset="multivitamin,omega-3,probiotics,vitamin-d">기본 영양제 4종</button>
-          <button type="button" class="chip" data-preset="lutein,omega-3,vitamin-a,zinc">눈 건강 조합</button>
-          <button type="button" class="chip" data-preset="green-tea-extract,garcinia,iron">다이어트 + 철분</button>
+        <div class="mt-4 grid items-center gap-8 lg:grid-cols-12">
+          <div class="lg:col-span-7">
+            <p class="text-sm font-bold text-brand-700">같이 먹어도 될까? 1분이면 확인</p>
+            <h1 class="mt-3 text-[2rem] font-extrabold leading-[1.2] tracking-tight text-ink-900 sm:text-5xl">영양제 궁합 체크</h1>
+            <p class="mt-4 max-w-xl text-[15px] leading-relaxed text-ink-600 sm:text-lg">먹고 있는 영양제를 모두 고르면 조합별 궁합과 이유, 그리고 간격을 고려한 하루 복용 시간표를 바로 만들어 드립니다.</p>
+            <div id="presets" class="mt-6 flex flex-wrap items-center gap-2">
+              <span class="text-xs font-bold text-ink-400">바로 해보기</span>
+              <button type="button" class="chip" data-preset="vitamin-d,calcium,magnesium,vitamin-k">뼈 건강 4종</button>
+              <button type="button" class="chip" data-preset="iron,vitamin-c,calcium">철분 + 비타민C + 칼슘</button>
+              <button type="button" class="chip" data-preset="multivitamin,omega-3,probiotics,vitamin-d">기본 영양제 4종</button>
+              <button type="button" class="chip" data-preset="lutein,omega-3,vitamin-a,zinc">눈 건강 조합</button>
+              <button type="button" class="chip" data-preset="green-tea-extract,garcinia,iron">다이어트 + 철분</button>
+            </div>
+            <ul class="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm text-ink-500">
+              <li class="inline-flex items-center gap-1.5"><i data-lucide="circle-check" class="h-4 w-4 text-brand-600"></i>최대 8개까지 한 번에 비교</li>
+              <li class="inline-flex items-center gap-1.5"><i data-lucide="clock" class="h-4 w-4 text-brand-600"></i>시간 간격·용량 주의까지 표시</li>
+              <li class="inline-flex items-center gap-1.5"><i data-lucide="calendar-check" class="h-4 w-4 text-brand-600"></i>하루 복용 시간표 자동 생성</li>
+            </ul>
+          </div>
+          <div class="relative lg:col-span-5">
+            <div class="hero-plate relative mx-auto max-w-md rounded-4xl">
+              <img src="assets/images/hero-pair.svg" alt="비타민D와 칼슘 영양제 병 두 개와 좋은 궁합 표시 일러스트" width="640" height="520" class="w-full" loading="eager" decoding="async">
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
     <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-      <!-- 선택 영역 -->
-      <section class="rounded-3xl border border-ink-100 bg-white p-5 shadow-card sm:p-7" aria-labelledby="pick-title">
+      <!-- 1. 선택 영역 -->
+      <section id="sec-pick" class="scroll-mt-28 rounded-3xl border border-ink-100 bg-white p-5 shadow-card sm:p-7" aria-labelledby="pick-title">
         <div class="flex flex-wrap items-center justify-between gap-3">
-          <h2 id="pick-title" class="text-lg font-extrabold text-ink-900">1. 영양제 선택 <span id="selected-count" class="ml-1 rounded-full bg-ink-100 px-2 py-0.5 text-xs font-bold text-ink-500">0 / 8</span></h2>
-          <div class="flex gap-2"><button type="button" id="clear-all" class="rounded-lg px-3 py-1.5 text-xs font-bold text-ink-500 hover:bg-ink-50">모두 지우기</button><button type="button" id="copy-link" class="inline-flex items-center gap-1 rounded-lg bg-ink-900 px-3 py-1.5 text-xs font-bold text-white hover:bg-brand-700"><i data-lucide="link" class="h-3.5 w-3.5"></i>결과 링크 복사</button></div>
+          <h2 id="pick-title" class="flex items-center gap-2.5 text-lg font-extrabold text-ink-900"><span class="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-brand-600 text-sm text-white">1</span>영양제 선택 <span id="selected-count" class="rounded-full bg-cream-200 px-2.5 py-1 text-xs font-bold text-ink-500">0 / 8</span></h2>
+          <div class="flex gap-2">
+            <button type="button" id="clear-all" class="rounded-full px-3.5 py-2 text-xs font-bold text-ink-500 transition hover:bg-cream-200 hover:text-ink-800">모두 지우기</button>
+            <button type="button" id="copy-link" class="inline-flex items-center gap-1.5 rounded-full bg-brand-600 px-4 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-brand-700"><i data-lucide="link" class="h-3.5 w-3.5"></i>결과 링크 복사</button>
+          </div>
         </div>
-        <div id="selected-chips" class="mt-4 flex min-h-[2.5rem] flex-wrap gap-2 rounded-2xl bg-ink-50 p-3"></div>
-        <div class="relative mt-4"><label for="picker-filter" class="sr-only">성분 검색</label><i data-lucide="search" class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400"></i><input id="picker-filter" type="search" placeholder="성분명으로 빠르게 찾기" class="w-full rounded-xl border border-ink-200 py-2.5 pl-10 pr-4 text-sm outline-none focus:border-brand-400 focus:ring-4 focus:ring-brand-100"></div>
-        <div id="picker-grid" class="mt-5 space-y-5"><div class="skeleton h-24"></div></div>
+        <div id="selected-chips" class="mt-4 flex min-h-[3.25rem] flex-wrap items-center gap-2 rounded-2xl bg-cream-100 p-2.5"></div>
+        <div class="relative mt-4"><label for="picker-filter" class="sr-only">성분 검색</label><i data-lucide="search" class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400"></i><input id="picker-filter" type="search" placeholder="성분명으로 빠르게 찾기 (예: 비타민D, 철분, 유산균)" class="w-full rounded-full border border-ink-200 bg-white py-3 pl-11 pr-4 text-sm outline-none focus:border-brand-400 focus:ring-4 focus:ring-brand-100"></div>
+        <div id="picker-grid" class="mt-6 space-y-6"><div class="skeleton h-24"></div></div>
       </section>
 
       <div id="results-anchor" class="mt-10 scroll-mt-24"></div>
-      <div id="results-empty" class="rounded-2xl border border-dashed border-ink-200 p-8 text-center"><p class="text-sm text-ink-500">성분을 2개 이상 선택하면 결과가 표시됩니다.</p></div>
+      <div id="results-empty" class="rounded-3xl border border-dashed border-ink-200 bg-cream-50 px-6 py-10 text-center"><p class="text-sm text-ink-500">성분을 2개 이상 선택하면 궁합 결과와 복용 시간표가 나타납니다.</p></div>
 
+      <div id="compat-tabs" class="detail-tabs scroll-x -mx-4 hidden overflow-x-auto px-4 sm:mx-0 sm:px-0"></div>
       <div id="results-wrap" class="hidden">
-        <h2 class="text-lg font-extrabold text-ink-900">2. 궁합 결과</h2>
-        <div id="summary" class="mt-4"></div>
-        <div id="matrix-wrap" class="mt-6 hidden rounded-2xl border border-ink-100 bg-white p-5 shadow-card"><h3 class="text-sm font-bold text-ink-900">한눈에 보기</h3><p class="mt-1 text-xs text-ink-500">○ 좋은 궁합 · △ 시간 간격/용량 주의 · ✕ 피해야 할 조합 · – 무난 · · 정보 없음 (칸을 누르면 상세 결과로 이동)</p><div class="scroll-x mt-3 overflow-x-auto"><table id="matrix" class="matrix"></table></div></div>
-        <div id="results" class="mt-6 grid gap-4 md:grid-cols-2"></div>
+        <!-- 2. 궁합 결과 -->
+        <section id="sec-results" class="mt-6 scroll-mt-32">
+          <h2 class="flex items-center gap-2.5 text-lg font-extrabold text-ink-900"><span class="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-brand-600 text-sm text-white">2</span>궁합 결과</h2>
+          <div id="summary" class="mt-4"></div>
+          <div id="matrix-wrap" class="mt-6 hidden scroll-mt-32 rounded-2xl border border-ink-100 bg-white p-5 shadow-card"><h3 class="text-sm font-bold text-ink-900">한눈에 보기</h3><p class="mt-1 text-xs text-ink-500">○ 좋은 궁합 · △ 시간 간격/용량 주의 · ✕ 피해야 할 조합 · – 무난 · · 정보 없음 (칸을 누르면 상세 결과로 이동)</p><div class="scroll-x mt-3 overflow-x-auto"><table id="matrix" class="matrix"></table></div></div>
+          <div id="results" class="mt-6 grid gap-4 md:grid-cols-2"></div>
+        </section>
 
-        <h2 class="mt-12 text-lg font-extrabold text-ink-900">3. 추천 복용 시간표</h2>
-        <p class="mt-1 text-sm text-ink-500">선택한 성분의 권장 시간과 간격 규칙을 반영해 자동으로 배치했습니다.</p>
-        <div id="schedule" class="mt-4"></div>
+        <!-- 3. 복용 시간표 -->
+        <section id="sec-schedule" class="mt-12 scroll-mt-32">
+          <h2 class="flex items-center gap-2.5 text-lg font-extrabold text-ink-900"><span class="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-brand-600 text-sm text-white">3</span>추천 복용 시간표</h2>
+          <p class="mt-2 text-sm text-ink-500">선택한 성분의 권장 시간과 간격 규칙을 반영해 자동으로 배치했습니다.</p>
+          <div id="schedule" class="mt-4"></div>
+        </section>
 
-        <h2 class="mt-12 text-lg font-extrabold text-ink-900">4. 선택한 성분 제품 찾기</h2>
-        <p class="mt-1 text-sm text-ink-500">쇼핑몰 검색 결과로 바로 이동합니다. 함량과 형태는 제품 라벨을 확인하세요.</p>
-        <div id="shop-list" class="mt-4 grid gap-3 md:grid-cols-2"></div>
-        <p class="mt-3 text-[11px] text-ink-400">이 사이트는 쿠팡 파트너스 및 링크프라이스 등 제휴 마케팅 활동의 일환으로, 구매 시 일정액의 수수료를 제공받을 수 있습니다.</p>
+        <!-- 4. 제품 찾기 -->
+        <section id="sec-shop" class="mt-12 scroll-mt-32">
+          <h2 class="flex items-center gap-2.5 text-lg font-extrabold text-ink-900"><span class="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-brand-600 text-sm text-white">4</span>선택한 성분 제품 찾기</h2>
+          <p class="mt-2 text-sm text-ink-500">쇼핑몰 검색 결과로 바로 이동합니다. 함량과 형태는 제품 라벨을 확인하세요.</p>
+          <div id="shop-list" class="mt-4 grid gap-3 md:grid-cols-2"></div>
+          <p class="mt-3 text-[11px] text-ink-400">이 사이트는 쿠팡 파트너스 및 링크프라이스 등 제휴 마케팅 활동의 일환으로, 구매 시 일정액의 수수료를 제공받을 수 있습니다.</p>
+        </section>
       </div>
 
-      <section class="mt-16 rounded-3xl bg-ink-50 p-6 sm:p-8"><h2 class="text-lg font-extrabold text-ink-900">궁합 등급은 이렇게 정했어요</h2><div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"><div class="rounded-2xl border p-4 card-synergy"><span class="badge badge-synergy">좋은 궁합</span><p class="mt-2 text-sm text-ink-700">흡수·작용을 서로 돕거나 같은 목적에서 보완적인 조합. 같은 시간에 먹어도 좋습니다.</p></div><div class="rounded-2xl border p-4 card-caution"><span class="badge badge-caution">주의 궁합</span><p class="mt-2 text-sm text-ink-700">흡수 경쟁이나 용량 중복이 있어 시간을 띄우거나 합산 함량을 확인해야 하는 조합.</p></div><div class="rounded-2xl border p-4 card-avoid"><span class="badge badge-avoid">피해야 할 궁합</span><p class="mt-2 text-sm text-ink-700">부작용 위험이 겹쳐 병용을 권하지 않거나 전문가 상담이 필요한 조합.</p></div><div class="rounded-2xl border p-4 card-neutral"><span class="badge badge-neutral">무난한 궁합</span><p class="mt-2 text-sm text-ink-700">알려진 특별한 상호작용이 없는 조합. 각 성분의 권장 시간만 지키면 됩니다.</p></div></div><p class="mt-4 text-xs text-ink-500">일반 성인의 일반적인 용량을 기준으로 한 참고 정보입니다. 임신·수유 중이거나 질환이 있거나 약을 복용 중이면 반드시 의사·약사와 상담하세요.</p></section>
+      <!-- 등급 안내 -->
+      <section id="sec-legend" class="mt-16 scroll-mt-32 rounded-3xl bg-cream p-6 sm:p-8">
+        <h2 class="text-lg font-extrabold text-ink-900">궁합 등급은 이렇게 정했어요</h2>
+        <p class="mt-1 text-sm text-ink-500">식약처 인정 기능성과 일반적인 섭취 기준을 바탕으로 네 가지 등급으로 나눴습니다.</p>
+        <div class="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div class="rounded-2xl bg-white p-5 shadow-card"><span class="grid h-10 w-10 place-items-center rounded-full bg-emerald-50 text-emerald-700"><i data-lucide="heart-handshake" class="h-5 w-5"></i></span><span class="badge badge-synergy mt-3">좋은 궁합</span><p class="mt-2 text-sm leading-relaxed text-ink-700">흡수·작용을 서로 돕거나 같은 목적에서 보완적인 조합. 같은 시간에 먹어도 좋습니다.</p></div>
+          <div class="rounded-2xl bg-white p-5 shadow-card"><span class="grid h-10 w-10 place-items-center rounded-full bg-amber-50 text-amber-700"><i data-lucide="clock-alert" class="h-5 w-5"></i></span><span class="badge badge-caution mt-3">주의 궁합</span><p class="mt-2 text-sm leading-relaxed text-ink-700">흡수 경쟁이나 용량 중복이 있어 시간을 띄우거나 합산 함량을 확인해야 하는 조합.</p></div>
+          <div class="rounded-2xl bg-white p-5 shadow-card"><span class="grid h-10 w-10 place-items-center rounded-full bg-rose-50 text-rose-700"><i data-lucide="octagon-alert" class="h-5 w-5"></i></span><span class="badge badge-avoid mt-3">피해야 할 궁합</span><p class="mt-2 text-sm leading-relaxed text-ink-700">부작용 위험이 겹쳐 병용을 권하지 않거나 전문가 상담이 필요한 조합.</p></div>
+          <div class="rounded-2xl bg-white p-5 shadow-card"><span class="grid h-10 w-10 place-items-center rounded-full bg-ink-100 text-ink-600"><i data-lucide="circle-check" class="h-5 w-5"></i></span><span class="badge badge-neutral mt-3">무난한 궁합</span><p class="mt-2 text-sm leading-relaxed text-ink-700">알려진 특별한 상호작용이 없는 조합. 각 성분의 권장 시간만 지키면 됩니다.</p></div>
+        </div>
+        <p class="mt-4 text-xs text-ink-500">일반 성인의 일반적인 용량을 기준으로 한 참고 정보입니다. 임신·수유 중이거나 질환이 있거나 약을 복용 중이면 반드시 의사·약사와 상담하세요.</p>
+      </section>
     </div>
   </main>
+  <a id="go-results" href="#results-anchor" class="go-results hidden items-center gap-2 rounded-full bg-ink-900 px-5 py-3 text-sm font-bold text-white shadow-lift transition hover:bg-brand-700 inline-flex no-print">궁합 결과 보기 <span id="go-results-count" class="rounded-full bg-white/20 px-2 py-0.5 text-xs">2개 선택</span><i data-lucide="arrow-down" class="h-4 w-4"></i></a>
   <div id="site-footer"></div>
 </body>
 </html>

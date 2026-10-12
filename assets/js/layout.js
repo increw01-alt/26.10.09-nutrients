@@ -23,8 +23,9 @@
   function renderHeader() {
     var el = document.getElementById("site-header");
     if (!el) return;
+    el.className = "sticky top-0 z-40";   // 고정 헤더: 래퍼(#site-header) 자체를 sticky 로 (자식만 sticky 면 래퍼 높이에 갇혀 고정되지 않음)
     el.innerHTML =
-      '<div class="sticky top-0 z-40 border-b border-ink-100/80 bg-white/90 backdrop-blur">' +
+      '<div class="border-b border-ink-100/80 bg-white/90 backdrop-blur">' +
         '<div class="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4 sm:px-6">' +
           '<a href="' + D.url("index.html") + '" class="flex shrink-0 items-center gap-2.5" aria-label="' + esc(S.name) + ' 홈">' + LOGO +
             '<span class="leading-tight"><span class="block text-[19px] font-extrabold tracking-tight text-ink-900">' + brandWord() + '</span>' +

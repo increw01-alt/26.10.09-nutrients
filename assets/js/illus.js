@@ -45,6 +45,11 @@
     sparkle: function (c) {
       return '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><ellipse cx="32" cy="52" rx="16" ry="3" fill="rgba(28,27,24,.08)"/><path d="M32 10 C 34 24, 40 30, 54 32 C 40 34, 34 40, 32 54 C 30 40, 24 34, 10 32 C 24 30, 30 24, 32 10 Z" fill="' + c + '"/><circle cx="48" cy="16" r="4" fill="' + c + '" opacity=".7"/></svg>';
     },
+    /* 성분 객체 → 병 라벨용 짧은 영문명 */
+    labelFor: function (it) {
+      var en = String((it && (it.en || it.name)) || "").split("(")[0].replace(/[^A-Za-z0-9 \-·]/g, "").trim();
+      return (en || (it && it.name) || "").slice(0, 14);
+    },
     /* 성분 분류(category) → 아이콘 */
     forCategory: function (key) {
       switch (key) {

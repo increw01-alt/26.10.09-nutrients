@@ -111,3 +111,26 @@ body.has-tabbar { padding-bottom: 64px; }
 .kv-table > dt:first-of-type, .kv-table > dd:first-of-type { border-top: 0; }
 .thumb { width: 64px; height: 64px; border-radius: .9rem; background: #f3efe6; display: grid; place-items: center; padding: .5rem; }
 .thumb svg { width: 100%; height: 100%; }
+
+/* 궁합 체크 페이지 */
+.thumb-sm { width: 44px; height: 44px; border-radius: .75rem; padding: .3rem; }
+.thumb-xs { width: 30px; height: 30px; border-radius: 9999px; padding: .15rem; }
+.cat-dot svg { width: 100%; height: 100%; }
+.pick-tile { display: flex; align-items: center; gap: .6rem; width: 100%; text-align: left; border: 1.5px solid #e6e1d6; background: #fff; border-radius: 1rem; padding: .45rem .6rem .45rem .45rem; cursor: pointer; transition: border-color .15s ease, background .15s ease, box-shadow .15s ease; }
+.pick-tile:hover { border-color: #9cc6a4; background: #f1f7f2; }
+.pick-tile.active { border-color: #3a7d44; background: #f1f7f2; box-shadow: 0 0 0 3px #e2efe4; }
+.pick-tile.hidden { display: none; }
+.pick-tile .thumb { width: 42px; height: 42px; border-radius: .7rem; padding: .25rem; flex-shrink: 0; }
+.pick-tile .tick { display: none; }
+.pick-tile.active .tick { display: grid; }
+.sel-pill { display: inline-flex; align-items: center; gap: .35rem; border-radius: 9999px; background: #fff; border: 1px solid #e6e1d6; padding: .2rem .3rem .2rem .25rem; font-size: .85rem; font-weight: 700; color: #2b2a26; }
+.pair-art { display: inline-flex; align-items: center; gap: .3rem; }
+.pair-art .thumb { background: #fff; border: 1px solid #efeeea; }
+.verdict { border-radius: 1.5rem; padding: 1.5rem; color: #fff; }
+.verdict-synergy { background: linear-gradient(135deg, #4b8c59 0%, #2f6538 100%); }
+.verdict-caution { background: linear-gradient(135deg, #e0a132 0%, #c2410c 100%); }
+.verdict-avoid { background: linear-gradient(135deg, #f43f5e 0%, #be123c 100%); }
+.verdict-neutral { background: linear-gradient(135deg, #5c5955 0%, #2b2a26 100%); }
+.verdict .thumb { background: rgba(255,255,255,.92); box-shadow: 0 0 0 2px rgba(255,255,255,.35); }
+.go-results { position: fixed; left: 50%; bottom: 78px; z-index: 39; transform: translateX(-50%); }
+@media (min-width: 768px) { .go-results { bottom: 24px; } }
