@@ -1,15 +1,15 @@
 {
-  "builtAt": "2026-10-12T11:04:42+09:00",
+  "builtAt": "2026-10-12T11:21:22+09:00",
   "ingredients": 37,
   "pairs": 97,
   "products": {
-    "source": "sample",
-    "updatedAt": "2026-10-09T00:00:00+09:00",
-    "total": 18
+    "source": "mfds",
+    "updatedAt": "2026-10-12T11:21:21+09:00",
+    "total": 6315
   },
   "news": {
     "source": "live",
-    "updatedAt": "2026-10-12T10:57:12+09:00",
+    "updatedAt": "2026-10-12T11:13:07+09:00",
     "total": 60
   }
 }

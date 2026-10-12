@@ -2,7 +2,7 @@
   "_meta": {
     "source": "live",
     "sourceLabel": "구글 뉴스 RSS",
-    "updatedAt": "2026-10-12T10:57:12+09:00",
+    "updatedAt": "2026-10-12T11:13:07+09:00",
     "queries": [
       "건강기능식품",
       "영양제",
@@ -14,6 +14,17 @@
     "total": 60
   },
   "items": [
+    {
+      "id": "2322d3bd3d5e33db",
+      "title": "건기식 돌파구 찾는 제약사, 답은 약국이었다",
+      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE84REtpR3o2VWNQd19WZUZ6bzVNaFBCYkk5NklDZDR3UzZNdFBOZjdVcDBLaUR0dmVDWHlpcVZ0RFNxOEJITG5hdUpnc0k2TVAyS3p6b0VQelRHb05qeHc?oc=5",
+      "source": "동행미디어 시대",
+      "publishedAt": "2026-10-12T10:55:01+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
     {
       "id": "e2a15ef7dccd3a98",
       "title": "동의명가, 전립선 건강 관리 건기식 ‘혈기보감 하이클래스’ 출시",
@@ -658,17 +669,6 @@
       "link": "https://news.google.com/rss/articles/CBMifEFVX3lxTFBaMFhfUDhUM3pQeWNsNHBCSUxPR3lhd1MyTXZFc1BjdEM4S0otWDFjckVMbW55cjhLVTdoYjJreTA3YWw5R0Q3SDhUeTdybDkzajRtTUw0cWN3S3c1ZU4tcU5SOHdjMFh0WGZvZ2Ewb0pBQ3d6UXhCVFdWYzg?oc=5",
       "source": "비욘드포스트",
       "publishedAt": "2026-10-07T09:35:30+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "ae5a0fcf8564268b",
-      "title": "NS홈쇼핑, 건강기능식품 라인 확대…토탈 웰니스 브랜드 육성",
-      "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTE9zS3lmT3ZkVjZLZGtnQ1NCcEdNd3hDSmExdG85Y2FGY3FZMDBTcDhOWlRYSTNSVERqcEJZa0stT1BKYWRNd2RNa3dSTTBfT3hVMkFhcy1rdTk1VG9hYm5RRGQ3a20wUmFaaGlvb1NtUk5rOW_SAXdBVV95cUxORXZ3VVBack13YlpVLUFvWmoxRXlwYnFoNGo2S09mNDJZbm10bUpMOUpaYWVHeW1jdVVrRUJwczE2WkJYLV94enJ3T1NmY1hEWW0zd2tMaTBMclJvNGZKbXdlcUpqSDd5VWw2blVDUDJxTEtodVRjcw?oc=5",
-      "source": "핀포인트뉴스",
-      "publishedAt": "2026-10-07T07:58:39+09:00",
       "summary": "",
       "category": "news",
       "query": "건강기능식품",
