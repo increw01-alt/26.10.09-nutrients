@@ -4,11 +4,12 @@
   var D = window.Data, S = window.SITE || {}, esc = D.esc;
   var page = "";
   var NAV = [
-    { key: "home", label: "홈", href: "index.html" },
+    { key: "home", label: "홈", href: "index.html", desktop: false },
     { key: "ingredients", label: "성분 사전", href: "ingredients.html" },
     { key: "compat", label: "궁합 체크", href: "compatibility.html", hot: true },
+    { key: "guides", label: "가이드", href: "guides.html" },
     { key: "products", label: "제품 찾기", href: "products.html" },
-    { key: "news", label: "뉴스·자료", href: "news.html" },
+    { key: "news", label: "뉴스", href: "news.html" },
     { key: "about", label: "소개", href: "about.html" }
   ];
 
@@ -24,7 +25,7 @@
             '<span class="hidden text-[11px] font-medium text-ink-500 sm:block">' + esc(S.tagline) + '</span></span>' +
           '</a>' +
           '<nav class="hidden items-center gap-1 md:flex" aria-label="주요 메뉴">' +
-            NAV.map(function (n) {
+            NAV.filter(function (n) { return n.desktop !== false; }).map(function (n) {
               var active = n.key === page;
               return '<a href="' + D.url(n.href) + '" class="rounded-lg px-3 py-2 text-sm font-semibold transition ' +
                 (active ? "bg-brand-50 text-brand-700" : "text-ink-600 hover:bg-ink-50 hover:text-ink-900") + '"' + (active ? ' aria-current="page"' : "") + '>' +
@@ -67,7 +68,7 @@
               '<p class="mt-4 text-xs leading-relaxed text-ink-400" id="footer-updated"></p>' +
             '</div>' +
             '<div class="md:col-span-3"><h3 class="text-sm font-bold text-ink-900">바로가기</h3><ul class="mt-3 space-y-2 text-sm text-ink-600">' +
-              NAV.slice(1).map(function (n) { return '<li><a class="hover:text-brand-700" href="' + D.url(n.href) + '">' + esc(n.label) + '</a></li>'; }).join("") +
+              NAV.slice(1).map(function (n) { return '<li><a class="hover:text-brand-700" href="' + D.url(n.href) + '">' + esc(n.label === "뉴스" ? "뉴스·자료" : n.label === "가이드" ? "영양제 가이드" : n.label) + '</a></li>'; }).join("") +
               '<li><a class="hover:text-brand-700" href="' + D.url("materials.html") + '">기능성 원료 인정현황</a></li>' +
             '</ul></div>' +
             '<div class="md:col-span-4"><h3 class="text-sm font-bold text-ink-900">데이터 출처</h3><ul class="mt-3 space-y-2 text-sm text-ink-600">' +
@@ -174,6 +175,12 @@
     window.addEventListener("scroll", function () { b.classList.toggle("hidden", window.scrollY < 500); b.classList.toggle("flex", window.scrollY >= 500); }, { passive: true });
     D.icons(b);
   }
+
+  /* 임시 주소(*.pages.dev)로 접속하면 정식 도메인으로 보냅니다 (중복 색인 방지) */
+  try {
+    var canon = (S.url || "").replace(/\/+$/, "");
+    if (canon && /\.pages\.dev$/i.test(location.hostname)) location.replace(canon + location.pathname + location.search + location.hash);
+  } catch (e) { /* 무시 */ }
 
   document.addEventListener("DOMContentLoaded", function () {
     page = document.body.getAttribute("data-page") || "";

@@ -3,11 +3,11 @@
  * (이 파일만 수정하면 브랜드명·도메인·제휴 ID가 전체 페이지에 반영됩니다)
  * ========================================================= */
 window.SITE = {
-  name: "서플노트",                              // TODO: 브랜드명
-  nameEn: "SuppleNote",
-  tagline: "영양제 정보 · 궁합 · 복용 가이드",
-  url: "https://26-10-09-nutrients.pages.dev",         // TODO: 실제 배포 도메인 (canonical·OG·sitemap에 사용)
-  description: "영양제 성분별 효능·권장량·주의사항과 영양제 간 궁합을 한눈에. 식약처 건강기능식품 정보와 최신 뉴스를 함께 제공합니다.",
+  name: "영양제.kr",                             // 브랜드명 (도메인과 동일하게 사용)
+  nameEn: "yeongyangje.kr",
+  tagline: "영양제 추천 · 궁합 · 복용 가이드",
+  url: "https://xn--og5b1hx9c.kr",             // 영양제.kr (퓨니코드 표기 — canonical·OG·sitemap에 사용)
+  description: "영양제 추천 성분, 영양제 궁합, 먹는 시간과 순서까지. 성분별 효능·권장량·주의사항과 식약처 건강기능식품 정보, 고민별·대상별 영양제 가이드를 제공합니다.",
   contactEmail: "contact@example.com",           // TODO: 문의 이메일
   ogImage: "assets/images/og-default.svg",       // 소셜 공유 썸네일 (PNG 1200x630 권장, 교체 가능)
   // 검색엔진 소유 확인 메타태그 값 (없으면 빈 문자열 유지)
@@ -42,7 +42,7 @@ window.AFFILIATE = {
   },
   coupang: {
     enabled: false,                              // TODO: 쿠팡 파트너스 승인 후 true (딥링크는 스크립트로 생성)
-    subId: "supplenote"                          // 서브 ID (채널 구분용)
+    subId: "yeongyangje"                          // 서브 ID (채널 구분용)
   },
   // 표시할 쇼핑몰 목록 (순서대로 버튼 노출). searchUrl 은 검색어로 상품 목록을 여는 주소
   shops: [

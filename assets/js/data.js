@@ -52,6 +52,9 @@
         return load("products").then(function (d) { return (d.items || []).filter(function (p) { return (p.ingredients || []).indexOf(iid) >= 0; }); }).catch(function () { return []; });
       });
     },
+    guides: function () { return load("guides"); },
+    guideUrl: function (slug) { return ROOT + "guide/" + encodeURIComponent(slug) + ".html"; },
+
     /* 식약처 기능성 원료 데이터: data/materials.json(전체), data/materials/<성분id>.json(성분별) */
     materials: function () { return load("materials"); },
     materialsFor: function (iid) {

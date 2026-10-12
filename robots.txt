@@ -4,4 +4,4 @@ Disallow: /scripts/
 Disallow: /config/
 
 # TODO: 실제 도메인으로 교체
-Sitemap: https://26-10-09-nutrients.pages.dev/sitemap.xml
+Sitemap: https://xn--og5b1hx9c.kr/sitemap.xml

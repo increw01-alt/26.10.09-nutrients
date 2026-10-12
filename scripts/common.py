@@ -18,7 +18,7 @@ logging.basicConfig(
     datefmt="%H:%M:%S",
     stream=sys.stdout,
 )
-log = logging.getLogger("supplenote")
+log = logging.getLogger("yeongyangje")
 
 
 def now_iso() -> str:

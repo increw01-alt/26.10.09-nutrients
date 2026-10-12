@@ -1,4 +1,4 @@
-# 서플노트 (SuppleNote) — 영양제 정보 · 궁합 · 복용 시간표 사이트
+# 영양제.kr — 영양제 추천 · 궁합 · 복용 가이드 사이트
 
 영양제 성분별 효능·권장량·주의사항과 **영양제 간 궁합**, **하루 복용 시간표**를 제공하는 정적 정보 사이트입니다.
 식약처(식품안전나라) 건강기능식품 신고 제품과 최신 뉴스를 **GitHub Actions 로 매일 자동 수집**하고,
@@ -15,6 +15,8 @@ project/
 ├─ ingredient.html            # 성분 상세 (JS 렌더링, ?id=vitamin-d)
 ├─ i/<id>.html                # 성분별 정적 상세 페이지 (SEO용, scripts/build_site.py 가 생성)
 ├─ compatibility.html         # 궁합 체크 (최대 8개 선택, 매트릭스, 복용 시간표, 공유 링크)
+├─ guides.html                # 영양제 가이드 허브 (scripts/build_site.py 가 생성)
+├─ guide/<slug>.html          # 고민별·대상별·복용법 가이드 28개 (data/guides.json 에서 생성)
 ├─ products.html              # 제품 찾기 (식약처 신고 제품 + 쇼핑몰 링크 + 변경 이력)
 ├─ news.html                  # 뉴스·자료 (식약처/연구/뉴스 분류)
 ├─ materials.html             # 식약처 기능성 원료 인정현황 (검색·성분 필터)
@@ -35,6 +37,7 @@ project/
 ├─ data/
 │  ├─ ingredients.json        # ★ 성분 사전 (37종) — 효능·권장량·시간·주의·FAQ
 │  ├─ interactions.json       # ★ 궁합 데이터 (97쌍) — synergy/caution/avoid/neutral
+│  ├─ guides.json             # ★ 가이드 콘텐츠 (고민별 12 · 대상별 9 · 복용법·안전 7)
 │  ├─ products.json           # 식약처 신고 제품 목록 (자동 수집, 압축 JSON)
 │  ├─ products/top/<id>.json  # 성분별 상위 60개 제품 (성분 상세 페이지)
 │  ├─ products/detail/NN.json # 전체 신고 정보 64조각 (제품 '더보기' 펼칠 때 로드)
@@ -75,12 +78,11 @@ Windows PowerShell 도 동일하게 `python -m http.server 8080` 으로 실행�
    - `linkprice.affiliateId` / `enabled: true`, 머천트 코드 확인
    - `coupang.enabled: true` (딥링크는 아래 스크립트가 생성)
    - 네이버 서치어드바이저·구글 서치콘솔 확인 코드
-2. **도메인 연결 후** 임시 주소 `https://26-10-09-nutrients.pages.dev` 를 실제 도메인으로 일괄 치환
+2. **도메인**: 현재 `영양제.kr`(퓨니코드 `https://xn--og5b1hx9c.kr`) 기준으로 canonical·OG·sitemap 이 설정되어 있습니다. 도메인을 바꾸려면 아래처럼 일괄 치환한 뒤 `python scripts/build_site.py` 를 실행하세요.
    ```bash
-   grep -rl "26-10-09-nutrients.pages.dev" --include="*.html" --include="*.js" --include="*.txt" . | xargs sed -i 's#https://26-10-09-nutrients.pages.dev#https://your-domain.com#g'
+   grep -rl "xn--og5b1hx9c.kr" --include="*.html" --include="*.js" --include="*.txt" --include="*.py" . | xargs sed -i 's#https://xn--og5b1hx9c.kr#https://your-domain.com#g'
    ```
-   Cloudflare Pages 에서는 **Custom domains → Set up a custom domain** 으로 도메인을 추가하면 DNS·SSL 이 자동 설정되며, 기존 `pages.dev` 주소는 자동으로 새 도메인으로 리다이렉트되지 않으므로 치환 후 커밋이 필요합니다.
-   (WSL/Linux 기준. 이후 `python scripts/build_site.py` 를 실행하면 `i/*.html` 과 `sitemap.xml` 은 자동 반영)
+   한글 도메인은 검색엔진·소셜 공유 호환을 위해 퓨니코드(ASCII) 형태로 적는 것이 안전합니다. 사용자에게 보이는 문구에는 `영양제.kr` 을 그대로 씁니다.
 3. `about.html` 의 문의 이메일, `assets/images/og-default.svg` 교체(선택)
 
 ## 데이터 자동 업데이트
@@ -130,6 +132,12 @@ python scripts/build_site.py
   - 링크프라이스 머천트(11번가·G마켓·옥션)는 `click.linkprice.com` 딥링크로 감쌉니다 (`config.js` 의 `buildUrl` 형식은 링크프라이스 관리자 "딥링크 생성" 형식과 맞춰 주세요).
   - 쿠팡은 `data/deeplinks.json` 에 생성된 파트너스 단축 링크가 있으면 사용하고, 없으면 일반 검색 링크로 연결합니다.
 - 모든 쇼핑 링크는 `rel="nofollow sponsored noopener"` 이며, 푸터·소개·제품 영역에 쿠팡 파트너스 필수 고지 문구가 포함되어 있습니다.
+
+## 가이드 페이지 추가·수정
+- `data/guides.json` 의 `items` 에 항목을 추가하면 `python scripts/build_site.py` 가 `guide/<slug>.html` 과 `guides.html` 을 다시 생성합니다.
+- 필수 키: id, type(concern|target|howto), slug, icon(lucide 아이콘명), title(SEO 제목), h1, keywords, description, intro, ingredients[{id, why}], combos[{ids, note}], tips, cautions, faq[{q, a}], related(가이드 id). 긴 본문은 sections[{h2, body}].
+- 성분 id 는 `data/ingredients.json` 과 일치해야 하며, 빌드 시 참조가 검증됩니다.
+- 표현은 식약처 인정 기능성 범위("~에 도움을 줄 수 있음")를 지키고 질병 치료·예방 표현을 쓰지 마세요.
 
 ## 성분·궁합 데이터 수정
 - 성분 추가: `data/ingredients.json` 의 `items` 에 항목 추가 (필수 키: id, name, en, category, summary, benefits, dosage, timing, cautions, shopQuery, tags) → `python scripts/build_site.py` 로 정적 페이지 생성

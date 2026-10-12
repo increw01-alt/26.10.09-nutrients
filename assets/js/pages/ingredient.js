@@ -115,7 +115,14 @@
 
     var side = document.getElementById("ingredient-side");
     var sameCat = core.items.filter(function (x) { return x.category === it.category && x.id !== it.id; }).slice(0, 6);
-    side.innerHTML =
+    D.guides().then(function (gd) {
+      var rel = (gd.items || []).filter(function (g) { return (g.ingredients || []).some(function (x) { return x.id === it.id; }); }).slice(0, 6);
+      var box = document.getElementById("ingredient-guides"); if (!box || !rel.length) return;
+      var types = (gd._meta && gd._meta.types) || {};
+      box.innerHTML = '<h2 class="text-sm font-bold text-ink-900">이 성분이 등장하는 가이드</h2><ul class="mt-3 space-y-1">' + rel.map(function (g) { return '<li><a class="flex items-start gap-2 rounded-lg px-2 py-2 text-sm hover:bg-brand-50" href="' + D.guideUrl(g.slug) + '"><i data-lucide="' + esc(g.icon || "book-open") + '" class="mt-0.5 h-4 w-4 shrink-0 text-brand-600"></i><span><span class="block font-semibold text-ink-800">' + esc(g.h1) + '</span><span class="text-[11px] text-ink-400">' + esc((types[g.type] || {}).short || "") + '</span></span></a></li>'; }).join("") + '</ul><a class="mt-2 inline-flex items-center gap-1 px-2 text-xs font-bold text-brand-700 hover:underline" href="' + D.url("guides.html") + '">전체 가이드 보기 <i data-lucide="arrow-right" class="h-3.5 w-3.5"></i></a>';
+      box.classList.remove("hidden"); D.icons(box);
+    }).catch(function () {});
+    side.innerHTML = '<div id="ingredient-guides" class="mb-4 hidden rounded-2xl border border-brand-100 bg-brand-50/40 p-5"></div>' +
       '<div class="rounded-2xl border border-ink-100 bg-white p-5 shadow-card"><h2 class="text-sm font-bold text-ink-900">같은 분류의 성분</h2><ul class="mt-3 space-y-1">' + sameCat.map(function (x) { return '<li><a class="flex items-center gap-2 rounded-lg px-2 py-2 text-sm font-semibold text-ink-700 hover:bg-brand-50 hover:text-brand-700" href="' + D.ingredientUrl(x.id) + '"><i data-lucide="' + esc(x.icon || "pill") + '" class="h-4 w-4 text-ink-400"></i>' + esc(x.name) + '</a></li>'; }).join("") + '</ul></div>' +
       '<div class="mt-4 rounded-2xl bg-gradient-to-br from-brand-600 to-brand-800 p-5 text-white shadow-lift"><h2 class="text-base font-extrabold">복용 시간표가 필요하세요?</h2><p class="mt-1 text-sm text-white/85">먹고 있는 영양제를 모두 선택하면 간격을 고려한 하루 시간표를 만들어 드립니다.</p><a href="' + D.compatUrl([it.id]) + '" class="mt-3 inline-flex items-center gap-1 rounded-lg bg-white px-3 py-2 text-sm font-bold text-brand-700">궁합 체크 열기 <i data-lucide="arrow-right" class="h-4 w-4"></i></a></div>';
 

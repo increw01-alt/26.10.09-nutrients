@@ -33,7 +33,7 @@ from common import DATA_DIR, KST, env, log, now_iso, read_json, write_json  # no
 
 QUERIES = ["건강기능식품", "영양제", "식약처 건강기능식품", "비타민 연구", "오메가3 유산균"]
 TIMEOUT = 15
-UA = {"User-Agent": "Mozilla/5.0 (compatible; SuppleNoteBot/1.0; +https://supplenote.example.com)"}
+UA = {"User-Agent": "Mozilla/5.0 (compatible; 영양제.krBot/1.0; +https://xn--og5b1hx9c.kr)"}
 MFDS_PAT = re.compile(r"식약처|식품의약품안전처|식품안전나라|보건복지부|질병관리청|소비자원|공정거래위원회")
 RESEARCH_PAT = re.compile(r"연구|논문|학회|임상|대학|연구팀|저널|메타분석")
 
