@@ -34,7 +34,9 @@ project/
 ├─ data/
 │  ├─ ingredients.json        # ★ 성분 사전 (37종) — 효능·권장량·시간·주의·FAQ
 │  ├─ interactions.json       # ★ 궁합 데이터 (97쌍) — synergy/caution/avoid/neutral
-│  ├─ products.json           # 식약처 신고 제품 (자동 수집, 현재 샘플)
+│  ├─ products.json           # 식약처 신고 제품 목록 (자동 수집, 압축 JSON)
+│  ├─ products/top/<id>.json  # 성분별 상위 60개 제품 (성분 상세 페이지)
+│  ├─ products/detail/NN.json # 전체 신고 정보 64조각 (제품 '더보기' 펼칠 때 로드)
 │  ├─ news.json               # 뉴스 (자동 수집, 현재 샘플)
 │  ├─ deeplinks.json          # 쿠팡 파트너스 딥링크 캐시
 │  └─ meta.json               # 빌드·갱신 정보
@@ -104,6 +106,17 @@ python scripts/fetch_products.py
 python scripts/build_affiliate_links.py
 python scripts/build_site.py
 ```
+
+### 제품 데이터 파일 구조
+- `data/products.json`: 제품 찾기 페이지용 가벼운 목록(이름·업체·신고일·제형·성분·기능성 요약)
+- `data/products/top/<성분id>.json`: 성분 상세 페이지용 상위 60개(제품명에 성분이 드러나는 단일 목적 제품 우선)
+- `data/products/detail/<00~63>.json`: 전체 신고 정보(원재료·섭취방법·주의사항 등). 제품 id 해시로 조각을 나누며 `assets/js/data.js`의 `productShard()`와 스크립트의 `shard_of()`가 같은 계산을 씁니다.
+- 매칭 규칙을 바꾼 뒤에는 `python scripts/fetch_products.py --rebuild` 로 API 호출 없이 저장된 레코드로 다시 생성할 수 있습니다.
+
+### 제품 매칭 기준
+- 비타민·미네랄은 식약처가 기능성 함량 이상일 때만 표기하는 **기능성 문구**(예: 칼슘 "뼈와 치아 형성에 필요")와 제품명으로 판정합니다. 부형제(스테아린산마그네슘 등)는 제외합니다.
+- 기능성 원료(홍삼·루테인 등)는 제품명·기능성 문구·원재료 목록 앞부분(주원료)으로 판정합니다.
+- 비타민·미네랄 5종 이상이면 종합비타민·미네랄로도 분류합니다.
 
 ### 제품 변경 추적
 `fetch_products.py` 는 식약처 API 가 느리고(1,000건당 20~40초) 키당 동시 요청 1개만 허용하므로, 최신 신고분부터 거꾸로 `FOODSAFETY_MAX_ROWS`(기본 15,000건)만 순차 수집합니다. 이전 `products.json` 과 신고번호 기준으로 비교해 **신규 / 변경(제품명·기능성·원재료·주의사항) / 삭제** 를 `changelog` 에 기록하고, 제품 찾기 페이지 상단에 건수와 이력을 표시합니다.

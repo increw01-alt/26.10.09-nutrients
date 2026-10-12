@@ -27,14 +27,13 @@
     return html;
   }
 
-  function renderProducts(it, products) {
+  function renderProducts(it, items, sample) {
     var el = document.getElementById("ingredient-products"); if (!el) return;
-    var items = (products.items || []).filter(function (p) { return (p.ingredients || []).indexOf(it.id) >= 0; }).slice(0, 6);
-    var sample = products._meta && products._meta.source === "sample";
+    items = (items || []).slice(0, 6);
     var html = (sample ? '<p class="mb-3 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">아래 제품은 <strong>샘플 데이터</strong>입니다. 식약처 API 키를 설정하고 수집 스크립트를 실행하면 실제 신고 제품으로 교체됩니다.</p>' : "");
     if (!items.length) html += '<p class="text-sm text-ink-400">이 성분이 포함된 신고 제품이 아직 수집되지 않았습니다.</p>';
-    else html += '<div class="grid gap-3 sm:grid-cols-2">' + items.map(function (p) {
-      return '<div class="rounded-xl border border-ink-100 p-4"><p class="font-bold text-ink-900">' + esc(p.name) + '</p><p class="mt-0.5 text-xs text-ink-500">' + esc(p.company) + (p.registeredAt ? ' · ' + esc(D.fmtDate(p.registeredAt)) + ' 신고' : "") + '</p><p class="mt-2 line-clamp-2 text-xs text-ink-600">' + esc(p.function || "") + '</p><div class="mt-3">' + window.Affiliate.buttonsHtml(p.shopQuery || p.name.replace(/^\[샘플\]\s*/, ""), { size: "sm", short: true }) + '</div></div>';
+    else html += '<p class="mb-3 text-xs text-ink-500">식약처에 신고된 ' + esc(it.name) + ' 함유 제품 중 제품명에 성분이 드러나는 단일 목적 제품을 우선 보여드립니다.</p><div class="grid gap-3 sm:grid-cols-2">' + items.map(function (p) {
+      return '<div class="rounded-xl border border-ink-100 p-4"><p class="font-bold text-ink-900">' + esc(p.name) + '</p><p class="mt-0.5 text-xs text-ink-500">' + esc(p.company) + (p.registeredAt ? ' · ' + esc(D.fmtDate(p.registeredAt)) + ' 신고' : "") + (p.shape ? ' · ' + esc(p.shape) : "") + '</p><p class="mt-2 line-clamp-2 whitespace-pre-line text-xs text-ink-600">' + esc(p.function || p.f || "") + '</p><div class="mt-3">' + window.Affiliate.buttonsHtml(p.shopQuery || p.name.replace(/^\[샘플\]\s*/, ""), { size: "sm", short: true }) + '</div></div>';
     }).join("") + "</div>";
     html += '<a href="' + D.productsUrl(it.id) + '" class="mt-4 inline-flex items-center gap-1 text-sm font-bold text-brand-700 hover:underline">' + esc(it.name) + ' 함유 제품 전체 보기 <i data-lucide="arrow-right" class="h-4 w-4"></i></a>';
     el.innerHTML = html; D.icons(el);
@@ -105,7 +104,13 @@
     var ssr = document.getElementById("ssr"); if (ssr) ssr.remove();
     document.getElementById("ingredient-app").classList.remove("hidden");
     D.icons();
-    window.Affiliate.ready().then(function () { D.products().then(function (p) { renderProducts(it, p); }).catch(function () { var el = document.getElementById("ingredient-products"); if (el) el.innerHTML = ""; }); });
+    window.Affiliate.ready().then(function () {
+      // 목록 파일(수 MB) 대신 meta.json 으로 샘플 여부만 확인하고, 성분별 상위 파일만 불러옵니다
+      D.meta().catch(function () { return {}; }).then(function (m) {
+        var sample = !!(m && m.products && m.products.source === "sample");
+        return D.productsTop(it.id).then(function (items) { renderProducts(it, items, sample); });
+      }).catch(function () { var el = document.getElementById("ingredient-products"); if (el) el.innerHTML = ""; });
+    });
   }
 
   document.addEventListener("DOMContentLoaded", function () {

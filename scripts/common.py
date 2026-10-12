@@ -36,13 +36,18 @@ def read_json(path: Path, default=None):
         return default
 
 
-def write_json(path: Path, data) -> None:
+def write_json(path: Path, data, compact: bool = False, quiet: bool = False) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_suffix(path.suffix + ".tmp")
     with open(tmp, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+        if compact:
+            json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
+        else:
+            json.dump(data, f, ensure_ascii=False, indent=2)
         f.write("\n")
     os.replace(tmp, path)
+    if quiet:
+        return
     try:
         shown = path.relative_to(ROOT)
     except ValueError:

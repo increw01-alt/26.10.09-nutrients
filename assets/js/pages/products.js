@@ -6,23 +6,38 @@
   var state = { q: D.qs("q") || "", ingredient: D.qs("ingredient") || "", shape: "", page: 1 };
   var core, products;
 
+  function detailHtml(p) {
+    return (p.reportNo ? '<div><dt class="inline font-bold">신고번호</dt> <dd class="inline">' + esc(p.reportNo) + '</dd></div>' : "") +
+      (p.registeredAt ? '<div><dt class="inline font-bold">신고일</dt> <dd class="inline">' + esc(D.fmtDate(p.registeredAt)) + '</dd></div>' : "") +
+      (p.lastUpdated ? '<div><dt class="inline font-bold">식약처 정보 갱신</dt> <dd class="inline">' + esc(D.fmtDate(p.lastUpdated)) + '</dd></div>' : "") +
+      (p.function ? '<div><dt class="inline font-bold">기능성</dt> <dd class="inline">' + esc(p.function) + '</dd></div>' : "") +
+      (p.intake ? '<div><dt class="inline font-bold">섭취방법</dt> <dd class="inline">' + esc(p.intake) + '</dd></div>' : "") +
+      (p.caution ? '<div><dt class="inline font-bold">주의사항</dt> <dd class="inline">' + esc(p.caution) + '</dd></div>' : "") +
+      (p.rawMaterials ? '<div><dt class="inline font-bold">원재료</dt> <dd class="inline">' + esc(p.rawMaterials) + '</dd></div>' : "") +
+      (p.shelfLife ? '<div><dt class="inline font-bold">유통기한</dt> <dd class="inline">' + esc(p.shelfLife) + '</dd></div>' : "");
+  }
+
   function card(p) {
     var ings = (p.ingredients || []).map(function (id) { return core.byId[id]; }).filter(Boolean);
     var q = p.shopQuery || p.name.replace(/^\[샘플\]\s*/, "");
-    return '<article class="flex flex-col rounded-2xl border border-ink-100 bg-white p-5 shadow-card fade-up">' +
-      '<div class="flex items-start justify-between gap-2"><div class="min-w-0"><h2 class="font-extrabold leading-snug text-ink-900">' + esc(p.name) + '</h2><p class="mt-1 text-xs text-ink-500">' + esc(p.company || "") + (p.shape ? ' · ' + esc(p.shape) : "") + '</p></div>' + (p.isNew ? '<span class="shrink-0 rounded-full bg-brand-600 px-2 py-0.5 text-[10px] font-bold text-white">NEW</span>' : "") + "</div>" +
-      '<p class="mt-3 line-clamp-3 whitespace-pre-line text-sm leading-relaxed text-ink-600">' + esc(p.function || "") + '</p>' +
+    var hasDetail = !!(p.rawMaterials || p.intake || p.caution);
+    return '<article class="flex flex-col rounded-2xl border border-ink-100 bg-white p-5 shadow-card fade-up" data-id="' + esc(p.id) + '">' +
+      '<div class="flex items-start justify-between gap-2"><div class="min-w-0"><h2 class="font-extrabold leading-snug text-ink-900">' + esc(p.name) + '</h2><p class="mt-1 text-xs text-ink-500">' + esc(p.company || "") + (p.shape ? ' · ' + esc(p.shape) : "") + (p.registeredAt ? ' · ' + esc(D.fmtDate(p.registeredAt)) + ' 신고' : "") + '</p></div>' + (p.isNew ? '<span class="shrink-0 rounded-full bg-brand-600 px-2 py-0.5 text-[10px] font-bold text-white">NEW</span>' : "") + "</div>" +
+      '<p class="mt-3 line-clamp-3 whitespace-pre-line text-sm leading-relaxed text-ink-600">' + esc(p.f || p.function || "") + '</p>' +
       (ings.length ? '<div class="mt-3 flex flex-wrap gap-1.5">' + ings.slice(0, 5).map(function (i) { return '<a href="' + D.ingredientUrl(i.id) + '" class="rounded-md bg-brand-50 px-2 py-0.5 text-[11px] font-bold text-brand-700 hover:bg-brand-100">' + esc(i.name) + '</a>'; }).join("") + (ings.length > 5 ? '<span class="text-[11px] text-ink-400">+' + (ings.length - 5) + '</span>' : "") + "</div>" : "") +
-      '<details class="mt-3 text-xs text-ink-500"><summary class="cursor-pointer font-semibold text-ink-600 hover:text-brand-700">신고 정보 더보기</summary><dl class="mt-2 space-y-1.5 whitespace-pre-line rounded-lg bg-ink-50 p-3">' +
-        (p.reportNo ? '<div><dt class="inline font-bold">신고번호</dt> <dd class="inline">' + esc(p.reportNo) + '</dd></div>' : "") +
-        (p.registeredAt ? '<div><dt class="inline font-bold">신고일</dt> <dd class="inline">' + esc(D.fmtDate(p.registeredAt)) + '</dd></div>' : "") +
-        (p.lastUpdated ? '<div><dt class="inline font-bold">식약처 정보 갱신</dt> <dd class="inline">' + esc(D.fmtDate(p.lastUpdated)) + '</dd></div>' : "") +
-        (p.intake ? '<div><dt class="inline font-bold">섭취방법</dt> <dd class="inline">' + esc(p.intake) + '</dd></div>' : "") +
-        (p.caution ? '<div><dt class="inline font-bold">주의사항</dt> <dd class="inline">' + esc(p.caution) + '</dd></div>' : "") +
-        (p.rawMaterials ? '<div><dt class="inline font-bold">원재료</dt> <dd class="inline">' + esc(p.rawMaterials) + '</dd></div>' : "") +
-        (p.shelfLife ? '<div><dt class="inline font-bold">유통기한</dt> <dd class="inline">' + esc(p.shelfLife) + '</dd></div>' : "") +
-      '</dl></details>' +
+      '<details class="mt-3 text-xs text-ink-500" data-detail="' + (hasDetail ? "inline" : "lazy") + '"><summary class="cursor-pointer font-semibold text-ink-600 hover:text-brand-700">신고 정보 더보기</summary><dl class="mt-2 space-y-1.5 whitespace-pre-line rounded-lg bg-ink-50 p-3">' + (hasDetail ? detailHtml(p) : '<div class="text-ink-400">불러오는 중…</div>') + '</dl></details>' +
       '<div class="mt-auto pt-4">' + window.Affiliate.buttonsHtml(q, { size: "sm", short: true }) + '</div></article>';
+  }
+
+  /* '더보기'를 펼칠 때 상세 조각 파일에서 전체 신고 정보를 가져옴 */
+  function lazyDetail(details) {
+    if (details.getAttribute("data-detail") !== "lazy") return;
+    details.setAttribute("data-detail", "loading");
+    var id = details.closest("article").getAttribute("data-id"), dl = details.querySelector("dl");
+    D.productDetail(id).then(function (full) {
+      dl.innerHTML = full ? detailHtml(full) : '<div class="text-ink-400">상세 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</div>';
+      details.setAttribute("data-detail", full ? "inline" : "lazy");
+    });
   }
 
   function filtered() {
@@ -30,7 +45,7 @@
     if (state.ingredient) items = items.filter(function (p) { return (p.ingredients || []).indexOf(state.ingredient) >= 0; });
     if (state.shape) items = items.filter(function (p) { return (p.shape || "") === state.shape; });
     var q = state.q.trim().toLowerCase();
-    if (q) items = items.filter(function (p) { return [p.name, p.company, p.function, p.rawMaterials].join(" ").toLowerCase().indexOf(q) >= 0; });
+    if (q) items = items.filter(function (p) { return [p.name, p.company, p.f || p.function || "", p.rawMaterials || ""].join(" ").toLowerCase().indexOf(q) >= 0; });
     items.sort(function (a, b) { return String(b.registeredAt || "").localeCompare(String(a.registeredAt || "")); });
     return items;
   }
@@ -85,6 +100,7 @@
       ssel.addEventListener("change", function () { state.shape = ssel.value; state.page = 1; render(); });
       var input = document.getElementById("product-search"); input.value = state.q;
       input.addEventListener("input", function () { state.q = input.value; state.page = 1; render(); });
+      document.getElementById("product-list").addEventListener("click", function (e) { var sm = e.target.closest("summary"); if (sm) lazyDetail(sm.parentElement); });
       document.getElementById("pagination").addEventListener("click", function (e) { var b = e.target.closest("[data-page]"); if (!b) return; state.page = Number(b.getAttribute("data-page")); render(); document.getElementById("product-list").scrollIntoView({ behavior: "smooth", block: "start" }); });
       var quick = document.getElementById("quick-ingredients");
       if (quick) quick.innerHTML = ["vitamin-d", "omega-3", "probiotics", "lutein", "magnesium", "milk-thistle", "red-ginseng", "calcium"].map(function (id) { var it = core.byId[id]; return it ? '<button type="button" class="chip" data-quick="' + id + '">' + esc(it.name) + "</button>" : ""; }).join("");

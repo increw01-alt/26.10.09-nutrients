@@ -41,6 +41,29 @@
     meta: function () { return load("meta"); },
     deeplinks: function () { return load("deeplinks").catch(function () { return { coupang: {} }; }); },
 
+    /* 제품 데이터 구조
+     *  data/products.json                 — 가벼운 목록(제품 찾기 페이지)
+     *  data/products/top/<성분id>.json     — 성분별 상위 제품 (성분 상세 페이지)
+     *  data/products/detail/<NN>.json     — 전체 레코드 조각 (제품 '더보기' 펼칠 때)
+     */
+    productsTop: function (iid) {
+      return load("products/top/" + iid).then(function (d) { return (d && d.items) || []; }).catch(function () {
+        // 성분별 파일이 없으면(샘플 상태 등) 목록에서 걸러서 사용
+        return load("products").then(function (d) { return (d.items || []).filter(function (p) { return (p.ingredients || []).indexOf(iid) >= 0; }); }).catch(function () { return []; });
+      });
+    },
+    productShard: function (id) {           // scripts/fetch_products.py 의 shard_of() 와 동일한 계산
+      var h = 0; id = String(id || "");
+      for (var i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) % 1000003;
+      var n = h % 64; return (n < 10 ? "0" : "") + n;
+    },
+    productDetail: function (id) {
+      return load("products/detail/" + Data.productShard(id)).then(function (d) {
+        var hit = ((d && d.items) || []).filter(function (p) { return p.id === id; })[0];
+        return hit || null;
+      }).catch(function () { return null; });
+    },
+
     /* 성분 + 궁합을 함께 로드해 인덱스까지 만들어 반환 */
     core: function () {
       if (cache.__core) return cache.__core;
