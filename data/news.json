@@ -2,7 +2,7 @@
   "_meta": {
     "source": "live",
     "sourceLabel": "구글 뉴스 RSS",
-    "updatedAt": "2026-10-12T11:13:07+09:00",
+    "updatedAt": "2026-10-12T16:07:47+09:00",
     "queries": [
       "건강기능식품",
       "영양제",
@@ -14,6 +14,94 @@
     "total": 60
   },
   "items": [
+    {
+      "id": "fed317ba2b070f59",
+      "title": "콜레스테롤 관리, 영양제만으로는 부족할 수 있는 이유",
+      "link": "https://news.google.com/rss/articles/CBMiU0FVX3lxTFBka01WQm9zMU9NUUg4T3VtRlZvUUVCZ2x6UTMyRHN5akRzNFlqSTlXZFM0aGxkdDlWajlhTmxYbUJDcGthYlR5RHM5SVdPVVg1Vlpn?oc=5",
+      "source": "유스연합",
+      "publishedAt": "2026-10-12T15:53:59+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "2cba4fc72e70a6d6",
+      "title": "엽산 보충제, 자살 위험 낮출까…임상 근거는 '글쎄'",
+      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE1XaHF3YkpUcjQ5SUM3Qk5jT1p6aHEtckZ0SXp3WTd2Y1NGejN6Mi0xZ0hsbEdkd2Z6VlFpbnRZdmFXbktmSHYyMlJ4Rm9DbW1xNU5RWjljVFhENzVNdDRaVUt1M0ZIUTV5bGE2UA?oc=5",
+      "source": "메디컬투데이",
+      "publishedAt": "2026-10-12T15:08:19+09:00",
+      "summary": "",
+      "category": "research",
+      "query": "비타민 연구",
+      "provider": "google"
+    },
+    {
+      "id": "e0c99925b3180cbc",
+      "title": "'천장 붕괴' 노인 대상 건강식품 팔던 대구 '떴다방'…방문판매업 '미신고'",
+      "link": "https://news.google.com/rss/articles/CBMiX0FVX3lxTE5Ha2FMRVctam1lMHVBTHhzeXk5VThjU1VHSUM2QkRwTWxMaG1IQ2h4YVZibUVYcnowQi1WNTlIREt2RUNOSVF2UERVUHN4RzJDcG9qeGYyMkN2OGN6MUhr?oc=5",
+      "source": "뉴스1",
+      "publishedAt": "2026-10-12T14:11:34+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "1ecf3778da16bb79",
+      "title": "건기식 경쟁 심화에 마케팅 부담까지…헬스케어 기업 수익성 시험대",
+      "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTFBsSzR4R0FERExqazR2Y0xyRlp4akVWdUpWNWduMENqY2NrMDduaDRjZndCSEJjZFpzelJKR0dZNnB0cmlfSFFKdkpyajdRYmFqdGh4SEs2U010Nzd3bnlJXzF5c0Ezb1VGTGFOaWtGckNsbXfSAXdBVV95cUxPVW01Q0lOdmdjY08wYzFOVVhFTW4zMHIxNDFveXR4cnk5dWdsT01sdlZDNVBfQTVzaGxZN0Y4czJSUmxadldMNUlTNlhYc05rZjc5NDlFRDlrMS1mOTBsc1U4TkthX043VUJIVEpTRnd6U3haR0JGZw?oc=5",
+      "source": "핀포인트뉴스",
+      "publishedAt": "2026-10-12T13:42:50+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "152b770faa3a54ff",
+      "title": "전북 천마, ‘기억력 개선’ 기능성 소재 가치 높다",
+      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE5CZVBpZzA5V2pVX0pzckNUQ3NtSXh2cGZydHM0anBCV2pxLURXSDctVHVvWVc2X2FyS0xuVTJVM2dSUndoa1dxWURPNGN6N205ZlJ4bzhqNVRhcnpCNy1Ib0ZQYTQ3NGEzNTU5Vw?oc=5",
+      "source": "농업인신문",
+      "publishedAt": "2026-10-12T13:25:53+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "a962dca7c5881d3f",
+      "title": "제천시, 가뭄·폭염 대비 과수 생리 장애 예방 영양제 5천만 원 지원",
+      "link": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE5UYTBsWFRFNVQ0SURtTWdvMFlJVXNZYzhkc0lORTRScko1TVY1ZmcydkFaM0p6UW1iQVZoN2ozNTYzSm1TRWxuY1Z5NnUwcGE2WUlzS0MwT0hXbk82R2xWVUln?oc=5",
+      "source": "충북일보",
+      "publishedAt": "2026-10-12T13:13:19+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "93a48a2f45243269",
+      "title": "미생물이 만드는 비타민 A…김선원 교수 연구팀, K-뷰티 원료 생산기술로 한 걸음 더",
+      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTFBZWU12d1lxR2Q0bmZncVBYemZiWE5IT295VnJvanhVQWJvZFVUbEpvWEtMTE1CcU1ETFN3N2hYUTUzMmN6SkhvUERqMmZBbG9tbExBNkFmZlRlaXpwT3RrcWt1dHZRdTlqYkIxUw?oc=5",
+      "source": "베리타스알파",
+      "publishedAt": "2026-10-12T12:22:03+09:00",
+      "summary": "",
+      "category": "research",
+      "query": "비타민 연구",
+      "provider": "google"
+    },
+    {
+      "id": "83a8e930a358183c",
+      "title": "뉴트리 에버콜라겐, 리포좀 제형 적용한 프라임 제품 2종 선봬",
+      "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE5RaGJQZ2RKSmxvUjFUdGlSTTBlcmlmTTQ2TFdKMmJsWGdDZ3lzVy1QSHpReVg3bFNxOENUSDJfbjVvRkI2anJuR0EyMFBkby1lSmh3YXJyLVJSRlkxQ1g3MVFjdy1Ocnc?oc=5",
+      "source": "한국섬유신문",
+      "publishedAt": "2026-10-12T11:22:52+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
     {
       "id": "2322d3bd3d5e33db",
       "title": "건기식 돌파구 찾는 제약사, 답은 약국이었다",
@@ -81,6 +169,17 @@
       "provider": "google"
     },
     {
+      "id": "76694f45cca8e58d",
+      "title": "운동 후부터 잠들기 전까지 '리커버리'를 위한 영양제 18",
+      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE5IUVRyQmU2NVAxZWdiUzcxcENrQmZ4c2Z2ZHM3V1dNSlQ3NDU3WFNvZWhDVElrSC1LMFRMZVFSdmpYWEJaenRvV2J3a01UTnNsX1oxd1FiVzhXdw?oc=5",
+      "source": "에스콰이어 코리아",
+      "publishedAt": "2026-10-12T08:00:03+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
       "id": "3aecf2390f4a7397",
       "title": "'사당귀' 김용빈, 건강 비결 공개 \"하루 즙 대여섯 개와 한약·영양제 먹어\"",
       "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTFA5Q2xaQjdDRDhNaVZSV1NOMktDXzNQbFAzb0FBdkNwem9uZW1sRHdySzJLRU81bk1EUnYyNUJhVGhqbTRXNUxoOHN4UDNiSTFMY3lkdnppRnpzV3RPSUgyMw?oc=5",
@@ -119,6 +218,17 @@
       "link": "https://news.google.com/rss/articles/CBMiS0FVX3lxTE9VYlo3eFBXWlVwOXEtM3Q4bkFxR2VOaldoX3pSaW5Ha0pweE9iNzhTN1haMDRyTDNodlAxUloyX21BbmV3ZDVCREJ0TQ?oc=5",
       "source": "재경일보",
       "publishedAt": "2026-10-11T19:00:00+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "e28a6ba54a64c228",
+      "title": "심벌 수집 표시와 라운드 횟수, 병원에서 맞고있는 정맥영양제 화면 구분",
+      "link": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxNQTFrSmxsLVZsanlIRkJibklkMlQ0QW9VTTV1Ymp1SnRnVk83clFzQ0Vhb0lxM3dNNkFEVmhtaW90a1VWdjJGaVNEaHFscmR4YzJwanpKRTBOR0R0bDRHbVYwbGhRQUhLeWpxMDNaUlVHWGEyRnhiWnV3cXVCcXowSy1icU8xZ1IwZkUzSzR3NVJLcmh2b1Jlc2cwWllBUHNKb3ZJc2hDSkNRaVQ0WnR6ckdjUjVMaHlrUjNNa0VQb3ptVkE?oc=5",
+      "source": "Calgary Roughnecks",
+      "publishedAt": "2026-10-11T18:03:16+09:00",
       "summary": "",
       "category": "news",
       "query": "영양제",
@@ -253,7 +363,7 @@
       "publishedAt": "2026-10-09T22:31:31+09:00",
       "summary": "",
       "category": "news",
-      "query": "건강기능식품",
+      "query": "식약처 건강기능식품",
       "provider": "google"
     },
     {
@@ -334,10 +444,10 @@
       "provider": "google"
     },
     {
-      "id": "d259e92808bd19ff",
+      "id": "1a8aeb203d7c9ee9",
       "title": "에이스바이옴 'ACE-01', 식약처 피부건강 개별인정형 원료 인정",
-      "link": "https://news.google.com/rss/articles/CBMigAFBVV95cUxPTDQyWUVyTjVXMW5kNFl6WW1mTW5DYlgxSTdaSjZZQW1yUUlodGtoVHdqX2ZWVTBOaG8tdzhsX0RJTlRfdVNIc2ZYNk9jWThmdDlSTkVfUTc3V0VVcWRVREd4SE5UaVUwbmNyaDVhWG1JRmZuTU8zN1h6VkZDWjhQRg?oc=5",
-      "source": "이데일리",
+      "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTE40WWJyNkpmNmlpbWs4UU53R2pFODZsMXFoN254d081R0puS25PVTBJWUtfa0Z6TUx5MnRIQXVHRmdfVDNCNHdoYnkySnRBOUpqcHhvRUdIOHFVeFlod0FaWU5Yc1Z0Ukx2eldfSFpvaDFGbnM?oc=5",
+      "source": "마켓인",
       "publishedAt": "2026-10-08T16:45:28+09:00",
       "summary": "",
       "category": "mfds",
@@ -517,7 +627,7 @@
       "publishedAt": "2026-10-08T09:14:56+09:00",
       "summary": "",
       "category": "news",
-      "query": "건강기능식품",
+      "query": "식약처 건강기능식품",
       "provider": "google"
     },
     {
@@ -559,116 +669,6 @@
       "link": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxQdGl3OWdOeDRSbkk0NC1JUHMwUmxyRjFiYmRZYVRNdC0zX1IwdnA5bUxmVVhRNFVDbERMYmxvOU5Zb0k3MFhGcGtsaGlndkJmMFVGRmRMUzA5bUdVREtMSEhvSTNrYVI5dkppVXFjNENuc2FJN0Z3RFN6TXBJZTBKNWNFWjE1Qy1MWjRF?oc=5",
       "source": "글로벌이코노믹",
       "publishedAt": "2026-10-08T08:24:35+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "8afe77ded2d8c532",
-      "title": "임신부 영양제, 시기마다 달라야 한다… 비타민B6부터 '칼마디'까지",
-      "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE93bEdWQnUwNndNN2Fxc0RYOGR4c1gzOGJPSkVNUHdtakMySzRVVV9hVmJjSlREM3JWQjVBU2llaEhldmsxSV9MY19FU3E0dVcxNG5pQlpLT3BNeXNXZFVZTkNDMkdGV2NzT3c?oc=5",
-      "source": "하이닥",
-      "publishedAt": "2026-10-08T07:00:00+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "5e29e7d87e968b44",
-      "title": "KGC 부여공장, 건강기능식품업계 최초 '폐기물 매립 제로' 최고등급 획득",
-      "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTE02SUU2SXZHZDM0d1AtZlBjbEpiREhTTW9oNDZtYzFDTzlKUzJGWGhnakR4RlNDbU1JMnRFeG83Z0lWRHdGcjZkV0RMNDQ3Mll1c1dSdWhNMGhZZkVfeE02bGFKd1NsbU5nVjY1bDhFYnp3dXM?oc=5",
-      "source": "비즈니스포스트",
-      "publishedAt": "2026-10-07T17:44:25+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "57c58f5413dd4e28",
-      "title": "제주삼다수-광동제약, 취약계층에 건강기능식품 1억원 상당 기탁",
-      "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTE5XZGoxOGVJMmxtV25mY3Q1MGVvZTRyU2V5c1JOcnNQUFctSnJLWjA3ZUx6UjJNUXJlUzB1ZVlIanZUZ0todVBOSHlMd3Z2U2FTamN4Y1VUdUNVeWxGd2JiaTlnamJGWUhHUm43bWlDOTdtQlk?oc=5",
-      "source": "헤드라인제주",
-      "publishedAt": "2026-10-07T17:13:24+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "5aa05dd902191f84",
-      "title": "GLP-1 전용 건강기능식품 개발…365mc·GC녹십자웰빙 맞손",
-      "link": "https://news.google.com/rss/articles/CBMiV0FVX3lxTFB0dmhhWFZHcmlWYkFaOU12WmhQcHIxSjJpN2s3OWtWSVI4dlJCbUl1UTRPbVdneG1YYVMxNkhTY0FDcllSSEY4TnZKZWstOHNjUnU2R0NUUQ?oc=5",
-      "source": "리얼푸드",
-      "publishedAt": "2026-10-07T15:48:13+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "e0b33b3fc67200e6",
-      "title": "[위키트리] 페트병 윗부분 당장 한 번 잘라보세요…돈이 절로 아껴집니다",
-      "link": "https://news.google.com/rss/articles/CBMiVkFVX3lxTFB3TnRtN2cyNVE4amtOY0tXeFJTdGR4aFNIQW1ULTUzVXByc1YtZ0pfWlpGV244QkVDMl82TUd3TTB2M3lhTWE2b0ZmT1lmX0RKNUZMNDRB?oc=5",
-      "source": "위키트리",
-      "publishedAt": "2026-10-07T15:25:00+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "067d5b42bf0c8b8a",
-      "title": "광동제약, 제주지역 취약계층에 건강기능식품 1억 원 상당 기탁",
-      "link": "https://news.google.com/rss/articles/CBMiP0FVX3lxTE92UmpSaE9vQ1RNN1B2TE9xU1hrLVV1eDZMck5TY2pSSmVTS0JYUFp4bVRTd19qa2VsenVjeUxNaw?oc=5",
-      "source": "사회적경제뉴스",
-      "publishedAt": "2026-10-07T15:01:00+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "609fa25f164d7302",
-      "title": "전북 천마 '기억력 개선' 기능성 원료 인정…건기식 시장 확대",
-      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE0tS1lGSHB0NnBwbE5xN25IaEJ3WXd0RU9KUW8wOTdsbnphY19OV0ZPVXhYS1hTeEVoV2otWDdsd1FZUl9lallkZkVsZjVJdzd1N2JmWUg5ZzFhNE1PcE40Z9IBeEFVX3lxTE5QMEo1ZE8zZG50Vk5TVkFKZHZSS29XMVBrRVBmVzlsT25wSUpkVThrUnVzZlF3QTlNTXQtb2E3OXI4YnQzS1NGOWY3UXJvNTVyLWVzWlF4RG1vdHdaSUpDZE10MVNkSEZYRkhKbUw5aUFVR0lyOWtDWA?oc=5",
-      "source": "뉴시스",
-      "publishedAt": "2026-10-07T13:19:48+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "1d2744dbc137e072",
-      "title": "자세한 규칙이 궁금해지는 게임, 병원에서 맞고있는 정맥영양제",
-      "link": "https://news.google.com/rss/articles/CBMi3AFBVV95cUxNTVlkVjZsN2xKZS1fX3BQTkFOX1k1aEFhYWhUYWZ4NUlYQTlkY094T1RCXzNGZXY0anFpYWYteWg4cjZxQm5rbnFzendnQVpSSEhoajA1cHpfVVFMaGV3elVJZ1hpY3hHeDdDcUtSWmNNMkZEYzYyb2lBeTAzTlNSWmhySTlFdDl0alg0QVptNEV3clVlNUZXZ1hhb2E2WHgtTy0yaXdCc08xdmNCeXpFLUZ2a29ORlNpLWF6cE83cWxLWTk4UkhubWE2cnhJM3g1cGhWWXo1ekh0dEl4?oc=5",
-      "source": "Calgary Roughnecks",
-      "publishedAt": "2026-10-07T12:53:16+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "6b619942d952f419",
-      "title": "제주삼다수·광동제약, 제주 취약계층에 1억원 상당 건강기능식품 기탁",
-      "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTE9ydnNocVI4SkVDVGJNZnQtdVpUQlVNbXBhNUxJOTZCY0xJS2dlamhlRjYwc0lZT0JablIyNWhLVjhkRnVTOHgzbWdyY0ZmT3BQdVJPWHd1S09RNjYyTGhKQkRHYXdaRlY4djVDT2xR?oc=5",
-      "source": "미디어파인",
-      "publishedAt": "2026-10-07T10:49:55+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "3a6a0af907f34788",
-      "title": "“국내 건강기능식품 업계 최초”... KGC 부여공장, 폐기물 매립 제로 검증 최고 등급인 ‘플래티넘’ 획득",
-      "link": "https://news.google.com/rss/articles/CBMifEFVX3lxTFBaMFhfUDhUM3pQeWNsNHBCSUxPR3lhd1MyTXZFc1BjdEM4S0otWDFjckVMbW55cjhLVTdoYjJreTA3YWw5R0Q3SDhUeTdybDkzajRtTUw0cWN3S3c1ZU4tcU5SOHdjMFh0WGZvZ2Ewb0pBQ3d6UXhCVFdWYzg?oc=5",
-      "source": "비욘드포스트",
-      "publishedAt": "2026-10-07T09:35:30+09:00",
       "summary": "",
       "category": "news",
       "query": "건강기능식품",

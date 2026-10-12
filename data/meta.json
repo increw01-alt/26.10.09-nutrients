@@ -1,22 +1,43 @@
 {
-  "builtAt": "2026-10-12T15:59:06+09:00",
+  "builtAt": "2026-10-12T16:10:01+09:00",
   "ingredients": 37,
   "pairs": 97,
   "products": {
     "source": "mfds",
-    "updatedAt": "2026-10-12T11:21:21+09:00",
-    "total": 5965
+    "updatedAt": "2026-10-12T16:10:00+09:00",
+    "total": 6710
   },
   "news": {
     "source": "live",
-    "updatedAt": "2026-10-12T11:13:07+09:00",
+    "updatedAt": "2026-10-12T16:07:47+09:00",
     "total": 60
   },
   "materials": {
-    "source": "sample",
-    "updatedAt": null,
-    "total": 0,
-    "matched": 0,
-    "ingredients": []
+    "source": "mfds",
+    "updatedAt": "2026-10-12T16:07:54+09:00",
+    "total": 1112,
+    "matched": 310,
+    "ingredients": [
+      "arginine",
+      "boswellia",
+      "collagen",
+      "coq10",
+      "curcumin",
+      "garcinia",
+      "ginkgo",
+      "glucosamine",
+      "green-tea-extract",
+      "l-carnitine",
+      "lutein",
+      "milk-thistle",
+      "msm",
+      "omega-3",
+      "phosphatidylserine",
+      "probiotics",
+      "propolis",
+      "red-ginseng",
+      "saw-palmetto",
+      "theanine"
+    ]
   }
 }
