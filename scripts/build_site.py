@@ -171,6 +171,7 @@ def render_page(it: dict, core: dict, cfg: dict) -> str:
   <script src="../assets/js/affiliate.js"></script>
   <script src="../assets/js/layout.js"></script>
   <script>window.__INGREDIENT_ID = {json.dumps(it["id"])};</script>
+  <script src="../assets/js/illus.js"></script>
   <script src="../assets/js/pages/ingredient.js"></script>
   <script type="application/ld+json" id="ld-ingredient">{json.dumps(ld, ensure_ascii=False)}</script>
 </head>
@@ -180,7 +181,7 @@ def render_page(it: dict, core: dict, cfg: dict) -> str:
   <main id="main" class="mx-auto max-w-7xl px-4 py-8 sm:px-6">
     <div id="ingredient-app" class="hidden">
       <div id="ingredient-hero"></div>
-      <div id="ingredient-quick" class="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4"></div>
+      <div id="ingredient-quick"></div>
       <div class="mt-8 grid gap-6 lg:grid-cols-12">
         <div id="ingredient-main" class="space-y-6 lg:col-span-8"></div>
         <aside id="ingredient-side" class="lg:col-span-4"></aside>

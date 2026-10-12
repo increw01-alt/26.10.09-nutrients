@@ -6,14 +6,16 @@
 
   function card(it, cats) {
     var cat = cats[it.category] || {};
-    return '<a href="' + D.ingredientUrl(it.id) + '" class="card-hover group flex flex-col rounded-2xl border border-ink-100 bg-white p-5 shadow-card fade-up">' +
-      '<div class="flex items-start justify-between gap-3"><span class="grid h-12 w-12 shrink-0 place-items-center rounded-xl ring-1 ' + D.catClass(cat.color) + '"><i data-lucide="' + esc(it.icon || cat.icon) + '" class="h-6 w-6"></i></span>' +
-      '<span class="rounded-full px-2.5 py-1 text-[11px] font-bold ring-1 ' + D.catClass(cat.color) + '">' + esc(cat.label || "") + '</span></div>' +
-      '<h2 class="mt-4 text-lg font-extrabold text-ink-900 group-hover:text-brand-700">' + esc(it.name) + '</h2>' +
+    var I = window.Illus;
+    var label = ((it.en || it.name).split("(")[0].replace(/[^A-Za-z0-9 \-·]/g, "").trim() || it.name).slice(0, 14);
+    var art = I ? I.bottle(label, I.colorFor(it.category), { sub: it.name, id: it.id }) : "";
+    return '<a href="' + D.ingredientUrl(it.id) + '" class="card-hover group flex flex-col rounded-2xl border border-ink-100 bg-white p-3 shadow-card fade-up">' +
+      '<div class="relative"><div class="illus-box aspect-[4/3] w-full">' + art + '</div><span class="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-bold ring-1 ' + D.catClass(cat.color) + '">' + esc(cat.label || "") + '</span></div>' +
+      '<div class="px-2 pb-2 pt-3"><h2 class="text-lg font-extrabold text-ink-900 group-hover:text-brand-700">' + esc(it.name) + '</h2>' +
       '<p class="text-xs font-medium text-ink-400">' + esc(it.en) + '</p>' +
-      '<p class="mt-2 line-clamp-3 text-sm leading-relaxed text-ink-600">' + esc(it.summary) + '</p>' +
-      '<div class="mt-4 flex flex-wrap gap-1.5">' + (it.tags || []).slice(0, 4).map(function (t) { return '<span class="rounded-md bg-ink-50 px-2 py-0.5 text-[11px] font-semibold text-ink-500">#' + esc(t) + '</span>'; }).join("") + '</div>' +
-      '<div class="mt-4 flex items-center justify-between border-t border-ink-100 pt-3 text-xs text-ink-500"><span class="inline-flex items-center gap-1"><i data-lucide="clock" class="h-3.5 w-3.5"></i>' + esc(it.timing.label) + '</span><span class="font-semibold text-brand-700">자세히 →</span></div></a>';
+      '<p class="mt-2 line-clamp-2 text-sm leading-relaxed text-ink-600">' + esc(it.summary) + '</p>' +
+      '<div class="mt-3 flex flex-wrap gap-1.5">' + (it.tags || []).slice(0, 3).map(function (t) { return '<span class="rounded-md bg-cream-200 px-2 py-0.5 text-[11px] font-semibold text-ink-500">#' + esc(t) + '</span>'; }).join("") + '</div>' +
+      '<div class="mt-3 flex items-center justify-between border-t border-ink-100 pt-3 text-xs text-ink-500"><span class="inline-flex items-center gap-1"><i data-lucide="clock" class="h-3.5 w-3.5"></i>' + esc(it.timing.label) + '</span><span class="grid h-8 w-8 place-items-center rounded-full bg-brand-600 text-white transition group-hover:bg-brand-700"><i data-lucide="arrow-right" class="h-4 w-4"></i></span></div></div></a>';
   }
 
   function render(core) {

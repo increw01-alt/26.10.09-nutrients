@@ -4,8 +4,8 @@
   var D = window.Data, esc = D.esc;
   var id = window.__INGREDIENT_ID || D.qs("id");
 
-  function section(title, icon, bodyHtml, extraClass) {
-    return '<section class="rounded-2xl border border-ink-100 bg-white p-6 shadow-card ' + (extraClass || "") + '"><h2 class="flex items-center gap-2 text-lg font-extrabold text-ink-900"><i data-lucide="' + icon + '" class="h-5 w-5 text-brand-600"></i>' + esc(title) + '</h2><div class="mt-4">' + bodyHtml + '</div></section>';
+  function section(title, icon, bodyHtml, extraClass, id) {
+    return '<section' + (id ? ' id="' + id + '"' : "") + ' class="scroll-mt-32 rounded-2xl border border-ink-100 bg-white p-6 shadow-card ' + (extraClass || "") + '"><h2 class="flex items-center gap-2 text-lg font-extrabold text-ink-900"><i data-lucide="' + icon + '" class="h-5 w-5 text-brand-600"></i>' + esc(title) + '</h2><div class="mt-4">' + bodyHtml + '</div></section>';
   }
   function list(arr, cls) { return arr && arr.length ? '<ul class="' + cls + ' text-[15px] text-ink-700">' + arr.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul>" : '<p class="text-sm text-ink-400">해당 없음</p>'; }
 
@@ -77,41 +77,68 @@
     var ogt = document.querySelector('meta[property="og:title"]'); if (ogt) ogt.content = document.title;
     var ogd = document.querySelector('meta[property="og:description"]'); if (ogd) ogd.content = it.summary;
 
+    var I = window.Illus;
+    var label = ((it.en || it.name).split("(")[0].replace(/[^A-Za-z0-9 \-·]/g, "").trim() || it.name).slice(0, 14);
+    var art = I ? I.bottle(label, I.colorFor(it.category), { sub: it.name, id: it.id }) : "";
+    var cut = it.summary.indexOf("다. ");
+    var tagline = (cut > 0 ? it.summary.slice(0, cut + 2) : it.summary).slice(0, 70);
     var hero = document.getElementById("ingredient-hero");
     hero.innerHTML =
       '<nav class="text-xs text-ink-500" aria-label="경로"><a class="hover:text-brand-700" href="' + D.url("index.html") + '">홈</a> › <a class="hover:text-brand-700" href="' + D.url("ingredients.html") + '">성분 사전</a> › <a class="hover:text-brand-700" href="' + D.url("ingredients.html?category=" + it.category) + '">' + esc(cat.label || "") + '</a> › <span class="text-ink-800">' + esc(it.name) + '</span></nav>' +
-      '<div class="mt-4 flex flex-col gap-5 md:flex-row md:items-start md:justify-between">' +
-        '<div class="flex items-start gap-4"><span class="grid h-16 w-16 shrink-0 place-items-center rounded-2xl ring-1 ' + D.catClass(cat.color) + '"><i data-lucide="' + esc(it.icon || cat.icon) + '" class="h-8 w-8"></i></span>' +
-        '<div><span class="rounded-full px-2.5 py-1 text-[11px] font-bold ring-1 ' + D.catClass(cat.color) + '">' + esc(cat.label || "") + '</span><h1 class="mt-2 text-3xl font-extrabold tracking-tight text-ink-900 sm:text-4xl">' + esc(it.name) + '</h1><p class="mt-1 text-sm font-medium text-ink-400">' + esc(it.en) + (it.aliases && it.aliases.length ? ' · ' + esc(it.aliases.slice(0, 4).join(", ")) : "") + '</p>' +
-        '<p class="mt-4 max-w-2xl text-[15px] leading-relaxed text-ink-700">' + esc(it.summary) + '</p>' +
-        '<div class="mt-4 flex flex-wrap gap-1.5">' + (it.tags || []).map(function (t) { return '<a href="' + D.url("ingredients.html?tag=" + encodeURIComponent(t)) + '" class="rounded-md bg-white px-2 py-1 text-xs font-semibold text-ink-600 ring-1 ring-ink-200 hover:ring-brand-300">#' + esc(t) + '</a>'; }).join("") + '</div></div></div>' +
-        '<div class="flex shrink-0 flex-col gap-2 md:w-64"><a href="' + D.compatUrl([it.id]) + '" class="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-3 text-sm font-bold text-white shadow-lift hover:bg-brand-700"><i data-lucide="heart-handshake" class="h-4 w-4"></i>다른 영양제와 궁합 보기</a><a href="#shop" class="inline-flex items-center justify-center gap-2 rounded-xl border border-ink-200 bg-white px-4 py-3 text-sm font-bold text-ink-800 hover:border-brand-300"><i data-lucide="shopping-cart" class="h-4 w-4"></i>제품 찾아보기</a></div>' +
+      '<div class="mt-5 grid gap-8 lg:grid-cols-12 lg:items-start">' +
+        '<div class="lg:col-span-5"><div class="illus-box aspect-square w-full rounded-3xl">' + art + '</div>' +
+          '<div class="mt-3 flex gap-2"><div class="thumb">' + art + '</div><div class="thumb">' + (I ? I.forCategory(it.category) : "") + '</div><div class="thumb"><i data-lucide="' + esc(it.icon || cat.icon || "pill") + '" class="h-7 w-7 text-brand-700"></i></div></div></div>' +
+        '<div class="lg:col-span-7">' +
+          '<span class="rounded-full px-2.5 py-1 text-[11px] font-bold ring-1 ' + D.catClass(cat.color) + '">' + esc(cat.label || "") + '</span>' +
+          '<h1 class="mt-3 text-3xl font-extrabold tracking-tight text-ink-900 sm:text-4xl">' + esc(it.name) + '</h1>' +
+          '<p class="mt-1 text-sm font-medium text-ink-400">' + esc(it.en) + '</p>' +
+          '<p class="mt-3 text-[15px] leading-relaxed text-ink-700">' + esc(tagline) + '</p>' +
+          '<dl class="kv-table mt-5 rounded-2xl bg-white px-5 py-1 shadow-card">' +
+            '<dt>주요 기능성</dt><dd>' + esc((it.mfdsFunction || "고시형 기능성 원료 아님").split(" · ").slice(0, 2).join(" · ")) + '</dd>' +
+            '<dt>하루 권장</dt><dd>' + esc(it.dosage.daily) + '</dd>' +
+            '<dt>상한 섭취량</dt><dd>' + esc(it.dosage.upper) + '</dd>' +
+            '<dt>섭취 시간</dt><dd>' + esc(it.timing.label) + (it.timing.note ? '<span class="block text-xs text-ink-500">' + esc(it.timing.note) + '</span>' : "") + '</dd>' +
+            '<dt>용해성</dt><dd>' + (it.fatSoluble ? "지용성 — 지방이 포함된 식사와 함께" : "수용성") + '</dd>' +
+            (it.whoFor && it.whoFor.length ? '<dt>이런 분께</dt><dd>' + esc(it.whoFor.slice(0, 2).join(" · ")) + '</dd>' : "") +
+          '</dl>' +
+          '<div class="mt-5 flex flex-wrap gap-3">' +
+            '<a href="#shop" class="inline-flex items-center gap-2 rounded-full bg-brand-600 px-6 py-3.5 text-[15px] font-bold text-white shadow-lift hover:bg-brand-700"><i data-lucide="shopping-bag" class="h-4 w-4"></i>제품 찾아보기</a>' +
+            '<a href="' + D.compatUrl([it.id]) + '" class="inline-flex items-center gap-2 rounded-full border border-ink-200 bg-white px-6 py-3.5 text-[15px] font-bold text-ink-800 hover:border-brand-300 hover:text-brand-700"><i data-lucide="heart-handshake" class="h-4 w-4 text-brand-600"></i>다른 영양제와 궁합 보기</a>' +
+          '</div>' +
+          '<div class="mt-4 flex flex-wrap gap-1.5">' + (it.tags || []).map(function (t) { return '<a href="' + D.url("ingredients.html?tag=" + encodeURIComponent(t)) + '" class="rounded-md bg-cream-200 px-2 py-1 text-xs font-semibold text-ink-600 hover:bg-cream-300">#' + esc(t) + '</a>'; }).join("") + '</div>' +
+        '</div>' +
       '</div>';
 
+    // 탭 (섹션 앵커)
     var quick = document.getElementById("ingredient-quick");
-    quick.innerHTML = [
-      { icon: "clock", k: "섭취 시간", v: it.timing.label, s: it.timing.note },
-      { icon: "flask-conical", k: "하루 권장", v: it.dosage.daily, s: "" },
-      { icon: "shield-alert", k: "상한 섭취량", v: it.dosage.upper, s: "" },
-      { icon: it.fatSoluble ? "droplets" : "glass-water", k: "용해성", v: it.fatSoluble ? "지용성 (식사와 함께)" : "수용성", s: "" }
-    ].map(function (q) {
-      return '<div class="rounded-2xl border border-ink-100 bg-white p-4 shadow-card"><div class="flex items-center gap-2 text-xs font-bold text-ink-400"><i data-lucide="' + q.icon + '" class="h-4 w-4 text-brand-600"></i>' + esc(q.k) + '</div><p class="mt-2 text-sm font-extrabold leading-snug text-ink-900">' + esc(q.v) + '</p>' + (q.s ? '<p class="mt-1 text-xs text-ink-500">' + esc(q.s) + '</p>' : "") + '</div>';
-    }).join("");
+    quick.className = "detail-tabs mt-8 scroll-x -mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0";
+    var TABS = [["sec-info", "성분 정보"], ["sec-intake", "섭취 가이드"], ["sec-compat", "궁합"], ["ingredient-materials", "인정 원료"], ["shop", "제품 찾기"], ["sec-faq", "FAQ"]];
+    quick.innerHTML = '<div class="flex">' + TABS.map(function (t, i) { return '<a href="#' + t[0] + '" data-tab="' + t[0] + '" class="' + (i === 0 ? "active" : "") + '">' + t[1] + '</a>'; }).join("") + '</div>';
+    quick.addEventListener("click", function (e) { var a = e.target.closest("a[data-tab]"); if (!a) return; quick.querySelectorAll("a").forEach(function (x) { x.classList.toggle("active", x === a); }); });
 
     var main = document.getElementById("ingredient-main");
     main.innerHTML =
-      section("식약처 인정 기능성", "badge-check", '<p class="rounded-xl bg-brand-50 p-4 text-[15px] font-semibold leading-relaxed text-brand-900">' + esc(it.mfdsFunction || "고시형 기능성 원료 아님") + '</p><p class="mt-2 text-xs text-ink-400">식품의약품안전처 건강기능식품 기능성 원료 고시·개별인정 내용을 요약한 것입니다. 제품별 인정 내용은 라벨을 확인하세요.</p>') +
-      '<section id="ingredient-materials" class="rounded-2xl border border-ink-100 bg-white p-6 shadow-card"><div class="skeleton h-16"></div></section>' +
+      section("식약처 인정 기능성", "badge-check", '<p class="rounded-xl bg-brand-50 p-4 text-[15px] font-semibold leading-relaxed text-brand-900">' + esc(it.mfdsFunction || "고시형 기능성 원료 아님") + '</p><p class="mt-2 text-xs text-ink-400">식품의약품안전처 건강기능식품 기능성 원료 고시·개별인정 내용을 요약한 것입니다. 제품별 인정 내용은 라벨을 확인하세요.</p>', "", "sec-info") +
+      '<section id="ingredient-materials" class="scroll-mt-32 rounded-2xl border border-ink-100 bg-white p-6 shadow-card"><div class="skeleton h-16"></div></section>' +
       section("이런 효과를 기대할 수 있어요", "sparkles", list(it.benefits, "list-check")) +
       section("권장 섭취량과 복용법", "flask-conical",
         '<dl class="grid gap-3 sm:grid-cols-2"><div class="rounded-xl bg-ink-50 p-4"><dt class="text-xs font-bold text-ink-400">하루 권장</dt><dd class="mt-1 font-bold text-ink-900">' + esc(it.dosage.daily) + '</dd></div><div class="rounded-xl bg-ink-50 p-4"><dt class="text-xs font-bold text-ink-400">상한 섭취량</dt><dd class="mt-1 font-bold text-ink-900">' + esc(it.dosage.upper) + '</dd></div></dl>' +
         (it.dosage.note ? '<p class="mt-3 flex items-start gap-2 text-sm text-ink-600"><i data-lucide="lightbulb" class="mt-0.5 h-4 w-4 shrink-0 text-amber-500"></i>' + esc(it.dosage.note) + '</p>' : "") +
-        '<div class="mt-4 flex items-start gap-3 rounded-xl border border-brand-100 bg-brand-50/60 p-4"><i data-lucide="clock" class="mt-0.5 h-5 w-5 shrink-0 text-brand-600"></i><div><p class="font-bold text-brand-900">' + esc(it.timing.label) + '</p><p class="mt-0.5 text-sm text-brand-900/80">' + esc(it.timing.note || "") + '</p></div></div>') +
+        '<div class="mt-4 flex items-start gap-3 rounded-xl border border-brand-100 bg-brand-50/60 p-4"><i data-lucide="clock" class="mt-0.5 h-5 w-5 shrink-0 text-brand-600"></i><div><p class="font-bold text-brand-900">' + esc(it.timing.label) + '</p><p class="mt-0.5 text-sm text-brand-900/80">' + esc(it.timing.note || "") + '</p></div></div>', "", "sec-intake") +
       section("이런 분께 추천해요", "user", list(it.whoFor, "list-dot")) +
       section("섭취 시 주의사항", "triangle-alert", list(it.cautions, "list-warn") + (it.drugCautions && it.drugCautions.length ? '<h3 class="mt-5 text-sm font-bold text-rose-700">약과 함께 먹을 때</h3>' + list(it.drugCautions, "list-warn") : "") + '<p class="mt-4 text-xs text-ink-400">질환이 있거나 약을 복용 중이라면 섭취 전 의사·약사와 상담하세요.</p>', "ring-1 ring-amber-100") +
-      section(it.name + " 궁합 한눈에", "heart-handshake", compatBlock(core, it)) +
-      '<section id="shop" class="rounded-2xl border border-ink-100 bg-white p-6 shadow-card"><h2 class="flex items-center gap-2 text-lg font-extrabold text-ink-900"><i data-lucide="shopping-cart" class="h-5 w-5 text-brand-600"></i>' + esc(it.name) + ' 제품 찾기</h2><p class="mt-2 text-sm text-ink-500">쇼핑몰에서 "' + esc(it.shopQuery) + '" 검색 결과로 바로 이동합니다. 함량·형태·보장균수 등은 제품 라벨을 꼭 확인하세요.</p><div class="mt-4">' + window.Affiliate.buttonsHtml(it.shopQuery) + '</div><div id="ingredient-products" class="mt-6"><div class="skeleton h-24"></div></div><p class="mt-4 text-[11px] text-ink-400">' + esc(window.Affiliate.disclosure()) + '</p></section>' +
-      (it.faq && it.faq.length ? section("자주 묻는 질문", "circle-help", it.faq.map(function (f) { return '<details class="group border-b border-ink-100 py-3 last:border-0"><summary class="flex cursor-pointer list-none items-center justify-between gap-3 font-bold text-ink-900"><span>Q. ' + esc(f.q) + '</span><i data-lucide="chevron-down" class="h-4 w-4 shrink-0 text-ink-400 transition group-open:rotate-180"></i></summary><p class="mt-2 text-sm leading-relaxed text-ink-600">' + esc(f.a) + '</p></details>'; }).join("")) : "");
+      section(it.name + " 궁합 한눈에", "heart-handshake", compatBlock(core, it), "", "sec-compat") +
+      '<section id="shop" class="scroll-mt-32 rounded-2xl border border-ink-100 bg-white p-6 shadow-card"><h2 class="flex items-center gap-2 text-lg font-extrabold text-ink-900"><i data-lucide="shopping-cart" class="h-5 w-5 text-brand-600"></i>' + esc(it.name) + ' 제품 찾기</h2><p class="mt-2 text-sm text-ink-500">쇼핑몰에서 "' + esc(it.shopQuery) + '" 검색 결과로 바로 이동합니다. 함량·형태·보장균수 등은 제품 라벨을 꼭 확인하세요.</p><div class="mt-4">' + window.Affiliate.buttonsHtml(it.shopQuery) + '</div><div id="ingredient-products" class="mt-6"><div class="skeleton h-24"></div></div><p class="mt-4 text-[11px] text-ink-400">' + esc(window.Affiliate.disclosure()) + '</p></section>' +
+      (it.faq && it.faq.length ? section("자주 묻는 질문", "circle-help", it.faq.map(function (f) { return '<details class="group border-b border-ink-100 py-3 last:border-0"><summary class="flex cursor-pointer list-none items-center justify-between gap-3 font-bold text-ink-900"><span>Q. ' + esc(f.q) + '</span><i data-lucide="chevron-down" class="h-4 w-4 shrink-0 text-ink-400 transition group-open:rotate-180"></i></summary><p class="mt-2 text-sm leading-relaxed text-ink-600">' + esc(f.a) + '</p></details>'; }).join(""), "", "sec-faq") : "");
+
+    // 탭 활성화: 섹션이 화면 상단에 오면 해당 탭 표시
+    try {
+      var tabs = document.getElementById("ingredient-quick");
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { if (en.isIntersecting) tabs.querySelectorAll("a").forEach(function (x) { x.classList.toggle("active", x.getAttribute("data-tab") === en.target.id); }); });
+      }, { rootMargin: "-140px 0px -70% 0px" });
+      ["sec-info", "sec-intake", "sec-compat", "ingredient-materials", "shop", "sec-faq"].forEach(function (id) { var el = document.getElementById(id); if (el) io.observe(el); });
+    } catch (e) { /* 구형 브라우저 무시 */ }
 
     var side = document.getElementById("ingredient-side");
     var sameCat = core.items.filter(function (x) { return x.category === it.category && x.id !== it.id; }).slice(0, 6);
@@ -124,7 +151,7 @@
     }).catch(function () {});
     side.innerHTML = '<div id="ingredient-guides" class="mb-4 hidden rounded-2xl border border-brand-100 bg-brand-50/40 p-5"></div>' +
       '<div class="rounded-2xl border border-ink-100 bg-white p-5 shadow-card"><h2 class="text-sm font-bold text-ink-900">같은 분류의 성분</h2><ul class="mt-3 space-y-1">' + sameCat.map(function (x) { return '<li><a class="flex items-center gap-2 rounded-lg px-2 py-2 text-sm font-semibold text-ink-700 hover:bg-brand-50 hover:text-brand-700" href="' + D.ingredientUrl(x.id) + '"><i data-lucide="' + esc(x.icon || "pill") + '" class="h-4 w-4 text-ink-400"></i>' + esc(x.name) + '</a></li>'; }).join("") + '</ul></div>' +
-      '<div class="mt-4 rounded-2xl bg-gradient-to-br from-brand-600 to-brand-800 p-5 text-white shadow-lift"><h2 class="text-base font-extrabold">복용 시간표가 필요하세요?</h2><p class="mt-1 text-sm text-white/85">먹고 있는 영양제를 모두 선택하면 간격을 고려한 하루 시간표를 만들어 드립니다.</p><a href="' + D.compatUrl([it.id]) + '" class="mt-3 inline-flex items-center gap-1 rounded-lg bg-white px-3 py-2 text-sm font-bold text-brand-700">궁합 체크 열기 <i data-lucide="arrow-right" class="h-4 w-4"></i></a></div>';
+      '<div class="mt-4 rounded-2xl bg-brand-700 p-5 text-white shadow-lift"><h2 class="text-base font-extrabold">복용 시간표가 필요하세요?</h2><p class="mt-1 text-sm text-white/85">먹고 있는 영양제를 모두 선택하면 간격을 고려한 하루 시간표를 만들어 드립니다.</p><a href="' + D.compatUrl([it.id]) + '" class="mt-3 inline-flex items-center gap-1 rounded-lg bg-white px-3 py-2 text-sm font-bold text-brand-700">궁합 체크 열기 <i data-lucide="arrow-right" class="h-4 w-4"></i></a></div>';
 
     // JSON-LD (정적 페이지에 이미 있으면 생략)
     if (!document.getElementById("ld-ingredient")) {
