@@ -27,6 +27,37 @@
     return html;
   }
 
+  function materialCard(g) {
+    return '<div class="rounded-xl border border-ink-100 bg-white p-4"><div class="flex flex-wrap items-center gap-2"><span class="rounded-full px-2 py-0.5 text-[11px] font-bold ' + (g.type === "고시형" ? "bg-sky-50 text-sky-700" : "bg-violet-50 text-violet-700") + '">' + esc(g.type) + '</span><p class="font-bold text-ink-900">' + esc(g.name) + '</p></div>' +
+      (g.function ? '<p class="mt-2 text-sm leading-relaxed text-ink-700">' + esc(g.function) + '</p>' : "") +
+      '<dl class="mt-3 grid gap-x-4 gap-y-1 text-xs text-ink-600 sm:grid-cols-2">' +
+      (g.intake ? '<div><dt class="inline font-bold text-ink-500">1일 섭취량</dt> <dd class="inline">' + esc(g.intake) + '</dd></div>' : "") +
+      (g.recognitionNo ? '<div><dt class="inline font-bold text-ink-500">인정번호</dt> <dd class="inline">' + esc(g.recognitionNo) + (g.recognizedAt ? ' (' + esc(D.fmtDate(g.recognizedAt)) + ')' : "") + '</dd></div>' : "") +
+      (g.companyCount ? '<div><dt class="inline font-bold text-ink-500">인정 업체</dt> <dd class="inline">' + esc((g.companies || []).slice(0, 2).join(", ")) + (g.companyCount > 2 ? ' 외 ' + (g.companyCount - 2) + '곳' : "") + '</dd></div>' : "") +
+      '</dl>' +
+      (g.caution ? '<details class="mt-2 text-xs"><summary class="cursor-pointer font-semibold text-amber-700">섭취 시 주의사항</summary><p class="mt-1 whitespace-pre-line text-ink-600">' + esc(g.caution) + '</p></details>' : "") +
+      '</div>';
+  }
+
+  function renderMaterials(it) {
+    var el = document.getElementById("ingredient-materials"); if (!el) return;
+    // meta.json 에 원료 파일이 있는 성분 목록이 있으므로, 없는 성분은 요청 자체를 하지 않음
+    D.meta().catch(function () { return {}; }).then(function (m) {
+      var has = m && m.materials && m.materials.ingredients;
+      if (has && has.indexOf(it.id) < 0) return [];
+      return D.materialsFor(it.id);
+    }).then(function (items) {
+      if (!items.length) { el.remove(); return; }
+      var shown = items.slice(0, 6);
+      el.innerHTML = '<h2 class="flex items-center gap-2 text-lg font-extrabold text-ink-900"><i data-lucide="badge-check" class="h-5 w-5 text-brand-600"></i>식약처 인정 원료 데이터 <span class="text-sm font-semibold text-ink-400">' + items.length + '건</span></h2>' +
+        '<p class="mt-2 text-sm text-ink-500">식품의약품안전처가 인정한 ' + esc(it.name) + ' 관련 기능성 원료의 공식 기능성 내용·1일 섭취량·주의사항입니다. 제품 라벨의 원료명과 비교해 보세요.</p>' +
+        '<div class="mt-4 grid gap-3">' + shown.map(materialCard).join("") + '</div>' +
+        (items.length > shown.length ? '<a href="' + D.url("materials.html?ingredient=" + encodeURIComponent(it.id)) + '" class="mt-4 inline-flex items-center gap-1 text-sm font-bold text-brand-700 hover:underline">관련 원료 ' + items.length + '건 전체 보기 <i data-lucide="arrow-right" class="h-4 w-4"></i></a>' : "") +
+        '<p class="mt-3 text-[11px] text-ink-400">출처: 식품안전나라 건강기능식품 기능성 원료인정현황·개별인정형 정보. 원료의 인정 내용은 해당 원료를 사용한 제품에만 적용됩니다.</p>';
+      D.icons(el);
+    }).catch(function () { el.remove(); });
+  }
+
   function renderProducts(it, items, sample) {
     var el = document.getElementById("ingredient-products"); if (!el) return;
     items = (items || []).slice(0, 6);
@@ -70,6 +101,7 @@
     var main = document.getElementById("ingredient-main");
     main.innerHTML =
       section("식약처 인정 기능성", "badge-check", '<p class="rounded-xl bg-brand-50 p-4 text-[15px] font-semibold leading-relaxed text-brand-900">' + esc(it.mfdsFunction || "고시형 기능성 원료 아님") + '</p><p class="mt-2 text-xs text-ink-400">식품의약품안전처 건강기능식품 기능성 원료 고시·개별인정 내용을 요약한 것입니다. 제품별 인정 내용은 라벨을 확인하세요.</p>') +
+      '<section id="ingredient-materials" class="rounded-2xl border border-ink-100 bg-white p-6 shadow-card"><div class="skeleton h-16"></div></section>' +
       section("이런 효과를 기대할 수 있어요", "sparkles", list(it.benefits, "list-check")) +
       section("권장 섭취량과 복용법", "flask-conical",
         '<dl class="grid gap-3 sm:grid-cols-2"><div class="rounded-xl bg-ink-50 p-4"><dt class="text-xs font-bold text-ink-400">하루 권장</dt><dd class="mt-1 font-bold text-ink-900">' + esc(it.dosage.daily) + '</dd></div><div class="rounded-xl bg-ink-50 p-4"><dt class="text-xs font-bold text-ink-400">상한 섭취량</dt><dd class="mt-1 font-bold text-ink-900">' + esc(it.dosage.upper) + '</dd></div></dl>' +
@@ -104,6 +136,7 @@
     var ssr = document.getElementById("ssr"); if (ssr) ssr.remove();
     document.getElementById("ingredient-app").classList.remove("hidden");
     D.icons();
+    renderMaterials(it);
     window.Affiliate.ready().then(function () {
       // 목록 파일(수 MB) 대신 meta.json 으로 샘플 여부만 확인하고, 성분별 상위 파일만 불러옵니다
       D.meta().catch(function () { return {}; }).then(function (m) {

@@ -68,6 +68,7 @@
             '</div>' +
             '<div class="md:col-span-3"><h3 class="text-sm font-bold text-ink-900">바로가기</h3><ul class="mt-3 space-y-2 text-sm text-ink-600">' +
               NAV.slice(1).map(function (n) { return '<li><a class="hover:text-brand-700" href="' + D.url(n.href) + '">' + esc(n.label) + '</a></li>'; }).join("") +
+              '<li><a class="hover:text-brand-700" href="' + D.url("materials.html") + '">기능성 원료 인정현황</a></li>' +
             '</ul></div>' +
             '<div class="md:col-span-4"><h3 class="text-sm font-bold text-ink-900">데이터 출처</h3><ul class="mt-3 space-y-2 text-sm text-ink-600">' +
               '<li><a class="hover:text-brand-700" href="https://www.foodsafetykorea.go.kr" target="_blank" rel="noopener">식품안전나라(식품의약품안전처) 건강기능식품 정보</a></li>' +

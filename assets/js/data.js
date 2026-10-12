@@ -19,7 +19,7 @@
   function load(name) {
     if (!cache[name]) {
       cache[name] = fetchJSON(ROOT + "data/" + name + ".json").catch(function (err) {
-        console.error("[data] " + name + " 로드 실패:", err.message);
+        (/HTTP 404/.test(err.message) ? console.warn : console.error)("[data] " + name + " 로드 실패:", err.message);
         delete cache[name];
         throw err;
       });
@@ -51,6 +51,11 @@
         // 성분별 파일이 없으면(샘플 상태 등) 목록에서 걸러서 사용
         return load("products").then(function (d) { return (d.items || []).filter(function (p) { return (p.ingredients || []).indexOf(iid) >= 0; }); }).catch(function () { return []; });
       });
+    },
+    /* 식약처 기능성 원료 데이터: data/materials.json(전체), data/materials/<성분id>.json(성분별) */
+    materials: function () { return load("materials"); },
+    materialsFor: function (iid) {
+      return load("materials/" + iid).then(function (d) { return (d && d.items) || []; }).catch(function () { return []; });
     },
     productShard: function (id) {           // scripts/fetch_products.py 의 shard_of() 와 동일한 계산
       var h = 0; id = String(id || "");

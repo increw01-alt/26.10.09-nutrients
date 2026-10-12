@@ -43,6 +43,13 @@ jobs:
           NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
         run: python scripts/fetch_news.py
 
+      - name: Fetch functional materials (MFDS)
+        timeout-minutes: 10
+        env:
+          CI: "true"
+          FOODSAFETY_API_KEY: ${{ secrets.FOODSAFETY_API_KEY }}
+        run: python scripts/fetch_materials.py
+
       - name: Fetch products (MFDS)
         timeout-minutes: 30
         env:

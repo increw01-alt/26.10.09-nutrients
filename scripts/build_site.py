@@ -20,7 +20,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from common import DATA_DIR, ROOT, env, log, now_iso, read_json, write_json  # noqa: E402
 
 OUT_DIR = ROOT / "i"
-STATIC_PAGES = ["index.html", "ingredients.html", "compatibility.html", "products.html", "news.html", "about.html"]
+STATIC_PAGES = ["index.html", "ingredients.html", "compatibility.html", "products.html", "news.html", "materials.html", "about.html"]
 
 
 def esc(s) -> str:
@@ -97,6 +97,14 @@ def render_page(it: dict, core: dict, cfg: dict) -> str:
             rel_html += f'<li><a class="font-semibold text-brand-700" href="{esc(other["id"])}.html">{esc(other["name"])}</a> — {esc(p["title"])}' + (f' ({p["separateHours"]}시간 이상 간격)' if p.get("separateHours") else "") + "</li>"
         rel_html += "</ul>"
 
+    # 식약처 인정 원료 (수집된 경우에만)
+    mats = (read_json(DATA_DIR / "materials" / f"{it['id']}.json", {}) or {}).get("items", [])
+    mat_html = ""
+    if mats:
+        mat_html = '<h2 class="mt-6 text-lg font-extrabold">식약처 인정 원료 데이터</h2><ul class="list-dot text-sm text-ink-700">' + "".join(
+            f'<li><strong>{esc(g.get("name"))}</strong> ({esc(g.get("type", ""))}) — {esc(g.get("function", ""))}' + (f' · 1일 섭취량 {esc(g["intake"])}' if g.get("intake") else "") + "</li>" for g in mats[:8]
+        ) + "</ul>"
+
     faq_html = "".join(f'<details class="border-b border-ink-100 py-3"><summary class="cursor-pointer font-bold text-ink-900">Q. {esc(f["q"])}</summary><p class="mt-2 text-sm text-ink-600">{esc(f["a"])}</p></details>' for f in it.get("faq", []))
 
     ld = {"@context": "https://schema.org", "@graph": [
@@ -121,6 +129,7 @@ def render_page(it: dict, core: dict, cfg: dict) -> str:
       <h2 class="mt-6 text-lg font-extrabold">섭취 시간</h2><p class="text-sm text-ink-700">{esc(it["timing"].get("label"))} — {esc(it["timing"].get("note", ""))}</p>
       <h2 class="mt-6 text-lg font-extrabold">이런 분께 추천</h2>{ul(it.get("whoFor", []), "list-dot")}
       <h2 class="mt-6 text-lg font-extrabold">주의사항</h2>{ul(it.get("cautions", []), "list-warn")}{('<h3 class="mt-3 text-sm font-bold text-rose-700">약과 함께 먹을 때</h3>' + ul(it.get("drugCautions", []), "list-warn")) if it.get("drugCautions") else ""}
+      {mat_html}
       <h2 class="mt-6 text-lg font-extrabold">{esc(it["name"])} 궁합</h2>{rel_html or '<p class="text-sm text-ink-400">등록된 궁합 정보가 없습니다.</p>'}
       {('<h2 class="mt-6 text-lg font-extrabold">자주 묻는 질문</h2>' + faq_html) if faq_html else ""}
       <p class="mt-8 text-xs text-ink-400">이 정보는 일반적인 건강 정보이며 의학적 조언을 대신하지 않습니다.</p>
@@ -213,12 +222,15 @@ def main() -> int:
     build_sitemap(ingredients["items"], cfg, data_date)
     products = read_json(DATA_DIR / "products.json", {"_meta": {}, "items": []})
     news = read_json(DATA_DIR / "news.json", {"_meta": {}, "items": []})
+    materials = read_json(DATA_DIR / "materials.json", {"_meta": {}, "items": []})
     write_json(DATA_DIR / "meta.json", {
         "builtAt": now_iso(),
         "ingredients": len(ingredients["items"]),
         "pairs": len(interactions["pairs"]),
         "products": {"source": products.get("_meta", {}).get("source", "sample"), "updatedAt": products.get("_meta", {}).get("updatedAt"), "total": len(products.get("items", []))},
         "news": {"source": news.get("_meta", {}).get("source", "sample"), "updatedAt": news.get("_meta", {}).get("updatedAt"), "total": len(news.get("items", []))},
+        "materials": {"source": materials.get("_meta", {}).get("source", "sample"), "updatedAt": materials.get("_meta", {}).get("updatedAt"), "total": len(materials.get("items", [])), "matched": materials.get("_meta", {}).get("matched", 0),
+                      "ingredients": sorted(f.stem for f in (DATA_DIR / "materials").glob("*.json"))},
     })
     return 0
 

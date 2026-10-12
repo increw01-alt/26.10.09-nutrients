@@ -17,6 +17,7 @@ project/
 ├─ compatibility.html         # 궁합 체크 (최대 8개 선택, 매트릭스, 복용 시간표, 공유 링크)
 ├─ products.html              # 제품 찾기 (식약처 신고 제품 + 쇼핑몰 링크 + 변경 이력)
 ├─ news.html                  # 뉴스·자료 (식약처/연구/뉴스 분류)
+├─ materials.html             # 식약처 기능성 원료 인정현황 (검색·성분 필터)
 ├─ about.html                 # 소개·데이터 출처·제휴 고지·면책
 ├─ 404.html
 ├─ robots.txt · sitemap.xml · .nojekyll
@@ -37,12 +38,15 @@ project/
 │  ├─ products.json           # 식약처 신고 제품 목록 (자동 수집, 압축 JSON)
 │  ├─ products/top/<id>.json  # 성분별 상위 60개 제품 (성분 상세 페이지)
 │  ├─ products/detail/NN.json # 전체 신고 정보 64조각 (제품 '더보기' 펼칠 때 로드)
-│  ├─ news.json               # 뉴스 (자동 수집, 현재 샘플)
+│  ├─ news.json               # 뉴스 (자동 수집)
+│  ├─ materials.json          # 식약처 기능성 원료 인정현황 (자동 수집)
+│  ├─ materials/<id>.json     # 성분별 관련 원료 (성분 상세 페이지)
 │  ├─ deeplinks.json          # 쿠팡 파트너스 딥링크 캐시
 │  └─ meta.json               # 빌드·갱신 정보
 ├─ scripts/
 │  ├─ fetch_products.py       # 식품안전나라 C003 API → products.json (+변경 이력)
 │  ├─ fetch_news.py           # 구글 뉴스 RSS / 네이버 뉴스 API → news.json
+│  ├─ fetch_materials.py      # 식약처 기능성 원료(I-0040·I-0050) → materials.json
 │  ├─ build_affiliate_links.py# 쿠팡 파트너스 딥링크 생성 → deeplinks.json
 │  ├─ build_site.py           # 데이터 검증 + i/*.html + sitemap.xml + meta.json
 │  └─ common.py
@@ -84,7 +88,7 @@ Windows PowerShell 도 동일하게 `python -m http.server 8080` 으로 실행�
 ### API 키 발급
 | 용도 | 발급처 | 환경변수 |
 |---|---|---|
-| 식약처 건강기능식품 신고 제품 (필수) | [식품안전나라 Open API](https://www.foodsafetykorea.go.kr/api/openApiInfo.do) → 서비스 `C003` 신청 | `FOODSAFETY_API_KEY` |
+| 식약처 건강기능식품 신고 제품·기능성 원료 (필수) | [식품안전나라 Open API](https://www.foodsafetykorea.go.kr/api/openApiInfo.do) → 서비스 `C003`, `I-0040`, `I-0050` 신청 | `FOODSAFETY_API_KEY` |
 | 네이버 뉴스 (선택) | [네이버 개발자센터](https://developers.naver.com/apps) 검색 API | `NAVER_CLIENT_ID`, `NAVER_CLIENT_SECRET` |
 | 쿠팡 파트너스 딥링크 (선택) | 쿠팡 파트너스 → 링크 생성 → API 키 | `COUPANG_ACCESS_KEY`, `COUPANG_SECRET_KEY` |
 
@@ -93,7 +97,7 @@ Windows PowerShell 도 동일하게 `python -m http.server 8080` 으로 실행�
 - Secrets: `FOODSAFETY_API_KEY`, (선택) `NAVER_CLIENT_ID`, `NAVER_CLIENT_SECRET`, `COUPANG_ACCESS_KEY`, `COUPANG_SECRET_KEY`
 - Variables(선택): `SITE_URL`, `COUPANG_SUB_ID`, `FOODSAFETY_SERVICE`(기본 C003), `FOODSAFETY_MAX_ROWS`(기본 15000)
 
-`update-data.yml` 이 매일 03:15 KST 에 실행되어 뉴스 → 제품 → 딥링크 → 정적 페이지 순으로 갱신하고 변경이 있을 때만 커밋합니다.
+`update-data.yml` 이 매일 03:15 KST 에 실행되어 뉴스 → 기능성 원료 → 제품 → 딥링크 → 정적 페이지 순으로 갱신하고 변경이 있을 때만 커밋합니다.
 Actions 탭에서 **Run workflow** 로 즉시 실행할 수도 있습니다. 키가 없는 단계는 건너뛰며 기존 데이터를 유지합니다.
 
 ### 로컬에서 수동 실행

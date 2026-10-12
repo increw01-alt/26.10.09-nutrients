@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko" data-root="./">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="assets/js/tailwind.config.js"></script>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js" defer></script>
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/affiliate.js"></script>
+  <script src="assets/js/layout.js"></script>
+  <title>건강기능식품 기능성 원료 인정현황 — 식약처 인정 원료 목록 | 서플노트</title>
+  <meta name="description" content="식품의약품안전처가 인정한 건강기능식품 기능성 원료(개별인정형·고시형)의 기능성 내용, 1일 섭취량, 섭취 시 주의사항, 인정번호를 성분별로 검색하세요. 매일 자동 갱신됩니다.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://26-10-09-nutrients.pages.dev/materials.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="서플노트">
+  <meta property="og:title" content="건강기능식품 기능성 원료 인정현황 | 서플노트">
+  <meta property="og:description" content="식약처 인정 기능성 원료의 기능성 내용·1일 섭취량·주의사항을 성분별로 검색하세요.">
+  <meta property="og:url" content="https://26-10-09-nutrients.pages.dev/materials.html">
+  <meta property="og:image" content="assets/images/og-default.svg">
+  <meta name="twitter:card" content="summary_large_image">
+  <script src="assets/js/pages/materials.js"></script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"홈","item":"https://26-10-09-nutrients.pages.dev/"},{"@type":"ListItem","position":2,"name":"기능성 원료 인정현황","item":"https://26-10-09-nutrients.pages.dev/materials.html"}]}</script>
+</head>
+<body data-page="ingredients" data-path="materials.html" class="min-h-screen antialiased">
+  <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:font-bold focus:text-brand-700">본문으로 건너뛰기</a>
+  <div id="site-header"></div>
+  <main id="main" class="mx-auto max-w-5xl px-4 py-10 sm:px-6">
+    <nav class="text-xs text-ink-500" aria-label="경로"><a class="hover:text-brand-700" href="index.html">홈</a> › <a class="hover:text-brand-700" href="ingredients.html">성분 사전</a> › <span class="text-ink-800">기능성 원료 인정현황</span></nav>
+    <p class="mt-4 text-sm font-bold text-brand-700">식약처 공식 데이터</p>
+    <h1 class="mt-1 text-3xl font-extrabold tracking-tight text-ink-900 sm:text-4xl">건강기능식품 기능성 원료 인정현황</h1>
+    <p class="mt-3 max-w-2xl text-ink-600">식품의약품안전처가 인정한 기능성 원료의 공식 기능성 내용, 1일 섭취량, 섭취 시 주의사항, 인정번호입니다. 성분 사전과 연결된 원료는 해당 성분 페이지로 바로 이동할 수 있습니다.</p>
+    <div id="material-status" class="mt-6"></div>
+    <div class="mt-6 grid gap-3 rounded-2xl border border-ink-100 bg-white p-4 shadow-card md:grid-cols-12">
+      <div class="relative md:col-span-7"><label for="material-search" class="sr-only">원료 검색</label><i data-lucide="search" class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400"></i><input id="material-search" type="search" placeholder="원료명·기능성·업체 검색" class="w-full rounded-xl border border-ink-200 py-2.5 pl-10 pr-4 text-sm outline-none focus:border-brand-400 focus:ring-4 focus:ring-brand-100"></div>
+      <div class="md:col-span-5"><label for="material-ingredient" class="sr-only">성분 필터</label><select id="material-ingredient" class="w-full rounded-xl border border-ink-200 bg-white px-3 py-2.5 text-sm font-semibold text-ink-700 outline-none focus:border-brand-400"><option>불러오는 중…</option></select></div>
+    </div>
+    <div id="material-types" class="mt-3 flex gap-2"><button type="button" class="chip active" data-type="">전체</button><button type="button" class="chip" data-type="개별인정형">개별인정형</button><button type="button" class="chip" data-type="고시형">고시형</button></div>
+    <p class="mt-4 text-sm text-ink-500"><span id="material-count">불러오는 중…</span> · 최근 인정순</p>
+    <div id="material-list" class="mt-3 grid gap-4 md:grid-cols-2"><div class="skeleton h-40"></div><div class="skeleton h-40"></div></div>
+    <div id="material-empty" class="mt-10 hidden rounded-2xl border border-dashed border-ink-200 p-10 text-center"><p class="font-bold text-ink-700">조건에 맞는 원료가 없습니다</p><p class="mt-1 text-sm text-ink-500">검색어나 필터를 바꿔 보세요.</p></div>
+    <nav id="material-pagination" class="mt-8 flex flex-wrap justify-center gap-1.5" aria-label="페이지"></nav>
+    <section class="mt-16 rounded-3xl bg-ink-50 p-6 sm:p-8"><h2 class="text-lg font-extrabold text-ink-900">개별인정형과 고시형의 차이</h2><ul class="list-dot mt-3 text-sm text-ink-700"><li><strong>고시형 원료</strong>는 식약처가 건강기능식품공전에 고시한 원료로, 기준·규격만 맞으면 누구나 사용할 수 있습니다(비타민·미네랄, 홍삼, 루테인 등).</li><li><strong>개별인정형 원료</strong>는 업체가 기능성·안전성 자료를 제출해 개별적으로 인정받은 원료입니다. 인정받은 업체(또는 사용 허가를 받은 업체)의 제품에만 쓰이며, 인정번호로 확인할 수 있습니다.</li><li>같은 원료명이라도 인정 내용(기능성·섭취량)이 업체별로 다를 수 있어, 제품 라벨의 원료명과 기능성 문구를 함께 확인하세요.</li></ul></section>
+  </main>
+  <div id="site-footer"></div>
+</body>
+</html>

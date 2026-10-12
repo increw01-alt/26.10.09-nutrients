@@ -1,5 +1,5 @@
 {
-  "builtAt": "2026-10-12T11:30:05+09:00",
+  "builtAt": "2026-10-12T15:59:06+09:00",
   "ingredients": 37,
   "pairs": 97,
   "products": {
@@ -11,5 +11,12 @@
     "source": "live",
     "updatedAt": "2026-10-12T11:13:07+09:00",
     "total": 60
+  },
+  "materials": {
+    "source": "sample",
+    "updatedAt": null,
+    "total": 0,
+    "matched": 0,
+    "ingredients": []
   }
 }
