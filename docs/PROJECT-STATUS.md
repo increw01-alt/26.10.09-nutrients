@@ -1,0 +1,110 @@
+# 영양제.kr 프로젝트 정리 (2026-10-12 기준)
+
+영양제 성분 정보·궁합·복용 가이드를 제공하고, 식약처 공공데이터와 뉴스를 매일 자동 수집하며, 쇼핑몰 제휴 링크로 수익화하는 정적 정보 사이트입니다.
+
+- 정식 주소: https://영양제.kr (퓨니코드 `https://xn--og5b1hx9c.kr`)
+- 임시 주소: https://26-10-09-nutrients.pages.dev (접속 시 정식 주소로 자동 이동)
+- 배포: Cloudflare Pages (빌드 명령 없음, 출력 디렉터리 `/`), 저장소 push 시 자동 배포
+- 저장소 브랜치: `claude/supplement-info-compatibility-site-1o2qrj` (기본 브랜치)
+
+## 1. 현재 데이터 상태
+
+| 데이터 | 건수 | 출처 | 갱신 |
+|---|---|---|---|
+| 성분 사전 | 37종 | 직접 작성 (식약처 기능성 고시·한국인 영양소 섭취기준 2020 참고) | 수동 |
+| 궁합 쌍 | 97쌍 | 직접 작성 | 수동 |
+| 가이드 | 28편 (고민별 12 · 대상별 9 · 복용법·안전 7) | 직접 작성 | 수동 |
+| 식약처 신고 제품 | 6,695건 (최신 15,000건 중 성분 매칭분) | 식품안전나라 Open API `C003` | 매일 03:15 KST |
+| 기능성 원료 인정현황 | 696건 (성분 연결 194건) | 식품안전나라 `I-0040`, `I-0050` | 매일 03:15 KST |
+| 뉴스 | 60건 | 구글 뉴스 RSS (네이버 API는 키 등록 시) | 매일 03:15 KST |
+
+## 2. 페이지 구성
+
+| 페이지 | 파일 | 역할 |
+|---|---|---|
+| 홈 | `index.html` | 검색, 빠른 궁합 체크, 인기 성분, 고민별·대상별 가이드 바로가기, 인기 궁합, 복용 원칙, 뉴스, FAQ |
+| 성분 사전 | `ingredients.html` | 분류·검색·태그 필터 목록 |
+| 성분 상세 | `i/<id>.html` (37개, 자동 생성) | 효능·권장량·상한·섭취 시간·주의·약물 상호작용·궁합·식약처 인정 원료·함유 제품·관련 가이드·FAQ |
+| 궁합 체크 | `compatibility.html` | 최대 8개 선택 → 조합별 결과, 매트릭스, 하루 복용 시간표, 공유 링크, 제품 링크 |
+| 영양제 가이드 | `guides.html`, `guide/<slug>.html` (28개, 자동 생성) | 고민별·대상별·복용법 가이드. 핵심 성분·추천 조합·팁·주의·FAQ·제품 링크 |
+| 제품 찾기 | `products.html` | 식약처 신고 제품 검색·성분/제형 필터, 신고 정보 펼치기, 변경 이력, 쇼핑몰 버튼 |
+| 기능성 원료 인정현황 | `materials.html` | 식약처 인정 원료 전체 검색·성분/유형 필터 |
+| 뉴스·자료 | `news.html` | 뉴스/식약처·공공/연구 분류 |
+| 소개 | `about.html` | 데이터 출처, 업데이트 방식, 제휴 고지, 면책 |
+| 기타 | `404.html`, `robots.txt`, `sitemap.xml`(73 URL) | |
+
+## 3. 데이터 파일
+
+```
+data/
+├─ ingredients.json        성분 사전 (수동 편집)
+├─ interactions.json       궁합 쌍 (수동 편집)
+├─ guides.json             가이드 콘텐츠 (수동 편집 → build_site.py 가 페이지 생성)
+├─ products.json           제품 목록 (압축, 제품 찾기 페이지용)
+├─ products/top/<id>.json  성분별 상위 60개 (성분 상세 페이지용)
+├─ products/detail/NN.json 전체 신고 정보 64조각 ('더보기' 펼칠 때 로드)
+├─ materials.json          기능성 원료 전체 (인정번호 기준 병합)
+├─ materials/<id>.json     성분별 관련 원료
+├─ news.json               뉴스
+├─ deeplinks.json          쿠팡 파트너스 딥링크 캐시 (키 등록 전까지 비어 있음)
+└─ meta.json               빌드·갱신 정보 (푸터 표시, 원료 보유 성분 목록)
+```
+
+## 4. 자동화 (GitHub Actions `update-data.yml`)
+
+매일 03:15 KST, 또는 Actions 탭 → Run workflow 로 수동 실행. 순서는 뉴스 → 기능성 원료 → 제품 → 쿠팡 딥링크 → 정적 페이지·sitemap·meta → 변경 시 커밋·푸시.
+
+| 단계 | 스크립트 | 비고 |
+|---|---|---|
+| 뉴스 | `scripts/fetch_news.py` | 구글 뉴스 RSS 5개 검색어, 60건 유지. `NAVER_CLIENT_ID/SECRET` 등록 시 네이버 뉴스 병합 |
+| 기능성 원료 | `scripts/fetch_materials.py` | I-0040·I-0050 수집, 인정번호로 병합, 원료명 기준 성분 연결. 약 10초 |
+| 제품 | `scripts/fetch_products.py` | C003 최신 15,000건 역순 수집(API 1,000건당 20~40초, 키당 동시 1요청). 기능성 문구 기준 매칭, 성분별 400건 상한, 신규(90일)·변경·삭제 이력. 2~9분 |
+| 딥링크 | `scripts/build_affiliate_links.py` | `COUPANG_ACCESS_KEY/SECRET_KEY` 등록 시 동작 |
+| 빌드 | `scripts/build_site.py` | 데이터 검증, 성분 37·가이드 28·허브 페이지 생성, sitemap, meta |
+
+수집 실패 시 기존 데이터를 유지하고 Actions 화면에 경고를 남깁니다. 매칭 규칙을 바꾼 뒤에는 `python scripts/fetch_products.py --rebuild` 로 API 호출 없이 재생성할 수 있습니다.
+
+## 5. 설정 현황
+
+| 항목 | 상태 |
+|---|---|
+| 도메인 `영양제.kr` 연결 (Cloudflare) | 완료 |
+| canonical·OG·sitemap 정식 도메인 반영 | 완료 |
+| 식품안전나라 API 키 (`FOODSAFETY_API_KEY`) | 완료 — C003, I-0040, I-0050, I0030 승인 |
+| 구글 서치콘솔·네이버 서치어드바이저 등록 | 미완 — sitemap 제출 후 확인 코드를 `assets/js/config.js` 에 입력 |
+| 링크프라이스 (`config.js` → `linkprice.affiliateId`, `enabled: true`) | 미완 — 11번가·G마켓 버튼은 현재 일반 검색 링크 |
+| 쿠팡 파트너스 (`COUPANG_ACCESS_KEY`, `COUPANG_SECRET_KEY` Secret) | 미완 — 쿠팡 버튼은 현재 일반 검색 링크 |
+| 네이버 뉴스 API (`NAVER_CLIENT_ID`, `NAVER_CLIENT_SECRET`) | 선택 |
+| 문의 이메일 (`config.js` `contactEmail`, `about.html`) | 미완 — `contact@example.com` 교체 필요 |
+| OG 썸네일 (`assets/images/og-default.svg`) | 기본 이미지 — PNG 1200×630 교체 권장 |
+
+## 6. 작업 이력
+
+| 일자 | 내용 |
+|---|---|
+| 10-09 | 사이트 초기 구축: 성분 사전 37종·궁합 97쌍, 홈·성분·궁합·제품·뉴스·소개 페이지, 수집 스크립트, 워크플로, SEO 기본 |
+| 10-10 | Cloudflare 배포 주소 반영, sitemap·dateModified 안정화, 뉴스 요약 정리. 첫 자동 실행으로 뉴스 실데이터 전환 |
+| 10-12 | 식약처 API 키 발급·등록. 제품 수집기 개선(역순 수집, 대기·재시도, 타임아웃), 기능성 문구 기반 매칭으로 오탐 제거, 데이터 파일 분리 |
+| 10-12 | 기능성 원료(I-0040·I-0050) 수집으로 성분 사전 보강, 원료 인정현황 페이지, 인정번호 기준 병합·정리 |
+| 10-12 | `영양제.kr` 도메인·브랜드 전환, 키워드 의도별 가이드 28편(고민별·대상별·복용법) 추가, 메뉴·홈·성분 페이지 연결 |
+
+## 7. 다음 할 일 (우선순위순)
+
+1. 서치콘솔·서치어드바이저 등록과 sitemap 제출, 확인 코드 입력
+2. 링크프라이스·쿠팡 파트너스 승인 후 ID/키 등록 → 제휴 링크 활성화
+3. 문의 이메일·OG 이미지 교체
+4. 네이버 키워드 도구 검색량 기준으로 가이드 보강·추가 (`data/guides.json` 에 항목 추가 후 빌드)
+5. 성분 사전 확장 (크롬·비타민B6 단일·히알루론산·아스타잔틴 등) 과 궁합 쌍 추가
+6. 운영 중 발견되는 제품 매칭 오탐은 `scripts/fetch_products.py` 의 규칙(`NUTRIENT_RULES`, `HERBAL_RULES`, `EXCIPIENT_RE`) 보정
+
+## 8. 로컬에서 작업하기
+
+```bash
+python3 -m http.server 8080            # http://localhost:8080 에서 확인
+pip install -r requirements.txt
+cp config/.env.example .env            # 키 입력 후 source
+python scripts/fetch_news.py
+python scripts/fetch_materials.py
+python scripts/fetch_products.py       # 또는 --rebuild
+python scripts/build_site.py           # 성분·가이드 페이지·sitemap 재생성 (데이터 수정 후 필수)
+```

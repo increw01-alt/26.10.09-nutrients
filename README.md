@@ -1,10 +1,14 @@
 # 영양제.kr — 영양제 추천 · 궁합 · 복용 가이드 사이트
 
-영양제 성분별 효능·권장량·주의사항과 **영양제 간 궁합**, **하루 복용 시간표**를 제공하는 정적 정보 사이트입니다.
-식약처(식품안전나라) 건강기능식품 신고 제품과 최신 뉴스를 **GitHub Actions 로 매일 자동 수집**하고,
+**https://영양제.kr** (퓨니코드 `https://xn--og5b1hx9c.kr`) · Cloudflare Pages 배포
+
+영양제 성분별 효능·권장량·주의사항과 **영양제 간 궁합**, **하루 복용 시간표**, **고민별·대상별·복용법 가이드**를 제공하는 정적 정보 사이트입니다.
+식약처(식품안전나라) 건강기능식품 신고 제품·기능성 원료 인정현황과 최신 뉴스를 **GitHub Actions 로 매일 자동 수집**하고,
 쿠팡·11번가·G마켓·네이버쇼핑 링크를 **링크프라이스 / 쿠팡 파트너스 제휴 링크**로 연결해 수익화할 수 있습니다.
 
-빌드 도구 없이 바로 열리는 정적 HTML + Tailwind CSS(CDN) + Vanilla JS 구조이며, Cloudflare Pages / GitHub Pages 에 그대로 배포됩니다.
+빌드 도구 없이 바로 열리는 정적 HTML + Tailwind CSS(CDN) + Vanilla JS 구조이며, 성분·가이드 페이지는 Python 스크립트가 JSON 데이터에서 생성합니다.
+
+> 현재 상태·설정 현황·작업 이력·다음 할 일은 [docs/PROJECT-STATUS.md](docs/PROJECT-STATUS.md) 에 정리되어 있습니다.
 
 ## 폴더 구조
 
@@ -58,6 +62,7 @@ project/
 │  ├─ update-data.yml         # 매일 03:15 KST 자동 수집·빌드·커밋
 │  └─ deploy-pages.yml        # GitHub Pages 배포 (Cloudflare 사용 시 삭제 가능)
 ├─ requirements.txt
+├─ docs/PROJECT-STATUS.md     # 프로젝트 현황·작업 이력 정리
 └─ README.md
 ```
 
