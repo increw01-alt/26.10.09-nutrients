@@ -51,6 +51,75 @@ FIELD_MAP = {
 INTAKE_UNIT_KEYS = ["DAY_INTK_UNIT", "INTK_UNIT", "UNIT"]
 
 
+RECOG_RE = re.compile(r"(new)?\s*제?\s*(\d{4})\s*-\s*(\d+)\s*호?", re.I)
+NAME_SUFFIX_RE = re.compile(r"\(?\s*(기능성\s*원료\s*인정)?\s*(new)?\s*제?\s*\d{4}\s*-\s*\d+\s*호?\s*\)?", re.I)
+NUMLIKE_RE = re.compile(r"\s*(new)?\s*제?\s*\d{4}\s*-\s*\d+\s*호?\s*", re.I)
+
+# 원료 데이터는 '원료명' 기준으로만 성분에 연결합니다 (같은 기능성 문구를 가진 다른 원료가 섞이지 않도록)
+MATERIAL_NAME_KWS: dict[str, list[str]] = {
+    "probiotics": ["프로바이오틱스", "유산균", "락토바실러스", "비피도박테리움", "비피더스", "락토코커스", "스트렙토코커스", "바실러스", "사카로마이세스", "엔테로코커스", "페디오코커스", "류코노스톡", "바이셀라",
+                   "lactobacillus", "bifidobacterium", "lactococcus", "streptococcus", "bacillus", "saccharomyces", "enterococcus", "pediococcus", "leuconostoc", "weissella", "probiotic"],
+    "milk-thistle": ["밀크씨슬", "밀크시슬", "실리마린", "카르두스", "milk thistle", "silymarin"],
+    "red-ginseng": ["홍삼"],
+    "theanine": ["테아닌", "theanine"],
+    "saw-palmetto": ["쏘팔메토", "소팔메토", "saw palmetto"],
+    "phosphatidylserine": ["포스파티딜세린", "phosphatidylserine", "leci-ps"],
+    "coq10": ["코엔자임q10", "코엔자임 q10", "코큐텐", "유비퀴놀", "유비퀴논", "coq10", "coenzyme q10", "ubiquinol"],
+    "garcinia": ["가르시니아", "garcinia"],
+    "lutein": ["루테인", "지아잔틴", "마리골드", "lutein", "zeaxanthin"],
+    "omega-3": ["오메가3", "오메가-3", "오메가 3", "epa", "dha", "피쉬오일", "크릴오일", "정제어유", "오징어유", "omega-3", "krill"],
+    "collagen": ["콜라겐", "collagen"],
+    "curcumin": ["커큐민", "강황", "울금", "터메릭", "테라큐민", "curcumin", "turmeric"],
+    "green-tea-extract": ["녹차", "카테킨", "egcg", "green tea"],
+    "boswellia": ["보스웰리아", "boswellia"],
+    "glucosamine": ["글루코사민", "glucosamine"],
+    "msm": ["msm", "디메틸설폰", "식이유황", "메틸설포닐메탄", "dimethylsulfone"],
+    "arginine": ["아르기닌", "시트룰린", "arginine", "citrulline"],
+    "ginkgo": ["은행잎", "징코", "ginkgo"],
+    "psyllium": ["차전자피", "차전자", "질경이씨", "psyllium"],
+    "l-carnitine": ["카르니틴", "carnitine"],
+    "propolis": ["프로폴리스", "propolis"],
+}
+
+
+def recog_key(no: str, name: str) -> str:
+    """인정번호를 '2023-40' / 'new-2007-13' 형태로 정규화 (New 시리즈는 별도 번호 체계)."""
+    m = RECOG_RE.search(no or "") or RECOG_RE.search(name or "")
+    if not m:
+        return ""
+    return ("new-" if m.group(1) else "") + f"{m.group(2)}-{int(m.group(3))}"
+
+
+def clean_name(s: str) -> str:
+    s = NAME_SUFFIX_RE.sub("", s or "")
+    s = re.sub(r"\(\s*\)", "", s)
+    return re.sub(r"\s+", " ", s).strip(" ,·-")
+
+
+def clean_function(s: str) -> str:
+    s = (s or "").replace("\r", "\n")
+    if NUMLIKE_RE.fullmatch(s):          # 기능성 칸에 인정번호만 들어 있는 행 (최근 I-0040 데이터)
+        return ""
+    s = re.split(r"\(\s*영문\s*\)", s)[0]
+    s = re.sub(r"\(\s*국문\s*\)", "", s)
+    s = re.sub(r"[“”\"◆■●▶]", "", s)
+    s = re.sub(r"[ \t]+", " ", s)
+    return re.sub(r"\n\s*\n+", "\n", s).strip(" \n")
+
+
+def tidy_intake(s: str) -> str:
+    s = (s or "").strip()
+    if s in (".", "-"):
+        return ""
+    m = re.fullmatch(r"([\d.,]+)\s*\(([^)]+)\)\s*~\s*([\d.,]+)\s*\(([^)]+)\)", s)
+    if m and m.group(2) == m.group(4):
+        return f"{m.group(1)}~{m.group(3)} {m.group(2)}"
+    m = re.fullmatch(r"([\d.,]+)\s*\(([^)]+)\)", s)
+    if m:
+        return f"{m.group(1)} {m.group(2)}"
+    return re.sub(r"\s+", " ", s)
+
+
 def pick(row: dict, concept: str, used: set) -> str:
     cands, needles = FIELD_MAP[concept]
     for k in cands:
@@ -84,8 +153,11 @@ def normalize(service: str, row: dict) -> dict:
     rec["recognizedAt"] = ymd(rec["recognizedAt"])
     rec["service"] = service
     rec["type"] = "고시형" if "고시" in (rec["materialType"] + rec["name"]) else "개별인정형"
-    rec["function"] = re.sub(r"[ \t]+", " ", rec["function"]).strip()
-    rec["caution"] = re.sub(r"[ \t]+", " ", rec["caution"]).strip()
+    rec["recogKey"] = recog_key(rec["recognitionNo"], rec["name"])
+    rec["name"] = clean_name(rec["name"])
+    rec["function"] = clean_function(rec["function"])
+    rec["intake"] = tidy_intake(rec["intake"])
+    rec["caution"] = re.sub(r"[ \t]+", " ", rec["caution"].replace("\r", "\n")).strip()
     rec["extra"] = {k: str(v).strip()[:200] for k, v in row.items() if k not in used and str(v).strip() and k not in ("RESULT",)}
     return rec
 
@@ -114,13 +186,13 @@ def fetch_all(key: str, service: str) -> list[dict]:
 def match_ids(rec: dict, matchers) -> list[str]:
     nut, herb = matchers
     name = rec["name"].lower()
-    func = rec["function"].lower()
     found = []
     for iid, (names, _claims, _shared, _ok) in nut.items():
         if any(k in name for k in names):
             found.append(iid)
-    for iid, (kws, claims) in herb.items():
-        if any(k in name for k in kws) or any(c in func for c in claims):
+    for iid, (kws, _claims) in herb.items():
+        kws = MATERIAL_NAME_KWS.get(iid, kws)
+        if any(k in name for k in kws):
             found.append(iid)
     return found
 
@@ -129,39 +201,47 @@ def norm_key(s: str) -> str:
     return re.sub(r"[^0-9a-z가-힣]", "", (s or "").lower())
 
 
+SERVICE_PRIORITY = {"I-0050": 0, "I-0040": 1}   # 기능성·섭취량·주의사항은 구조화된 I-0050 값을 우선
+
+
 def group_records(recs: list[dict]) -> list[dict]:
-    """같은 원료명+기능성 내용은 하나로 묶고 업체·인정번호를 모읍니다."""
+    """같은 인정번호(없으면 원료명+기능성)는 하나로 합치고 두 서비스의 빈칸을 서로 채웁니다."""
     groups: dict[str, dict] = {}
-    for r in recs:
-        key = norm_key(r["name"]) + "|" + norm_key(r["function"])[:80]
+    order = sorted(recs, key=lambda r: SERVICE_PRIORITY.get(r["service"], 9))
+    for r in order:
+        key = r["recogKey"] or (norm_key(r["name"]) + "|" + norm_key(r["function"])[:80])
         g = groups.get(key)
         if not g:
-            g = groups[key] = {
-                "name": r["name"], "type": r["type"], "function": r["function"], "intake": r["intake"], "caution": r["caution"],
-                "recognitionNo": r["recognitionNo"], "recognizedAt": r["recognizedAt"], "companies": [], "services": [], "ingredients": r["ingredients"], "count": 0,
-                "extra": r["extra"],
-            }
+            g = groups[key] = {"name": "", "type": r["type"], "function": "", "intake": "", "caution": "", "recognitionNo": "",
+                               "recognizedAt": "", "companies": [], "services": [], "ingredients": [], "count": 0, "extra": {}}
         g["count"] += 1
+        # 원료명은 I-0040(신청원료명)을 우선, 없으면 아무거나
+        if r["name"] and (not g["name"] or (r["service"] == "I-0040" and len(r["name"]) <= len(g["name"]))):
+            g["name"] = r["name"]
+        for f in ("function", "intake", "caution"):
+            if r[f] and (not g[f] or len(r[f]) > len(g[f]) * 2):
+                g[f] = r[f]
+        if r["recognitionNo"] and (not g["recognitionNo"] or len(r["recognitionNo"]) < len(g["recognitionNo"])):
+            g["recognitionNo"] = r["recognitionNo"]
+        if r["recognizedAt"] and (not g["recognizedAt"] or r["recognizedAt"] < g["recognizedAt"]):
+            g["recognizedAt"] = r["recognizedAt"]
         if r["company"] and r["company"] not in g["companies"]:
             g["companies"].append(r["company"])
         if r["service"] not in g["services"]:
             g["services"].append(r["service"])
-        if r["recognizedAt"] and (not g["recognizedAt"] or r["recognizedAt"] < g["recognizedAt"]):
-            g["recognizedAt"] = r["recognizedAt"]
-            g["recognitionNo"] = r["recognitionNo"] or g["recognitionNo"]
-        for f in ("intake", "caution", "function"):
-            if not g[f] and r[f]:
-                g[f] = r[f]
         for iid in r["ingredients"]:
             if iid not in g["ingredients"]:
                 g["ingredients"].append(iid)
+        for k, v in r["extra"].items():
+            g["extra"].setdefault(k, v)
     out = []
-    for g in groups.values():
+    for key, g in groups.items():
         g["companyCount"] = len(g["companies"])
         g["companies"] = g["companies"][:6]
-        g["id"] = re.sub(r"[^0-9a-z가-힣]", "", g["name"].lower())[:40] + "-" + (g["recognitionNo"] or str(abs(hash(g["function"])) % 100000)).replace("/", "-")
+        g["id"] = (key if RECOG_RE.search(key) else norm_key(g["name"])[:40] + "-" + str(abs(hash(g["function"])) % 100000))
+        g["recognitionNo"] = re.sub(r"\s+", "", g["recognitionNo"])
         out.append(g)
-    out.sort(key=lambda g: (g["recognizedAt"] or "9999"), reverse=True)
+    out.sort(key=lambda g: (g["recognizedAt"] or "0000", g["name"]), reverse=True)
     return out
 
 
@@ -218,6 +298,8 @@ def main() -> int:
             by_ing.setdefault(iid, []).append(g)
     wanted = set()
     for iid, lst in by_ing.items():
+        # 성분 페이지에서는 기능성 내용이 채워진 원료를 먼저, 그다음 최근 인정순
+        lst = sorted(lst, key=lambda g: (0 if g["function"] else 1, -(int((g["recognizedAt"] or "0000-00-00").replace("-", "") or 0))))
         write_json(mdir / f"{iid}.json", {"_meta": {"ingredient": iid, "updatedAt": meta["updatedAt"], "total": len(lst)}, "items": lst}, compact=True, quiet=True)
         wanted.add(f"{iid}.json")
     for stale in mdir.glob("*.json"):

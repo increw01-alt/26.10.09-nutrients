@@ -235,8 +235,9 @@ def normalize(row: dict, ingredient_ids: list[str]) -> dict:
 NEW_WITHIN_DAYS = 90           # 이 기간 안에 신고된 제품만 '신규'로 기록 (성분별 상한 경계에서 끼어드는 옛 제품 제외)
 
 
-def diff_changelog(old_items: list[dict], new_items: list[dict], window_oldest: str = "") -> dict:
-    """old → new 비교. window_oldest(YYYY-MM-DD) 이후 신고분만 이번 수집 범위이므로 삭제 판정은 그 안에서만."""
+def diff_changelog(old_items: list[dict], new_items: list[dict], window_oldest: str = "", still_present: set | None = None) -> dict:
+    """old → new 비교. window_oldest(YYYY-MM-DD) 이후 신고분만 이번 수집 범위이므로 삭제 판정은 그 안에서만.
+    still_present: 이번 수집에서 여전히 확인된(상한 때문에 목록에서만 빠진) 제품 id — 삭제로 기록하지 않음."""
     from datetime import date, timedelta
     recent_cutoff = (date.today() - timedelta(days=NEW_WITHIN_DAYS)).isoformat()
     old = {p["id"]: p for p in old_items if p.get("source") != "sample"}
@@ -253,7 +254,9 @@ def diff_changelog(old_items: list[dict], new_items: list[dict], window_oldest: 
                     entries.append({"type": "changed", "name": p["name"], "company": p["company"], "id": pid, "field": label})
                     break
     for pid, o in old.items():
-        if pid not in new and (not window_oldest or (o.get("registeredAt") or "") >= window_oldest):
+        if pid in new or (still_present and pid in still_present):
+            continue
+        if not window_oldest or (o.get("registeredAt") or "") >= window_oldest:
             entries.append({"type": "removed", "name": o["name"], "company": o.get("company", ""), "id": pid})
     counts = {t: sum(1 for e in entries if e["type"] == t) for t in ("added", "removed", "changed")}
     return {"updatedAt": now_iso(), "added": counts["added"], "removed": counts["removed"], "changed": counts["changed"], "items": entries[:CHANGELOG_KEEP]}
@@ -395,6 +398,7 @@ def main() -> int:
         if not p["name"]:
             continue
         items[p["id"]] = p
+    matched_now = set(items.keys())
     window_oldest = robust_oldest([p["registeredAt"] for p in items.values()])
     log.info("성분 매칭 제품 %s건 / %s행 (수집 범위 최초 신고일 %s)", f"{len(items):,}", f"{len(rows):,}", window_oldest or "?")
 
@@ -418,7 +422,7 @@ def main() -> int:
         p.pop("isNew", None)
     # 샘플→실데이터 첫 전환, 매칭 규칙 변경, 재구성 시에는 변경 이력을 새로 시작
     baseline = was_sample or args.rebuild or existing_meta.get("matcherVersion") != MATCHER_VERSION
-    changelog = {"updatedAt": now_iso(), "added": 0, "removed": 0, "changed": 0, "items": []} if baseline else diff_changelog(list(full_prev.values()), new_items, window_oldest)
+    changelog = {"updatedAt": now_iso(), "added": 0, "removed": 0, "changed": 0, "items": []} if baseline else diff_changelog(list(full_prev.values()), new_items, window_oldest, matched_now)
     for e in changelog["items"]:
         if e["type"] == "added":
             for p in new_items:
