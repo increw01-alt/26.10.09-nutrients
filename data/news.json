@@ -2,7 +2,7 @@
   "_meta": {
     "source": "live",
     "sourceLabel": "구글 뉴스 RSS",
-    "updatedAt": "2026-10-12T06:53:44+09:00",
+    "updatedAt": "2026-10-12T10:57:12+09:00",
     "queries": [
       "건강기능식품",
       "영양제",
@@ -14,6 +14,61 @@
     "total": 60
   },
   "items": [
+    {
+      "id": "e2a15ef7dccd3a98",
+      "title": "동의명가, 전립선 건강 관리 건기식 ‘혈기보감 하이클래스’ 출시",
+      "link": "https://news.google.com/rss/articles/CBMiWEFVX3lxTFBTdURsRlBsZjRGVlNUcFNvSVRBNDFKOTZnSlJPTXRPdjdkSFI3aGxvWi1KUzZQUmg5T09jVEhoNXRMcVdhU2NmY1JRTTVYaXpTa19jTFR4Z08?oc=5",
+      "source": "뷰어스",
+      "publishedAt": "2026-10-12T10:30:57+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "9dda932898a17034",
+      "title": "남성 난임, 칼슘·비타민D 부족하면 정자 질 떨어질까? 1,230명 분석 결과",
+      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE1CNHV2LWpyZzBEMkhhZFBwQ0FTbTNqZ1NXNXp0aU5LdmdKTzNjWERJX043dl9nRkVtRkw5UG45YnlDREcyZTFzcGNDY0ozSzNMb1BHNFBXTEtJTlpuZkpndHVHZGk?oc=5",
+      "source": "용인신문",
+      "publishedAt": "2026-10-12T10:16:27+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "비타민 연구",
+      "provider": "google"
+    },
+    {
+      "id": "96f52960d8fab669",
+      "title": "제천시, 과수 447ha 농가 영양제 지원…가뭄·폭염 대응",
+      "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTE1hLS1JMzVpWUtGSWhlMVk3NVNVb3k0S1cyaERZZlVwRTJETWdhbU5MZHE3c3lnaExuUU02cXhKcmtpa3FkS2JJRnVzUzZzSTJGenVxbkE4OUFQV0h2bkRvbmlFLVJuc3lPMnJEWjFB?oc=5",
+      "source": "국제뉴스",
+      "publishedAt": "2026-10-12T08:48:05+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "501d1225033bbe2c",
+      "title": "남양유업 테이크핏, 익스트림과 협업…무신사서 기획상품 판매",
+      "link": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE4tbW92V3Qtc1MxU25qNjlMSVI1bmZRQlhIQUd2TjZBNVVNODRMcXk4VTVSUWtqbTktSkNXejNaNWpnLWNuVFJ5RjllUmI3cFB4azBtaE9sdk9BQ0XSAWBBVV95cUxNdE0zdm5KZWhJRzh0aEJJSVY0UlZFZWdEOWljb24weXpjQXpRN1NYRHI1MFRyTk53UWUzamMwTDZoMjhEWkE0S244RUk5czZyeUxvcF8xZEJBWm43b2Z5OFY?oc=5",
+      "source": "연합뉴스",
+      "publishedAt": "2026-10-12T08:44:53+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "4ab8713033a1875f",
+      "title": "2035년 기억력 지원 건강기능식품 시장 전망: 고령화와 예방적 인지 건강 수요로 성장 가속",
+      "link": "https://news.google.com/rss/articles/CBMi6AFBVV95cUxQem9MOEROWF9pVmV2N3ZlMWN1R1RySHdnaUtqbnFXeGhTSWF0NXFpRk9Rdzl4YmsyRHpPeF9jWGoxNlIwYUN3RmNwb256S0U5VVNCZkpYUGxnaHBqZ1JSUlBiNGxlZlNxdDE3RFNkVzlMZ2YydnZOcGJPUmNQdHUtZjE3alpibTg4ZDZmWlB6TEtLckNRY0JKU2E3X25veGdGNTRNdzJJRzFVU0FQSW0wSXlRT095ZnF4cTlpRjNZcEIwVEtZV2NUQ1JOWm94RWVWOTJiNVZZUUN5enR0alo4dTJ3NzUzaEJa?oc=5",
+      "source": "IndexBox",
+      "publishedAt": "2026-10-12T08:16:04+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
     {
       "id": "3aecf2390f4a7397",
       "title": "'사당귀' 김용빈, 건강 비결 공개 \"하루 즙 대여섯 개와 한약·영양제 먹어\"",
@@ -92,9 +147,9 @@
       "provider": "google"
     },
     {
-      "id": "b644ef70ae12b9db",
+      "id": "2297ee0c3eecc8ac",
       "title": "동아제약, 위 건강 개별인정형 원료 담은 건강기능식품 ‘위스트로’ 출시",
-      "link": "https://news.google.com/rss/articles/CBMiY0FVX3lxTE54SjYwSlRFUFZ4cE1aRXlCOUplOWlQRTgzM3ZnUGNUUjJzeGd4eWppbXplVkJ2LW9RVk81Yk5kUExmbmNnSzhoRlpmV1VqRFJjdWNXQm91cHdLMXd1ei1OZU00WQ?oc=5",
+      "link": "https://news.google.com/rss/articles/CBMiY0FVX3lxTE54SjYwSlRFUFZ4cE1aRXlCOUplOWlQRTgzM3ZnUGNUUjJzeGd4eWppbXplVkJ2LW9RVk81Yk5kUExmbmNnSzhoRlpmV1VqRFJjdWNXQm91cHdLMXd1ei1OZU00WdIBZ0FVX3lxTE9Vc09NVndRSHFjNkk1TG1FTFQxT0FHdkhuNUEzTVVBLTh4ZVB4dkhYNTRjZGFoRWdVUHl6YVpvcXpadzRNdm1CSGxMdGlyZ3pMUVJKWDdMQ0dYaVpVc0ZKSy0tOUx4M2s?oc=5",
       "source": "국민기자뉴스",
       "publishedAt": "2026-10-11T05:05:00+09:00",
       "summary": "",
@@ -617,61 +672,6 @@
       "summary": "",
       "category": "news",
       "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "cb4b283231fbe4d0",
-      "title": "배뇨 개선 건기식, 어디에 목표 두느냐 관건",
-      "link": "https://news.google.com/rss/articles/CBMif0FVX3lxTE5EbmdyS3dRSlVpckIxbk5XeEJ1Sm5NVUxOSHZkX1VTdFJFNkl4RjhmWHJoZFQyeUFNc0xkQ25IVExDRzBLcHVhWHRRM3ZDM1dIa1RCTHdzeWFyUDF2amxJMGdKSUJmbDhVQldyNFptZ3dtbnA2LTlfanhvTlpvcVU?oc=5",
-      "source": "약업신문",
-      "publishedAt": "2026-10-07T06:10:00+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "0d1b24d08982a8ef",
-      "title": "강원 속초농협, 모든 조합원 농작물 영양제 공급",
-      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE5XUGZqcTFjRUtRQVpmcWNxNTlleGJKSFppWEhZRHFJeFpkbGJyX0p2VTlBZmx5ZTBfbi1VWXBIR2x4YzZUMl9idERmLUt1aTFRS29PbHFJN2NGQQ?oc=5",
-      "source": "농민신문",
-      "publishedAt": "2026-10-07T00:00:00+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "43e5b50ab67decc2",
-      "title": "광동제약, 도내 어려운 이웃 위해 건강기능식품 1억 원 상당 기탁",
-      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE1yTjZBMmxCY2EzWG5UYU9HNkRDTGQtVEtOZ0hlZTdjcDVJZzBSNWd1X0JoU2M2Q0FkNWdwWnlXMEYwXzhnbHVYWVdmYXk4TFhlT2FQR0xLeDdhVHphMkJvRlQ3YTl2VmZLdmR1eQ?oc=5",
-      "source": "뉴스N제주",
-      "publishedAt": "2026-10-06T21:51:05+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "a131e8f142b5d879",
-      "title": "“이걸 먹고 혈관이…” 미국이 작정하고 추천한 ‘심장 영양제’ 3가지",
-      "link": "https://news.google.com/rss/articles/CBMieEFVX3lxTFB0X2RwTC1UX0xUemlldVpIckNzUVFkRFJQeXhNLTZISzlORHZCYkE4S1R1TFBRa3dScXRVbWU4RVcxM0ZIa05IdEtiUEROQzJoYjBzT0NRbEtTOE10ek9RTUhDcWpHSmNmeVl1US13OWJVQWc0LTExeg?oc=5",
-      "source": "뉴스와",
-      "publishedAt": "2026-10-06T21:45:00+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "fc5fa44bde07837a",
-      "title": "\"참혹한 환경 속 방치견, 건강 회복 시급\"…닥터레이 영양제 후원",
-      "link": "https://news.google.com/rss/articles/CBMiT0FVX3lxTE1fdWNVVmd0R1ZGVWNtSTJhQ19Sd1JVUlR0T25jYmRmdk5MME1LanlXMlc0Z0o1YjFsRUdvUHZjT0FSX0lwdFIwbVlRd3FoN0E?oc=5",
-      "source": "Daum",
-      "publishedAt": "2026-10-06T17:19:50+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
       "provider": "google"
     }
   ]
