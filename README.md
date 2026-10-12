@@ -78,6 +78,7 @@ project/
    cd "26.10.12 영양제.kr"
    ```
 3. 로컬 서버 실행 — 폴더의 `dev.bat` 을 더블클릭하거나 PowerShell 에서 `.\dev.ps1` (브라우저가 http://localhost:8080 으로 열립니다)
+4. (선택) 디자인 클래스나 아이콘을 바꿀 때만 [Node.js](https://nodejs.org/) 가 필요합니다: 폴더에서 `npm ci` 한 번, 이후 `npm run assets` 로 `assets/css/tailwind.css` 와 `assets/js/icons.js` 를 재생성한 뒤 `dev.bat build` 를 실행합니다. Node 가 없어도 push 하면 GitHub Actions(`build-assets.yml`)가 자동으로 만들어 커밋합니다.
    - 데이터를 고친 뒤에는 `.\dev.ps1 -Build` (또는 `dev.bat build`) 로 성분·가이드 페이지를 다시 생성
    - WSL2 Ubuntu·macOS 에서는 `./dev.sh --build`
 4. 수정 → 확인 → 커밋 → 푸시하면 Cloudflare Pages 가 자동 배포합니다

@@ -16,6 +16,11 @@ if (-not (Test-Path ".venv")) {
 & ".venv\Scripts\python.exe" -m pip install -q -r requirements.txt
 
 if ($Build) {
+  if (Get-Command npm -ErrorAction SilentlyContinue) {
+    if (-not (Test-Path "node_modules")) { npm ci }
+    Write-Host "Tailwind CSS·아이콘 번들 생성 (npm run assets)..." -ForegroundColor Cyan
+    npm run assets
+  } else { Write-Host "[안내] npm 이 없어 CSS·아이콘 번들은 건너뜁니다. push 하면 GitHub Actions 가 자동 생성합니다." -ForegroundColor Yellow }
   Write-Host "정적 페이지 생성 (build_site.py)..." -ForegroundColor Cyan
   & ".venv\Scripts\python.exe" scripts\build_site.py
 }

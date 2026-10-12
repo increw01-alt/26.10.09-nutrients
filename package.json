@@ -1,0 +1,14 @@
+{
+  "name": "yeongyangje-kr",
+  "private": true,
+  "description": "영양제.kr 정적 사이트 — Tailwind CSS 정적 빌드와 아이콘 번들 생성용 (사이트 자체는 빌드 도구 없이 동작)",
+  "scripts": {
+    "css": "tailwindcss -c tailwind.config.cjs -i assets/css/tailwind.src.css -o assets/css/tailwind.css --minify",
+    "icons": "node scripts/build_icons.mjs",
+    "assets": "npm run css && npm run icons"
+  },
+  "devDependencies": {
+    "lucide": "0.460.0",
+    "tailwindcss": "3.4.17"
+  }
+}

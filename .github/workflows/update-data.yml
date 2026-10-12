@@ -67,6 +67,15 @@ jobs:
           COUPANG_SUB_ID: ${{ vars.COUPANG_SUB_ID }}
         run: python scripts/build_affiliate_links.py
 
+      - name: Set up Node (Tailwind CSS · icons)
+        uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: npm
+      - name: Rebuild Tailwind CSS & icon bundle
+        timeout-minutes: 5
+        run: npm ci && npm run assets
+
       - name: Build static pages & sitemap
         env:
           SITE_URL: ${{ vars.SITE_URL }}

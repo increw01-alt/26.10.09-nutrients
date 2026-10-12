@@ -41,7 +41,7 @@ def site_config() -> dict:
 VERIFY_START, VERIFY_END = "<!-- site-verification:start", "<!-- site-verification:end -->"
 
 
-ASSET_LINK_RE = re.compile(r'(?P<pre>(?:src|href)=")(?P<path>/?(?:\.\./)*assets/(?:js|css)/[A-Za-z0-9_./-]+\.(?:js|css))(?:\?v=[0-9a-f]+)?(?P<post>")')
+ASSET_LINK_RE = re.compile(r'(?P<pre>(?:src|href)=")(?P<path>/?(?:\.\./|\./)*assets/(?:js|css)/[A-Za-z0-9_./-]+\.(?:js|css))(?:\?v=[0-9a-f]+)?(?P<post>")')
 
 
 def stamp_assets() -> None:
@@ -70,6 +70,28 @@ def stamp_assets() -> None:
         if out != src:
             html_path.write_text(out, encoding="utf-8"); changed += 1
     log.info("자산 버전 스탬프: HTML %d개 갱신", changed)
+
+
+def check_icons() -> None:
+    """HTML·JS·데이터에서 쓰는 lucide 아이콘 이름이 assets/js/icons.js 번들에 모두 있는지 확인 (없으면 `npm run icons`)."""
+    bundle = ROOT / "assets/js/icons.js"
+    if not bundle.exists():
+        log.warning("assets/js/icons.js 가 없습니다. `npm run icons` 로 생성하세요."); return
+    have = set(re.findall(r'"([a-z0-9-]+)":\[\[', bundle.read_text(encoding="utf-8")))
+    used: set[str] = set()
+    srcs = list(ROOT.glob("*.html")) + list((ROOT / "assets/js").rglob("*.js")) + [ROOT / "scripts/build_site.py"]
+    for f in srcs:
+        if f.name == "icons.js":
+            continue
+        t = f.read_text(encoding="utf-8")
+        used |= set(re.findall(r'data-lucide="([a-z0-9-]+)"', t)) | set(re.findall(r'icon:\s*"([a-z0-9-]+)"', t))
+    for f in ("ingredients.json", "interactions.json", "guides.json"):
+        used |= set(re.findall(r'"icon":\s*"([a-z0-9-]+)"', (DATA_DIR / f).read_text(encoding="utf-8")))
+    missing = sorted(used - have)
+    if missing:
+        log.warning("아이콘 번들에 없는 이름 %d개 (표시되지 않음 → `npm run icons` 실행): %s", len(missing), ", ".join(missing))
+    else:
+        log.info("아이콘 번들 점검 OK (%d개 사용)", len(used))
 
 
 def inject_verification(cfg: dict) -> None:
@@ -219,17 +241,16 @@ def render_page(it: dict, core: dict, cfg: dict) -> str:
   <link rel="icon" href="../assets/images/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="../assets/js/tailwind.config.js"></script>
   <link rel="stylesheet" href="../assets/css/style.css">
-  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js" defer></script>
-  <script src="../assets/js/config.js"></script>
-  <script src="../assets/js/data.js"></script>
-  <script src="../assets/js/affiliate.js"></script>
-  <script src="../assets/js/layout.js"></script>
+  <link rel="stylesheet" href="../assets/css/tailwind.css">
+  <script src="../assets/js/icons.js" defer></script>
+  <script src="../assets/js/config.js" defer></script>
+  <script src="../assets/js/data.js" defer></script>
+  <script src="../assets/js/affiliate.js" defer></script>
+  <script src="../assets/js/layout.js" defer></script>
   <script>window.__INGREDIENT_ID = {json.dumps(it["id"])};</script>
-  <script src="../assets/js/illus.js"></script>
-  <script src="../assets/js/pages/ingredient.js"></script>
+  <script src="../assets/js/illus.js" defer></script>
+  <script src="../assets/js/pages/ingredient.js" defer></script>
   <script type="application/ld+json" id="ld-ingredient">{json.dumps(ld, ensure_ascii=False)}</script>
 </head>
 <body data-page="ingredients" data-path="i/{esc(it["id"])}.html" class="min-h-screen antialiased">
@@ -275,14 +296,13 @@ def head_html(cfg: dict, *, title: str, desc: str, path: str, root: str, keyword
   <link rel="icon" href="{root}assets/images/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="{root}assets/js/tailwind.config.js"></script>
   <link rel="stylesheet" href="{root}assets/css/style.css">
-  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js" defer></script>
-  <script src="{root}assets/js/config.js"></script>
-  <script src="{root}assets/js/data.js"></script>
-  <script src="{root}assets/js/affiliate.js"></script>
-  <script src="{root}assets/js/layout.js"></script>
+  <link rel="stylesheet" href="{root}assets/css/tailwind.css">
+  <script src="{root}assets/js/icons.js" defer></script>
+  <script src="{root}assets/js/config.js" defer></script>
+  <script src="{root}assets/js/data.js" defer></script>
+  <script src="{root}assets/js/affiliate.js" defer></script>
+  <script src="{root}assets/js/layout.js" defer></script>
   {extra_scripts}
   {('<script type="application/ld+json">' + json.dumps(ld, ensure_ascii=False) + '</script>') if ld else ''}
 </head>"""
@@ -324,7 +344,7 @@ def render_guide(gd: dict, guides: dict, core: dict, cfg: dict) -> str:
         {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": f["q"], "acceptedAnswer": {"@type": "Answer", "text": f["a"]}} for f in gd["faq"]]},
     ]}
     head = head_html(cfg, title=f"{gd['title']} | {cfg['name']}", desc=desc, path=path, root="../", keywords=", ".join(gd["keywords"]),
-                     extra_scripts='<script src="../assets/js/pages/guide.js"></script>', ld=ld)
+                     extra_scripts='<script src="../assets/js/pages/guide.js" defer></script>', ld=ld)
 
     # 핵심 성분
     ing_html = ""
@@ -487,6 +507,7 @@ def main() -> int:
     guides = build_guides(core, cfg)
     build_sitemap(ingredients["items"], cfg, data_date, guides)
     inject_verification(cfg)
+    check_icons()
     stamp_assets()
     products = read_json(DATA_DIR / "products.json", {"_meta": {}, "items": []})
     news = read_json(DATA_DIR / "news.json", {"_meta": {}, "items": []})
