@@ -13,29 +13,35 @@
     { key: "about", label: "소개", href: "about.html" }
   ];
 
+  var LOGO = '<span class="grid h-9 w-9 place-items-center rounded-xl bg-brand-600 text-white"><svg viewBox="0 0 64 64" class="h-5 w-5" aria-hidden="true"><path d="M14 40 C 20 20, 40 12, 52 16 C 50 36, 34 50, 14 40 Z" fill="#fff"/><path d="M18 38 C 28 30, 38 24, 48 20" stroke="#9cc6a4" stroke-width="3" fill="none" stroke-linecap="round"/></svg></span>';
+  function brandWord() {
+    var n = S.name || "";
+    var m = /^(.*?)(\.[a-z]{2,4})$/i.exec(n);
+    return m ? esc(m[1]) + '<span class="text-brand-600">' + esc(m[2]) + '</span>' : esc(n);
+  }
+
   function renderHeader() {
     var el = document.getElementById("site-header");
     if (!el) return;
     el.innerHTML =
-      '<div class="sticky top-0 z-40 border-b border-ink-100/80 bg-white/85 backdrop-blur">' +
-        '<div class="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">' +
-          '<a href="' + D.url("index.html") + '" class="flex items-center gap-2.5" aria-label="' + esc(S.name) + ' 홈">' +
-            '<span class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 text-white shadow-lift"><i data-lucide="pill" class="h-5 w-5"></i></span>' +
-            '<span class="leading-tight"><span class="block text-[17px] font-extrabold tracking-tight text-ink-900">' + esc(S.name) + '</span>' +
-            '<span class="hidden text-[11px] font-medium text-ink-500 sm:block">' + esc(S.tagline) + '</span></span>' +
+      '<div class="sticky top-0 z-40 border-b border-ink-100/80 bg-white/90 backdrop-blur">' +
+        '<div class="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4 sm:px-6">' +
+          '<a href="' + D.url("index.html") + '" class="flex shrink-0 items-center gap-2.5" aria-label="' + esc(S.name) + ' 홈">' + LOGO +
+            '<span class="leading-tight"><span class="block text-[19px] font-extrabold tracking-tight text-ink-900">' + brandWord() + '</span>' +
+            '<span class="hidden text-[11px] font-medium text-ink-400 lg:block">' + esc(S.tagline) + '</span></span>' +
           '</a>' +
-          '<nav class="hidden items-center gap-1 md:flex" aria-label="주요 메뉴">' +
+          '<nav class="ml-2 hidden items-center gap-0.5 md:flex" aria-label="주요 메뉴">' +
             NAV.filter(function (n) { return n.desktop !== false; }).map(function (n) {
               var active = n.key === page;
-              return '<a href="' + D.url(n.href) + '" class="rounded-lg px-3 py-2 text-sm font-semibold transition ' +
-                (active ? "bg-brand-50 text-brand-700" : "text-ink-600 hover:bg-ink-50 hover:text-ink-900") + '"' + (active ? ' aria-current="page"' : "") + '>' +
-                esc(n.label) + (n.hot ? '<span class="ml-1 rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold text-amber-700">HOT</span>' : "") + '</a>';
+              return '<a href="' + D.url(n.href) + '" class="rounded-lg px-3 py-2 text-[14px] font-semibold transition ' +
+                (active ? "bg-brand-50 text-brand-700" : "text-ink-600 hover:bg-cream-200 hover:text-ink-900") + '"' + (active ? ' aria-current="page"' : "") + '>' +
+                esc(n.label) + (n.hot ? '<span class="ml-1 rounded-full bg-peach-100 px-1.5 py-0.5 text-[10px] font-bold text-orange-700">HOT</span>' : "") + '</a>';
             }).join("") +
           '</nav>' +
-          '<div class="flex items-center gap-2">' +
-            '<button type="button" id="open-search" class="inline-flex items-center gap-2 rounded-xl border border-ink-200 bg-white px-3 py-2 text-sm font-medium text-ink-500 shadow-sm transition hover:border-brand-300 hover:text-brand-700" aria-label="성분 검색 열기">' +
-              '<i data-lucide="search" class="h-4 w-4"></i><span class="hidden sm:inline">성분 검색</span><kbd class="hidden rounded border border-ink-200 bg-ink-50 px-1.5 text-[10px] font-semibold text-ink-400 lg:inline">/</kbd></button>' +
-            '<button type="button" id="open-menu" class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-ink-200 bg-white text-ink-700 md:hidden" aria-label="메뉴 열기" aria-expanded="false" aria-controls="mobile-menu"><i data-lucide="menu" class="h-5 w-5"></i></button>' +
+          '<div class="ml-auto flex items-center gap-2">' +
+            '<button type="button" id="open-search" class="hidden h-10 w-64 items-center gap-2 rounded-full border border-ink-200 bg-cream-100 px-4 text-sm text-ink-400 transition hover:border-brand-300 hover:bg-white sm:flex lg:w-72" aria-label="성분 검색 열기"><i data-lucide="search" class="h-4 w-4 text-ink-400"></i><span class="truncate">원하는 영양제 성분을 검색해보세요</span><kbd class="ml-auto hidden rounded border border-ink-200 bg-white px-1.5 text-[10px] font-semibold text-ink-400 lg:inline">/</kbd></button>' +
+            '<button type="button" id="open-search-m" class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-ink-200 bg-white text-ink-700 sm:hidden" aria-label="성분 검색 열기"><i data-lucide="search" class="h-5 w-5"></i></button>' +
+            '<button type="button" id="open-menu" class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-ink-200 bg-white text-ink-700 md:hidden" aria-label="메뉴 열기" aria-expanded="false" aria-controls="mobile-menu"><i data-lucide="menu" class="h-5 w-5"></i></button>' +
           '</div>' +
         '</div>' +
         '<div id="mobile-menu" class="mobile-menu md:hidden border-t border-ink-100 bg-white"><nav class="mx-auto max-w-7xl px-4 py-2" aria-label="모바일 메뉴">' +
@@ -43,6 +49,7 @@
             var active = n.key === page;
             return '<a href="' + D.url(n.href) + '" class="flex items-center justify-between rounded-lg px-3 py-3 text-[15px] font-semibold ' + (active ? "bg-brand-50 text-brand-700" : "text-ink-700") + '">' + esc(n.label) + '<i data-lucide="chevron-right" class="h-4 w-4 text-ink-300"></i></a>';
           }).join("") +
+          '<a href="' + D.url("materials.html") + '" class="flex items-center justify-between rounded-lg px-3 py-3 text-[15px] font-semibold text-ink-700">기능성 원료 인정현황<i data-lucide="chevron-right" class="h-4 w-4 text-ink-300"></i></a>' +
         '</nav></div>' +
       '</div>';
     var btn = document.getElementById("open-menu"), menu = document.getElementById("mobile-menu");
@@ -50,8 +57,23 @@
       var open = menu.classList.toggle("open");
       btn.setAttribute("aria-expanded", open ? "true" : "false");
     });
-    var sbtn = document.getElementById("open-search");
-    if (sbtn) sbtn.addEventListener("click", openSearch);
+    ["open-search", "open-search-m"].forEach(function (id) { var b = document.getElementById(id); if (b) b.addEventListener("click", openSearch); });
+  }
+
+  /* 모바일 하단 탭 바 */
+  function renderTabbar() {
+    var TABS = [
+      { key: "home", label: "홈", href: "index.html", icon: "house" },
+      { key: "ingredients", label: "성분", href: "ingredients.html", icon: "book-open" },
+      { key: "compat", label: "궁합", href: "compatibility.html", icon: "heart-handshake" },
+      { key: "guides", label: "가이드", href: "guides.html", icon: "compass" },
+      { key: "products", label: "제품", href: "products.html", icon: "shopping-bag" }
+    ];
+    var nav = document.createElement("nav");
+    nav.className = "tabbar no-print"; nav.setAttribute("aria-label", "하단 메뉴");
+    nav.innerHTML = TABS.map(function (t) { return '<a href="' + D.url(t.href) + '" class="' + (t.key === page ? "active" : "") + '"' + (t.key === page ? ' aria-current="page"' : "") + '><i data-lucide="' + t.icon + '"></i>' + esc(t.label) + '</a>'; }).join("");
+    document.body.appendChild(nav); document.body.classList.add("has-tabbar");
+    D.icons(nav);
   }
 
   function renderFooter() {
@@ -59,11 +81,11 @@
     if (!el) return;
     var A = window.AFFILIATE || {};
     el.innerHTML =
-      '<footer class="mt-20 border-t border-ink-100 bg-white">' +
+      '<footer class="mt-20 border-t border-ink-100 bg-cream-100">' +
         '<div class="mx-auto max-w-7xl px-4 py-12 sm:px-6">' +
           '<div class="grid gap-10 md:grid-cols-12">' +
             '<div class="md:col-span-5">' +
-              '<div class="flex items-center gap-2.5"><span class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 text-white"><i data-lucide="pill" class="h-5 w-5"></i></span><span class="text-lg font-extrabold text-ink-900">' + esc(S.name) + '</span></div>' +
+              '<div class="flex items-center gap-2.5">' + LOGO + '<span class="text-lg font-extrabold text-ink-900">' + brandWord() + '</span></div>' +
               '<p class="mt-4 text-sm leading-relaxed text-ink-500">' + esc(S.description) + '</p>' +
               '<p class="mt-4 text-xs leading-relaxed text-ink-400" id="footer-updated"></p>' +
             '</div>' +
@@ -78,7 +100,7 @@
             '</ul>' +
             '<p class="mt-4 text-xs text-ink-500">문의: <a class="underline hover:text-brand-700" href="mailto:' + esc(S.contactEmail) + '">' + esc(S.contactEmail) + '</a></p></div>' +
           '</div>' +
-          '<div class="mt-10 space-y-3 rounded-2xl bg-ink-50 p-5 text-xs leading-relaxed text-ink-500">' +
+          '<div class="mt-10 space-y-3 rounded-2xl bg-white p-5 text-xs leading-relaxed text-ink-500">' +
             '<p><strong class="text-ink-700">의학적 면책:</strong> 이 사이트의 정보는 일반적인 건강 정보 제공을 목적으로 하며 의학적 진단·처방을 대신하지 않습니다. 질환이 있거나 약을 복용 중이라면 영양제 섭취 전 의사·약사와 상담하세요. 건강기능식품은 질병의 예방·치료를 위한 의약품이 아닙니다.</p>' +
             '<p><strong class="text-ink-700">제휴 고지:</strong> ' + esc(A.disclosure || "") + '</p>' +
           '</div>' +
@@ -168,7 +190,7 @@
   /* 맨 위로 버튼 */
   function topButton() {
     var b = document.createElement("button");
-    b.type = "button"; b.className = "no-print fixed bottom-5 right-5 z-30 hidden h-11 w-11 items-center justify-center rounded-full bg-ink-900/90 text-white shadow-lg transition hover:bg-brand-700";
+    b.type = "button"; b.className = "no-print fixed bottom-20 right-4 z-30 hidden h-11 w-11 items-center justify-center rounded-full bg-ink-900/85 text-white shadow-lg transition hover:bg-brand-700 md:bottom-5 md:right-5";
     b.setAttribute("aria-label", "맨 위로"); b.innerHTML = '<i data-lucide="arrow-up" class="h-5 w-5"></i>';
     b.addEventListener("click", function () { window.scrollTo({ top: 0, behavior: "smooth" }); });
     document.body.appendChild(b);
@@ -184,7 +206,7 @@
 
   document.addEventListener("DOMContentLoaded", function () {
     page = document.body.getAttribute("data-page") || "";
-    renderHeader(); renderFooter(); fixMeta(); topButton(); D.icons();
+    renderHeader(); renderFooter(); renderTabbar(); fixMeta(); topButton(); D.icons();
   });
   window.Layout = { openSearch: openSearch, closeSearch: closeSearch };
 })();

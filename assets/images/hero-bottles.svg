@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 520" role="img" aria-label="영양제 병과 잎 일러스트">
+  <defs>
+    <linearGradient id="amber" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b7773a"/><stop offset="1" stop-color="#7a4a1f"/></linearGradient>
+    <linearGradient id="green" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3f7f4b"/><stop offset="1" stop-color="#244d2c"/></linearGradient>
+    <linearGradient id="white" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#f1ede4"/></linearGradient>
+    <linearGradient id="plate" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#efe9dc"/><stop offset="1" stop-color="#e3dccb"/></linearGradient>
+  </defs>
+  <!-- 받침·그림자 -->
+  <ellipse cx="330" cy="470" rx="250" ry="26" fill="url(#plate)"/>
+  <ellipse cx="330" cy="464" rx="210" ry="14" fill="rgba(28,27,24,.08)"/>
+  <!-- 뒤쪽 잎 -->
+  <g transform="translate(420 120) rotate(-40)"><path d="M0 0 C 40 -70, 130 -80, 170 -20 C 130 30, 40 40, 0 0 Z" fill="#3a7d44"/><path d="M8 -4 C 50 -30, 110 -40, 160 -22" stroke="rgba(255,255,255,.45)" stroke-width="3" fill="none" stroke-linecap="round"/></g>
+  <g transform="translate(470 180) rotate(-5)"><path d="M0 0 C 40 -60, 120 -66, 150 -14 C 115 26, 40 36, 0 0 Z" fill="#6ea87a"/><path d="M8 -2 C 50 -22, 100 -30, 142 -16" stroke="rgba(255,255,255,.45)" stroke-width="3" fill="none" stroke-linecap="round"/></g>
+  <g transform="translate(60 230) rotate(200)"><path d="M0 0 C 40 -60, 120 -66, 150 -14 C 115 26, 40 36, 0 0 Z" fill="#9cc6a4"/></g>
+  <!-- 1. 큰 흰 병 (DAILY BALANCE) -->
+  <g>
+    <rect x="118" y="120" width="62" height="26" rx="6" fill="#2f6538"/>
+    <rect x="124" y="144" width="50" height="12" fill="#efe9dc"/>
+    <rect x="96" y="154" width="106" height="300" rx="26" fill="url(#white)" stroke="rgba(28,27,24,.08)"/>
+    <rect x="96" y="214" width="106" height="110" fill="#f6f2ea"/>
+    <text x="149" y="250" text-anchor="middle" font-family="Pretendard, Arial, sans-serif" font-size="13" font-weight="800" fill="#2b2a26" letter-spacing=".08em">DAILY</text>
+    <text x="149" y="272" text-anchor="middle" font-family="Pretendard, Arial, sans-serif" font-size="13" font-weight="800" fill="#2b2a26" letter-spacing=".08em">BALANCE</text>
+    <text x="149" y="296" text-anchor="middle" font-family="Pretendard, Arial, sans-serif" font-size="9" font-weight="600" fill="#6b675f">Multi Vitamin</text>
+    <rect x="108" y="166" width="8" height="270" rx="4" fill="rgba(255,255,255,.7)"/>
+  </g>
+  <!-- 2. 갈색 유리병 (OMEGA-3) -->
+  <g>
+    <rect x="236" y="196" width="56" height="24" rx="6" fill="#1f1a14"/>
+    <rect x="222" y="216" width="84" height="238" rx="22" fill="url(#amber)"/>
+    <rect x="222" y="268" width="84" height="92" fill="#f6f2ea"/>
+    <text x="264" y="302" text-anchor="middle" font-family="Pretendard, Arial, sans-serif" font-size="12" font-weight="800" fill="#2b2a26" letter-spacing=".06em">OMEGA-3</text>
+    <text x="264" y="322" text-anchor="middle" font-family="Pretendard, Arial, sans-serif" font-size="8.5" font-weight="600" fill="#6b675f">EPA · DHA 1000</text>
+    <rect x="232" y="228" width="8" height="210" rx="4" fill="rgba(255,255,255,.28)"/>
+  </g>
+  <!-- 3. 작은 흰 병 (VITAMIN D) -->
+  <g>
+    <rect x="336" y="256" width="60" height="22" rx="6" fill="#e6b53f"/>
+    <rect x="322" y="274" width="88" height="180" rx="22" fill="url(#white)" stroke="rgba(28,27,24,.08)"/>
+    <rect x="322" y="318" width="88" height="78" fill="#f6d27a"/>
+    <text x="366" y="350" text-anchor="middle" font-family="Pretendard, Arial, sans-serif" font-size="12" font-weight="800" fill="#2b2a26" letter-spacing=".06em">VITAMIN D</text>
+    <text x="366" y="370" text-anchor="middle" font-family="Pretendard, Arial, sans-serif" font-size="8.5" font-weight="600" fill="#5a4a1c">1000 IU</text>
+    <rect x="332" y="286" width="8" height="150" rx="4" fill="rgba(255,255,255,.7)"/>
+  </g>
+  <!-- 4. 진녹색 병 (MAGNESIUM) -->
+  <g>
+    <rect x="444" y="226" width="60" height="24" rx="6" fill="#1b3a21"/>
+    <rect x="428" y="246" width="92" height="208" rx="22" fill="url(#green)"/>
+    <rect x="428" y="300" width="92" height="84" fill="#f6f2ea"/>
+    <text x="474" y="334" text-anchor="middle" font-family="Pretendard, Arial, sans-serif" font-size="11.5" font-weight="800" fill="#2b2a26" letter-spacing=".06em">MAGNESIUM</text>
+    <text x="474" y="354" text-anchor="middle" font-family="Pretendard, Arial, sans-serif" font-size="8.5" font-weight="600" fill="#6b675f">Glycinate 300</text>
+    <rect x="438" y="258" width="8" height="180" rx="4" fill="rgba(255,255,255,.22)"/>
+  </g>
+  <!-- 앞쪽 잎 -->
+  <g transform="translate(20 430) rotate(-15)"><path d="M0 0 C 40 -60, 120 -66, 150 -14 C 115 26, 40 36, 0 0 Z" fill="#4b8c59"/><path d="M8 -2 C 50 -22, 100 -30, 142 -16" stroke="rgba(255,255,255,.45)" stroke-width="3" fill="none" stroke-linecap="round"/></g>
+  <g transform="translate(520 455) rotate(190)"><path d="M0 0 C 40 -60, 120 -66, 150 -14 C 115 26, 40 36, 0 0 Z" fill="#6ea87a"/></g>
+  <!-- 캡슐 몇 알 -->
+  <g transform="translate(300 440) rotate(-20)"><rect x="0" y="0" width="34" height="14" rx="7" fill="#f3b23e"/><path d="M17 0h10a7 7 0 0 1 0 14H17z" fill="#f6d27a"/></g>
+  <g transform="translate(560 420) rotate(25)"><ellipse cx="0" cy="0" rx="16" ry="9" fill="#f6c43d"/><ellipse cx="-5" cy="-3" rx="5" ry="2.5" fill="rgba(255,255,255,.6)"/></g>
+</svg>

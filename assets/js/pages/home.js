@@ -10,12 +10,19 @@
   ];
   var POPULAR = ["vitamin-d", "omega-3", "probiotics", "magnesium", "vitamin-c", "lutein", "iron", "calcium", "zinc", "milk-thistle", "red-ginseng", "vitamin-b-complex"];
 
+  function bottleLabel(it) {
+    var en = (it.en || it.name).split("(")[0].replace(/[^A-Za-z0-9 \-·]/g, "").trim();
+    return (en || it.name).slice(0, 14);
+  }
   function ingredientCard(it, cats) {
     var cat = cats[it.category] || {};
-    return '<a href="' + D.ingredientUrl(it.id) + '" class="card-hover group flex items-start gap-3 rounded-2xl border border-ink-100 bg-white p-4 shadow-card">' +
-      '<span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl ring-1 ' + D.catClass(cat.color) + '"><i data-lucide="' + esc(it.icon || cat.icon) + '" class="h-5 w-5"></i></span>' +
-      '<span class="min-w-0"><span class="block truncate font-bold text-ink-900 group-hover:text-brand-700">' + esc(it.name) + '</span>' +
-      '<span class="mt-0.5 block truncate text-xs text-ink-500">' + esc((it.tags || []).slice(0, 3).join(" · ")) + '</span></span></a>';
+    var I = window.Illus;
+    var art = I ? I.bottle(bottleLabel(it), I.colorFor(it.category), { sub: it.name, id: it.id }) : "";
+    return '<a href="' + D.ingredientUrl(it.id) + '" class="card-hover group flex flex-col rounded-2xl border border-ink-100 bg-white p-3 shadow-card">' +
+      '<div class="illus-box aspect-square w-full">' + art + '</div>' +
+      '<div class="mt-3 flex items-end justify-between gap-2 px-1 pb-1"><div class="min-w-0"><span class="block truncate font-extrabold text-ink-900 group-hover:text-brand-700">' + esc(it.name) + '</span>' +
+      '<span class="mt-0.5 block truncate text-xs text-ink-500">' + esc((it.tags || []).slice(0, 3).join(" · ")) + '</span></div>' +
+      '<span class="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-brand-600 text-white transition group-hover:bg-brand-700"><i data-lucide="arrow-right" class="h-4 w-4"></i></span></div></a>';
   }
 
   function pairCard(core, p) {
@@ -90,7 +97,7 @@
       if (cats) {
         cats.innerHTML = Object.keys(core.categories).map(function (k) {
           var c = core.categories[k]; var n = core.items.filter(function (i) { return i.category === k; }).length;
-          return '<a href="' + D.url("ingredients.html?category=" + k) + '" class="card-hover flex items-center gap-3 rounded-2xl border border-ink-100 bg-white px-4 py-3.5 shadow-card"><span class="grid h-10 w-10 place-items-center rounded-xl ring-1 ' + D.catClass(c.color) + '"><i data-lucide="' + esc(c.icon) + '" class="h-5 w-5"></i></span><span><span class="block font-bold text-ink-900">' + esc(c.label) + '</span><span class="text-xs text-ink-400">' + n + '개 성분</span></span></a>';
+          return '<a href="' + D.url("ingredients.html?category=" + k) + '" class="cat-card" aria-label="' + esc(c.label) + ' 성분 ' + n + '개">' + (window.Illus ? window.Illus.forCategory(k) : "") + '<span class="text-sm font-bold text-ink-800">' + esc(c.label) + '</span><span class="-mt-1 text-[11px] text-ink-400">' + n + '개 성분</span></a>';
         }).join("");
       }
       var stat = document.getElementById("stat-ingredients"); if (stat) stat.textContent = core.items.length;
