@@ -6,18 +6,17 @@
   var NAV = [
     { key: "home", label: "홈", href: "index.html", desktop: false },
     { key: "ingredients", label: "성분 사전", href: "ingredients.html" },
-    { key: "compat", label: "궁합 체크", href: "compatibility.html", hot: true },
+    { key: "compat", label: "궁합 체크", href: "compatibility.html" },
     { key: "guides", label: "가이드", href: "guides.html" },
     { key: "products", label: "제품 찾기", href: "products.html" },
     { key: "news", label: "뉴스", href: "news.html" },
     { key: "about", label: "소개", href: "about.html" }
   ];
 
-  var LOGO = '<span class="grid h-9 w-9 place-items-center rounded-xl bg-brand-600 text-white"><svg viewBox="0 0 64 64" class="h-5 w-5" aria-hidden="true"><path d="M14 40 C 20 20, 40 12, 52 16 C 50 36, 34 50, 14 40 Z" fill="#fff"/><path d="M18 38 C 28 30, 38 24, 48 20" stroke="#9cc6a4" stroke-width="3" fill="none" stroke-linecap="round"/></svg></span>';
   function brandWord() {
     var n = S.name || "";
     var m = /^(.*?)(\.[a-z]{2,4})$/i.exec(n);
-    return m ? esc(m[1]) + '<span class="text-brand-600">' + esc(m[2]) + '</span>' : esc(n);
+    return m ? esc(m[1]) + '<small>' + esc(m[2]) + '</small>' : esc(n);
   }
 
   function renderHeader() {
@@ -25,24 +24,20 @@
     if (!el) return;
     el.className = "sticky top-0 z-40";   // 고정 헤더: 래퍼(#site-header) 자체를 sticky 로 (자식만 sticky 면 래퍼 높이에 갇혀 고정되지 않음)
     el.innerHTML =
-      '<div class="border-b border-ink-100/80 bg-white/90 backdrop-blur">' +
-        '<div class="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4 sm:px-6">' +
-          '<a href="' + D.url("index.html") + '" class="flex shrink-0 items-center gap-2.5" aria-label="' + esc(S.name) + ' 홈">' + LOGO +
-            '<span class="leading-tight"><span class="block text-[19px] font-extrabold tracking-tight text-ink-900">' + brandWord() + '</span>' +
-            '<span class="hidden text-[11px] font-medium text-ink-400 lg:block">' + esc(S.tagline) + '</span></span>' +
-          '</a>' +
-          '<nav class="ml-2 hidden items-center gap-0.5 md:flex" aria-label="주요 메뉴">' +
+      '<div class="border-b border-[#edf0e9] bg-white/95 backdrop-blur">' +
+        '<div class="mx-auto flex h-[68px] max-w-7xl items-center gap-3 px-4 sm:px-6 md:h-[84px] md:gap-6">' +
+          '<a href="' + D.url("index.html") + '" class="wordmark" aria-label="' + esc(S.name) + ' 홈"><img class="brand-leaf" src="' + D.url("assets/images/home/leaf.webp") + '" alt="" width="30" height="38" decoding="async"><span>' + brandWord() + '</span></a>' +
+          '<span class="brand-description hidden xl:block">' + esc(S.tagline) + '</span>' +
+          '<nav class="main-nav ml-auto hidden items-center gap-0.5 md:flex" aria-label="주요 메뉴">' +
             NAV.filter(function (n) { return n.desktop !== false; }).map(function (n) {
               var active = n.key === page;
-              return '<a href="' + D.url(n.href) + '" class="rounded-lg px-3 py-2 text-[14px] font-semibold transition ' +
-                (active ? "bg-brand-50 text-brand-700" : "text-ink-600 hover:bg-cream-200 hover:text-ink-900") + '"' + (active ? ' aria-current="page"' : "") + '>' +
-                esc(n.label) + (n.hot ? '<span class="ml-1 rounded-full bg-peach-100 px-1.5 py-0.5 text-[10px] font-bold text-orange-700">HOT</span>' : "") + '</a>';
+              return '<a href="' + D.url(n.href) + '" class="' + (active ? "active" : "") + '"' + (active ? ' aria-current="page"' : "") + '>' + esc(n.label) + '</a>';
             }).join("") +
           '</nav>' +
-          '<div class="ml-auto flex items-center gap-2">' +
-            '<button type="button" id="open-search" class="hidden h-10 w-64 items-center gap-2 rounded-full border border-ink-200 bg-cream-100 px-4 text-sm text-ink-400 transition hover:border-brand-300 hover:bg-white sm:flex lg:w-72" aria-label="성분 검색 열기"><i data-lucide="search" class="h-4 w-4 text-ink-400"></i><span class="truncate">원하는 영양제 성분을 검색해보세요</span><kbd class="ml-auto hidden rounded border border-ink-200 bg-white px-1.5 text-[10px] font-semibold text-ink-400 lg:inline">/</kbd></button>' +
-            '<button type="button" id="open-search-m" class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-ink-200 bg-white text-ink-700 sm:hidden" aria-label="성분 검색 열기"><i data-lucide="search" class="h-5 w-5"></i></button>' +
-            '<button type="button" id="open-menu" class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-ink-200 bg-white text-ink-700 md:hidden" aria-label="메뉴 열기" aria-expanded="false" aria-controls="mobile-menu"><i data-lucide="menu" class="h-5 w-5"></i></button>' +
+          '<div class="header-actions ml-auto flex items-center gap-1 md:ml-0 md:gap-2">' +
+            '<button type="button" id="open-search" class="icon-button" aria-label="성분 검색 열기" title="검색 ( / )"><i data-lucide="search"></i></button>' +
+            '<a href="' + D.url("compatibility.html") + '" class="header-cta hidden sm:inline-flex">궁합 체크 <i data-lucide="arrow-right"></i></a>' +
+            '<button type="button" id="open-menu" class="icon-button md:hidden" aria-label="메뉴 열기" aria-expanded="false" aria-controls="mobile-menu"><i data-lucide="menu"></i></button>' +
           '</div>' +
         '</div>' +
         '<div id="mobile-menu" class="mobile-menu md:hidden border-t border-ink-100 bg-white"><nav class="mx-auto max-w-7xl px-4 py-2" aria-label="모바일 메뉴">' +
@@ -82,11 +77,11 @@
     if (!el) return;
     var A = window.AFFILIATE || {};
     el.innerHTML =
-      '<footer class="mt-20 border-t border-ink-100 bg-cream-100">' +
+      '<footer class="mt-20 border-t border-[#e8eee1] bg-[#f8faf5]">' +
         '<div class="mx-auto max-w-7xl px-4 py-12 sm:px-6">' +
           '<div class="grid gap-10 md:grid-cols-12">' +
             '<div class="md:col-span-5">' +
-              '<div class="flex items-center gap-2.5">' + LOGO + '<span class="text-lg font-extrabold text-ink-900">' + brandWord() + '</span></div>' +
+              '<a href="' + D.url("index.html") + '" class="wordmark wordmark-sm" aria-label="' + esc(S.name) + ' 홈"><img class="brand-leaf" src="' + D.url("assets/images/home/leaf.webp") + '" alt="" width="24" height="30" loading="lazy" decoding="async"><span>' + brandWord() + '</span></a>' +
               '<p class="mt-4 text-sm leading-relaxed text-ink-500">' + esc(S.description) + '</p>' +
               '<p class="mt-4 text-xs leading-relaxed text-ink-400" id="footer-updated"></p>' +
             '</div>' +

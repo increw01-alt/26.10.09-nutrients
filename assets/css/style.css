@@ -66,6 +66,7 @@ body { background: var(--bg); color: var(--ink); font-family: "Pretendard Variab
 /* 모바일 메뉴 애니메이션 */
 .mobile-menu { transition: max-height .25s ease, opacity .2s ease; max-height: 0; opacity: 0; overflow: hidden; }
 .mobile-menu.open { max-height: 480px; opacity: 1; }
+.mobile-menu:not(.open) { border-top-width: 0; }
 
 /* 스켈레톤 */
 .skeleton { background: linear-gradient(90deg, #eef0f1 25%, #f7f8f8 37%, #eef0f1 63%); background-size: 400% 100%; animation: shimmer 1.4s ease infinite; border-radius: .75rem; }
@@ -102,7 +103,7 @@ body.has-tabbar { padding-bottom: 64px; }
 .cat-card svg { width: 56px; height: 56px; }
 
 /* 성분 상세 탭 */
-.detail-tabs { position: sticky; top: 64px; z-index: 30; background: rgba(251,250,246,.92); backdrop-filter: blur(8px); border-bottom: 1px solid #efeeea; }
+.detail-tabs { position: sticky; top: var(--header-h, 64px); z-index: 30; background: rgba(251,250,246,.92); backdrop-filter: blur(8px); border-bottom: 1px solid #efeeea; }
 .detail-tabs a { display: inline-block; padding: .85rem .25rem; margin-right: 1.25rem; font-size: .9rem; font-weight: 700; color: #8f8b82; border-bottom: 2px solid transparent; white-space: nowrap; }
 .detail-tabs a.active { color: #2f6538; border-bottom-color: #3a7d44; }
 .kv-table { display: grid; grid-template-columns: 7rem 1fr; }
@@ -134,3 +135,19 @@ body.has-tabbar { padding-bottom: 64px; }
 .verdict .thumb { background: rgba(255,255,255,.92); box-shadow: 0 0 0 2px rgba(255,255,255,.35); }
 .go-results { position: fixed; left: 50%; bottom: 78px; z-index: 39; transform: translateX(-50%); }
 @media (min-width: 768px) { .go-results { bottom: 24px; } }
+
+/* 헤더·푸터 워드마크 (실사형 메인 리뉴얼과 통일) */
+:root { --header-h: 68px; }
+@media (min-width: 768px) { :root { --header-h: 84px; } }
+.wordmark { display: inline-flex; align-items: center; gap: 8px; font-size: 26px; font-weight: 850; letter-spacing: -1.5px; white-space: nowrap; line-height: 1; color: #19241f; flex: none; }
+.wordmark small { font-size: 20px; font-weight: 850; color: #426e45; letter-spacing: -.8px; }
+.brand-leaf { width: 27px; height: 34px; object-fit: contain; transform: rotate(26deg); filter: saturate(.77); }
+@media (min-width: 768px) { .wordmark { font-size: 29px; gap: 9px; } .wordmark small { font-size: 22px; } .brand-leaf { width: 30px; height: 38px; } }
+.wordmark-sm, .wordmark-sm.wordmark { font-size: 23px; letter-spacing: -1.2px; } .wordmark-sm small { font-size: 18px; } .wordmark-sm .brand-leaf { width: 24px; height: 30px; }
+.brand-description { font-size: 11px; line-height: 1.55; color: #667465; white-space: nowrap; }
+.main-nav a { font-size: 13px; font-weight: 650; color: #19241f; padding: .5rem .65rem; border-radius: .5rem; white-space: nowrap; transition: color .15s, background .15s; }
+.main-nav a:hover { color: #246d4b; } .main-nav a.active { color: #246d4b; background: #eff5ec; }
+.icon-button { width: 42px; height: 42px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; color: #19241f; transition: background .15s; }
+.icon-button:hover { background: #eff5ec; } .icon-button svg { width: 22px; height: 22px; }
+.header-cta { align-items: center; gap: 7px; min-height: 39px; padding: 9px 17px; border-radius: 999px; font-size: 12px; font-weight: 700; color: #fff; background: linear-gradient(120deg, #367e55, #206742); border: 1px solid #286c45; box-shadow: inset 0 1px 1px #ffffff21, 0 4px 9px #31563a0c; white-space: nowrap; transition: background .18s, transform .18s; }
+.header-cta:hover { background: #175136; transform: translateY(-1px); } .header-cta svg { width: 15px; height: 15px; }

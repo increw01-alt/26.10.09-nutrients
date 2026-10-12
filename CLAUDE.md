@@ -20,7 +20,7 @@ python scripts/fetch_news.py / fetch_materials.py / fetch_products.py   # API �
 
 ## 구조 요약
 - `assets/js/` : `config.js`(설정) · `data.js`(JSON 로더·검색) · `affiliate.js`(쇼핑 링크) · `layout.js`(헤더·푸터·검색 오버레이·메뉴·모바일 탭 바) · `schedule.js`(복용 시간표) · `illus.js`(병·캡슐 SVG 일러스트, 사진 대신 사용) · `pages/*.js`(페이지별)
-- 디자인 체계: 포레스트 그린(`brand-*`)·크림(`cream-*`)·피치(`peach-*`) 색상은 `assets/js/tailwind.config.js`, 공통 스타일은 `assets/css/style.css`. 사진 대신 `Illus` 헬퍼의 SVG를 쓴다.
+- 디자인 체계: 포레스트 그린(`brand-*`)·크림(`cream-*`)·피치(`peach-*`) 색상은 `assets/js/tailwind.config.js`, 공통 스타일(헤더 워드마크·탭·카드)은 `assets/css/style.css`. 메인(`index.html`)은 실사형 시안을 옮긴 전용 스타일 `assets/css/home.css`(모든 규칙이 `.home` 아래로 한정)와 `assets/images/home/*.webp` 연출 이미지를 쓰고, 내부 페이지는 `Illus` 헬퍼의 SVG 일러스트를 쓴다. 헤더 높이는 `--header-h`(모바일 68px·데스크톱 84px) 변수로 관리하며 고정 탭(`.detail-tabs`)이 이를 참조한다.
 - `data/` : 성분·궁합·가이드(수동) / 제품·원료·뉴스(자동). 제품은 목록(`products.json`) + 성분별 상위(`products/top/`) + 상세 조각(`products/detail/`)
 - `scripts/` : 수집·빌드 파이썬. `fetch_products.py` 의 `NUTRIENT_RULES`·`HERBAL_RULES`·`EXCIPIENT_RE` 가 제품-성분 매칭 규칙
 - 현황·이력·다음 할 일: `docs/PROJECT-STATUS.md`

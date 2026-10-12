@@ -2,7 +2,8 @@
 <html lang="ko" data-root="./">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#246d4b">
   <title>영양제.kr — 영양제 추천 성분 · 영양제 궁합 · 먹는 시간 가이드</title>
   <meta name="description" content="영양제 추천은 제품이 아니라 성분부터. 비타민D·오메가3·유산균 등 37가지 성분의 효능·권장량·주의사항, 같이 먹으면 안 되는 영양제 궁합, 먹는 시간과 순서, 고민별·대상별 영양제 가이드와 식약처 건강기능식품 정보를 한곳에서 확인하세요.">
   <meta name="robots" content="index,follow">
@@ -10,7 +11,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="영양제.kr">
   <meta property="og:title" content="영양제.kr — 영양제 추천 성분 · 궁합 · 먹는 시간 가이드">
-  <meta property="og:description" content="영양제 성분별 효능·권장량과 영양제 간 궁합을 쉽게 확인하세요. 하루 복용 시간표까지 자동으로 만들어 드립니다.">
+  <meta property="og:description" content="내가 먹는 영양제, 같이 먹어도 될까? 성분별 효능·권장량과 영양제 궁합, 하루 복용 시간표까지 한곳에서 확인하세요.">
   <meta property="og:url" content="https://xn--og5b1hx9c.kr/index.html">
   <meta property="og:image" content="assets/images/og-default.svg">
   <meta name="twitter:card" content="summary_large_image">
@@ -22,21 +23,23 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="assets/js/tailwind.config.js"></script>
   <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/home.css">
+  <link rel="preload" as="image" href="assets/images/home/hero-bottles.webp">
   <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js" defer></script>
   <script src="assets/js/config.js"></script>
   <script src="assets/js/data.js"></script>
   <script src="assets/js/affiliate.js"></script>
   <script src="assets/js/layout.js"></script>
-  <script src="assets/js/illus.js"></script>
   <script src="assets/js/pages/home.js"></script>
   <script type="application/ld+json">
   {"@context":"https://schema.org","@graph":[
     {"@type":"WebSite","name":"영양제.kr","url":"https://xn--og5b1hx9c.kr/","description":"영양제 성분 정보와 영양제 간 궁합, 복용 시간표를 제공하는 정보 사이트","potentialAction":{"@type":"SearchAction","target":"https://xn--og5b1hx9c.kr/ingredients.html?q={search_term_string}","query-input":"required name=search_term_string"}},
     {"@type":"Organization","name":"영양제.kr","url":"https://xn--og5b1hx9c.kr/","logo":"https://xn--og5b1hx9c.kr/assets/images/favicon.svg"},
     {"@type":"FAQPage","mainEntity":[
-      {"@type":"Question","name":"영양제 궁합은 왜 중요한가요?","acceptedAnswer":{"@type":"Answer","text":"칼슘과 철분처럼 같은 시간에 먹으면 서로 흡수를 방해하는 조합이 있고, 비타민D와 칼슘처럼 함께 먹어야 효과가 커지는 조합도 있습니다. 섭취 시간만 나눠도 같은 영양제로 더 나은 효과를 얻을 수 있습니다."}},
-      {"@type":"Question","name":"영양제는 공복에 먹나요, 식후에 먹나요?","acceptedAnswer":{"@type":"Answer","text":"지용성 성분(비타민A·D·E·K, 오메가3, 루테인, 코엔자임Q10)은 지방이 포함된 식사 직후가 흡수에 유리합니다. 철분·유산균·아미노산 계열은 공복이 유리한 경우가 많고, 위장 부담이 있는 미네랄은 식후를 권장합니다."}},
-      {"@type":"Question","name":"이 사이트의 제품 정보는 어디서 가져오나요?","acceptedAnswer":{"@type":"Answer","text":"식품의약품안전처 식품안전나라의 건강기능식품 품목제조신고 공공데이터를 주기적으로 수집해 성분별로 정리합니다. 구매 링크는 쿠팡·11번가·G마켓 등 쇼핑몰 검색 결과로 연결됩니다."}}
+      {"@type":"Question","name":"영양제 궁합은 왜 중요한가요?","acceptedAnswer":{"@type":"Answer","text":"칼슘과 철분처럼 같은 시간에 먹으면 서로 흡수를 방해하는 조합이 있고, 비타민D와 칼슘처럼 함께 먹으면 도움이 되는 조합도 있습니다. 섭취 시간만 나눠도 같은 영양제를 더 잘 활용할 수 있습니다. 궁합 체크에서 조합별 결과와 간격·용량 주의 사항을 확인할 수 있으며, 일반 성인의 일반적인 용량을 기준으로 한 참고 정보입니다."}},
+      {"@type":"Question","name":"영양제는 공복에 먹나요, 식후에 먹나요?","acceptedAnswer":{"@type":"Answer","text":"지용성 성분(비타민A·D·E·K, 오메가3, 루테인, 코엔자임Q10)은 지방이 포함된 식사 직후가 흡수에 유리합니다. 철분·유산균·아미노산 계열은 공복이 유리한 경우가 많고, 위장 부담이 있는 미네랄은 식후를 권장합니다. 성분 사전의 섭취 시간은 일반적인 안내이며 제품 라벨의 섭취 방법이 우선입니다."}},
+      {"@type":"Question","name":"이 사이트의 제품 정보는 어디서 가져오나요?","acceptedAnswer":{"@type":"Answer","text":"식품의약품안전처 식품안전나라의 건강기능식품 품목제조신고 공공데이터를 주기적으로 수집해 성분별로 정리합니다. 구매 링크는 쿠팡·11번가·G마켓 등 쇼핑몰 검색 결과로 연결되며, 수집·갱신 방식은 소개 페이지에서 확인할 수 있습니다."}},
+      {"@type":"Question","name":"약을 먹고 있는데 영양제를 먹어도 되나요?","acceptedAnswer":{"@type":"Answer","text":"일부 성분은 처방약의 흡수나 작용에 영향을 줄 수 있습니다. 이 사이트의 정보는 의학적 진단·치료·처방을 대신하지 않으므로, 약을 복용 중이라면 영양제를 시작하기 전에 반드시 의사·약사와 상담하세요. 약과 영양제 가이드에서 성분별로 확인할 점을 정리해 두었습니다."}}
     ]}
   ]}
   </script>
@@ -48,210 +51,219 @@
   <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:font-bold focus:text-brand-700">본문으로 건너뛰기</a>
   <div id="site-header"></div>
 
-  <main id="main">
-    <!-- Hero -->
-    <section class="bg-mesh">
-      <div class="mx-auto max-w-7xl px-4 pb-10 pt-10 sm:px-6 sm:pt-16 lg:pb-16">
-        <div class="grid items-center gap-10 lg:grid-cols-12">
-          <div class="lg:col-span-6">
-            <p class="text-sm font-bold text-brand-700">오늘도 더 건강한 하루</p>
-            <h1 class="mt-3 text-[2.1rem] font-extrabold leading-[1.2] tracking-tight text-ink-900 sm:text-5xl lg:text-[3.25rem]">영양제로<br>건강한 변화를 시작하세요.</h1>
-            <p class="mt-5 max-w-lg text-[15px] leading-relaxed text-ink-600 sm:text-lg">나에게 맞는 영양제 성분을 찾고, 같이 먹어도 되는지 궁합을 확인하고, 먹는 시간까지 정리해 꾸준한 관리로 더 나은 일상을 만들어보세요.</p>
-            <div class="mt-7 flex flex-wrap gap-3">
-              <a href="ingredients.html" class="inline-flex items-center gap-2 rounded-full bg-brand-600 px-6 py-3.5 text-[15px] font-bold text-white shadow-lift transition hover:bg-brand-700">지금 영양제 둘러보기 <i data-lucide="arrow-right" class="h-4 w-4"></i></a>
-              <a href="compatibility.html" class="inline-flex items-center gap-2 rounded-full border border-ink-200 bg-white px-6 py-3.5 text-[15px] font-bold text-ink-800 transition hover:border-brand-300 hover:text-brand-700"><i data-lucide="heart-handshake" class="h-4 w-4 text-brand-600"></i>궁합 체크하기</a>
+  <main id="main" class="home">
+    <!-- Hero: 실사 병 이미지 + 성분 검색 + 빠른 궁합 체크 -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-atmosphere" aria-hidden="true">
+        <img class="leaf-decor leaf-1" src="assets/images/home/leaf.webp" alt="" width="65" height="82" decoding="async">
+        <img class="leaf-decor leaf-2" src="assets/images/home/leaf.webp" alt="" width="65" height="82" decoding="async">
+        <img class="leaf-decor leaf-3" src="assets/images/home/leaf.webp" alt="" width="65" height="82" decoding="async">
+        <img class="leaf-decor leaf-4" src="assets/images/home/leaf.webp" alt="" width="65" height="82" decoding="async">
+        <img class="leaf-decor leaf-5" src="assets/images/home/leaf.webp" alt="" width="65" height="82" decoding="async">
+      </div>
+      <div class="container hero-main">
+        <div class="hero-copy">
+          <p class="hero-eyebrow"><i data-lucide="leaf" class="icon"></i> 영양제 정보 · 궁합 · 복용 시간표</p>
+          <h1 id="hero-title">내가 먹는 영양제,<br><em>같이 먹어도 될까?</em></h1>
+          <p class="hero-description"><strong>영양제 추천은 제품이 아니라 성분부터.</strong>성분별 효능·권장량, 같이 먹으면 안 되는 조합,<br class="desktop-break">먹는 시간과 순서, 고민별 가이드까지 한곳에서 확인하세요.</p>
+          <label class="search-label" for="ingredient-search">성분 검색</label>
+          <div class="search-area" id="search-area">
+            <form action="ingredients.html" class="search-form" id="search-form" method="get" role="search">
+              <i data-lucide="search" class="icon"></i>
+              <input id="ingredient-search" name="q" type="search" role="combobox" aria-autocomplete="list" aria-controls="search-list" aria-describedby="search-help" aria-expanded="false" autocomplete="off" placeholder="성분명 또는 고민으로 검색 (예: 마그네슘, 눈 건강, 피로)">
+              <button type="submit" aria-label="성분 및 가이드 검색"><i data-lucide="arrow-right" class="icon"></i></button>
+            </form>
+            <span class="sr-only" id="search-help">성분 사전과 가이드를 검색합니다. 결과를 고르면 해당 페이지로 이동합니다.</span>
+            <div class="search-results" id="search-results" hidden>
+              <ul class="search-list" id="search-list" role="listbox" aria-label="검색 결과"></ul>
+              <div class="search-result-footer"><span>성분 사전·가이드 검색</span><a href="ingredients.html">전체 성분 사전 →</a></div>
             </div>
-            <ul class="mt-7 flex flex-wrap gap-x-5 gap-y-2 text-sm text-ink-500">
-              <li class="inline-flex items-center gap-1.5"><i data-lucide="badge-check" class="h-4 w-4 text-brand-600"></i>식약처 인정 기능성 기준</li>
-              <li class="inline-flex items-center gap-1.5"><i data-lucide="refresh-cw" class="h-4 w-4 text-brand-600"></i>제품·뉴스 매일 자동 갱신</li>
-              <li class="inline-flex items-center gap-1.5"><i data-lucide="shield" class="h-4 w-4 text-brand-600"></i>특정 제품 보증 없는 성분 중심 정보</li>
-            </ul>
+            <div class="sr-only" id="search-status" role="status" aria-live="polite"></div>
           </div>
-          <div class="relative lg:col-span-6">
-            <div class="hero-plate relative mx-auto max-w-xl rounded-4xl">
-              <p class="font-hand mb-1 text-center text-2xl text-brand-700 sm:absolute sm:right-10 sm:top-4 sm:mb-0 sm:rotate-[-6deg] sm:text-3xl">작은 습관이 큰 변화를 만듭니다.</p>
-              <img src="assets/images/hero-bottles.svg" alt="종합비타민, 오메가3, 비타민D, 마그네슘 영양제 병과 잎 일러스트" width="640" height="520" class="w-full" loading="eager" decoding="async">
+          <div class="popular">
+            <span class="popular-label">인기 검색</span>
+            <a class="chip" href="i/vitamin-d.html">비타민D</a>
+            <a class="chip" href="i/omega-3.html">오메가3</a>
+            <a class="chip" href="i/magnesium.html">마그네슘</a>
+            <a class="chip" href="i/probiotics.html">유산균</a>
+            <a class="chip" href="compatibility.html?items=calcium,iron">칼슘+철분</a>
+          </div>
+          <a class="button primary hero-cta" href="#quick-check">지금 궁합 체크하기 <i data-lucide="arrow-right" class="icon"></i></a>
+        </div>
+        <p class="hero-whisper" aria-hidden="true">작은 습관이<br>큰 변화를 만듭니다.</p>
+        <div class="hero-photo" aria-hidden="true">
+          <img class="bottle-scene" src="assets/images/home/hero-bottles.webp" alt="" width="364" height="286" decoding="async" fetchpriority="high">
+        </div>
+        <div class="checker-wrap" id="quick-check">
+          <section class="checker" aria-labelledby="checker-title">
+            <div class="checker-heading">
+              <img class="checker-leaf" src="assets/images/home/leaf.webp" alt="" width="29" height="34" decoding="async">
+              <h2 id="checker-title">영양제 궁합 빠른 체크</h2>
             </div>
-          </div>
+            <p class="checker-intro">두 가지 성분을 고르면 바로 결과를 보여드려요</p>
+            <form action="compatibility.html" id="compatibility-form" method="get" novalidate>
+              <div class="pair-fields">
+                <div class="pair-field">
+                  <label for="first-ingredient"><span class="field-number">01</span> 첫 번째 영양제</label>
+                  <div class="select-wrap">
+                    <i data-lucide="pill" class="icon"></i>
+                    <select id="first-ingredient" aria-describedby="pair-feedback" aria-required="true"><option value="">선택하기</option></select>
+                    <i data-lucide="chevron-down" class="icon"></i>
+                  </div>
+                </div>
+                <div class="pair-plus" aria-hidden="true"><i data-lucide="plus" class="icon"></i></div>
+                <div class="pair-field">
+                  <label for="second-ingredient"><span class="field-number">02</span> 두 번째 영양제</label>
+                  <div class="select-wrap">
+                    <i data-lucide="pill" class="icon"></i>
+                    <select id="second-ingredient" aria-describedby="pair-feedback" aria-required="true"><option value="">선택하기</option></select>
+                    <i data-lucide="chevron-down" class="icon"></i>
+                  </div>
+                </div>
+              </div>
+              <button class="button primary check-submit" type="submit"><span>궁합 확인하기</span><i data-lucide="arrow-right" class="icon"></i></button>
+              <p class="form-feedback" id="pair-feedback" role="status" aria-live="polite">선택한 성분의 자세한 결과는 궁합 페이지에서 확인합니다.</p>
+            </form>
+            <p class="checker-footer">3개 이상 한꺼번에 보려면<br class="checker-break"> <a href="compatibility.html">궁합 체크 페이지에서 <i data-lucide="arrow-right" class="icon"></i></a></p>
+          </section>
         </div>
       </div>
     </section>
 
-    <!-- 특징 4가지 -->
-    <section class="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-      <ul class="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <li class="flex items-center gap-3 rounded-2xl bg-white p-4 shadow-card"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-brand-50 text-brand-700"><i data-lucide="book-open" class="h-5 w-5"></i></span><div><p class="font-bold text-ink-900">다양한 영양제 성분</p><p class="text-xs text-ink-500"><span id="stat-ingredients">37</span>개 성분 효능·권장량 정리</p></div></li>
-        <li class="flex items-center gap-3 rounded-2xl bg-white p-4 shadow-card"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-brand-50 text-brand-700"><i data-lucide="heart-handshake" class="h-5 w-5"></i></span><div><p class="font-bold text-ink-900">나에게 맞는 조합</p><p class="text-xs text-ink-500"><span id="stat-pairs">97</span>쌍 궁합·복용 시간표</p></div></li>
-        <li class="flex items-center gap-3 rounded-2xl bg-white p-4 shadow-card"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-brand-50 text-brand-700"><i data-lucide="database" class="h-5 w-5"></i></span><div><p class="font-bold text-ink-900">식약처 신고 제품</p><p class="text-xs text-ink-500"><span id="stat-products">–</span>건 성분별 검색</p></div></li>
-        <li class="flex items-center gap-3 rounded-2xl bg-white p-4 shadow-card"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-brand-50 text-brand-700"><i data-lucide="shopping-bag" class="h-5 w-5"></i></span><div><p class="font-bold text-ink-900">간편한 구매 연결</p><p class="text-xs text-ink-500">쿠팡·11번가·G마켓 바로가기</p></div></li>
-      </ul>
-    </section>
-
-    <!-- 카테고리 -->
-    <section class="mx-auto max-w-7xl px-4 py-10 sm:px-6">
-      <div class="flex items-end justify-between gap-4">
-        <h2 class="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-[1.7rem]">카테고리로 더 쉽게 찾아보세요</h2>
-        <a href="ingredients.html" class="inline-flex items-center gap-1 text-sm font-semibold text-ink-500 hover:text-brand-700">전체보기 <i data-lucide="chevron-right" class="h-4 w-4"></i></a>
-      </div>
-      <div id="category-grid" class="mt-5 grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-8"><div class="skeleton h-28"></div><div class="skeleton h-28"></div><div class="skeleton h-28"></div><div class="skeleton h-28"></div></div>
-    </section>
-
-    <!-- 빠른 궁합 체크 -->
-    <section class="mx-auto max-w-7xl px-4 py-6 sm:px-6">
-      <div class="grid gap-6 rounded-4xl bg-brand-50 p-6 sm:p-10 lg:grid-cols-12 lg:items-center">
-        <div class="lg:col-span-5">
-          <p class="text-sm font-bold text-brand-700">영양제 궁합 빠른 체크</p>
-          <h2 class="mt-2 text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">같이 먹어도 될까?<br>두 가지만 골라 보세요.</h2>
-          <p class="mt-3 text-ink-600">함께 먹으면 좋은 조합인지, 시간을 띄워야 하는지 이유와 함께 바로 알려드립니다. 3개 이상은 <a class="font-bold text-brand-700 underline" href="compatibility.html">궁합 체크 페이지</a>에서 한 번에 확인하세요.</p>
-        </div>
-        <form id="quick-form" class="grid gap-3 rounded-3xl bg-white p-5 shadow-card sm:grid-cols-[1fr_auto_1fr_auto] sm:items-end lg:col-span-7">
-          <div><label for="quick-a" class="mb-1 block text-xs font-bold text-ink-500">첫 번째 영양제</label><select id="quick-a" class="w-full rounded-xl border border-ink-200 bg-cream-50 px-3 py-3 text-sm font-semibold text-ink-800 outline-none focus:border-brand-400 focus:ring-4 focus:ring-brand-100"><option>불러오는 중…</option></select></div>
-          <div class="hidden justify-center pb-3 text-ink-300 sm:flex"><i data-lucide="plus" class="h-5 w-5"></i></div>
-          <div><label for="quick-b" class="mb-1 block text-xs font-bold text-ink-500">두 번째 영양제</label><select id="quick-b" class="w-full rounded-xl border border-ink-200 bg-cream-50 px-3 py-3 text-sm font-semibold text-ink-800 outline-none focus:border-brand-400 focus:ring-4 focus:ring-brand-100"><option>불러오는 중…</option></select></div>
-          <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-5 py-3 text-[15px] font-bold text-white shadow-lift transition hover:bg-brand-700">확인 <i data-lucide="arrow-right" class="h-4 w-4"></i></button>
-        </form>
-      </div>
-    </section>
-
-    <!-- 추천 성분 -->
-    <section class="mx-auto max-w-7xl px-4 py-10 sm:px-6">
-      <div class="flex items-end justify-between gap-4">
-        <div><h2 class="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-[1.7rem]">많이 찾는 영양제 성분</h2><p class="mt-1 text-sm text-ink-500">특정 제품이 아니라 성분 기준으로 효능·권장량·궁합을 정리했습니다.</p></div>
-        <a href="ingredients.html" class="inline-flex items-center gap-1 text-sm font-semibold text-ink-500 hover:text-brand-700">전체보기 <i data-lucide="chevron-right" class="h-4 w-4"></i></a>
-      </div>
-      <div id="popular-ingredients" class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
-        <div class="skeleton aspect-[3/4]"></div><div class="skeleton aspect-[3/4]"></div><div class="skeleton aspect-[3/4]"></div><div class="skeleton aspect-[3/4]"></div>
-      </div>
-    </section>
-
-    <!-- 루틴 배너 -->
-    <section class="mx-auto max-w-7xl px-4 py-6 sm:px-6">
-      <div class="flex flex-col items-start justify-between gap-5 rounded-4xl bg-peach-100 px-6 py-7 sm:flex-row sm:items-center sm:px-10">
-        <div><h2 class="text-xl font-extrabold tracking-tight text-ink-900 sm:text-2xl">나만의 복용 시간표를 만들어보세요.</h2><p class="mt-1 text-ink-600">먹고 있는 영양제를 모두 고르면 아침 공복·식후·취침 전으로 간격까지 고려해 정리해 드립니다.</p></div>
-        <a href="compatibility.html" class="inline-flex shrink-0 items-center gap-2 rounded-full bg-brand-600 px-6 py-3.5 text-[15px] font-bold text-white shadow-lift transition hover:bg-brand-700">복용 시간표 만들기 <i data-lucide="arrow-right" class="h-4 w-4"></i></a>
-      </div>
-    </section>
-
-    <!-- 고민별·대상별 가이드 -->
-    <section class="mx-auto max-w-7xl px-4 py-12 sm:px-6">
-      <div class="flex items-end justify-between gap-4">
-        <div><p class="text-sm font-bold text-brand-700">영양제 추천 가이드</p><h2 class="mt-1 text-2xl font-extrabold tracking-tight text-ink-900 sm:text-[1.7rem]">고민과 상황에서 출발하기</h2><p class="mt-2 text-ink-500">고민을 고르면 핵심 성분·조합·먹는 시간이 정리되어 있습니다.</p></div>
-        <a href="guides.html" class="hidden items-center gap-1 text-sm font-semibold text-ink-500 hover:text-brand-700 sm:inline-flex">전체 가이드 <i data-lucide="chevron-right" class="h-4 w-4"></i></a>
-      </div>
-      <h3 class="mt-6 text-xs font-bold uppercase tracking-wide text-ink-400">고민별</h3>
-      <div class="mt-2 flex flex-wrap gap-2">
-        <a href="guide/fatigue.html" class="chip"><i data-lucide="zap" class="h-3.5 w-3.5"></i>피로회복</a>
-        <a href="guide/eye-health.html" class="chip"><i data-lucide="eye" class="h-3.5 w-3.5"></i>눈 건강</a>
-        <a href="guide/liver-health.html" class="chip"><i data-lucide="leaf" class="h-3.5 w-3.5"></i>간 건강</a>
-        <a href="guide/joint-health.html" class="chip"><i data-lucide="activity" class="h-3.5 w-3.5"></i>관절</a>
-        <a href="guide/sleep.html" class="chip"><i data-lucide="moon" class="h-3.5 w-3.5"></i>수면</a>
-        <a href="guide/immunity.html" class="chip"><i data-lucide="shield-check" class="h-3.5 w-3.5"></i>면역력</a>
-        <a href="guide/hair-health.html" class="chip"><i data-lucide="sparkles" class="h-3.5 w-3.5"></i>모발</a>
-        <a href="guide/skin-health.html" class="chip"><i data-lucide="sparkles" class="h-3.5 w-3.5"></i>피부</a>
-        <a href="guide/menopause.html" class="chip"><i data-lucide="heart" class="h-3.5 w-3.5"></i>갱년기</a>
-        <a href="guide/blood-circulation.html" class="chip"><i data-lucide="heart-pulse" class="h-3.5 w-3.5"></i>혈행</a>
-        <a href="guide/gut-health.html" class="chip"><i data-lucide="microscope" class="h-3.5 w-3.5"></i>장 건강</a>
-        <a href="guide/diet.html" class="chip"><i data-lucide="scale" class="h-3.5 w-3.5"></i>다이어트</a>
-      </div>
-      <h3 class="mt-5 text-xs font-bold uppercase tracking-wide text-ink-400">대상별</h3>
-      <div class="mt-2 flex flex-wrap gap-2">
-        <a href="guide/20s.html" class="chip">20대</a>
-        <a href="guide/30s-men.html" class="chip">30대 남자</a>
-        <a href="guide/40s-women.html" class="chip">40대 여성</a>
-        <a href="guide/50s-plus.html" class="chip">50대 이상</a>
-        <a href="guide/parents-gift.html" class="chip">부모님 선물</a>
-        <a href="guide/pregnancy.html" class="chip">임산부·임신 준비</a>
-        <a href="guide/students.html" class="chip">수험생</a>
-        <a href="guide/kids.html" class="chip">어린이</a>
-        <a href="guide/office-workers.html" class="chip">직장인</a>
-      </div>
-      <h3 class="mt-5 text-xs font-bold uppercase tracking-wide text-ink-400">복용법·안전</h3>
-      <div class="mt-2 flex flex-wrap gap-2">
-        <a href="guide/when-to-take.html" class="chip"><i data-lucide="clock" class="h-3.5 w-3.5"></i>먹는 시간</a>
-        <a href="guide/how-to-combine.html" class="chip"><i data-lucide="list-checks" class="h-3.5 w-3.5"></i>조합 원칙</a>
-        <a href="guide/do-not-take-together.html" class="chip"><i data-lucide="octagon-alert" class="h-3.5 w-3.5"></i>같이 먹으면 안되는 영양제</a>
-        <a href="guide/empty-stomach.html" class="chip"><i data-lucide="sunrise" class="h-3.5 w-3.5"></i>공복 영양제</a>
-        <a href="guide/daily-limit.html" class="chip"><i data-lucide="flask-conical" class="h-3.5 w-3.5"></i>권장량·과다복용</a>
-        <a href="guide/storage-expiry.html" class="chip"><i data-lucide="package" class="h-3.5 w-3.5"></i>유통기한·보관</a>
-        <a href="guide/with-medication.html" class="chip"><i data-lucide="stethoscope" class="h-3.5 w-3.5"></i>약과 영양제</a>
-      </div>
-      <a href="guides.html" class="mt-5 inline-flex items-center gap-1 text-sm font-bold text-brand-700 sm:hidden">전체 가이드 보기 <i data-lucide="arrow-right" class="h-4 w-4"></i></a>
-    </section>
-
-    <!-- 인기 궁합 -->
-    <section class="bg-cream">
-      <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6">
-        <div class="flex items-end justify-between gap-4">
-          <div><p class="text-sm font-bold text-brand-700">궁합 체크</p><h2 class="mt-1 text-2xl font-extrabold tracking-tight text-ink-900 sm:text-[1.7rem]">꼭 알아야 할 영양제 궁합</h2><p class="mt-2 text-ink-500">같이 먹으면 좋은 조합과 시간을 나눠야 하는 조합을 골라 담았습니다.</p></div>
-          <a href="compatibility.html" class="hidden items-center gap-1 text-sm font-semibold text-ink-500 hover:text-brand-700 sm:inline-flex">직접 체크하기 <i data-lucide="chevron-right" class="h-4 w-4"></i></a>
-        </div>
-        <div class="mt-5 flex flex-wrap gap-2 text-xs font-bold">
-          <span class="badge badge-synergy"><i data-lucide="heart-handshake" class="h-3.5 w-3.5"></i>좋은 궁합</span>
-          <span class="badge badge-caution"><i data-lucide="clock-alert" class="h-3.5 w-3.5"></i>시간 간격·용량 주의</span>
-          <span class="badge badge-avoid"><i data-lucide="octagon-alert" class="h-3.5 w-3.5"></i>피해야 할 조합</span>
-        </div>
-        <div id="featured-pairs" class="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <div class="skeleton h-44"></div><div class="skeleton h-44"></div><div class="skeleton h-44"></div><div class="skeleton h-44"></div>
-        </div>
-      </div>
-    </section>
+    <!-- 주요 서비스 -->
+    <nav class="container feature-strip" aria-label="주요 서비스">
+      <a class="feature" href="ingredients.html"><span class="feature-icon"><i data-lucide="leaf" class="icon"></i></span><span><strong>성분 사전</strong><small>성분별 정보 확인</small></span><i data-lucide="arrow-right" class="icon"></i></a>
+      <a class="feature" href="compatibility.html"><span class="feature-icon"><i data-lucide="link" class="icon"></i></span><span><strong>궁합 체크</strong><small>같이 먹는 조합 확인</small></span><i data-lucide="arrow-right" class="icon"></i></a>
+      <a class="feature" href="guide/when-to-take.html"><span class="feature-icon"><i data-lucide="calendar-days" class="icon"></i></span><span><strong>복용 가이드</strong><small>먹는 시간과 순서</small></span><i data-lucide="arrow-right" class="icon"></i></a>
+      <a class="feature" href="products.html"><span class="feature-icon"><i data-lucide="shopping-bag" class="icon"></i></span><span><strong>제품 찾기</strong><small>성분별 제품 탐색</small></span><i data-lucide="arrow-right" class="icon"></i></a>
+    </nav>
 
     <!-- 이용 방법 -->
-    <section class="mx-auto max-w-7xl px-4 py-14 sm:px-6">
-      <div class="text-center"><p class="text-sm font-bold text-brand-700">이용 방법</p><h2 class="mt-1 text-2xl font-extrabold tracking-tight text-ink-900 sm:text-[1.7rem]">3단계면 충분해요</h2></div>
-      <ol class="mt-8 grid gap-5 md:grid-cols-3">
-        <li class="rounded-3xl bg-white p-7 shadow-card"><span class="grid h-11 w-11 place-items-center rounded-full bg-brand-50 text-brand-700"><i data-lucide="list-checks" class="h-5 w-5"></i></span><p class="mt-4 text-xs font-bold text-brand-700">STEP 1</p><h3 class="mt-1 text-lg font-extrabold text-ink-900">먹고 있는 영양제 선택</h3><p class="mt-2 text-sm leading-relaxed text-ink-600">종합비타민부터 유산균까지, 지금 먹고 있거나 먹으려는 성분을 모두 고르세요. 최대 8개까지 한 번에 분석됩니다.</p></li>
-        <li class="rounded-3xl bg-white p-7 shadow-card"><span class="grid h-11 w-11 place-items-center rounded-full bg-brand-50 text-brand-700"><i data-lucide="heart-handshake" class="h-5 w-5"></i></span><p class="mt-4 text-xs font-bold text-brand-700">STEP 2</p><h3 class="mt-1 text-lg font-extrabold text-ink-900">궁합 결과 확인</h3><p class="mt-2 text-sm leading-relaxed text-ink-600">좋은 궁합·주의·피해야 할 조합을 이유와 함께 보여드려요. 3개 이상이면 한눈에 보는 매트릭스도 제공됩니다.</p></li>
-        <li class="rounded-3xl bg-white p-7 shadow-card"><span class="grid h-11 w-11 place-items-center rounded-full bg-brand-50 text-brand-700"><i data-lucide="alarm-clock" class="h-5 w-5"></i></span><p class="mt-4 text-xs font-bold text-brand-700">STEP 3</p><h3 class="mt-1 text-lg font-extrabold text-ink-900">하루 복용 시간표 받기</h3><p class="mt-2 text-sm leading-relaxed text-ink-600">흡수를 방해하는 조합은 자동으로 시간을 나누어 아침 공복·식후·취침 전으로 정리한 시간표를 만들어 드립니다.</p></li>
-      </ol>
+    <section class="container process-section" aria-labelledby="process-title">
+      <div class="section-heading centered">
+        <span class="eyebrow">이용 방법</span>
+        <h2 id="process-title">3단계면 충분해요</h2>
+        <p>먹고 있는 성분부터 궁합 결과, 하루 복용 시간표까지.</p>
+      </div>
+      <div class="process-grid">
+        <a class="step-card" href="#quick-check"><div class="step-number">1</div><span class="step-symbol"><i data-lucide="pill" class="icon"></i></span><div class="step-content"><h3>먹고 있는 영양제 선택</h3><p>종합비타민부터 유산균까지, 지금 먹고 있거나 먹으려는 성분을 모두 고르세요.</p></div><span class="round-arrow"><i data-lucide="arrow-right" class="icon"></i></span></a>
+        <a class="step-card" href="compatibility.html"><div class="step-number">2</div><span class="step-symbol"><i data-lucide="layers" class="icon"></i></span><div class="step-content"><h3>궁합 결과 확인</h3><p>좋은 궁합·주의·피해야 할 조합을 이유와 함께 보여드려요.</p></div><span class="round-arrow"><i data-lucide="arrow-right" class="icon"></i></span></a>
+        <a class="step-card" href="compatibility.html"><div class="step-number">3</div><span class="step-symbol"><i data-lucide="calendar-days" class="icon"></i></span><div class="step-content"><h3>하루 복용 시간표 받기</h3><p>흡수를 방해하는 조합은 자동으로 시간을 나누어 아침 공복·식후·취침 전으로 정리한 시간표를 만들어 드립니다.</p></div><span class="round-arrow"><i data-lucide="arrow-right" class="icon"></i></span></a>
+      </div>
     </section>
 
-    <!-- 복용 기본 원칙 -->
-    <section class="bg-brand-50">
-      <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6">
-        <div class="grid gap-8 lg:grid-cols-12">
-          <div class="lg:col-span-4"><p class="text-sm font-bold text-brand-700">복용 가이드</p><h2 class="mt-1 text-2xl font-extrabold tracking-tight text-ink-900 sm:text-[1.7rem]">영양제, 이것만 지켜도 달라져요</h2><p class="mt-3 text-ink-600">가장 자주 틀리는 섭취 원칙 6가지입니다. 각 성분 페이지와 복용법 가이드에서 더 자세히 확인할 수 있어요.</p><a href="guide/when-to-take.html" class="mt-4 inline-flex items-center gap-1 text-sm font-bold text-brand-700 hover:underline">먹는 시간 가이드 보기 <i data-lucide="arrow-right" class="h-4 w-4"></i></a></div>
-          <ul class="grid gap-4 sm:grid-cols-2 lg:col-span-8">
-            <li class="rounded-2xl bg-white p-5 shadow-card"><i data-lucide="droplets" class="h-6 w-6 text-brand-600"></i><h3 class="mt-3 font-bold text-ink-900">지용성은 식사와 함께</h3><p class="mt-1 text-sm text-ink-600">비타민 A·D·E·K, 오메가3, 루테인, 코엔자임Q10은 기름기 있는 식사 직후에 먹어야 흡수가 잘 됩니다.</p></li>
-            <li class="rounded-2xl bg-white p-5 shadow-card"><i data-lucide="clock" class="h-6 w-6 text-brand-600"></i><h3 class="mt-3 font-bold text-ink-900">칼슘과 철분은 2시간 간격</h3><p class="mt-1 text-sm text-ink-600">같은 시간에 먹으면 철분 흡수가 크게 떨어집니다. 철분은 아침 공복, 칼슘은 저녁 식후가 기본입니다.</p></li>
-            <li class="rounded-2xl bg-white p-5 shadow-card"><i data-lucide="sunrise" class="h-6 w-6 text-brand-600"></i><h3 class="mt-3 font-bold text-ink-900">유산균은 공복에</h3><p class="mt-1 text-sm text-ink-600">위산이 적은 기상 직후나 취침 전이 균 생존에 유리합니다. 항생제와는 2~3시간 띄우세요.</p></li>
-            <li class="rounded-2xl bg-white p-5 shadow-card"><i data-lucide="layers" class="h-6 w-6 text-brand-600"></i><h3 class="mt-3 font-bold text-ink-900">중복 성분은 합산 계산</h3><p class="mt-1 text-sm text-ink-600">종합비타민·눈 영양제·간유에 비타민A·아연·셀레늄이 겹치기 쉽습니다. 상한 섭취량을 넘기지 마세요.</p></li>
-            <li class="rounded-2xl bg-white p-5 shadow-card"><i data-lucide="coffee" class="h-6 w-6 text-brand-600"></i><h3 class="mt-3 font-bold text-ink-900">커피·녹차와 철분은 따로</h3><p class="mt-1 text-sm text-ink-600">카테킨·탄닌이 철분과 결합해 흡수를 막습니다. 비타민C와 함께 먹으면 반대로 흡수가 올라갑니다.</p></li>
-            <li class="rounded-2xl bg-white p-5 shadow-card"><i data-lucide="stethoscope" class="h-6 w-6 text-brand-600"></i><h3 class="mt-3 font-bold text-ink-900">약을 먹고 있다면 꼭 상담</h3><p class="mt-1 text-sm text-ink-600">와파린·갑상선약·항생제·혈압약은 여러 영양제와 상호작용합니다. 시작 전 약사·의사에게 확인하세요.</p></li>
-          </ul>
+    <!-- 많이 찾는 성분 -->
+    <section class="container ingredient-section" id="ingredients" aria-labelledby="ingredient-title">
+      <div class="section-heading">
+        <div><span class="eyebrow">성분 사전</span><h2 id="ingredient-title">많이 찾는 영양제 성분</h2></div>
+        <a class="arrow-link" href="ingredients.html">전체 성분 보기 <i data-lucide="arrow-right" class="icon"></i></a>
+      </div>
+      <div class="ingredient-grid">
+        <a class="ingredient-card" href="i/vitamin-d.html"><div class="ingredient-photo"><img src="assets/images/home/capsule-yellow.webp" alt="" width="55" height="48" loading="lazy" decoding="async"></div><h3>비타민D</h3><span>성분 정보 보기 <i data-lucide="arrow-right" class="icon"></i></span></a>
+        <a class="ingredient-card" href="i/omega-3.html"><div class="ingredient-photo"><img src="assets/images/home/softgel-amber.webp" alt="" width="51" height="44" loading="lazy" decoding="async"></div><h3>오메가3</h3><span>성분 정보 보기 <i data-lucide="arrow-right" class="icon"></i></span></a>
+        <a class="ingredient-card" href="i/magnesium.html"><div class="ingredient-photo"><img src="assets/images/home/tablet-beige.webp" alt="" width="54" height="46" loading="lazy" decoding="async"></div><h3>마그네슘</h3><span>성분 정보 보기 <i data-lucide="arrow-right" class="icon"></i></span></a>
+        <a class="ingredient-card" href="i/probiotics.html"><div class="ingredient-photo"><img src="assets/images/home/capsule-blue.webp" alt="" width="54" height="48" loading="lazy" decoding="async"></div><h3>유산균</h3><span>성분 정보 보기 <i data-lucide="arrow-right" class="icon"></i></span></a>
+        <a class="ingredient-card" href="i/calcium.html"><div class="ingredient-photo"><img src="assets/images/home/tablet-beige.webp" alt="" width="54" height="46" loading="lazy" decoding="async"></div><h3>칼슘</h3><span>성분 정보 보기 <i data-lucide="arrow-right" class="icon"></i></span></a>
+        <a class="ingredient-card" href="i/iron.html"><div class="ingredient-photo"><img src="assets/images/home/capsule-yellow.webp" alt="" width="55" height="48" loading="lazy" decoding="async"></div><h3>철분</h3><span>성분 정보 보기 <i data-lucide="arrow-right" class="icon"></i></span></a>
+      </div>
+    </section>
+
+    <!-- 복용 가이드 -->
+    <section class="container reading-section" id="reading" aria-labelledby="reading-title">
+      <img class="hand-photo" src="assets/images/home/hand-softgel.webp" alt="" width="154" height="108" loading="lazy" decoding="async">
+      <div class="section-heading">
+        <div><span class="eyebrow">복용 가이드</span><h2 id="reading-title">영양제, 이것만 지켜도 달라져요</h2><p>먹는 시간과 조합, 확인해야 할 정보부터 살펴보세요.</p></div>
+      </div>
+      <div class="reading-grid">
+        <a class="reading-card" href="guide/when-to-take.html"><div class="reading-photo"><img src="assets/images/home/capsule-yellow.webp" alt="" width="55" height="48" loading="lazy" decoding="async"></div><h3>먹는 시간</h3><p>성분별 섭취 시간과 순서 확인</p><span class="reading-link">가이드 보기 <i data-lucide="arrow-right" class="icon"></i></span></a>
+        <a class="reading-card" href="guide/how-to-combine.html"><div class="reading-photo"><img src="assets/images/home/softgel-amber.webp" alt="" width="51" height="44" loading="lazy" decoding="async"></div><h3>조합 원칙</h3><p>함께 먹는 성분의 조합 알아보기</p><span class="reading-link">가이드 보기 <i data-lucide="arrow-right" class="icon"></i></span></a>
+        <a class="reading-card" href="guide/do-not-take-together.html"><div class="reading-photo"><img src="assets/images/home/capsule-blue.webp" alt="" width="54" height="48" loading="lazy" decoding="async"></div><h3>같이 먹으면 안되는 영양제</h3><p>주의할 조합과 이유 확인</p><span class="reading-link">가이드 보기 <i data-lucide="arrow-right" class="icon"></i></span></a>
+        <a class="reading-card" href="guide/empty-stomach.html"><div class="reading-photo"><img src="assets/images/home/tablet-beige.webp" alt="" width="54" height="46" loading="lazy" decoding="async"></div><h3>공복 영양제</h3><p>공복·식후 섭취 안내 확인</p><span class="reading-link">가이드 보기 <i data-lucide="arrow-right" class="icon"></i></span></a>
+        <a class="reading-card" href="guide/daily-limit.html"><div class="reading-photo"><img src="assets/images/home/coffee-cup.webp" alt="" width="62" height="46" loading="lazy" decoding="async"></div><h3>권장량·과다복용</h3><p>중복 성분과 함량 살펴보기</p><span class="reading-link">가이드 보기 <i data-lucide="arrow-right" class="icon"></i></span></a>
+        <a class="reading-card" href="guide/with-medication.html"><div class="reading-photo"><img src="assets/images/home/chat-bubble.webp" alt="" width="50" height="45" loading="lazy" decoding="async"></div><h3>약과 영양제</h3><p>약을 복용 중일 때 확인할 정보</p><span class="reading-link">가이드 보기 <i data-lucide="arrow-right" class="icon"></i></span></a>
+      </div>
+    </section>
+
+    <!-- 고민·상황별 가이드 -->
+    <section class="container categories" id="guides" aria-labelledby="guides-title">
+      <div class="section-heading">
+        <div><span class="eyebrow">영양제 추천 가이드</span><h2 id="guides-title">고민과 상황에서 출발하기</h2><p>제품이 아니라 성분과 조합을 추천합니다.</p></div>
+        <div class="guide-tabs" role="tablist" aria-label="가이드 분류">
+          <button type="button" role="tab" id="tab-concerns" data-group="concerns" aria-selected="true" aria-controls="category-grid">고민별</button>
+          <button type="button" role="tab" id="tab-people" data-group="people" aria-selected="false" aria-controls="category-grid" tabindex="-1">대상별</button>
+          <button type="button" role="tab" id="tab-safety" data-group="safety" aria-selected="false" aria-controls="category-grid" tabindex="-1">복용법·안전</button>
         </div>
       </div>
+      <div class="category-grid" id="category-grid" role="tabpanel" aria-labelledby="tab-concerns">
+        <a class="category-card" href="guide/fatigue.html" aria-label="피로회복 가이드 읽기"><span class="category-icon" style="--cat-bg:#fbf1db;--cat-color:#b48a3d"><i data-lucide="zap" class="icon"></i></span><h3>피로회복</h3><span class="category-subtitle">가이드 살펴보기</span></a>
+        <a class="category-card" href="guide/eye-health.html" aria-label="눈 건강 가이드 읽기"><span class="category-icon" style="--cat-bg:#eaf1e3;--cat-color:#789664"><i data-lucide="eye" class="icon"></i></span><h3>눈 건강</h3><span class="category-subtitle">가이드 살펴보기</span></a>
+        <a class="category-card" href="guide/gut-health.html" aria-label="장 건강 가이드 읽기"><span class="category-icon" style="--cat-bg:#f8e9e0;--cat-color:#bc9479"><i data-lucide="microscope" class="icon"></i></span><h3>장 건강</h3><span class="category-subtitle">가이드 살펴보기</span></a>
+        <a class="category-card" href="guide/sleep.html" aria-label="수면 가이드 읽기"><span class="category-icon" style="--cat-bg:#ececf7;--cat-color:#9393b3"><i data-lucide="moon" class="icon"></i></span><h3>수면</h3><span class="category-subtitle">가이드 살펴보기</span></a>
+        <a class="category-card" href="guide/immunity.html" aria-label="면역력 가이드 읽기"><span class="category-icon" style="--cat-bg:#e9f1f5;--cat-color:#7c9dad"><i data-lucide="shield-check" class="icon"></i></span><h3>면역력</h3><span class="category-subtitle">가이드 살펴보기</span></a>
+        <a class="category-card" href="guide/joint-health.html" aria-label="관절 가이드 읽기"><span class="category-icon" style="--cat-bg:#f2ede2;--cat-color:#a79876"><i data-lucide="bone" class="icon"></i></span><h3>관절</h3><span class="category-subtitle">가이드 살펴보기</span></a>
+      </div>
+      <div id="guide-status" class="sr-only" role="status" aria-live="polite"></div>
+      <div class="category-end"><a class="arrow-link" href="guides.html">전체 가이드 보기 <i data-lucide="arrow-right" class="icon"></i></a></div>
     </section>
 
-    <!-- 뉴스 -->
-    <section class="mx-auto max-w-7xl px-4 py-14 sm:px-6">
-      <div class="flex items-end justify-between gap-4">
-        <div><p class="text-sm font-bold text-brand-700">뉴스·자료</p><h2 class="mt-1 text-2xl font-extrabold tracking-tight text-ink-900 sm:text-[1.7rem]">영양제 최신 소식</h2><span id="home-news-sample" class="mt-2 hidden rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-bold text-amber-700">샘플 데이터</span></div>
-        <a href="news.html" class="hidden items-center gap-1 text-sm font-semibold text-ink-500 hover:text-brand-700 sm:inline-flex">전체보기 <i data-lucide="chevron-right" class="h-4 w-4"></i></a>
+    <!-- 제품 찾기 -->
+    <section class="container product-banner" aria-labelledby="product-title">
+      <div class="product-copy">
+        <span class="eyebrow">제품 찾기</span>
+        <h2 id="product-title">식약처에 신고된 제품을<br>성분별로, 바로 구매처까지</h2>
+        <p>식품안전나라 공공데이터를 바탕으로 성분·기능성·형태별 제품을 찾고 쿠팡·11번가·G마켓 검색 결과로 바로 이동할 수 있습니다.</p>
+        <a class="button primary" href="products.html">제품 찾아보기 <i data-lucide="arrow-right" class="icon"></i></a>
       </div>
-      <div id="home-news" class="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4"><div class="skeleton h-40"></div><div class="skeleton h-40"></div><div class="skeleton h-40"></div><div class="skeleton h-40"></div></div>
+      <div class="product-path">
+        <span><i data-lucide="leaf" class="icon"></i> 성분 정보 확인</span><i></i>
+        <span><i data-lucide="shopping-bag" class="icon"></i> 제품 찾아보기</span><i></i>
+        <span><i data-lucide="arrow-up-right" class="icon"></i> 구매처 확인</span>
+      </div>
+      <img class="product-photo" src="assets/images/home/product-bottle.webp" alt="" width="227" height="163" loading="lazy" decoding="async">
     </section>
 
-    <!-- 제품 CTA -->
-    <section class="mx-auto max-w-7xl px-4 pb-6 sm:px-6">
-      <div class="grid items-center gap-6 rounded-4xl border border-brand-100 bg-white p-8 shadow-card sm:p-10 lg:grid-cols-12">
-        <div class="lg:col-span-8"><p class="text-sm font-bold text-brand-700">제품 찾기</p><h2 class="mt-1 text-2xl font-extrabold tracking-tight text-ink-900 sm:text-[1.7rem]">식약처에 신고된 제품을 성분별로, 바로 구매처까지</h2><p class="mt-3 text-ink-600">식품안전나라 공공데이터를 바탕으로 성분·기능성·형태별 제품을 찾고 쿠팡·11번가·G마켓 검색 결과로 바로 이동할 수 있습니다. 신규 등록·변경 제품은 매일 자동 반영됩니다.</p></div>
-        <div class="flex flex-col gap-3 lg:col-span-4"><a href="products.html" class="inline-flex items-center justify-center gap-2 rounded-full bg-brand-600 px-5 py-3.5 font-bold text-white shadow-lift hover:bg-brand-700"><i data-lucide="shopping-bag" class="h-5 w-5"></i>제품 찾아보기</a><a href="about.html" class="inline-flex items-center justify-center gap-2 rounded-full border border-ink-200 bg-white px-5 py-3.5 font-bold text-ink-800 hover:border-brand-300">데이터 출처·업데이트 방식</a></div>
+    <!-- 최신 소식 (매일 자동 수집) -->
+    <section class="container news-section" aria-labelledby="news-title">
+      <div class="section-heading">
+        <div><span class="eyebrow">최신 소식</span><h2 id="news-title">영양제·건강기능식품 뉴스</h2><p>식약처 안내와 최근 연구, 업계 소식을 매일 자동으로 모읍니다.</p></div>
+        <a class="arrow-link" href="news.html">뉴스 전체 보기 <i data-lucide="arrow-right" class="icon"></i></a>
       </div>
+      <div class="news-grid" id="home-news"><div class="news-skeleton"></div><div class="news-skeleton"></div><div class="news-skeleton"></div></div>
     </section>
 
     <!-- FAQ -->
-    <section class="mx-auto max-w-3xl px-4 py-14 sm:px-6">
-      <div class="text-center"><p class="text-sm font-bold text-brand-700">FAQ</p><h2 class="mt-1 text-2xl font-extrabold tracking-tight text-ink-900 sm:text-[1.7rem]">자주 묻는 질문</h2></div>
-      <div class="mt-8 divide-y divide-ink-100 rounded-3xl bg-white px-6 shadow-card">
-        <details class="group py-5"><summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-bold text-ink-900"><span>영양제 궁합은 왜 중요한가요?</span><i data-lucide="chevron-down" class="h-5 w-5 shrink-0 text-ink-400 transition group-open:rotate-180"></i></summary><p class="mt-3 text-sm leading-relaxed text-ink-600">칼슘과 철분처럼 같은 시간에 먹으면 서로 흡수를 방해하는 조합이 있고, 비타민D와 칼슘처럼 함께 먹어야 효과가 커지는 조합도 있습니다. 섭취 시간만 나눠도 같은 영양제로 더 나은 효과를 얻을 수 있습니다.</p></details>
-        <details class="group py-5"><summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-bold text-ink-900"><span>영양제는 공복에 먹나요, 식후에 먹나요?</span><i data-lucide="chevron-down" class="h-5 w-5 shrink-0 text-ink-400 transition group-open:rotate-180"></i></summary><p class="mt-3 text-sm leading-relaxed text-ink-600">지용성 성분(비타민A·D·E·K, 오메가3, 루테인, 코엔자임Q10)은 지방이 포함된 식사 직후가 흡수에 유리합니다. 철분·유산균·아미노산 계열은 공복이 유리한 경우가 많고, 위장 부담이 있는 미네랄은 식후를 권장합니다.</p></details>
-        <details class="group py-5"><summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-bold text-ink-900"><span>이 사이트의 제품 정보는 어디서 가져오나요?</span><i data-lucide="chevron-down" class="h-5 w-5 shrink-0 text-ink-400 transition group-open:rotate-180"></i></summary><p class="mt-3 text-sm leading-relaxed text-ink-600">식품의약품안전처 식품안전나라의 건강기능식품 품목제조신고 공공데이터를 매일 수집해 성분별로 정리합니다. 구매 링크는 쿠팡·11번가·G마켓 등 쇼핑몰 검색 결과로 연결되며, 제휴 링크를 통해 수수료를 받을 수 있습니다.</p></details>
-        <details class="group py-5"><summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-bold text-ink-900"><span>약을 먹고 있는데 영양제를 먹어도 되나요?</span><i data-lucide="chevron-down" class="h-5 w-5 shrink-0 text-ink-400 transition group-open:rotate-180"></i></summary><p class="mt-3 text-sm leading-relaxed text-ink-600">각 성분 페이지의 '약과 함께 먹을 때' 항목과 <a class="font-bold text-brand-700 underline" href="guide/with-medication.html">약과 영양제 가이드</a>에 대표적인 상호작용을 정리해 두었지만, 이 정보는 참고용입니다. 처방약을 복용 중이라면 영양제를 시작하기 전에 반드시 의사·약사와 상담하세요.</p></details>
+    <section class="container faq-section" id="faq" aria-labelledby="faq-title">
+      <div class="faq-intro">
+        <span class="eyebrow">FAQ</span>
+        <h2 id="faq-title">자주 묻는 질문</h2>
+        <p>궁금한 점이 있으신가요?<br>확인해야 할 정보부터 안내합니다.</p>
+        <a class="arrow-link" href="about.html">데이터 출처 확인 <i data-lucide="arrow-right" class="icon"></i></a>
       </div>
+      <div class="faq-items">
+        <details>
+          <summary><span class="q" aria-hidden="true">Q.</span><span>영양제 궁합은 왜 중요한가요?</span><i data-lucide="plus" class="icon"></i></summary>
+          <div class="faq-answer"><p>칼슘과 철분처럼 같은 시간에 먹으면 서로 흡수를 방해하는 조합이 있고, 비타민D와 칼슘처럼 함께 먹으면 도움이 되는 조합도 있습니다. 섭취 시간만 나눠도 같은 영양제를 더 잘 활용할 수 있습니다. 궁합 체크에서 조합별 결과와 간격·용량 주의 사항을 확인할 수 있으며, 일반 성인의 일반적인 용량을 기준으로 한 참고 정보입니다.</p><a href="compatibility.html">궁합 체크 페이지 보기</a></div>
+        </details>
+        <details>
+          <summary><span class="q" aria-hidden="true">Q.</span><span>영양제는 공복에 먹나요, 식후에 먹나요?</span><i data-lucide="plus" class="icon"></i></summary>
+          <div class="faq-answer"><p>지용성 성분(비타민A·D·E·K, 오메가3, 루테인, 코엔자임Q10)은 지방이 포함된 식사 직후가 흡수에 유리합니다. 철분·유산균·아미노산 계열은 공복이 유리한 경우가 많고, 위장 부담이 있는 미네랄은 식후를 권장합니다. 성분 사전의 섭취 시간은 일반적인 안내이며 제품 라벨의 섭취 방법이 우선입니다.</p><a href="guide/when-to-take.html">먹는 시간 가이드 보기</a></div>
+        </details>
+        <details>
+          <summary><span class="q" aria-hidden="true">Q.</span><span>이 사이트의 제품 정보는 어디서 가져오나요?</span><i data-lucide="plus" class="icon"></i></summary>
+          <div class="faq-answer"><p>식품의약품안전처 식품안전나라의 건강기능식품 품목제조신고 공공데이터를 주기적으로 수집해 성분별로 정리합니다. 구매 링크는 쿠팡·11번가·G마켓 등 쇼핑몰 검색 결과로 연결되며, 수집·갱신 방식은 소개 페이지에서 확인할 수 있습니다.</p><a href="about.html">데이터 출처 확인하기</a></div>
+        </details>
+        <details>
+          <summary><span class="q" aria-hidden="true">Q.</span><span>약을 먹고 있는데 영양제를 먹어도 되나요?</span><i data-lucide="plus" class="icon"></i></summary>
+          <div class="faq-answer"><p>일부 성분은 처방약의 흡수나 작용에 영향을 줄 수 있습니다. 이 사이트의 정보는 의학적 진단·치료·처방을 대신하지 않으므로, 약을 복용 중이라면 영양제를 시작하기 전에 반드시 의사·약사와 상담하세요. 약과 영양제 가이드에서 성분별로 확인할 점을 정리해 두었습니다.</p><a href="guide/with-medication.html">약과 영양제 가이드 보기</a></div>
+        </details>
+      </div>
+      <aside class="faq-aside">
+        <img class="faq-leaf" src="assets/images/home/leaf.webp" alt="" width="44" height="50" loading="lazy" decoding="async">
+        <strong>영양제 추천은<br>제품이 아니라 성분부터.</strong>
+        <a href="ingredients.html">성분 사전 살펴보기 <i data-lucide="arrow-right" class="icon"></i></a>
+      </aside>
     </section>
   </main>
-
   <div id="site-footer"></div>
 </body>
 </html>

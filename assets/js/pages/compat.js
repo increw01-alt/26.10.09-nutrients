@@ -112,7 +112,7 @@
     var title = r.pair ? r.pair.title : "특별히 알려진 상호작용이 없습니다";
     var detail = r.pair ? r.pair.detail : "현재 데이터베이스에 두 성분 간 주의할 상호작용이 등록되어 있지 않습니다. 일반적인 용량에서는 함께 섭취해도 무방한 경우가 많지만, 각 성분의 상한 섭취량과 섭취 시간 권장을 지켜 주세요.";
     var tip = r.pair ? r.pair.tip : "";
-    return '<article id="' + pairAnchor(r.a.id, r.b.id) + '" class="scroll-mt-32 rounded-2xl border p-5 shadow-card card-' + r.type + ' fade-up">' +
+    return '<article id="' + pairAnchor(r.a.id, r.b.id) + '" class="scroll-mt-36 rounded-2xl border p-5 shadow-card card-' + r.type + ' fade-up">' +
       '<div class="flex flex-wrap items-start justify-between gap-3">' +
       '<div class="pair-art">' + thumb(r.a) + '<span class="text-lg font-extrabold text-ink-300">+</span>' + thumb(r.b) + '</div>' +
       '<div class="flex flex-col items-end gap-1.5"><span class="badge ' + D.typeClass(r.type) + '"><i data-lucide="' + esc(t.icon) + '" class="h-3.5 w-3.5"></i>' + esc(t.short) + '</span>' +
