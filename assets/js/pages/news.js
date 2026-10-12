@@ -8,9 +8,9 @@
 
   function item(n) {
     var cat = CATS[n.category] || "뉴스";
-    var catCls = { mfds: "bg-sky-50 text-sky-700", research: "bg-violet-50 text-violet-700", news: "bg-brand-50 text-brand-700" }[n.category] || "bg-brand-50 text-brand-700";
-    return '<a href="' + esc(n.link) + '" target="_blank" rel="noopener" class="card-hover flex flex-col gap-2 rounded-2xl border border-ink-100 bg-white p-5 shadow-card fade-up sm:flex-row sm:items-start sm:gap-5">' +
-      '<div class="flex shrink-0 items-center gap-2 text-xs sm:w-40 sm:flex-col sm:items-start"><span class="rounded-full px-2 py-0.5 font-bold ' + catCls + '">' + esc(cat) + '</span><span class="text-ink-400">' + esc(D.fmtDate(n.publishedAt)) + '</span></div>' +
+    var catCls = { mfds: "bg-sky-50 text-sky-700 ring-sky-100", research: "bg-violet-50 text-violet-700 ring-violet-100", news: "bg-brand-50 text-brand-700 ring-brand-100" }[n.category] || "bg-brand-50 text-brand-700 ring-brand-100";
+    return '<a href="' + esc(n.link) + '" target="_blank" rel="noopener" class="card-hover flex flex-col gap-2 rounded-2xl border border-[#e3ebdc] bg-white p-5 shadow-card fade-up sm:flex-row sm:items-start sm:gap-5">' +
+      '<div class="flex shrink-0 items-center gap-2 text-xs sm:w-40 sm:flex-col sm:items-start"><span class="rounded-full px-2.5 py-1 text-[11px] font-bold ring-1 ' + catCls + '">' + esc(cat) + '</span><span class="text-ink-400">' + esc(D.fmtDate(n.publishedAt)) + '</span></div>' +
       '<div class="min-w-0 flex-1"><h2 class="font-bold leading-snug text-ink-900">' + esc(n.title) + '</h2>' + (n.summary ? '<p class="mt-1.5 line-clamp-2 text-sm text-ink-500">' + esc(n.summary) + '</p>' : "") + '<p class="mt-2 flex items-center gap-1 text-xs font-semibold text-ink-400"><i data-lucide="external-link" class="h-3.5 w-3.5"></i>' + esc(n.source || "출처 미상") + '</p></div></a>';
   }
 

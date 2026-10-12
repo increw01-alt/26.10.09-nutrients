@@ -50,6 +50,15 @@
       var en = String((it && (it.en || it.name)) || "").split("(")[0].replace(/[^A-Za-z0-9 \-·]/g, "").trim();
       return (en || (it && it.name) || "").slice(0, 14);
     },
+    /* 성분 분류 → 실사 알약 사진 경로 (메인 시안의 연출 이미지, assets/images/home/) */
+    photoFor: function (key) {
+      var file = { vitamin: "capsule-yellow", mineral: "tablet-beige", "fatty-acid": "softgel-amber", probiotic: "capsule-blue", herbal: "capsule-green", amino: "capsule-violet", joint: "capsule-orange", beauty: "capsule-pink" }[key] || "tablet-beige";
+      var root = (window.Data && window.Data.url) ? window.Data.url("") : "";
+      return root + "assets/images/home/" + file + ".webp";
+    },
+    photoImg: function (key, cls) {
+      return '<img src="' + Illus.photoFor(key) + '" alt="" width="54" height="48" loading="lazy" decoding="async"' + (cls ? ' class="' + esc(cls) + '"' : "") + '>';
+    },
     /* 성분 분류(category) → 아이콘 */
     forCategory: function (key) {
       switch (key) {

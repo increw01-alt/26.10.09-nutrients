@@ -33,18 +33,28 @@
   <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:font-bold focus:text-brand-700">본문으로 건너뛰기</a>
   <div id="site-header"></div>
 
-  <main id="main" class="mx-auto max-w-7xl px-4 py-10 sm:px-6">
-    <nav class="text-xs text-ink-500" aria-label="경로"><a class="hover:text-brand-700" href="index.html">홈</a> › <span class="text-ink-800">성분 사전</span></nav>
-    <div class="mt-4 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-      <div><p class="text-sm font-bold text-brand-700">성분 사전</p><h1 class="mt-1 text-3xl font-extrabold tracking-tight text-ink-900 sm:text-4xl">영양제 성분, 한 번에 비교하기</h1><p class="mt-3 max-w-2xl text-ink-600">식약처 인정 기능성과 한국인 영양소 섭취기준을 바탕으로 효능·권장량·섭취 시간·주의사항을 정리했습니다. 성분을 누르면 궁합과 제품까지 이어서 볼 수 있어요.</p></div>
-      <form class="relative w-full lg:w-80" role="search" onsubmit="return false;"><label for="list-search" class="sr-only">성분 검색</label><i data-lucide="search" class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400"></i><input id="list-search" type="search" placeholder="성분명·효능·태그 검색" class="w-full rounded-xl border border-ink-200 bg-white py-3 pl-11 pr-4 text-sm shadow-sm outline-none focus:border-brand-400 focus:ring-4 focus:ring-brand-100"></form>
+  <main id="main">
+    <section class="page-hero">
+      <div class="mx-auto max-w-7xl px-4 pb-8 pt-8 sm:px-6 sm:pt-10">
+        <nav class="text-xs text-ink-500" aria-label="경로"><a class="hover:text-brand-700" href="index.html">홈</a> › <span class="text-ink-800">성분 사전</span></nav>
+        <div class="mt-4 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div class="max-w-2xl">
+            <p class="eyebrow-kicker"><i data-lucide="leaf"></i> 성분 사전</p>
+            <h1 class="page-title mt-3">영양제 성분, 한 번에 비교하기</h1>
+            <p class="page-lead mt-4">식약처 인정 기능성과 한국인 영양소 섭취기준을 바탕으로 효능·권장량·섭취 시간·주의사항을 정리했습니다. 성분을 고르면 궁합과 함유 제품까지 이어서 확인할 수 있습니다.</p>
+          </div>
+          <form class="relative w-full lg:w-80" role="search" onsubmit="return false;"><label for="list-search" class="sr-only">성분 검색</label><i data-lucide="search" class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400"></i><input id="list-search" type="search" placeholder="성분명·별칭·태그로 검색" class="w-full rounded-full border border-ink-200 bg-white py-3 pl-11 pr-4 text-sm shadow-card outline-none focus:border-brand-400 focus:ring-4 focus:ring-brand-100"></form>
+        </div>
+        <div id="category-filters" class="scroll-x mt-6 flex gap-2 overflow-x-auto pb-1"></div>
+        <p id="active-tag" class="mt-3 hidden text-sm text-ink-600"></p>
+      </div>
+    </section>
+    <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+      <div class="flex items-center justify-between text-sm text-ink-500"><span id="result-count">불러오는 중…</span><span class="hidden sm:inline">가나다순 · 검색 시 관련도순</span></div>
+      <div id="ingredient-list" class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"><div class="skeleton h-56"></div><div class="skeleton h-56"></div><div class="skeleton h-56"></div></div>
+      <div id="empty-state" class="mt-10 hidden rounded-2xl border border-dashed border-ink-200 p-10 text-center"><i data-lucide="search-x" class="mx-auto h-8 w-8 text-ink-300"></i><p class="mt-3 font-bold text-ink-700">조건에 맞는 성분이 없습니다</p><p class="mt-1 text-sm text-ink-500">검색어를 줄이거나 다른 분류를 선택해 보세요.</p></div>
+      <section class="mt-16 rounded-3xl bg-cream-200 p-6 sm:p-8"><h2 class="text-xl font-extrabold text-ink-900">성분 정보, 이렇게 읽으세요</h2><ul class="mt-4 grid gap-3 text-sm text-ink-700 sm:grid-cols-2"><li class="flex gap-2"><i data-lucide="badge-check" class="mt-0.5 h-4 w-4 shrink-0 text-brand-600"></i><span><strong>식약처 인정 기능성</strong>은 건강기능식품으로 표시할 수 있는 공식 기능성 문구입니다. 그 외 효과는 연구 단계 정보입니다.</span></li><li class="flex gap-2"><i data-lucide="flask-conical" class="mt-0.5 h-4 w-4 shrink-0 text-brand-600"></i><span><strong>하루 권장</strong>은 한국인 영양소 섭취기준 또는 건강기능식품 일일섭취량 기준, <strong>상한</strong>은 넘기지 말아야 할 양입니다.</span></li><li class="flex gap-2"><i data-lucide="clock" class="mt-0.5 h-4 w-4 shrink-0 text-brand-600"></i><span><strong>섭취 시간</strong>은 흡수율과 위장 부담, 다른 성분과의 간격을 고려한 일반적 권장이며 제품 라벨이 우선입니다.</span></li><li class="flex gap-2"><i data-lucide="stethoscope" class="mt-0.5 h-4 w-4 shrink-0 text-brand-600"></i><span>질환이 있거나 약을 복용 중이면 <strong>약과 함께 먹을 때</strong> 항목을 확인하고 전문가와 상담하세요.</span></li></ul><p class="mt-4 text-sm"><a class="inline-flex items-center gap-1 font-bold text-brand-700 hover:underline" href="materials.html">식약처 기능성 원료 인정현황 전체 보기 <i data-lucide="arrow-right" class="h-4 w-4"></i></a></p></section>
     </div>
-    <div id="category-filters" class="scroll-x mt-6 flex gap-2 overflow-x-auto pb-1"></div>
-    <p id="active-tag" class="mt-3 hidden text-sm text-ink-600"></p>
-    <div class="mt-6 flex items-center justify-between text-sm text-ink-500"><span id="result-count">불러오는 중…</span><span class="hidden sm:inline">가나다순 · 검색 시 관련도순</span></div>
-    <div id="ingredient-list" class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"><div class="skeleton h-56"></div><div class="skeleton h-56"></div><div class="skeleton h-56"></div></div>
-    <div id="empty-state" class="mt-10 hidden rounded-2xl border border-dashed border-ink-200 p-10 text-center"><i data-lucide="search-x" class="mx-auto h-8 w-8 text-ink-300"></i><p class="mt-3 font-bold text-ink-700">조건에 맞는 성분이 없습니다</p><p class="mt-1 text-sm text-ink-500">검색어를 바꾸거나 분류 필터를 해제해 보세요.</p></div>
-    <section class="mt-16 rounded-3xl bg-brand-50 p-8 ring-1 ring-brand-100"><h2 class="text-xl font-extrabold text-ink-900">성분 정보, 이렇게 읽으세요</h2><ul class="mt-4 grid gap-3 text-sm text-ink-700 sm:grid-cols-2"><li class="flex gap-2"><i data-lucide="badge-check" class="mt-0.5 h-4 w-4 shrink-0 text-brand-600"></i><span><strong>식약처 인정 기능성</strong>은 건강기능식품으로 표시할 수 있는 공식 기능성 문구입니다. 그 외 효과는 연구 단계 정보입니다.</span></li><li class="flex gap-2"><i data-lucide="flask-conical" class="mt-0.5 h-4 w-4 shrink-0 text-brand-600"></i><span><strong>하루 권장</strong>은 한국인 영양소 섭취기준 또는 건강기능식품 일일섭취량 기준, <strong>상한</strong>은 넘기지 말아야 할 양입니다.</span></li><li class="flex gap-2"><i data-lucide="clock" class="mt-0.5 h-4 w-4 shrink-0 text-brand-600"></i><span><strong>섭취 시간</strong>은 흡수율과 위장 부담, 다른 성분과의 간격을 고려한 일반적 권장이며 제품 라벨이 우선입니다.</span></li><li class="flex gap-2"><i data-lucide="stethoscope" class="mt-0.5 h-4 w-4 shrink-0 text-brand-600"></i><span>질환이 있거나 약을 복용 중이면 <strong>약과 함께 먹을 때</strong> 항목을 확인하고 전문가와 상담하세요.</span></li></ul><p class="mt-4 text-sm"><a class="inline-flex items-center gap-1 font-bold text-brand-700 hover:underline" href="materials.html">식약처 기능성 원료 인정현황 전체 보기 <i data-lucide="arrow-right" class="h-4 w-4"></i></a></p></section>
   </main>
   <div id="site-footer"></div>
 </body>

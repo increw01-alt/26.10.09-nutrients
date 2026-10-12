@@ -204,15 +204,17 @@ def render_page(it: dict, core: dict, cfg: dict) -> str:
 <body data-page="ingredients" data-path="i/{esc(it["id"])}.html" class="min-h-screen antialiased">
   <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:font-bold focus:text-brand-700">본문으로 건너뛰기</a>
   <div id="site-header"></div>
-  <main id="main" class="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+  <main id="main">
     <div id="ingredient-app" class="hidden">
-      <div id="ingredient-hero"></div>
+      <div id="ingredient-hero" class="page-hero"></div>
+      <div class="mx-auto max-w-7xl px-4 pb-8 sm:px-6">
       <div id="ingredient-quick"></div>
       <div class="mt-8 grid gap-6 lg:grid-cols-12">
         <div id="ingredient-main" class="space-y-6 lg:col-span-8"></div>
         <aside id="ingredient-side" class="lg:col-span-4"></aside>
       </div>
-    </div>{ssr}
+      </div>
+    </div><div class="mx-auto max-w-7xl px-4 py-8 sm:px-6">{ssr}</div>
   </main>
   <div id="site-footer"></div>
 </body>
@@ -267,7 +269,7 @@ def cat_class(color: str) -> str:
 
 def guide_card(gd: dict, types: dict, root: str) -> str:
     t = types.get(gd["type"], {})
-    return (f'<a href="{root}guide/{esc(gd["slug"])}.html" class="card-hover flex gap-4 rounded-2xl border border-ink-100 bg-white p-5 shadow-card">'
+    return (f'<a href="{root}guide/{esc(gd["slug"])}.html" class="card-hover flex gap-4 rounded-2xl border border-[#e3ebdc] bg-white p-5 shadow-card">'
             f'<span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl ring-1 {TYPE_STYLE.get(gd["type"], "")}"><i data-lucide="{esc(gd["icon"])}" class="h-5 w-5"></i></span>'
             f'<span class="min-w-0"><span class="text-[11px] font-bold text-ink-400">{esc(t.get("short", ""))}</span><span class="block font-extrabold leading-snug text-ink-900">{esc(gd["h1"])}</span>'
             f'<span class="mt-1 line-clamp-2 block text-sm text-ink-500">{esc(gd["intro"][:90])}…</span></span></a>')
@@ -335,17 +337,17 @@ def render_guide(gd: dict, guides: dict, core: dict, cfg: dict) -> str:
 <body data-page="guides" data-path="{path}" class="min-h-screen antialiased">
   {SKIP_LINK}
   <main id="main">
-    <section class="bg-mesh border-b border-ink-100"><div class="mx-auto max-w-5xl px-4 py-10 sm:px-6 sm:py-14">
+    <section class="page-hero"><div class="mx-auto max-w-5xl px-4 pb-10 pt-8 sm:px-6 sm:pt-12">
       <nav class="text-xs text-ink-500" aria-label="경로"><a class="hover:text-brand-700" href="../index.html">홈</a> › <a class="hover:text-brand-700" href="../guides.html">영양제 가이드</a> › <a class="hover:text-brand-700" href="../guides.html#{gd['type']}">{esc(t.get('short', ''))}</a> › <span class="text-ink-800">{esc(gd['h1'])}</span></nav>
       <span class="mt-4 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold ring-1 {TYPE_STYLE.get(gd['type'], '')}"><i data-lucide="{esc(gd['icon'])}" class="h-3.5 w-3.5"></i>{esc(t.get('label', ''))}</span>
-      <h1 class="mt-3 text-3xl font-extrabold leading-tight tracking-tight text-ink-900 sm:text-4xl">{esc(gd['h1'])}</h1>
-      <p class="mt-4 max-w-3xl text-[15px] leading-relaxed text-ink-700 sm:text-base">{esc(gd['intro'])}</p>
+      <h1 class="page-title mt-3">{esc(gd['h1'])}</h1>
+      <p class="page-lead mt-4 max-w-3xl">{esc(gd['intro'])}</p>
       <div class="mt-5 flex flex-wrap gap-2 text-xs">{nav_chips}</div>
       <p class="mt-4 text-xs text-ink-400">식약처 인정 기능성 표현을 기준으로 작성한 일반 건강 정보이며 의학적 조언이 아닙니다 · 최종 수정 {esc(guides['_meta'].get('updatedAt', ''))}</p>
     </div></section>
     <div class="mx-auto max-w-5xl space-y-8 px-4 py-10 sm:px-6">
       <section id="ingredients" class="scroll-mt-24"><h2 class="text-2xl font-extrabold tracking-tight text-ink-900">핵심 성분</h2><p class="mt-1 text-sm text-ink-500">각 성분을 누르면 효능·권장량·주의사항과 함유 제품을 볼 수 있습니다.</p><div class="mt-4 grid gap-4 md:grid-cols-2">{ing_html}</div>
-        <a href="../compatibility.html?items={all_ids}" class="mt-4 inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-3 text-sm font-bold text-white shadow-lift hover:bg-brand-700"><i data-lucide="heart-handshake" class="h-4 w-4"></i>이 성분들로 궁합·복용 시간표 만들기</a></section>
+        <a href="../compatibility.html?items={all_ids}" class="btn-primary mt-4"><i data-lucide="heart-handshake"></i>이 성분들로 궁합·복용 시간표 만들기 <i data-lucide="arrow-right"></i></a></section>
       {('<section id="combos" class="scroll-mt-24"><h2 class="text-2xl font-extrabold tracking-tight text-ink-900">함께 먹으면 좋은 조합</h2><div class="mt-4 grid gap-4 md:grid-cols-2">' + combo_html + '</div></section>') if combo_html else ''}
       {sections_html}
       <section id="tips" class="scroll-mt-24 grid gap-4 md:grid-cols-2"><div class="rounded-2xl border border-ink-100 bg-white p-6 shadow-card"><h2 class="flex items-center gap-2 text-lg font-extrabold text-ink-900"><i data-lucide="lightbulb" class="h-5 w-5 text-amber-500"></i>이렇게 드세요</h2><div class="mt-3">{tips_html}</div></div><div class="rounded-2xl border border-amber-100 bg-white p-6 shadow-card"><h2 class="flex items-center gap-2 text-lg font-extrabold text-ink-900"><i data-lucide="triangle-alert" class="h-5 w-5 text-amber-600"></i>주의할 점</h2><div class="mt-3">{caut_html}</div></div></section>
@@ -378,15 +380,15 @@ def render_guides_hub(guides: dict, cfg: dict) -> str:
 <body data-page="guides" data-path="guides.html" class="min-h-screen antialiased">
   {SKIP_LINK}
   <main id="main">
-    <section class="bg-mesh border-b border-ink-100"><div class="mx-auto max-w-7xl px-4 py-12 sm:px-6">
+    <section class="page-hero"><div class="mx-auto max-w-7xl px-4 pb-10 pt-8 sm:px-6 sm:pt-10">
       <nav class="text-xs text-ink-500" aria-label="경로"><a class="hover:text-brand-700" href="index.html">홈</a> › <span class="text-ink-800">영양제 가이드</span></nav>
-      <p class="mt-4 text-sm font-bold text-brand-700">영양제 추천 가이드</p>
-      <h1 class="mt-1 text-3xl font-extrabold tracking-tight text-ink-900 sm:text-4xl">고민과 상황에서 출발하는 영양제 가이드</h1>
-      <p class="mt-3 max-w-2xl text-ink-600">특정 제품이 아니라 <strong>성분과 조합</strong>을 추천합니다. 각 가이드는 식약처 인정 기능성 표현을 기준으로 핵심 성분, 함께 먹으면 좋은 조합, 섭취 시간, 주의할 점을 정리하고 성분 사전·궁합 체크·제품 찾기로 연결됩니다.</p>
+      <p class="eyebrow-kicker mt-4"><i data-lucide="leaf"></i> 영양제 추천 가이드</p>
+      <h1 class="page-title mt-3">고민과 상황에서 출발하는 영양제 가이드</h1>
+      <p class="page-lead mt-4 max-w-2xl">특정 제품이 아니라 <strong>성분과 조합</strong>을 추천합니다. 각 가이드는 식약처 인정 기능성 표현을 기준으로 핵심 성분, 함께 먹으면 좋은 조합, 섭취 시간, 주의할 점을 정리하고 성분 사전·궁합 체크·제품 찾기로 연결됩니다.</p>
       <div class="mt-5 flex flex-wrap gap-2">{''.join(f'<a href="#{k}" class="chip">{esc(t["short"])}</a>' for k, t in types.items())}</div>
     </div></section>
     <div class="mx-auto max-w-7xl space-y-14 px-4 py-12 sm:px-6">{secs}
-      <section class="rounded-3xl bg-ink-50 p-6 sm:p-8"><h2 class="text-lg font-extrabold text-ink-900">가이드를 읽는 법</h2><ul class="list-dot mt-3 text-sm text-ink-700"><li>'추천 성분'은 식약처가 인정한 기능성과 결핍 가능성을 기준으로 고른 것이며 특정 제품·브랜드를 보증하지 않습니다.</li><li>건강기능식품은 질병의 예방·치료 목적이 아닙니다. 증상이 지속되면 진료가 먼저입니다.</li><li>약을 복용 중이라면 <a class="font-bold text-brand-700 underline" href="guide/with-medication.html">약과 영양제 가이드</a>를 먼저 읽고 약사·의사와 상의하세요.</li></ul></section>
+      <section class="rounded-3xl bg-cream-200 p-6 sm:p-8"><h2 class="text-lg font-extrabold text-ink-900">가이드를 읽는 법</h2><ul class="list-dot mt-3 text-sm text-ink-700"><li>'추천 성분'은 식약처가 인정한 기능성과 결핍 가능성을 기준으로 고른 것이며 특정 제품·브랜드를 보증하지 않습니다.</li><li>건강기능식품은 질병의 예방·치료 목적이 아닙니다. 증상이 지속되면 진료가 먼저입니다.</li><li>약을 복용 중이라면 <a class="font-bold text-brand-700 underline" href="guide/with-medication.html">약과 영양제 가이드</a>를 먼저 읽고 약사·의사와 상의하세요.</li></ul></section>
     </div>
   </main>
   <div id="site-footer"></div>

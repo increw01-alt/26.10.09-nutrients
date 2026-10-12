@@ -84,16 +84,17 @@
     var tagline = (cut > 0 ? it.summary.slice(0, cut + 2) : it.summary).slice(0, 70);
     var hero = document.getElementById("ingredient-hero");
     hero.innerHTML =
+      '<div class="mx-auto max-w-7xl px-4 pb-10 pt-8 sm:px-6 sm:pt-10">' +
       '<nav class="text-xs text-ink-500" aria-label="경로"><a class="hover:text-brand-700" href="' + D.url("index.html") + '">홈</a> › <a class="hover:text-brand-700" href="' + D.url("ingredients.html") + '">성분 사전</a> › <a class="hover:text-brand-700" href="' + D.url("ingredients.html?category=" + it.category) + '">' + esc(cat.label || "") + '</a> › <span class="text-ink-800">' + esc(it.name) + '</span></nav>' +
       '<div class="mt-5 grid gap-8 lg:grid-cols-12 lg:items-start">' +
-        '<div class="lg:col-span-5"><div class="illus-box aspect-square w-full rounded-3xl">' + art + '</div>' +
-          '<div class="mt-3 flex gap-2"><div class="thumb">' + art + '</div><div class="thumb">' + (I ? I.forCategory(it.category) : "") + '</div><div class="thumb"><i data-lucide="' + esc(it.icon || cat.icon || "pill") + '" class="h-7 w-7 text-brand-700"></i></div></div></div>' +
+        '<div class="lg:col-span-5"><div class="illus-box relative aspect-square w-full rounded-3xl">' + art + '<span class="photo-badge" aria-hidden="true">' + (I ? I.photoImg(it.category) : "") + '</span></div>' +
+          '<div class="mt-3 flex gap-2"><div class="thumb"><img src="' + (I ? I.photoFor(it.category) : "") + '" alt="" width="54" height="48" style="mix-blend-mode:multiply;object-fit:contain;width:44px;height:38px"></div><div class="thumb">' + (I ? I.forCategory(it.category) : "") + '</div><div class="thumb"><i data-lucide="' + esc(it.icon || cat.icon || "pill") + '" class="h-7 w-7 text-brand-700"></i></div></div></div>' +
         '<div class="lg:col-span-7">' +
-          '<span class="rounded-full px-2.5 py-1 text-[11px] font-bold ring-1 ' + D.catClass(cat.color) + '">' + esc(cat.label || "") + '</span>' +
-          '<h1 class="mt-3 text-3xl font-extrabold tracking-tight text-ink-900 sm:text-4xl">' + esc(it.name) + '</h1>' +
-          '<p class="mt-1 text-sm font-medium text-ink-400">' + esc(it.en) + '</p>' +
-          '<p class="mt-3 text-[15px] leading-relaxed text-ink-700">' + esc(tagline) + '</p>' +
-          '<dl class="kv-table mt-5 rounded-2xl bg-white px-5 py-1 shadow-card">' +
+          '<p class="eyebrow-kicker"><i data-lucide="leaf"></i> 성분 사전 <span class="text-ink-300">·</span> <span class="rounded-full px-2.5 py-0.5 text-[11px] font-bold ring-1 ' + D.catClass(cat.color) + '">' + esc(cat.label || "") + '</span></p>' +
+          '<h1 class="page-title mt-3">' + esc(it.name) + '</h1>' +
+          '<p class="mt-1.5 text-sm font-medium text-ink-400">' + esc(it.en) + '</p>' +
+          '<p class="page-lead mt-3">' + esc(tagline) + '</p>' +
+          '<dl class="kv-table mt-5 rounded-2xl border border-ink-100 bg-white px-5 py-1 shadow-card">' +
             '<dt>주요 기능성</dt><dd>' + esc((it.mfdsFunction || "고시형 기능성 원료 아님").split(" · ").slice(0, 2).join(" · ")) + '</dd>' +
             '<dt>하루 권장</dt><dd>' + esc(it.dosage.daily) + '</dd>' +
             '<dt>상한 섭취량</dt><dd>' + esc(it.dosage.upper) + '</dd>' +
@@ -102,16 +103,16 @@
             (it.whoFor && it.whoFor.length ? '<dt>이런 분께</dt><dd>' + esc(it.whoFor.slice(0, 2).join(" · ")) + '</dd>' : "") +
           '</dl>' +
           '<div class="mt-5 flex flex-wrap gap-3">' +
-            '<a href="#shop" class="inline-flex items-center gap-2 rounded-full bg-brand-600 px-6 py-3.5 text-[15px] font-bold text-white shadow-lift hover:bg-brand-700"><i data-lucide="shopping-bag" class="h-4 w-4"></i>제품 찾아보기</a>' +
-            '<a href="' + D.compatUrl([it.id]) + '" class="inline-flex items-center gap-2 rounded-full border border-ink-200 bg-white px-6 py-3.5 text-[15px] font-bold text-ink-800 hover:border-brand-300 hover:text-brand-700"><i data-lucide="heart-handshake" class="h-4 w-4 text-brand-600"></i>다른 영양제와 궁합 보기</a>' +
+            '<a href="#shop" class="btn-primary"><i data-lucide="shopping-bag"></i>제품 찾아보기 <i data-lucide="arrow-right"></i></a>' +
+            '<a href="' + D.compatUrl([it.id]) + '" class="btn-outline"><i data-lucide="heart-handshake" class="text-brand-600"></i>다른 영양제와 궁합 보기</a>' +
           '</div>' +
-          '<div class="mt-4 flex flex-wrap gap-1.5">' + (it.tags || []).map(function (t) { return '<a href="' + D.url("ingredients.html?tag=" + encodeURIComponent(t)) + '" class="rounded-md bg-cream-200 px-2 py-1 text-xs font-semibold text-ink-600 hover:bg-cream-300">#' + esc(t) + '</a>'; }).join("") + '</div>' +
+          '<div class="mt-4 flex flex-wrap gap-1.5">' + (it.tags || []).map(function (t) { return '<a href="' + D.url("ingredients.html?tag=" + encodeURIComponent(t)) + '" class="rounded-full bg-white/80 px-2.5 py-1 text-xs font-semibold text-ink-600 ring-1 ring-[#e3ebdc] hover:bg-white hover:text-brand-700">#' + esc(t) + '</a>'; }).join("") + '</div>' +
         '</div>' +
-      '</div>';
+      '</div></div>';
 
     // 탭 (섹션 앵커)
     var quick = document.getElementById("ingredient-quick");
-    quick.className = "detail-tabs mt-8 scroll-x -mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0";
+    quick.className = "detail-tabs mt-2 scroll-x -mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0";
     var TABS = [["sec-info", "성분 정보"], ["sec-intake", "섭취 가이드"], ["sec-compat", "궁합"], ["ingredient-materials", "인정 원료"], ["shop", "제품 찾기"], ["sec-faq", "FAQ"]];
     quick.innerHTML = '<div class="flex">' + TABS.map(function (t, i) { return '<a href="#' + t[0] + '" data-tab="' + t[0] + '" class="' + (i === 0 ? "active" : "") + '">' + t[1] + '</a>'; }).join("") + '</div>';
     quick.addEventListener("click", function (e) { var a = e.target.closest("a[data-tab]"); if (!a) return; quick.querySelectorAll("a").forEach(function (x) { x.classList.toggle("active", x === a); }); });
