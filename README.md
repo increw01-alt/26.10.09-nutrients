@@ -89,7 +89,7 @@ Windows PowerShell 도 동일하게 `python -m http.server 8080` 으로 실행�
 ### GitHub Actions 설정
 저장소 **Settings → Secrets and variables → Actions** 에서
 - Secrets: `FOODSAFETY_API_KEY`, (선택) `NAVER_CLIENT_ID`, `NAVER_CLIENT_SECRET`, `COUPANG_ACCESS_KEY`, `COUPANG_SECRET_KEY`
-- Variables(선택): `SITE_URL`, `COUPANG_SUB_ID`, `FOODSAFETY_MAX_ROWS`
+- Variables(선택): `SITE_URL`, `COUPANG_SUB_ID`, `FOODSAFETY_SERVICE`(기본 C003), `FOODSAFETY_MAX_ROWS`(기본 15000)
 
 `update-data.yml` 이 매일 03:15 KST 에 실행되어 뉴스 → 제품 → 딥링크 → 정적 페이지 순으로 갱신하고 변경이 있을 때만 커밋합니다.
 Actions 탭에서 **Run workflow** 로 즉시 실행할 수도 있습니다. 키가 없는 단계는 건너뛰며 기존 데이터를 유지합니다.
@@ -106,7 +106,7 @@ python scripts/build_site.py
 ```
 
 ### 제품 변경 추적
-`fetch_products.py` 는 이전 `products.json` 과 신고번호 기준으로 비교해 **신규 / 변경(제품명·기능성·원재료·주의사항) / 삭제** 를 `changelog` 에 기록하고, 제품 찾기 페이지 상단에 건수와 이력을 표시합니다.
+`fetch_products.py` 는 식약처 API 가 느리고(1,000건당 20~40초) 키당 동시 요청 1개만 허용하므로, 최신 신고분부터 거꾸로 `FOODSAFETY_MAX_ROWS`(기본 15,000건)만 순차 수집합니다. 이전 `products.json` 과 신고번호 기준으로 비교해 **신규 / 변경(제품명·기능성·원재료·주의사항) / 삭제** 를 `changelog` 에 기록하고, 제품 찾기 페이지 상단에 건수와 이력을 표시합니다.
 
 ## 제휴 링크 동작 방식
 - `assets/js/affiliate.js` 가 각 성분·제품의 검색어로 쇼핑몰 검색 URL 을 만들고

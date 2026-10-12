@@ -10,8 +10,15 @@
 API 키 발급: https://www.foodsafetykorea.go.kr/api/openApiInfo.do (식품안전나라 > Open API 신청)
 환경변수:
   FOODSAFETY_API_KEY   필수. 없으면 기존 파일을 유지하고 정상 종료합니다.
-  FOODSAFETY_MAX_ROWS  선택. 최대 수집 행 수 (기본 0 = 전체).
+  FOODSAFETY_MAX_ROWS  선택. 최신 신고분부터 거꾸로 수집할 최대 행 수 (기본 15000, 0 = 전체).
   FOODSAFETY_SERVICE   선택. 서비스 ID (기본 C003).
+
+동작 방식:
+  - 식약처 API 는 1,000건당 20~40초가 걸리고 인증키 하나로 동시에 1개 요청만 처리합니다.
+    그래서 읽기 제한을 넉넉히 두고(READ_TIMEOUT) 순차 호출하며, 실패 시 서버가 이전 요청을
+    끝낼 시간을 기다린 뒤 재시도합니다.
+  - 데이터는 오래된 신고부터 정렬되어 있어 마지막 페이지(최신)부터 거꾸로 MAX_ROWS 만큼만 받습니다.
+  - 이전 수집분 중 이번 수집 범위 밖(더 오래된)의 제품은 그대로 유지하고, 범위 안에서 사라진 제품만 '삭제'로 기록합니다.
 """
 from __future__ import annotations
 
@@ -28,8 +35,13 @@ from common import DATA_DIR, env, load_ingredients, log, now_iso, read_json, wri
 
 API_BASE = "http://openapi.foodsafetykorea.go.kr/api"
 PAGE = 1000
-TIMEOUT = 30
-RETRY = 3
+CONNECT_TIMEOUT = 15
+READ_TIMEOUT = 150             # 1,000건 응답에 20~40초, 여유 있게
+RETRY = 4
+WAIT_AFTER_TIMEOUT = 60        # 읽기 제한 초과 후 서버가 이전 요청을 끝낼 시간
+WAIT_WHEN_BUSY = 40            # INFO-500(현재 접속 중인 인증키) 시 대기
+PAUSE_BETWEEN_CALLS = 1.0
+DEFAULT_MAX_ROWS = 15000       # 최신 신고분부터 거꾸로 수집할 기본 행 수
 PER_INGREDIENT_CAP = 400       # 성분별 최대 보관 제품 수 (최신 신고순)
 CHANGELOG_KEEP = 200
 
@@ -79,10 +91,12 @@ def match_ingredients(row: dict, matchers) -> list[str]:
 
 def api_get(key: str, service: str, start: int, end: int) -> dict:
     url = f"{API_BASE}/{key}/{service}/json/{start}/{end}"
-    last_err = None
+    safe_url = url.replace(key, "***")
+    last_err: Exception | None = None
     for attempt in range(1, RETRY + 1):
+        wait = 5 * attempt
         try:
-            r = requests.get(url, timeout=TIMEOUT)
+            r = requests.get(url, timeout=(CONNECT_TIMEOUT, READ_TIMEOUT))
             r.raise_for_status()
             data = r.json()
             body = data.get(service) or {}
@@ -91,13 +105,46 @@ def api_get(key: str, service: str, start: int, end: int) -> dict:
             if code and code != "INFO-000":
                 if code == "INFO-200":   # 해당하는 데이터가 없습니다
                     return {"row": [], "total_count": body.get("total_count", "0")}
+                if code == "INFO-500":   # 현재 접속 중인 인증키입니다 → 이전 요청이 아직 처리 중
+                    wait = WAIT_WHEN_BUSY
                 raise RuntimeError(f"API 오류 {code}: {result.get('MSG')}")
             return body
+        except requests.exceptions.ReadTimeout as e:
+            last_err = e
+            wait = WAIT_AFTER_TIMEOUT
+            log.warning("API 응답 지연 (%d/%d) %s: %ds 내 응답 없음 → %ds 대기 후 재시도", attempt, RETRY, safe_url, READ_TIMEOUT, wait)
         except Exception as e:  # noqa: BLE001
             last_err = e
-            log.warning("API 호출 실패 (%d/%d) %s: %s", attempt, RETRY, url.replace(key, "***"), e)
-            time.sleep(2 * attempt)
+            log.warning("API 호출 실패 (%d/%d) %s: %s → %ds 대기 후 재시도", attempt, RETRY, safe_url, e, wait)
+        if attempt < RETRY:
+            time.sleep(wait)
     raise RuntimeError(f"API 호출 반복 실패: {last_err}")
+
+
+def fetch_rows(key: str, service: str, max_rows: int) -> tuple[list[dict], int]:
+    """마지막 페이지(최신 신고)부터 거꾸로 max_rows 만큼 수집."""
+    probe = api_get(key, service, 1, 1)
+    total = int(probe.get("total_count") or 0)
+    if total <= 0:
+        return [], 0
+    limit = min(total, max_rows) if max_rows else total
+    floor = total - limit + 1
+    log.info("총 %s건 (서비스 %s) → 최신 %s건 수집 (행 %s~%s)", f"{total:,}", service, f"{limit:,}", f"{floor:,}", f"{total:,}")
+    rows: list[dict] = []
+    end = total
+    while end >= floor:
+        start = max(end - PAGE + 1, floor)
+        body = api_get(key, service, start, end)
+        chunk = body.get("row") or []
+        if not chunk:
+            log.warning("행 %s~%s 응답이 비어 있어 중단", f"{start:,}", f"{end:,}")
+            break
+        rows.extend(chunk)
+        dates = [r.get("PRMS_DT", "") for r in chunk if r.get("PRMS_DT")]
+        log.info("수집 %s / %s (행 %s~%s · 신고일 %s~%s)", f"{len(rows):,}", f"{limit:,}", f"{start:,}", f"{end:,}", min(dates) if dates else "?", max(dates) if dates else "?")
+        end = start - 1
+        time.sleep(PAUSE_BETWEEN_CALLS)
+    return rows, total
 
 
 def normalize(row: dict, ingredient_ids: list[str]) -> dict:
@@ -127,13 +174,20 @@ def normalize(row: dict, ingredient_ids: list[str]) -> dict:
     }
 
 
-def diff_changelog(old_items: list[dict], new_items: list[dict]) -> dict:
+NEW_WITHIN_DAYS = 90           # 이 기간 안에 신고된 제품만 '신규'로 기록 (성분별 상한 경계에서 끼어드는 옛 제품 제외)
+
+
+def diff_changelog(old_items: list[dict], new_items: list[dict], window_oldest: str = "") -> dict:
+    """old → new 비교. window_oldest(YYYY-MM-DD) 이후 신고분만 이번 수집 범위이므로 삭제 판정은 그 안에서만."""
+    from datetime import date, timedelta
+    recent_cutoff = (date.today() - timedelta(days=NEW_WITHIN_DAYS)).isoformat()
     old = {p["id"]: p for p in old_items if p.get("source") != "sample"}
     new = {p["id"]: p for p in new_items}
     entries = []
     for pid, p in new.items():
         if pid not in old:
-            entries.append({"type": "added", "name": p["name"], "company": p["company"], "id": pid})
+            if (p.get("registeredAt") or "") >= recent_cutoff:
+                entries.append({"type": "added", "name": p["name"], "company": p["company"], "id": pid})
         else:
             o = old[pid]
             for field, label in (("name", "제품명"), ("function", "기능성"), ("rawMaterials", "원재료"), ("caution", "주의사항"), ("intake", "섭취방법"), ("lastUpdated", "식약처 정보 갱신")):
@@ -141,7 +195,7 @@ def diff_changelog(old_items: list[dict], new_items: list[dict]) -> dict:
                     entries.append({"type": "changed", "name": p["name"], "company": p["company"], "id": pid, "field": label})
                     break
     for pid, o in old.items():
-        if pid not in new:
+        if pid not in new and (not window_oldest or (o.get("registeredAt") or "") >= window_oldest):
             entries.append({"type": "removed", "name": o["name"], "company": o.get("company", ""), "id": pid})
     counts = {t: sum(1 for e in entries if e["type"] == t) for t in ("added", "removed", "changed")}
     return {"updatedAt": now_iso(), "added": counts["added"], "removed": counts["removed"], "changed": counts["changed"], "items": entries[:CHANGELOG_KEEP]}
@@ -160,26 +214,14 @@ def main() -> int:
         return 0
 
     service = env("FOODSAFETY_SERVICE", "C003")
-    max_rows = int(env("FOODSAFETY_MAX_ROWS", "0") or 0)
+    max_rows = int(env("FOODSAFETY_MAX_ROWS", str(DEFAULT_MAX_ROWS)) or 0)
     ingredients = load_ingredients()
     matchers = build_matchers(ingredients)
 
-    first = api_get(key, service, 1, PAGE)
-    total = int(first.get("total_count") or 0)
-    log.info("총 %s건 (서비스 %s)", f"{total:,}", service)
-    rows = list(first.get("row") or [])
-    start = PAGE + 1
-    limit = min(total, max_rows) if max_rows else total
-    while start <= limit:
-        end = min(start + PAGE - 1, limit)
-        body = api_get(key, service, start, end)
-        chunk = body.get("row") or []
-        if not chunk:
-            break
-        rows.extend(chunk)
-        log.info("수집 %s / %s", f"{len(rows):,}", f"{limit:,}")
-        start = end + 1
-        time.sleep(0.3)
+    rows, total = fetch_rows(key, service, max_rows)
+    if not rows:
+        log.warning("수집된 행이 없어 기존 데이터를 유지합니다.")
+        return 0
 
     items: dict[str, dict] = {}
     for row in rows:
@@ -190,6 +232,15 @@ def main() -> int:
         if not p["name"]:
             continue
         items[p["id"]] = p
+    window_oldest = min((p["registeredAt"] for p in items.values() if re.fullmatch(r"\d{4}-\d{2}-\d{2}", p["registeredAt"])), default="")
+    log.info("성분 매칭 제품 %s건 (수집 범위 최초 신고일 %s)", f"{len(items):,}", window_oldest or "?")
+
+    # 이전 수집분 중 이번 범위보다 오래된 제품은 그대로 유지 (갱신은 못 하지만 사라지지도 않음)
+    was_sample = existing.get("_meta", {}).get("source") == "sample"
+    if not was_sample:
+        for p in existing.get("items", []):
+            if p.get("source") == "mfds" and p["id"] not in items and window_oldest and (p.get("registeredAt") or "") < window_oldest:
+                items[p["id"]] = p
 
     # 성분별 상한 적용 (최신 신고순)
     per: dict[str, int] = {}
@@ -205,9 +256,10 @@ def main() -> int:
                 per[iid] = per.get(iid, 0) + 1
 
     new_items = sorted(kept.values(), key=lambda x: x["registeredAt"], reverse=True)
-    changelog = diff_changelog(existing.get("items", []), new_items)
+    for p in new_items:
+        p.pop("isNew", None)
+    changelog = diff_changelog(existing.get("items", []), new_items, window_oldest)
     added_ids = {e["id"] for e in changelog["items"] if e["type"] == "added"}
-    was_sample = existing.get("_meta", {}).get("source") == "sample"
     for p in new_items:
         if p["id"] in added_ids and not was_sample:
             p["isNew"] = True
@@ -220,6 +272,8 @@ def main() -> int:
             "updatedAt": now_iso(),
             "total": len(new_items),
             "scanned": len(rows),
+            "apiTotal": total,
+            "windowOldest": window_oldest,
             "fields": existing.get("_meta", {}).get("fields", {}),
         },
         "changelog": changelog if not was_sample else {"updatedAt": now_iso(), "added": 0, "removed": 0, "changed": 0, "items": []},
@@ -235,4 +289,7 @@ if __name__ == "__main__":
         sys.exit(main())
     except Exception as e:  # noqa: BLE001
         log.error("제품 수집 실패: %s — 기존 데이터를 유지합니다.", e)
-        sys.exit(0 if env("CI") else 1)
+        if env("CI"):
+            print(f"::warning title=제품 수집 실패::{e} — 기존 products.json 유지")
+            sys.exit(0)
+        sys.exit(1)

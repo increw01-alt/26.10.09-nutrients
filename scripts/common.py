@@ -43,7 +43,11 @@ def write_json(path: Path, data) -> None:
         json.dump(data, f, ensure_ascii=False, indent=2)
         f.write("\n")
     os.replace(tmp, path)
-    log.info("저장: %s", path.relative_to(ROOT))
+    try:
+        shown = path.relative_to(ROOT)
+    except ValueError:
+        shown = path
+    log.info("저장: %s", shown)
 
 
 def env(name: str, default: str = "") -> str:
