@@ -1,0 +1,9 @@
+# Cloudflare Pages 캐시 설정 — JS/CSS 는 빌드가 ?v=해시 를 붙이므로 길게 캐시해도 안전
+/assets/js/*
+  Cache-Control: public, max-age=31536000, immutable
+/assets/css/*
+  Cache-Control: public, max-age=31536000, immutable
+/assets/images/*
+  Cache-Control: public, max-age=604800
+/data/*
+  Cache-Control: public, max-age=300

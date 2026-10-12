@@ -41,6 +41,37 @@ def site_config() -> dict:
 VERIFY_START, VERIFY_END = "<!-- site-verification:start", "<!-- site-verification:end -->"
 
 
+ASSET_LINK_RE = re.compile(r'(?P<pre>(?:src|href)=")(?P<path>/?(?:\.\./)*assets/(?:js|css)/[A-Za-z0-9_./-]+\.(?:js|css))(?:\?v=[0-9a-f]+)?(?P<post>")')
+
+
+def stamp_assets() -> None:
+    """모든 HTML 의 assets/js·css 링크에 내용 해시(?v=…)를 붙여, 배포 후 브라우저가 예전 캐시 대신 새 파일을 받게 합니다.
+    (Cloudflare Pages + 휴대폰 브라우저에서 새 HTML 과 옛 JS/CSS 가 섞여 동작이 깨지는 문제 방지)"""
+    import hashlib
+    cache: dict[str, str] = {}
+
+    def digest(path: Path) -> str:
+        key = str(path)
+        if key not in cache:
+            cache[key] = hashlib.sha1(path.read_bytes()).hexdigest()[:8] if path.exists() else "0"
+        return cache[key]
+
+    files = sorted(ROOT.glob("*.html")) + sorted(OUT_DIR.glob("*.html")) + sorted((ROOT / "guide").glob("*.html"))
+    changed = 0
+    for html_path in files:
+        src = html_path.read_text(encoding="utf-8")
+
+        def repl(m: re.Match) -> str:
+            rel = m.group("path")
+            target = (ROOT / rel.lstrip("/")).resolve() if rel.startswith("/") else (html_path.parent / rel).resolve()
+            return f'{m.group("pre")}{m.group("path")}?v={digest(target)}{m.group("post")}'
+
+        out = ASSET_LINK_RE.sub(repl, src)
+        if out != src:
+            html_path.write_text(out, encoding="utf-8"); changed += 1
+    log.info("자산 버전 스탬프: HTML %d개 갱신", changed)
+
+
 def inject_verification(cfg: dict) -> None:
     """config.js 의 소유 확인 코드를 index.html <head> 의 마커 사이에 정적 메타태그로 넣습니다.
     (검색엔진 소유 확인 크롤러는 JS 를 실행하지 않으므로 원본 HTML 에 있어야 합니다.)"""
@@ -456,6 +487,7 @@ def main() -> int:
     guides = build_guides(core, cfg)
     build_sitemap(ingredients["items"], cfg, data_date, guides)
     inject_verification(cfg)
+    stamp_assets()
     products = read_json(DATA_DIR / "products.json", {"_meta": {}, "items": []})
     news = read_json(DATA_DIR / "news.json", {"_meta": {}, "items": []})
     materials = read_json(DATA_DIR / "materials.json", {"_meta": {}, "items": []})
