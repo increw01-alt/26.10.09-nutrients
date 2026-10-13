@@ -15,6 +15,7 @@ API 키 발급: https://www.data.go.kr 회원가입 → 아래 두 API 를 '활�
 환경변수:
   DATA_GO_KR_KEY        필수. 없으면 기존 파일을 유지하고 정상 종료합니다. (Encoding 키를 넣어도 자동으로 풀어 씁니다)
   DRUG_API_BUDGET       선택. 한 번 실행에서 허용할 API 호출 수 (기본 900 — 공공데이터포털 개발계정 일일 1,000건 기준)
+  DRUG_TIME_BUDGET      선택. 한 번 실행에서 허용할 시간(초, 기본 780). 넘으면 허가정보 연결을 멈추고 받은 것까지 저장
   DRUG_MAX_ROWS         선택. e약은요 수집 상한 (기본 0 = 전체)
   DRUG_API_BASE / DRUG_EASY_SERVICE / DRUG_PERMIT_SERVICE   선택. 주소·서비스 경로가 바뀌었을 때 덮어쓰기
 
@@ -44,9 +45,19 @@ from common import DATA_DIR, env, load_ingredients, log, now_iso, read_json, wri
 DEFAULT_API_BASE = "https://apis.data.go.kr/1471000"
 DEFAULT_EASY_SERVICE = "DrbEasyDrugInfoService/getDrbEasyDrugList"
 DEFAULT_PERMIT_SERVICE = "DrugPrdtPrmsnInfoService06/getDrugPrdtPrmsnInq06"
+# 허가정보 API 는 식약처가 스키마를 바꿀 때마다 서비스 버전(…Service06)과 오퍼레이션 번호가 올라간다.
+# 기본 경로가 400/404 를 돌려주면 아래 후보를 차례로 1회씩 찔러 보고 품목 필드(ITEM_SEQ)가 오는 첫 경로를 쓴다.
+PERMIT_CANDIDATES = [
+    "DrugPrdtPrmsnInfoService06/getDrugPrdtPrmsnInq06", "DrugPrdtPrmsnInfoService06/getDrugPrdtPrmsnDtlInq05",
+    "DrugPrdtPrmsnInfoService07/getDrugPrdtPrmsnInq07", "DrugPrdtPrmsnInfoService07/getDrugPrdtPrmsnDtlInq06",
+    "DrugPrdtPrmsnInfoService08/getDrugPrdtPrmsnInq08", "DrugPrdtPrmsnInfoService08/getDrugPrdtPrmsnDtlInq07",
+    "DrugPrdtPrmsnInfoService05/getDrugPrdtPrmsnInq05", "DrugPrdtPrmsnInfoService05/getDrugPrdtPrmsnDtlInq04",
+]
+DEFAULT_TIME_BUDGET = 780      # 실행당 허용 시간(초). 워크플로 단계 제한(20분) 전에 멈추고 받은 것까지 저장한다
+MAX_CONSECUTIVE_FAILS = 5      # 개별 조회가 연속으로 이만큼 실패하면 API 쪽 문제로 보고 중단
 PAGE = 100                     # 공공데이터포털 numOfRows 상한
 CONNECT_TIMEOUT = 15
-READ_TIMEOUT = 60
+READ_TIMEOUT = 60              # e약은요는 페이지당 1~3초, 느릴 때 15초 이상
 RETRY = 3
 PAUSE_BETWEEN_CALLS = 0.3
 DEFAULT_BUDGET = 900
@@ -169,32 +180,52 @@ def match_ids(name: str, tokens: list[str], valid: set[str]) -> list[str]:
 
 # ---------------------------------------------------------------- API
 class Client:
-    def __init__(self, key: str, base: str, budget: int):
+    def __init__(self, key: str, base: str, budget: int, time_budget: int = DEFAULT_TIME_BUDGET):
         self.key = unquote(key) if "%" in key else key
         self.base = base.rstrip("/")
         self.budget = budget
+        self.time_budget = time_budget
+        self.started = time.monotonic()
         self.calls = 0
 
-    def get(self, service: str, **params) -> tuple[list[dict], int]:
+    def elapsed(self) -> float:
+        return time.monotonic() - self.started
+
+    def get(self, service: str, retries: int = RETRY, **params) -> tuple[list[dict], int]:
         if self.calls >= self.budget:
             raise QuotaExceeded(f"실행당 호출 예산({self.budget}회) 소진")
+        if self.elapsed() > self.time_budget:
+            raise QuotaExceeded(f"실행당 시간 예산({self.time_budget}초) 초과")
         url = f"{self.base}/{service}"
         q = {"serviceKey": self.key, "type": "json", "numOfRows": PAGE, "pageNo": 1}
         q.update({k: v for k, v in params.items() if v not in (None, "")})
         last_err: Exception | None = None
-        for attempt in range(1, RETRY + 1):
+        for attempt in range(1, retries + 1):
             try:
                 self.calls += 1
                 r = requests.get(url, params=q, timeout=(CONNECT_TIMEOUT, READ_TIMEOUT), headers={"Accept": "application/json, application/xml;q=0.9, */*;q=0.8"})
-                r.raise_for_status()
+                if r.status_code >= 400:
+                    body = r.text.lstrip()
+                    if body.startswith("<") or body.startswith("{"):
+                        try:
+                            parse_response(body)            # 오류 본문이 포털 공통 오류(코드 12·30 등)면 코드와 조치를 담아 던진다
+                        except PortalError:
+                            raise
+                        except Exception:  # noqa: BLE001
+                            pass
+                    snippet = re.sub(r"\s+", " ", r.text)[:240]
+                    msg = f"HTTP {r.status_code} {r.reason}: {snippet or '(본문 없음)'}"
+                    if r.status_code < 500:
+                        raise PortalError(msg)           # 4xx 는 요청 자체가 거부된 것 — 재시도해도 같다
+                    raise RuntimeError(msg)
                 return parse_response(r.text)
             except PortalError:
                 raise
             except Exception as e:  # noqa: BLE001
                 last_err = e
                 shown = {k: v for k, v in q.items() if k != "serviceKey"}
-                log.warning("API 호출 실패 (%d/%d) %s %s: %s", attempt, RETRY, service, shown, e)
-                if attempt < RETRY:
+                log.warning("API 호출 실패 (%d/%d) %s %s: %s", attempt, retries, service, shown, e)
+                if attempt < retries:
                     time.sleep(3 * attempt)
         raise RuntimeError(f"API 호출 반복 실패: {last_err}")
 
@@ -284,13 +315,39 @@ def permit_entry(row: dict) -> dict:
     }
 
 
+def resolve_permit_service(client: Client, preferred: str) -> str | None:
+    """허가정보 API 경로를 확인한다: 지정 경로 → 후보 순서로 1회씩 호출해 품목 필드가 오는 첫 경로. 실패 사유는 모두 로그에 남긴다."""
+    cands = [c for c in [preferred] + PERMIT_CANDIDATES if c]
+    seen: set[str] = set()
+    for svc in cands:
+        if svc in seen:
+            continue
+        seen.add(svc)
+        try:
+            items, total = client.get(svc, retries=1, numOfRows=1)
+        except QuotaExceeded:
+            raise
+        except Exception as e:  # noqa: BLE001
+            log.warning("허가정보 경로 후보 %s → %s", svc, str(e)[:300])
+            continue
+        if items and any(k in items[0] for k in ("ITEM_SEQ", "ITEM_NAME")):
+            log.info("허가정보 경로 확인: %s (전체 %s건, 필드 예: %s)", svc, f"{total:,}", ", ".join(list(items[0].keys())[:14]))
+            return svc
+        log.warning("허가정보 경로 후보 %s → 품목 필드 없음 (%s)", svc, ", ".join(list(items[0].keys())[:8]) if items else "빈 응답")
+    log.warning("허가정보 API 경로를 찾지 못해 주성분 연결을 건너뜁니다. 위 로그의 응답을 보고 저장소 Variables 의 DRUG_PERMIT_SERVICE 를 맞춰 주세요.")
+    return None
+
+
 def fill_permits(client: Client, service: str, cache: dict[str, dict], needed: list[str]) -> None:
     """허가 목록으로 주성분 캐시를 채운다. 많이 비어 있으면 목록 전체 순회, 아니면 품목별 조회."""
     missing = [i for i in needed if i not in cache]
     if not missing:
         return
     need = set(missing)
-    log.info("허가정보 캐시에 없는 품목 %s건", f"{len(missing):,}")
+    log.info("허가정보 캐시에 없는 품목 %s건", f"{len(need):,}")
+    service = resolve_permit_service(client, service) or ""
+    if not service:
+        return
     if len(missing) > BULK_THRESHOLD:
         # 일반의약품만 걸러지는지 확인 (지원하지 않는 필터면 전체를 넘긴다)
         flt: dict = {}
@@ -303,7 +360,7 @@ def fill_permits(client: Client, service: str, cache: dict[str, dict], needed: l
         except QuotaExceeded:
             raise
         except Exception as e:  # noqa: BLE001
-            log.warning("허가 목록 건수 확인 실패: %s → 전체 순회", e)
+            log.warning("허가 목록 건수 확인 실패: %s → 전체 순회", str(e)[:300])
         page, found = 1, 0
         while page <= BULK_MAX_PAGES and need:
             try:
@@ -311,7 +368,7 @@ def fill_permits(client: Client, service: str, cache: dict[str, dict], needed: l
             except QuotaExceeded:
                 raise
             except Exception as e:  # noqa: BLE001
-                log.warning("허가 목록 %d페이지 실패: %s → 목록 순회 중단", page, e)
+                log.warning("허가 목록 %d페이지 실패: %s → 목록 순회 중단", page, str(e)[:300])
                 break
             if not items:
                 break
@@ -326,18 +383,23 @@ def fill_permits(client: Client, service: str, cache: dict[str, dict], needed: l
             time.sleep(PAUSE_BETWEEN_CALLS)
         log.info("허가 목록 순회 종료: 연결 %s건, 남은 품목 %s건", f"{found:,}", f"{len(need):,}")
     # 남은 품목은 개별 조회 (예산 안에서)
-    single = 0
+    single, fails = 0, 0
     for seq in list(need):
         if client.calls >= client.budget - 1:
             log.warning("호출 예산 소진 — 남은 %s건은 다음 실행에서 조회합니다.", f"{len(need):,}")
             break
         try:
-            items, _ = client.get(service, item_seq=seq, numOfRows=5)
+            items, _ = client.get(service, retries=2, item_seq=seq, numOfRows=5)
         except QuotaExceeded:
             raise
         except Exception as e:  # noqa: BLE001
-            log.warning("허가정보 개별 조회 실패 %s: %s", seq, e)
+            fails += 1
+            log.warning("허가정보 개별 조회 실패 %s: %s", seq, str(e)[:300])
+            if fails >= MAX_CONSECUTIVE_FAILS:
+                log.warning("개별 조회가 %d번 연속 실패해 중단합니다. 남은 %s건은 다음 실행에서 다시 시도합니다.", fails, f"{len(need):,}")
+                break
             continue
+        fails = 0
         hit = next((r for r in items if str(r.get("ITEM_SEQ") or "").strip() == seq), None) or (items[0] if items else None)
         cache[seq] = permit_entry(hit) if hit else {"ingr": "", "otc": "", "cls": "", "date": "", "cancel": "", "img": "", "name": "", "none": True}
         need.discard(seq); single += 1
@@ -470,7 +532,8 @@ def main() -> int:
         if args.sample or not key:
             log.warning("DATA_GO_KR_KEY 가 없어 의약품 수집을 건너뜁니다. 기존 데이터(%s건)를 유지합니다.", f"{len(full_prev):,}")
             return 0
-        client = Client(key, env("DRUG_API_BASE", DEFAULT_API_BASE), int(env("DRUG_API_BUDGET", str(DEFAULT_BUDGET)) or DEFAULT_BUDGET))
+        client = Client(key, env("DRUG_API_BASE", DEFAULT_API_BASE), int(env("DRUG_API_BUDGET", str(DEFAULT_BUDGET)) or DEFAULT_BUDGET),
+                        int(env("DRUG_TIME_BUDGET", str(DEFAULT_TIME_BUDGET)) or DEFAULT_TIME_BUDGET))
         rows, total = fetch_easy(client, easy_service, int(env("DRUG_MAX_ROWS", "0") or 0))
         if not rows:
             log.warning("수집된 행이 없어 기존 데이터를 유지합니다.")
