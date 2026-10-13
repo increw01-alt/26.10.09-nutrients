@@ -104,7 +104,7 @@
   document.addEventListener("DOMContentLoaded", function () {
     D.productNames().then(function (n) {
       names = n && n.p ? n : null; if (!names) return;
-      var apply = function () { nameMatch = D.nameMatcher(D.indexText(names, 3)); if (state.q && products && core) render(); };
+      var apply = function () { nameMatch = D.productMatcher(names); if (state.q && products && core) render(); };
       apply(); if (names.more) names.more.then(apply);   // 과거 제품 색인이 합쳐지면 한 번 더
     }).catch(function () {});
     Promise.all([D.core(), D.products(), window.Affiliate.ready()]).then(function (r) {

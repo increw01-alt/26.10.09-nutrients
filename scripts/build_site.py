@@ -18,6 +18,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from datetime import datetime  # noqa: E402
+from brand_priority import load_brand_priority  # noqa: E402
 from common import DATA_DIR, KST, ROOT, env, log, now_iso, read_json, write_json  # noqa: E402
 
 OUT_DIR = ROOT / "i"
@@ -92,7 +93,13 @@ def build_product_names() -> None:
     companies = sorted({(it.get("company") or "").strip() for it in rows} - {""})
     cidx = {c: n for n, c in enumerate(companies)}
     cutoff = f"{datetime.now(KST).year - SEARCH_RECENT_YEARS + 1}-01-01"
-    entry = lambda it: [it["id"], it["name"], [idx[i] for i in it.get("ingredients", []) if i in idx], cidx.get((it.get("company") or "").strip(), -1)]
+    bp = load_brand_priority()
+
+    def entry(it: dict) -> list:   # [제품id, 이름, [성분번호], 제조사번호, (브랜드 가중치 1~3 — 0 이면 생략)]
+        company = (it.get("company") or "").strip()
+        row = [it["id"], it["name"], [idx[i] for i in it.get("ingredients", []) if i in idx], cidx.get(company, -1)]
+        w = bp.weight(it["name"], company)
+        return row + [w] if w else row
     recent = [entry(it) for it in rows if (it.get("registeredAt") or "9999") >= cutoff]
     older = [entry(it) for it in rows if (it.get("registeredAt") or "9999") < cutoff]
     updated = products.get("_meta", {}).get("updatedAt")
@@ -102,7 +109,8 @@ def build_product_names() -> None:
         write_json(old_path, {"_meta": {"updatedAt": updated, "total": len(older), "before": cutoff}, "i": ids, "c": companies, "p": older}, compact=True, quiet=True)
     elif old_path.exists():
         old_path.unlink()
-    log.info("제품 검색 색인: 최근 %s건 + 과거 %s건 (data/products/names.json%s)", f"{len(recent):,}", f"{len(older):,}", " · names-old.json" if older else "")
+    weighted = sum(1 for e in recent + older if len(e) > 4)
+    log.info("제품 검색 색인: 최근 %s건 + 과거 %s건 (data/products/names.json%s) · 브랜드 가중치 %s건", f"{len(recent):,}", f"{len(older):,}", " · names-old.json" if older else "", f"{weighted:,}")
 
 
 def validate_drug_pairings(valid_ids: set[str]) -> None:
@@ -116,10 +124,35 @@ def validate_drug_pairings(valid_ids: set[str]) -> None:
     log.info("의약품 영양 성분 규칙 검증 통과: %d개 규칙", len(data.get("rules", [])))
 
 
+def stamp_drug_weights() -> None:
+    """의약품 검색 색인(data/drugs/names.json) 의 각 항목에 브랜드 가중치(p[6]) 를 싣는다 — fetch_drugs.py 도 같은 규칙으로 쓰지만,
+    규칙 파일(data/brand-priority.json)만 고친 뒤 빌드해도 반영되도록 여기서 다시 맞춘다 (바뀐 게 없으면 파일을 건드리지 않음)."""
+    path = DATA_DIR / "drugs" / "names.json"
+    data = read_json(path, None)
+    if not data or not data.get("p"):
+        return
+    bp = load_brand_priority()
+    companies = data.get("c", [])
+    changed = 0
+    for row in data["p"]:
+        company = companies[row[5]] if len(row) > 5 and isinstance(row[5], int) and 0 <= row[5] < len(companies) else ""
+        w = bp.weight(row[1], company)
+        cur = row[6] if len(row) > 6 else 0
+        if w != cur:
+            changed += 1
+            del row[6:]
+            if w:
+                row.append(w)
+    if changed:
+        write_json(path, data, compact=True, quiet=True)
+        log.info("의약품 검색 색인 브랜드 가중치 갱신: %s건 변경", f"{changed:,}")
+
+
 def ensure_drug_index() -> None:
     """의약품 검색 색인(scripts/fetch_drugs.py 가 생성)이 아직 없으면 빈 색인을 둔다 — 검색 스크립트가 404 를 만나지 않도록."""
     path = DATA_DIR / "drugs" / "names.json"
     if path.exists():
+        stamp_drug_weights()
         return
     write_json(path, {"_meta": {"source": "none", "total": 0, "updatedAt": None, "note": "DATA_GO_KR_KEY 를 등록하고 scripts/fetch_drugs.py 를 실행하면 채워집니다"}, "i": [], "p": []}, compact=True, quiet=True)
     log.info("의약품 검색 색인이 없어 빈 색인 생성 (data/drugs/names.json) — DATA_GO_KR_KEY 등록 후 fetch_drugs.py 로 수집")

@@ -40,6 +40,7 @@ from urllib.parse import unquote
 import requests
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from brand_priority import load_brand_priority  # noqa: E402
 from common import DATA_DIR, env, load_ingredients, log, now_iso, read_json, write_json  # noqa: E402
 from drug_ingr_ko import to_korean  # noqa: E402
 
@@ -505,9 +506,14 @@ def write_outputs(data_dir: Path, items: list[dict], meta: dict, valid_ids: list
     idx = {i: n for n, i in enumerate(used)}
     companies = sorted({it["company"] for it in items if it["company"]})
     cidx = {c: n for n, c in enumerate(companies)}
-    # p 항목: [품목기준코드, 이름, [영양 성분 번호], 주성분 요약, 1=일반·2=전문, 제조사 번호]
-    names = {"_meta": meta, "i": used, "c": companies,
-             "p": [[it["id"], it["name"], [idx[i] for i in it["ingredients"]], " · ".join(it["ingr"][:3])[:40], OTC_FLAG.get(it["otc"], 0), cidx.get(it["company"], -1)] for it in items]}
+    bp = load_brand_priority()   # 검색 순위용 브랜드 가중치 (data/brand-priority.json)
+
+    def entry(it: dict) -> list:   # [품목기준코드, 이름, [영양 성분 번호], 주성분 요약, 1=일반·2=전문, 제조사 번호, (브랜드 가중치 1~3 — 0 이면 생략)]
+        row = [it["id"], it["name"], [idx[i] for i in it["ingredients"]], " · ".join(it["ingr"][:3])[:40], OTC_FLAG.get(it["otc"], 0), cidx.get(it["company"], -1)]
+        w = bp.weight(it["name"], it["company"])
+        return row + [w] if w else row
+
+    names = {"_meta": meta, "i": used, "c": companies, "p": [entry(it) for it in items]}
     write_json(d / "names.json", names, compact=True)
     shards: dict[str, list[dict]] = {}
     for it in items:

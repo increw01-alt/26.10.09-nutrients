@@ -42,11 +42,11 @@
 
     title.textContent = "‘" + q + "’ 검색 결과";
     var ings = D.search(core.items, q, 8);
-    var pm = D.nameMatcher(D.indexText(products, 3)), ph = pm(q, 30);   // 이름 + 제조사로 검색 (브랜드·제조사명으로도 찾도록)
-    var dm = D.nameMatcher(D.indexText(drugs, 5)), dh = dm(q, 20);
+    var pm = D.productMatcher(products), ph = pm(q, 30);   // 이름 + 제조사로 검색 (브랜드·제조사명으로도 찾도록), 잘 알려진 브랜드 우선
+    var dm = D.drugMatcher(drugs), dh = dm(q, 20);
     var gs = (guides || []).filter(function (g) { return D.has([g.title, g.h1, (g.keywords || []).join(" ")].join(" "), q); }).slice(0, 8);
     var counts = [ings.length ? "성분 " + ings.length : "", ph.total ? "건강기능식품 " + ph.total.toLocaleString() : "", dh.total ? "의약품 " + dh.total.toLocaleString() : "", gs.length ? "가이드 " + gs.length : ""].filter(Boolean);
-    summary.textContent = counts.length ? counts.join(" · ") + "건을 찾았어요. 제품명은 일부만 맞아도 나오며, 이름 앞부분이 맞는 제품부터 보여줍니다." : "일치하는 결과가 없어요. 아래 비슷한 이름과 검색 요령을 확인해 보세요.";
+    summary.textContent = counts.length ? counts.join(" · ") + "건을 찾았어요. 제품명은 일부만 맞아도 나오며, 이름 앞부분이 맞는 제품과 잘 알려진 브랜드를 먼저 보여줍니다." : "일치하는 결과가 없어요. 아래 비슷한 이름과 검색 요령을 확인해 보세요.";
 
     var html = "";
     if (ings.length) html += section("sec-ingredients", "성분", "pill", ings.length + "건",
@@ -57,7 +57,7 @@
           '<a class="shrink-0 text-xs font-bold text-brand-700 hover:underline" href="' + D.productsUrl(it.id) + '">함유 제품</a></li>';
       }).join("") + '</ul>');
     if (ph.total) html += section("sec-products", "건강기능식품", "package", ph.total.toLocaleString() + "건",
-      '<p class="mt-1 text-xs text-ink-400">식약처 품목신고 제품 · 이름 앞부분이 맞는 순</p><ul class="mt-3 divide-y divide-ink-100">' + ph.idx.map(function (i) {
+      '<p class="mt-1 text-xs text-ink-400">식약처 품목신고 제품 · 이름 앞부분이 맞는 제품·잘 알려진 브랜드 순</p><ul class="mt-3 divide-y divide-ink-100">' + ph.idx.map(function (i) {
         var pp = products.p[i]; var ids = pp[2].map(function (k) { return products.i[k]; }).filter(function (k) { return !!core.byId[k]; });
         var maker = (products.c || [])[pp[3]] || "";
         return '<li class="py-3"><div class="flex flex-wrap items-center gap-x-3 gap-y-1"><a class="min-w-0 text-[15px] font-bold text-ink-900 hover:text-brand-700" href="' + D.productUrl(pp[0]) + '">' + D.markMatch(pp[1], q) + '</a>' + (maker ? '<span class="text-xs font-semibold text-ink-500">' + esc(maker) + '</span>' : "") + (ids.length ? '<a class="text-xs font-bold text-brand-700 hover:underline" href="' + D.compatUrl(ids) + '">궁합 보기</a>' : "") + '</div>' +

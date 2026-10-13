@@ -47,6 +47,17 @@
     }
     return out;
   }
+  function wordStarts(s, fn) {   // fn(jamo·chosung) 으로 풀어 쓴 문자열에서 단어가 시작하는 위치 → {위치: 1} (공백·기호 뒤, 한글↔영문·숫자 경계)
+    var out = {}, len = 0, start = true, prevH = null; s = String(s == null ? "" : s);
+    for (var i = 0; i < s.length; i++) {
+      var piece = fn(s.charAt(i));
+      if (!piece) { start = true; continue; }
+      var c = s.charCodeAt(i), h = (c >= 0xAC00 && c <= 0xD7A3) || (c >= 0x3131 && c <= 0x318E);
+      if (start || (prevH !== null && h !== prevH)) out[len] = 1;
+      start = false; prevH = h; len += piece.length;
+    }
+    return out;
+  }
 
   var Data = {
     root: ROOT,
@@ -71,7 +82,16 @@
       }
       return cache.__productNames;
     },
-    indexText: function (n, ci) { return (n && n.p ? n.p : []).map(function (pp) { var c = ci >= 0 ? (n.c || [])[pp[ci]] : ""; return pp[1] + (c ? " " + c : ""); }); },   // 이름 + 제조사 (검색 매처용)
+    /* 검색 색인 {c:[제조사], p:[[id, 이름, …]]} → 매처: 이름으로 찾고 제조사명(ci 번째)으로도 찾으며, 브랜드 가중치(wi 번째, data/brand-priority.json 을 빌드가 실어 둠)를 순위에 반영 */
+    indexMatcher: function (n, ci, wi) {
+      var p = (n && n.p) || [], c = (n && n.c) || [];
+      return Data.nameMatcher(p.map(function (pp) { return pp[1]; }), {
+        extra: p.map(function (pp) { return (ci >= 0 && pp[ci] >= 0 && c[pp[ci]]) || ""; }),
+        weights: p.map(function (pp) { return pp[wi] || 0; })
+      });
+    },
+    productMatcher: function (n) { return Data.indexMatcher(n, 3, 4); },   // 제품 색인: [제품id, 이름, [성분번호], 제조사번호, (가중치)]
+    drugMatcher: function (n) { return Data.indexMatcher(n, 5, 6); },      // 의약품 색인: [품목코드, 이름, [성분번호], 주성분요약, 1=일반·2=전문, 제조사번호, (가중치)]
     drugNames: function () { return load("drugs/names"); },         // 의약품 검색 색인 { i:[성분id], c:[제조사], p:[[품목코드, 이름, [성분번호], 주성분요약, 1=일반·2=전문, 제조사번호]] } (수집 전이면 빈 색인)
     news: function () { return load("news"); },
     meta: function () { return load("meta"); },
@@ -202,14 +222,26 @@
       var key = Data.isChosung(q) ? String(q).replace(/\s+/g, "") : jamo(q);
       return !!key && (Data.isChosung(q) ? chosung(text) : jamo(text)).indexOf(key) >= 0;
     },
-    /* 이름 목록용 매처: 한 번 자모로 풀어 두고 (q, limit) → { idx: [색인…], total } 를 돌려준다. 앞에서 일치하는 이름, 짧은 이름 우선 */
-    nameMatcher: function (names) {
-      var J = names.map(jamo), C = names.map(chosung);
+    /* 이름 목록용 매처: 한 번 자모로 풀어 두고 (q, limit) → { idx: [색인…], total } 를 돌려준다.
+     * 순위: 이름 앞부분 일치(0) → 단어 첫머리 일치(300) → 이름 중간 일치(1000) → 제조사명 일치(2000, opts.extra) 등급으로 묶고,
+     * 같은 등급 안에서는 브랜드 가중치(opts.weights 0~3, 한 단계당 -200: 등급 안에서는 항상 앞이고, 가중치 2 이상이면 단어 첫머리 일치가 가중치 없는 앞부분 일치보다 앞) 가 높은 것, 그다음 일치 위치가 앞인 것, 짧은 이름 순. */
+    nameMatcher: function (names, opts) {
+      opts = opts || {};
+      var J = names.map(jamo), C = names.map(chosung), W = opts.weights || null;
+      var E = opts.extra ? opts.extra.map(jamo) : null, EC = opts.extra ? opts.extra.map(chosung) : null;
+      var SJ = names.map(function (n) { return wordStarts(n, jamo); }), SC = names.map(function (n) { return wordStarts(n, chosung); });
       return function (q, limit) {
         var cho = Data.isChosung(q), key = cho ? String(q).replace(/\s+/g, "") : jamo(q);
         if (key.length < 2) return { idx: [], total: 0 };
-        var hits = [], arr = cho ? C : J;
-        for (var i = 0; i < arr.length; i++) { var pos = arr[i].indexOf(key); if (pos >= 0) hits.push([i, (pos === 0 ? 0 : 1000) + pos * 10 + arr[i].length]); }
+        var hits = [], arr = cho ? C : J, ext = cho ? EC : E, starts = cho ? SC : SJ;
+        for (var i = 0; i < arr.length; i++) {
+          var pos = arr[i].indexOf(key), tier;
+          if (pos === 0) tier = 0;
+          else if (pos > 0) tier = starts[i][pos] ? 300 : 1000;
+          else if (ext && ext[i].indexOf(key) >= 0) { tier = 2000; pos = 0; }
+          else continue;
+          hits.push([i, tier + Math.min(pos, 60) * 3 + Math.min(arr[i].length, 99) - (W ? (W[i] || 0) * 200 : 0)]);   // 위치(자모 단위, 최대 180)·길이(최대 99)는 가중치 한 단계(200)를 넘지 않는다
+        }
         hits.sort(function (a, b) { return a[1] - b[1]; });
         return { idx: hits.slice(0, limit || 10).map(function (h) { return h[0]; }), total: hits.length };
       };
