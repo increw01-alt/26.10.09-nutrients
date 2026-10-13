@@ -60,7 +60,17 @@
     ingredients: function () { return load("ingredients"); },
     interactions: function () { return load("interactions"); },
     products: function () { return load("products"); },
-    productNames: function () { return load("products/names"); },   // 검색용 경량 색인 { i:[성분id], c:[제조사], p:[[제품id, 이름, [성분번호], 제조사번호]] }
+    productNames: function () {   // 검색용 경량 색인 { i:[성분id], c:[제조사], p:[[제품id, 이름, [성분번호], 제조사번호]] } — 과거(names-old)가 있으면 이어 붙인다
+      if (!cache.__productNames) {
+        cache.__productNames = load("products/names").then(function (n) {
+          if (!n || !n._meta || !n._meta.old) return n;
+          return load("products/names-old").then(function (o) { n.p = n.p.concat((o && o.p) || []); return n; }).catch(function () { return n; });
+        });
+        cache.__productNames.catch(function () { delete cache.__productNames; });
+      }
+      return cache.__productNames;
+    },
+    indexText: function (n, ci) { return (n && n.p ? n.p : []).map(function (pp) { var c = ci >= 0 ? (n.c || [])[pp[ci]] : ""; return pp[1] + (c ? " " + c : ""); }); },   // 이름 + 제조사 (검색 매처용)
     drugNames: function () { return load("drugs/names"); },         // 의약품 검색 색인 { i:[성분id], c:[제조사], p:[[품목코드, 이름, [성분번호], 주성분요약, 1=일반·2=전문, 제조사번호]] } (수집 전이면 빈 색인)
     news: function () { return load("news"); },
     meta: function () { return load("meta"); },

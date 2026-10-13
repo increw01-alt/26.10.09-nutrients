@@ -40,12 +40,25 @@
     });
   }
 
+  var names = null, nameMatch = null;   // 전체 제품 검색 색인 (목록 파일은 성분별 상한이 있어 검색은 색인으로 보완)
   function filtered() {
     var items = products.items.slice();
     if (state.ingredient) items = items.filter(function (p) { return (p.ingredients || []).indexOf(state.ingredient) >= 0; });
     if (state.shape) items = items.filter(function (p) { return (p.shape || "") === state.shape; });
     var q = state.q.trim().toLowerCase();
-    if (q) items = items.filter(function (p) { return [p.name, p.company, p.f || p.function || "", p.rawMaterials || ""].join(" ").toLowerCase().indexOf(q) >= 0; });
+    if (q) {
+      items = items.filter(function (p) { return [p.name, p.company, p.f || p.function || "", p.rawMaterials || ""].join(" ").toLowerCase().indexOf(q) >= 0 || D.has(p.name + " " + (p.company || ""), q); });
+      if (nameMatch && !state.shape) {   // 목록에 없는 제품도 색인에서 찾아 덧붙임 (상세는 펼칠 때 조각 파일에서)
+        var have = {}; items.forEach(function (p) { have[p.id] = true; });
+        nameMatch(q, 400).idx.forEach(function (i) {
+          var pp = names.p[i]; if (have[pp[0]]) return;
+          var ids = pp[2].map(function (k) { return names.i[k]; });
+          if (state.ingredient && ids.indexOf(state.ingredient) < 0) return;
+          have[pp[0]] = true;
+          items.push({ id: pp[0], name: pp[1], company: (names.c || [])[pp[3]] || "", ingredients: ids, registeredAt: "", shape: "", f: "", fromIndex: true });
+        });
+      }
+    }
     items.sort(function (a, b) { return String(b.registeredAt || "").localeCompare(String(a.registeredAt || "")); });
     return items;
   }
@@ -89,6 +102,7 @@
   }
 
   document.addEventListener("DOMContentLoaded", function () {
+    D.productNames().then(function (n) { names = n && n.p ? n : null; if (names) nameMatch = D.nameMatcher(D.indexText(names, 3)); if (state.q && products && core) render(); }).catch(function () {});
     Promise.all([D.core(), D.products(), window.Affiliate.ready()]).then(function (r) {
       core = r[0]; products = r[1];
       var sel = document.getElementById("filter-ingredient");

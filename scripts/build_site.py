@@ -17,7 +17,8 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from common import DATA_DIR, ROOT, env, log, now_iso, read_json, write_json  # noqa: E402
+from datetime import datetime  # noqa: E402
+from common import DATA_DIR, KST, ROOT, env, log, now_iso, read_json, write_json  # noqa: E402
 
 OUT_DIR = ROOT / "i"
 GUIDE_DIR = ROOT / "guide"
@@ -72,19 +73,36 @@ def stamp_assets() -> None:
     log.info("자산 버전 스탬프: HTML %d개 갱신", changed)
 
 
+SEARCH_RECENT_YEARS = 6        # 검색 색인 1단(names.json)에 담을 신고 연도 범위. 그보다 오래된 제품은 names-old.json 으로 (검색창이 뒤이어 불러온다)
+
+
 def build_product_names() -> None:
-    """제품 검색용 경량 색인(data/products/names.json): 제품 id·이름·성분 번호·제조사 번호만 담아 검색창에서 지연 로드한다.
-    (전체 색인 products.json 은 2.8MB 라 검색창에서 바로 쓰기엔 무겁다)"""
+    """제품 검색용 경량 색인: 상세 조각(data/products/detail/*.json, 매칭된 전체 제품)에서 id·이름·성분 번호·제조사 번호만 뽑아
+    data/products/names.json(최근 SEARCH_RECENT_YEARS 년) 과 names-old.json(그 이전) 으로 나눠 저장한다. 두 파일은 같은 성분·제조사 목록을 공유한다."""
     products = read_json(DATA_DIR / "products.json", {"_meta": {}, "items": []}) or {}
-    items = products.get("items", [])
-    ids = sorted({i for it in items for i in it.get("ingredients", [])})
+    items: dict[str, dict] = {}
+    for f in sorted((DATA_DIR / "products" / "detail").glob("*.json")):
+        for it in (read_json(f, {}) or {}).get("items", []):
+            items.setdefault(it["id"], it)
+    if not items:   # 상세 조각이 없으면(샘플 상태) 목록 파일로
+        items = {it["id"]: it for it in products.get("items", [])}
+    rows = sorted(items.values(), key=lambda it: it.get("registeredAt") or "", reverse=True)
+    ids = sorted({i for it in rows for i in it.get("ingredients", [])})
     idx = {i: n for n, i in enumerate(ids)}
-    companies = sorted({(it.get("company") or "").strip() for it in items} - {""})
+    companies = sorted({(it.get("company") or "").strip() for it in rows} - {""})
     cidx = {c: n for n, c in enumerate(companies)}
-    data = {"_meta": {"updatedAt": products.get("_meta", {}).get("updatedAt"), "total": len(items)}, "i": ids, "c": companies,
-            "p": [[it["id"], it["name"], [idx[i] for i in it.get("ingredients", []) if i in idx], cidx.get((it.get("company") or "").strip(), -1)] for it in items]}
-    write_json(DATA_DIR / "products" / "names.json", data, compact=True, quiet=True)
-    log.info("제품 검색 색인: %d개 (data/products/names.json)", len(items))
+    cutoff = f"{datetime.now(KST).year - SEARCH_RECENT_YEARS}-01-01"
+    entry = lambda it: [it["id"], it["name"], [idx[i] for i in it.get("ingredients", []) if i in idx], cidx.get((it.get("company") or "").strip(), -1)]
+    recent = [entry(it) for it in rows if (it.get("registeredAt") or "9999") >= cutoff]
+    older = [entry(it) for it in rows if (it.get("registeredAt") or "9999") < cutoff]
+    updated = products.get("_meta", {}).get("updatedAt")
+    write_json(DATA_DIR / "products" / "names.json", {"_meta": {"updatedAt": updated, "total": len(recent), "old": len(older), "cutoff": cutoff}, "i": ids, "c": companies, "p": recent}, compact=True, quiet=True)
+    old_path = DATA_DIR / "products" / "names-old.json"
+    if older:
+        write_json(old_path, {"_meta": {"updatedAt": updated, "total": len(older), "before": cutoff}, "i": ids, "c": companies, "p": older}, compact=True, quiet=True)
+    elif old_path.exists():
+        old_path.unlink()
+    log.info("제품 검색 색인: 최근 %s건 + 과거 %s건 (data/products/names.json%s)", f"{len(recent):,}", f"{len(older):,}", " · names-old.json" if older else "")
 
 
 def validate_drug_pairings(valid_ids: set[str]) -> None:

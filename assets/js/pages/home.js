@@ -63,8 +63,8 @@
     extra.loading = Promise.all([
       D.guides().then(function (g) { extra.guides = (g && g.items) || []; }).catch(function () { extra.guides = []; }),
       D.drugPairings().then(function (r) { extra.pairings = r; }).catch(function () { extra.pairings = { rules: [] }; }),   // 의약품별 함께 챙기면 좋은/주의할 영양 성분 규칙
-      D.productNames().then(function (n) { extra.products = n && n.p ? n : { i: [], p: [] }; }).catch(function () { extra.products = { i: [], p: [] }; }).then(function () { extra.prodMatch = D.nameMatcher(extra.products.p.map(function (p) { return p[1]; })); }),
-      D.drugNames().then(function (n) { extra.drugs = n && n.p ? n : { i: [], p: [] }; }).catch(function () { extra.drugs = { i: [], p: [] }; }).then(function () { extra.drugMatch = D.nameMatcher(extra.drugs.p.map(function (p) { return p[1]; })); })   // 의약품 수집 전이면 빈 색인
+      D.productNames().then(function (n) { extra.products = n && n.p ? n : { i: [], p: [] }; }).catch(function () { extra.products = { i: [], p: [] }; }).then(function () { extra.prodMatch = D.nameMatcher(D.indexText(extra.products, 3)); }),
+      D.drugNames().then(function (n) { extra.drugs = n && n.p ? n : { i: [], p: [] }; }).catch(function () { extra.drugs = { i: [], p: [] }; }).then(function () { extra.drugMatch = D.nameMatcher(D.indexText(extra.drugs, 5)); })   // 의약품 수집 전이면 빈 색인
     ]);
     return extra.loading;
   }

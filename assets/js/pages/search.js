@@ -42,8 +42,8 @@
 
     title.textContent = "‘" + q + "’ 검색 결과";
     var ings = D.search(core.items, q, 8);
-    var pm = D.nameMatcher(products.p.map(function (p) { return p[1]; })), ph = pm(q, 30);
-    var dm = D.nameMatcher(drugs.p.map(function (p) { return p[1]; })), dh = dm(q, 20);
+    var pm = D.nameMatcher(D.indexText(products, 3)), ph = pm(q, 30);   // 이름 + 제조사로 검색 (브랜드·제조사명으로도 찾도록)
+    var dm = D.nameMatcher(D.indexText(drugs, 5)), dh = dm(q, 20);
     var gs = (guides || []).filter(function (g) { return D.has([g.title, g.h1, (g.keywords || []).join(" ")].join(" "), q); }).slice(0, 8);
     var counts = [ings.length ? "성분 " + ings.length : "", ph.total ? "건강기능식품 " + ph.total.toLocaleString() : "", dh.total ? "의약품 " + dh.total.toLocaleString() : "", gs.length ? "가이드 " + gs.length : ""].filter(Boolean);
     summary.textContent = counts.length ? counts.join(" · ") + "건을 찾았어요. 제품명은 일부만 맞아도 나오며, 이름 앞부분이 맞는 제품부터 보여줍니다." : "일치하는 결과가 없어요. 아래 비슷한 이름과 검색 요령을 확인해 보세요.";

@@ -168,8 +168,8 @@
         if (!names && !namesLoading && input.value.trim()) {   // 제품·의약품 색인은 처음 입력할 때 한 번만 (의약품은 수집 전이면 404 → 빈 목록)
           namesLoading = true;
           Promise.all([
-            D.productNames().then(function (n) { names = n && n.p ? n : { i: [], p: [] }; }).catch(function () { names = { i: [], p: [] }; }).then(function () { prodMatch = D.nameMatcher(names.p.map(function (p) { return p[1]; })); }),
-            D.drugNames().then(function (n) { drugs = n && n.p ? n : { i: [], p: [] }; }).catch(function () { drugs = { i: [], p: [] }; }).then(function () { drugMatch = D.nameMatcher(drugs.p.map(function (p) { return p[1]; })); })
+            D.productNames().then(function (n) { names = n && n.p ? n : { i: [], p: [] }; }).catch(function () { names = { i: [], p: [] }; }).then(function () { prodMatch = D.nameMatcher(D.indexText(names, 3)); }),
+            D.drugNames().then(function (n) { drugs = n && n.p ? n : { i: [], p: [] }; }).catch(function () { drugs = { i: [], p: [] }; }).then(function () { drugMatch = D.nameMatcher(D.indexText(drugs, 5)); })
           ]).then(render);
         }
         render();

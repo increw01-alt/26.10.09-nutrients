@@ -9,6 +9,10 @@ on:
         description: "수동 실행 사유"
         required: false
         default: "manual"
+      products_max_rows:
+        description: "제품 수집 행 수 (비우면 기본 15,000 = 최근 약 5년. 0 = 전체 약 46,000건, 20~30분 — 과거 제품까지 검색하려면 한 번만 0 으로 실행)"
+        required: false
+        default: ""
 
 permissions:
   contents: write
@@ -20,7 +24,7 @@ concurrency:
 jobs:
   update:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 70
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -51,12 +55,12 @@ jobs:
         run: python scripts/fetch_materials.py
 
       - name: Fetch products (MFDS)
-        timeout-minutes: 30
+        timeout-minutes: 40
         env:
           CI: "true"
           FOODSAFETY_API_KEY: ${{ secrets.FOODSAFETY_API_KEY }}
           FOODSAFETY_SERVICE: ${{ vars.FOODSAFETY_SERVICE }}
-          FOODSAFETY_MAX_ROWS: ${{ vars.FOODSAFETY_MAX_ROWS }}
+          FOODSAFETY_MAX_ROWS: ${{ inputs.products_max_rows || vars.FOODSAFETY_MAX_ROWS }}
         run: python scripts/fetch_products.py
 
       - name: Fetch drugs (MFDS e약은요 · 허가정보)

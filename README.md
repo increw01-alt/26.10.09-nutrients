@@ -139,7 +139,8 @@ python scripts/build_site.py
 ```
 
 ### 제품 데이터 파일 구조
-- `data/products.json`: 제품 찾기 페이지용 가벼운 목록(이름·업체·신고일·제형·성분·기능성 요약)
+- `data/products.json`: 제품 찾기 페이지용 가벼운 목록(이름·업체·신고일·제형·성분·기능성 요약). 성분별 최신 400건 상한이 있어 목록은 약 7천 건이지만, 검색은 아래 색인으로 매칭된 전체 제품을 대상으로 합니다.
+- `data/products/names.json`(최근 6년 신고분)·`names-old.json`(그 이전): 검색창·빠른 체크·제품 찾기 검색용 색인(이름·성분·제조사). 빌드가 상세 조각 전체에서 만들며, 제조사명으로도 검색됩니다.
 - `data/products/top/<성분id>.json`: 성분 상세 페이지용 상위 60개(제품명에 성분이 드러나는 단일 목적 제품 우선)
 - `data/products/detail/<00~63>.json`: 전체 신고 정보(원재료·섭취방법·주의사항 등). 제품 id 해시로 조각을 나누며 `assets/js/data.js`의 `productShard()`와 스크립트의 `shard_of()`가 같은 계산을 씁니다.
 - 매칭 규칙을 바꾼 뒤에는 `python scripts/fetch_products.py --rebuild` 로 API 호출 없이 저장된 레코드로 다시 생성할 수 있습니다.
@@ -160,7 +161,7 @@ python scripts/build_site.py
 - 비타민·미네랄 5종 이상이면 종합비타민·미네랄로도 분류합니다.
 
 ### 제품 변경 추적
-`fetch_products.py` 는 식약처 API 가 느리고(1,000건당 20~40초) 키당 동시 요청 1개만 허용하므로, 최신 신고분부터 거꾸로 `FOODSAFETY_MAX_ROWS`(기본 15,000건)만 순차 수집합니다. 이전 `products.json` 과 신고번호 기준으로 비교해 **신규 / 변경(제품명·기능성·원재료·주의사항) / 삭제** 를 `changelog` 에 기록하고, 제품 찾기 페이지 상단에 건수와 이력을 표시합니다.
+`fetch_products.py` 는 식약처 API 가 느리고(1,000건당 20~40초) 키당 동시 요청 1개만 허용하므로, 최신 신고분부터 거꾸로 `FOODSAFETY_MAX_ROWS`(기본 15,000건 ≈ 최근 5년)만 순차 수집합니다. 그보다 오래된 제품까지 검색하려면 Actions → Run workflow 의 `products_max_rows` 에 `0` 을 넣어 한 번 전체(약 46,000건, 20~30분)를 받으면, 이후 기본 수집에서도 그 제품들은 유지됩니다. 이전 `products.json` 과 신고번호 기준으로 비교해 **신규 / 변경(제품명·기능성·원재료·주의사항) / 삭제** 를 `changelog` 에 기록하고, 제품 찾기 페이지 상단에 건수와 이력을 표시합니다.
 
 ## 제휴 링크 동작 방식
 - `assets/js/affiliate.js` 가 각 성분·제품의 검색어로 쇼핑몰 검색 URL 을 만들고

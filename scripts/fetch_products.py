@@ -44,7 +44,7 @@ WAIT_AFTER_TIMEOUT = 60        # 읽기 제한 초과 후 서버가 이전 요�
 WAIT_WHEN_BUSY = 40            # INFO-500(현재 접속 중인 인증키) 시 대기
 PAUSE_BETWEEN_CALLS = 1.0
 DEFAULT_MAX_ROWS = 15000       # 최신 신고분부터 거꾸로 수집할 기본 행 수
-PER_INGREDIENT_CAP = 400       # 성분별 최대 보관 제품 수 (최신 신고순)
+PER_INGREDIENT_CAP = 400       # 제품 찾기 목록(products.json)의 성분별 최대 건수 (최신 신고순). 상세 조각·검색 색인에는 상한 없음
 CHANGELOG_KEEP = 200
 
 MATCHER_VERSION = 2            # 매칭 규칙이 바뀌면 올립니다 → 다음 수집에서 변경 이력을 새로 시작
@@ -311,7 +311,9 @@ def focus_sort_key(p: dict, iid: str, kws: list[str]):
     return (0 if named else 1, len(p["ingredients"]), p["registeredAt"] and -int(p["registeredAt"].replace("-", "") or 0))
 
 
-def write_outputs(data_dir: Path, items: list[dict], meta: dict, changelog: dict, matchers) -> None:
+def write_outputs(data_dir: Path, items: list[dict], meta: dict, changelog: dict, matchers, all_items: list[dict] | None = None) -> None:
+    """items: 제품 찾기 목록용(성분별 상한 적용) · all_items: 매칭된 전체(상세 조각·성분별 상위·검색 색인의 바탕)."""
+    all_items = all_items if all_items is not None else items
     nut, herb = matchers
     kw_by_id = {iid: r[0] for iid, r in nut.items()} | {iid: r[0] for iid, r in herb.items()} | {"multivitamin": ["멀티비타민", "종합비타민", "멀티미네랄", "종합영양제"]}
     # 1) 목록 파일 (가벼움, 압축 JSON): 제품 찾기 페이지·홈 통계용
@@ -332,7 +334,7 @@ def write_outputs(data_dir: Path, items: list[dict], meta: dict, changelog: dict
     detail_dir.mkdir(parents=True, exist_ok=True)
     # 2) 성분별 상위 제품 (성분 상세 페이지용)
     by_ing: dict[str, list[dict]] = {}
-    for p in items:
+    for p in all_items:
         for iid in p["ingredients"]:
             by_ing.setdefault(iid, []).append(p)
     wanted = set()
@@ -343,14 +345,14 @@ def write_outputs(data_dir: Path, items: list[dict], meta: dict, changelog: dict
     for stale in top_dir.glob("*.json"):
         if stale.name not in wanted:
             stale.unlink()
-    # 3) 전체 레코드 조각 (제품 찾기 페이지 '더보기' 지연 로드용, 중복 없음)
+    # 3) 전체 레코드 조각 (제품 페이지·'더보기'·검색 색인용, 상한 없이 매칭된 전체, 중복 없음)
     shards: dict[str, list[dict]] = {}
-    for p in items:
+    for p in all_items:
         shards.setdefault(shard_of(p["id"]), []).append(p)
     for n in range(DETAIL_SHARDS):
         key = f"{n:02d}"
         write_json(detail_dir / f"{key}.json", {"items": shards.get(key, [])}, compact=True, quiet=True)
-    log.info("저장: 성분별 상위 %d개 파일, 상세 조각 %d개 파일", len(wanted), DETAIL_SHARDS)
+    log.info("저장: 목록 %s건 · 성분별 상위 %d개 파일 · 상세 조각 %d개 파일(전체 %s건)", f"{len(items):,}", len(wanted), DETAIL_SHARDS, f"{len(all_items):,}")
 
 
 def main() -> int:
@@ -417,18 +419,17 @@ def main() -> int:
             for iid in p["ingredients"]:
                 per[iid] = per.get(iid, 0) + 1
 
-    new_items = sorted(kept.values(), key=lambda x: x["registeredAt"], reverse=True)
-    for p in new_items:
+    new_items = sorted(kept.values(), key=lambda x: x["registeredAt"], reverse=True)          # 제품 찾기 목록 (상한 적용)
+    all_items = sorted(items.values(), key=lambda x: x["registeredAt"], reverse=True)         # 상세 조각·검색 색인 (매칭된 전체)
+    for p in all_items:
         p.pop("isNew", None)
     # 샘플→실데이터 첫 전환, 매칭 규칙 변경, 재구성 시에는 변경 이력을 새로 시작
     baseline = was_sample or args.rebuild or existing_meta.get("matcherVersion") != MATCHER_VERSION
-    changelog = {"updatedAt": now_iso(), "added": 0, "removed": 0, "changed": 0, "items": []} if baseline else diff_changelog(list(full_prev.values()), new_items, window_oldest, matched_now)
-    for e in changelog["items"]:
-        if e["type"] == "added":
-            for p in new_items:
-                if p["id"] == e["id"]:
-                    p["isNew"] = True
-                    break
+    changelog = {"updatedAt": now_iso(), "added": 0, "removed": 0, "changed": 0, "items": []} if baseline else diff_changelog(list(full_prev.values()), all_items, window_oldest, matched_now)
+    added_ids = {e["id"] for e in changelog["items"] if e["type"] == "added"}
+    for p in all_items:
+        if p["id"] in added_ids:
+            p["isNew"] = True
 
     meta = {
         "source": "mfds",
@@ -437,14 +438,15 @@ def main() -> int:
         "updatedAt": now_iso() if not args.rebuild else (existing_meta.get("updatedAt") or now_iso()),
         "rebuiltAt": now_iso() if args.rebuild else None,
         "total": len(new_items),
+        "indexed": len(all_items),
         "scanned": len(rows),
         "apiTotal": total,
         "windowOldest": window_oldest,
         "matcherVersion": MATCHER_VERSION,
         "files": {"top": f"data/{FULL_DIR_NAME}/top/<ingredientId>.json", "detail": f"data/{FULL_DIR_NAME}/detail/<shard>.json", "shards": DETAIL_SHARDS},
     }
-    write_outputs(DATA_DIR, new_items, meta, changelog, matchers)
-    log.info("완료: 제품 %s건 (신규 %d · 변경 %d · 삭제 %d)%s", f"{len(new_items):,}", changelog["added"], changelog["changed"], changelog["removed"], " · 변경 이력 초기화" if baseline else "")
+    write_outputs(DATA_DIR, new_items, meta, changelog, matchers, all_items)
+    log.info("완료: 목록 %s건 · 검색 색인 대상 %s건 (신규 %d · 변경 %d · 삭제 %d)%s", f"{len(new_items):,}", f"{len(all_items):,}", changelog["added"], changelog["changed"], changelog["removed"], " · 변경 이력 초기화" if baseline else "")
     return 0
 
 
