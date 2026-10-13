@@ -27,6 +27,27 @@
     return cache[name];
   }
 
+  var CHO = "ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ", JUNG = "ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ";
+  var JONG = ["", "ㄱ", "ㄲ", "ㄳ", "ㄴ", "ㄵ", "ㄶ", "ㄷ", "ㄹ", "ㄺ", "ㄻ", "ㄼ", "ㄽ", "ㄾ", "ㄿ", "ㅀ", "ㅁ", "ㅂ", "ㅄ", "ㅅ", "ㅆ", "ㅇ", "ㅈ", "ㅉ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"];
+  function jamo(s) {   // 한글 음절 → 자모 나열, 영문·숫자는 소문자, 공백·기호 제거
+    var out = ""; s = String(s == null ? "" : s).toLowerCase();
+    for (var i = 0; i < s.length; i++) {
+      var c = s.charCodeAt(i), ch = s.charAt(i);
+      if (c >= 0xAC00 && c <= 0xD7A3) { var n = c - 0xAC00; out += CHO.charAt(Math.floor(n / 588)) + JUNG.charAt(Math.floor((n % 588) / 28)) + JONG[n % 28]; }
+      else if ((c >= 0x3131 && c <= 0x318E) || /[a-z0-9]/.test(ch)) out += ch;
+    }
+    return out;
+  }
+  function chosung(s) {  // 초성만 (영문·숫자 포함)
+    var out = ""; s = String(s == null ? "" : s).toLowerCase();
+    for (var i = 0; i < s.length; i++) {
+      var c = s.charCodeAt(i), ch = s.charAt(i);
+      if (c >= 0xAC00 && c <= 0xD7A3) out += CHO.charAt(Math.floor((c - 0xAC00) / 588));
+      else if ((c >= 0x3131 && c <= 0x314E) || /[a-z0-9]/.test(ch)) out += ch;
+    }
+    return out;
+  }
+
   var Data = {
     root: ROOT,
     url: function (p) { return ROOT + p.replace(/^\/+/, ""); },
@@ -131,11 +152,65 @@
         else if ((it.en || "").toLowerCase().indexOf(q) >= 0) s = 40;
         else if ((it.tags || []).some(function (t) { return t.toLowerCase().indexOf(q) >= 0; })) s = 30;
         else if ((it.summary || "").toLowerCase().indexOf(q) >= 0) s = 10;
+        else if (Data.has(it.name, q) || (it.aliases || []).some(function (a) { return Data.has(a, q); })) s = 20;   // '비탐'·'ㅂㅌㅁ' 같은 입력 중 글자·초성
         if (s) scored.push({ s: s, it: it });
       });
       scored.sort(function (a, b) { return b.s - a.s; });
       return scored.slice(0, limit || 8).map(function (x) { return x.it; });
     },
+
+    /* ---------- 한글 자모 검색 ----------
+     * 음절을 초성·중성·종성으로 풀어 비교하므로 '락ㅌ'·'비탐' 처럼 입력 중인 글자, 'ㄹㅌㅍ' 같은 초성만으로도 제품명을 찾는다. */
+    jamo: jamo,
+    chosung: chosung,
+    isChosung: function (q) { return /^[ㄱ-ㅎ]+$/.test(String(q || "").replace(/\s+/g, "")); },
+    has: function (text, q) {   // text 안에 q 가 (자모 기준으로) 들어 있는가
+      var key = Data.isChosung(q) ? String(q).replace(/\s+/g, "") : jamo(q);
+      return !!key && (Data.isChosung(q) ? chosung(text) : jamo(text)).indexOf(key) >= 0;
+    },
+    /* 이름 목록용 매처: 한 번 자모로 풀어 두고 (q, limit) → { idx: [색인…], total } 를 돌려준다. 앞에서 일치하는 이름, 짧은 이름 우선 */
+    nameMatcher: function (names) {
+      var J = names.map(jamo), C = names.map(chosung);
+      return function (q, limit) {
+        var cho = Data.isChosung(q), key = cho ? String(q).replace(/\s+/g, "") : jamo(q);
+        if (key.length < 2) return { idx: [], total: 0 };
+        var hits = [], arr = cho ? C : J;
+        for (var i = 0; i < arr.length; i++) { var pos = arr[i].indexOf(key); if (pos >= 0) hits.push([i, (pos === 0 ? 0 : 1000) + pos * 10 + arr[i].length]); }
+        hits.sort(function (a, b) { return a[1] - b[1]; });
+        return { idx: hits.slice(0, limit || 10).map(function (h) { return h[0]; }), total: hits.length };
+      };
+    },
+    /* 비슷한 이름 찾기 (검색 결과가 없을 때): 자모 2글자 묶음(바이그램) 겹침 비율 */
+    similarNames: function (names, q, limit) {
+      var jq = jamo(q); if (jq.length < 3) return [];
+      function grams(s) { var m = {}, n = 0; for (var i = 0; i + 1 < s.length; i++) { var g = s.substr(i, 2); m[g] = (m[g] || 0) + 1; n++; } return { m: m, n: n }; }
+      var gq = grams(jq), out = [];
+      for (var i = 0; i < names.length; i++) {
+        var js = jamo(names[i]); if (!js) continue;
+        var gs = grams(js), common = 0;
+        for (var g in gq.m) if (gs.m[g]) common += Math.min(gq.m[g], gs.m[g]);
+        var score = (2 * common) / (gq.n + gs.n || 1);
+        var pre = 0; while (pre < jq.length && pre < js.length && jq.charAt(pre) === js.charAt(pre)) pre++;
+        if (pre >= 3) score += 0.25;                          // 앞부분이 같으면 가산
+        if (score >= 0.4) out.push([i, score]);
+      }
+      out.sort(function (a, b) { return b[1] - a[1]; });
+      return out.slice(0, limit || 6).map(function (h) { return h[0]; });
+    },
+    /* 이름에서 검색어와 (자모 기준으로) 일치한 부분을 <mark> 로 감싼 HTML */
+    markMatch: function (name, q) {
+      name = String(name == null ? "" : name);
+      var cho = Data.isChosung(q), key = cho ? String(q).replace(/\s+/g, "") : jamo(q);
+      if (!key) return Data.esc(name);
+      var parts = [], off = [], total = "";
+      for (var i = 0; i < name.length; i++) { var piece = cho ? chosung(name.charAt(i)) : jamo(name.charAt(i)); off.push(total.length); parts.push(piece); total += piece; }
+      var pos = total.indexOf(key); if (pos < 0) return Data.esc(name);
+      var end = pos + key.length, a = -1, b = -1;
+      for (var k = 0; k < name.length; k++) { if (!parts[k]) continue; if (a < 0 && off[k] + parts[k].length > pos) a = k; if (off[k] < end) b = k; }
+      if (a < 0 || b < a) return Data.esc(name);
+      return Data.esc(name.slice(0, a)) + "<mark>" + Data.esc(name.slice(a, b + 1)) + "</mark>" + Data.esc(name.slice(b + 1));
+    },
+    searchUrl: function (q) { return ROOT + "search.html?q=" + encodeURIComponent(q || ""); },
 
     /* HTML 이스케이프 */
     esc: function (s) {

@@ -589,3 +589,9 @@
 @media (max-width: 800px) { .home .news-grid { grid-template-columns: 1fr; gap: 10px; } .home .news-card { min-height: 0; } .home .news-section { padding-bottom: 32px; } }
 .home .search-option > span:not(.option-type) { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .home .search-option small { display: block; font-size: 11px; color: #6d7e65; margin-top: 1px; }
+
+/* 검색 드롭다운: 전체 결과 보기 행, 빈 결과의 링크, 일치 부분 강조 */
+.home .search-option.all { margin-top: 4px; border-top: 1px solid #edf1e8; border-radius: 0 0 8px 8px; color: var(--green); font-weight: 650; }
+.home .search-option.all .icon { color: var(--green); }
+.home .search-empty a { color: var(--green); font-weight: 650; white-space: nowrap; }
+.home .search-option mark { background: #e3efdc; color: #175136; border-radius: 3px; padding: 0 1px; }

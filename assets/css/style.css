@@ -61,6 +61,7 @@ body { background: var(--bg); color: var(--ink); font-family: "Pretendard Variab
 .search-panel input { width: 100%; padding: 1.1rem 1.25rem 1.1rem 3rem; font-size: 1.05rem; outline: none; border-bottom: 1px solid #e6ebe2; }
 .search-result { display: flex; align-items: center; gap: .9rem; padding: .8rem 1.25rem; text-decoration: none; color: inherit; }
 .search-result:hover, .search-result.focus { background: #eff5ec; }
+.search-result mark, #search-results mark { background: #e3efdc; color: #175136; border-radius: 3px; padding: 0 1px; }   /* 검색어와 일치한 부분 */
 
 /* 모바일 메뉴 애니메이션 */
 .mobile-menu { transition: max-height .25s ease, opacity .2s ease; max-height: 0; opacity: 0; overflow: hidden; }

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko" data-root="./">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <link rel="stylesheet" href="assets/css/style.css?v=40343463">
+  <link rel="stylesheet" href="assets/css/tailwind.css?v=6bc1b44b">
+  <script src="assets/js/icons.js?v=37990267" defer></script>
+  <script src="assets/js/config.js?v=c8b8f436" defer></script>
+  <script src="assets/js/data.js?v=48422d74" defer></script>
+  <script src="assets/js/affiliate.js?v=65f5cd0f" defer></script>
+  <script src="assets/js/layout.js?v=7e20cc45" defer></script>
+  <script src="assets/js/illus.js?v=5c359cba" defer></script>
+  <script src="assets/js/pages/search.js?v=5d8c9981" defer></script>
+  <title>통합 검색 | 영양제.kr</title>
+  <meta name="description" content="성분명·제품명·의약품명으로 성분 사전, 식약처 신고 건강기능식품, 허가 의약품, 가이드를 한 번에 검색합니다.">
+  <meta name="robots" content="noindex,follow">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="영양제.kr">
+  <meta property="og:title" content="통합 검색 | 영양제.kr">
+  <meta property="og:description" content="성분·건강기능식품·의약품 통합 검색">
+  <meta property="og:url" content="https://xn--og5b1hx9c.kr/search.html">
+  <meta property="og:image" content="assets/images/og-default.svg">
+  <meta name="twitter:card" content="summary_large_image">
+</head>
+<body data-page="search" data-path="search.html" class="min-h-screen antialiased">
+  <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:font-bold focus:text-brand-700">본문으로 건너뛰기</a>
+  <div id="site-header"></div>
+  <main id="main">
+    <div id="search-hero" class="page-hero">
+      <div class="mx-auto max-w-5xl px-4 pb-8 pt-8 sm:px-6 sm:pt-10">
+        <nav class="text-xs text-ink-500" aria-label="경로"><a class="hover:text-brand-700" href="index.html">홈</a> › <span class="text-ink-800">검색</span></nav>
+        <p class="eyebrow-kicker mt-4"><i data-lucide="search"></i> 통합 검색</p>
+        <h1 id="search-title" class="page-title mt-3">검색</h1>
+        <form id="search-form" action="search.html" method="get" role="search" class="mt-5 flex max-w-2xl gap-2">
+          <label for="search-q" class="sr-only">검색어</label>
+          <input id="search-q" name="q" type="search" autocomplete="off" placeholder="성분명·제품명·의약품명 (예: 락토핏, 마그네슘, 우루사)" class="min-w-0 flex-1 rounded-full border border-ink-100 bg-white px-5 py-3 text-[15px] text-ink-900 shadow-card outline-none placeholder:text-ink-400 focus:border-brand-600 focus:ring-2 focus:ring-brand-600/20">
+          <button type="submit" class="btn-primary shrink-0"><i data-lucide="search"></i>검색</button>
+        </form>
+        <p id="search-summary" class="page-lead mt-3">성분명, 건강기능식품·의약품 제품명, 고민 키워드로 찾아보세요.</p>
+      </div>
+    </div>
+    <div class="mx-auto max-w-5xl px-4 py-8 sm:px-6">
+      <div id="search-loading"><div class="skeleton h-28"></div><div class="skeleton mt-4 h-40"></div></div>
+      <div id="search-results" class="hidden space-y-6"></div>
+    </div>
+  </main>
+  <div id="site-footer"></div>
+</body>
+</html>
