@@ -119,9 +119,9 @@
     overlay.innerHTML =
       '<div class="search-panel">' +
         '<div class="relative"><i data-lucide="search" class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-ink-400"></i>' +
-        '<label for="global-search-input" class="sr-only">성분 검색</label><input id="global-search-input" type="search" placeholder="성분명·별칭·효능으로 검색 (예: 비타민D, 눈 건강)" autocomplete="off" />' +
+        '<label for="global-search-input" class="sr-only">성분 검색</label><input id="global-search-input" type="search" placeholder="성분명·제품명·효능으로 검색 (예: 비타민D, 락토핏)" autocomplete="off" />' +
         '<button type="button" id="close-search" class="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg px-2 py-1 text-xs font-semibold text-ink-400 hover:bg-ink-50" aria-label="닫기">ESC</button></div>' +
-        '<div id="global-search-results" class="max-h-[60vh] overflow-y-auto py-2"><p class="px-5 py-6 text-sm text-ink-400">검색어를 입력하면 성분 사전에서 바로 찾아드립니다.</p></div>' +
+        '<div id="global-search-results" class="max-h-[60vh] overflow-y-auto py-2"><p class="px-5 py-6 text-sm text-ink-400">검색어를 입력하면 성분 사전과 신고 제품에서 바로 찾아드립니다.</p></div>' +
         '<div class="flex items-center justify-between border-t border-ink-100 px-5 py-2.5 text-[11px] text-ink-400"><span>↑↓ 이동 · Enter 열기</span><a class="font-semibold text-brand-700" href="' + D.url("ingredients.html") + '">전체 성분 보기 →</a></div>' +
       '</div>';
     document.body.appendChild(overlay);
@@ -132,19 +132,33 @@
     overlay.querySelector("#close-search").addEventListener("click", closeSearch);
     input.focus();
     D.ingredients().then(function (d) {
-      input.addEventListener("input", function () {
+      var byId = {}; d.items.forEach(function (it) { byId[it.id] = it; });
+      var names = null, namesLoading = false;
+      function norm(v) { return String(v || "").toLowerCase().replace(/[\s·\-]+/g, ""); }
+      function row(href, iconHtml, title, sub) {
+        return '<a class="search-result" href="' + href + '">' + iconHtml + '<span class="min-w-0"><span class="block truncate text-sm font-bold text-ink-900">' + title + '</span><span class="block truncate text-xs text-ink-500">' + sub + '</span></span></a>';
+      }
+      function render() {
         focusIdx = -1;
-        var q = input.value;
-        var hits = D.search(d.items, q, 10);
-        if (!q.trim()) { results.innerHTML = '<p class="px-5 py-6 text-sm text-ink-400">검색어를 입력하면 성분 사전에서 바로 찾아드립니다.</p>'; return; }
-        if (!hits.length) { results.innerHTML = '<p class="px-5 py-6 text-sm text-ink-400">"' + esc(q) + '"에 해당하는 성분이 아직 없습니다. <a class="font-semibold text-brand-700" href="' + D.url("ingredients.html") + '">전체 목록</a>에서 찾아보세요.</p>'; return; }
-        results.innerHTML = hits.map(function (it) {
+        var q = input.value, nq = norm(q.trim());
+        if (!q.trim()) { results.innerHTML = '<p class="px-5 py-6 text-sm text-ink-400">성분명·제품명·효능으로 검색해 보세요. (예: 비타민D, 락토핏, 눈 건강)</p>'; return; }
+        var hits = D.search(d.items, q, 8);
+        var prods = (names && nq.length >= 2) ? names.p.filter(function (pp) { return norm(pp[1]).indexOf(nq) >= 0; }).slice(0, 4) : [];
+        if (!hits.length && !prods.length) { results.innerHTML = '<p class="px-5 py-6 text-sm text-ink-400">"' + esc(q) + '"에 해당하는 성분·제품이 없습니다. 건강기능식품으로 신고된 제품만 검색되며, 의약품은 성분명으로 찾아보세요. <a class="font-semibold text-brand-700" href="' + D.url("ingredients.html") + '">전체 성분 보기</a></p>'; return; }
+        var html = hits.map(function (it) {
           var cat = d._meta.categories[it.category] || {};
-          return '<a class="search-result" href="' + D.ingredientUrl(it.id) + '">' +
-            '<span class="grid h-9 w-9 shrink-0 place-items-center rounded-lg ring-1 ' + D.catClass(cat.color) + '"><i data-lucide="' + esc(it.icon || cat.icon || "pill") + '" class="h-4 w-4"></i></span>' +
-            '<span class="min-w-0"><span class="block truncate text-sm font-bold text-ink-900">' + esc(it.name) + ' <span class="font-medium text-ink-400">' + esc(it.en) + '</span></span><span class="block truncate text-xs text-ink-500">' + esc((it.tags || []).join(" · ")) + '</span></span></a>';
+          return row(D.ingredientUrl(it.id), '<span class="grid h-9 w-9 shrink-0 place-items-center rounded-lg ring-1 ' + D.catClass(cat.color) + '"><i data-lucide="' + esc(it.icon || cat.icon || "pill") + '" class="h-4 w-4"></i></span>',
+            esc(it.name) + ' <span class="font-medium text-ink-400">' + esc(it.en) + '</span>', esc((it.tags || []).slice(0, 3).join(" · ")));
         }).join("");
-        D.icons(results);
+        if (prods.length) html += '<p class="px-5 pb-1 pt-3 text-[11px] font-bold text-ink-400">식약처 신고 제품</p>' + prods.map(function (pp) {
+          var ingNames = pp[2].map(function (i) { var it = byId[names.i[i]]; return it ? it.name : null; }).filter(Boolean);
+          return row(D.productUrl(pp[0]), '<span class="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-cream-200 text-brand-700"><i data-lucide="package" class="h-4 w-4"></i></span>', esc(pp[1]), ingNames.length ? "성분: " + esc(ingNames.slice(0, 3).join(" · ")) : "성분 사전과 연결된 성분 없음");
+        }).join("");
+        results.innerHTML = html; D.icons(results);
+      }
+      input.addEventListener("input", function () {
+        if (!names && !namesLoading && input.value.trim()) { namesLoading = true; D.productNames().then(function (n) { names = n && n.p ? n : { i: [], p: [] }; render(); }).catch(function () { names = { i: [], p: [] }; }); }
+        render();
       });
     }).catch(function () { results.innerHTML = '<p class="px-5 py-6 text-sm text-rose-600">데이터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</p>'; });
     input.addEventListener("keydown", function (e) {

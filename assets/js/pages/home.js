@@ -59,19 +59,26 @@
     var list = document.getElementById("search-list"), status = document.getElementById("search-status"), area = document.getElementById("search-area");
     if (!input || !form || !box || !list) return;
     var POPULAR = ["vitamin-d", "omega-3", "magnesium", "probiotics"];
-    var guides = null, guidesLoading = null, matches = [], active = -1;
-    function loadGuides() {
-      if (guides || guidesLoading) return guidesLoading;
-      guidesLoading = D.guides().then(function (g) { guides = (g && g.items) || []; }).catch(function () { guides = []; });
-      return guidesLoading;
+    var guides = null, products = null, extraLoading = null, matches = [], active = -1;
+    function loadExtra() {   // 가이드·제품 색인은 처음 입력할 때 한 번만
+      if (extraLoading) return extraLoading;
+      extraLoading = Promise.all([
+        D.guides().then(function (g) { guides = (g && g.items) || []; }).catch(function () { guides = []; }),
+        D.productNames().then(function (n) { products = n && n.p ? n : { i: [], p: [] }; }).catch(function () { products = { i: [], p: [] }; })
+      ]);
+      return extraLoading;
     }
     function entries(q) {
       var nq = norm(q);
       if (!nq) return POPULAR.map(function (id) { return core.byId[id]; }).filter(Boolean).map(function (it) { return { title: it.name, type: "성분", icon: "pill", href: D.ingredientUrl(it.id) }; });
-      var ings = D.search(core.items, q, 5).map(function (it) { return { title: it.name, type: "성분", icon: "pill", href: D.ingredientUrl(it.id) }; });
+      var ings = D.search(core.items, q, 4).map(function (it) { return { title: it.name, type: "성분", icon: "pill", href: D.ingredientUrl(it.id) }; });
+      var prods = (products && nq.length >= 2) ? products.p.filter(function (pp) { return norm(pp[1]).indexOf(nq) >= 0; }).slice(0, 3).map(function (pp) {
+        var names = pp[2].map(function (i) { var it = core.byId[products.i[i]]; return it ? it.name : null; }).filter(Boolean);
+        return { title: pp[1], type: "제품", icon: "package", href: D.productUrl(pp[0]), sub: names.length ? "성분: " + names.slice(0, 3).join(" · ") : "성분 사전과 연결된 성분 없음" };
+      }) : [];
       var gs = (guides || []).filter(function (g) { return norm([g.title, g.h1, (g.keywords || []).join(" ")].join(" ")).indexOf(nq) >= 0; }).slice(0, 3)
         .map(function (g) { return { title: String(g.h1 || g.title || "").split(" — ")[0], type: "가이드", icon: "book-open", href: D.guideUrl(g.slug) }; });
-      return ings.concat(gs).slice(0, 8);
+      return ings.concat(prods, gs).slice(0, 9);
     }
     function close() { box.hidden = true; input.setAttribute("aria-expanded", "false"); input.removeAttribute("aria-activedescendant"); active = -1; }
     function setActive(i) {
@@ -83,13 +90,13 @@
     function render() {
       matches = entries(input.value.trim()); active = -1; input.removeAttribute("aria-activedescendant");
       list.innerHTML = matches.length
-        ? matches.map(function (m, i) { return '<li class="search-option" id="search-option-' + i + '" role="option" aria-selected="false" data-href="' + esc(m.href) + '"><i data-lucide="' + m.icon + '" class="icon"></i><span>' + esc(m.title) + '</span><span class="option-type">' + m.type + '</span></li>'; }).join("")
-        : '<li class="search-empty" role="presentation">검색 결과가 없어요. 전체 성분 사전에서 확인해 주세요.</li>';
+        ? matches.map(function (m, i) { return '<li class="search-option" id="search-option-' + i + '" role="option" aria-selected="false" data-href="' + esc(m.href) + '"><i data-lucide="' + m.icon + '" class="icon"></i><span class="min-w-0">' + esc(m.title) + (m.sub ? '<small>' + esc(m.sub) + '</small>' : '') + '</span><span class="option-type">' + m.type + '</span></li>'; }).join("")
+        : '<li class="search-empty" role="presentation">성분·제품·가이드에서 찾지 못했어요. 건강기능식품으로 신고된 제품만 검색되며, 의약품은 성분명으로 찾아보세요.</li>';
       D.icons(list);
       box.hidden = false; input.setAttribute("aria-expanded", "true");
       if (status) status.textContent = matches.length ? "검색 결과 " + matches.length + "개가 있습니다. 화살표 키로 선택하세요." : "검색 결과가 없습니다.";
     }
-    function renderWithGuides() { var p = loadGuides(); render(); if (p) p.then(function () { if (!box.hidden) render(); }); }
+    function renderWithGuides() { var p = loadExtra(); render(); if (p) p.then(function () { if (!box.hidden) render(); }); }
     list.addEventListener("pointerdown", function (e) { e.preventDefault(); });
     list.addEventListener("click", function (e) { var li = e.target.closest("[data-href]"); if (li) location.href = li.getAttribute("data-href"); });
     input.addEventListener("input", renderWithGuides);

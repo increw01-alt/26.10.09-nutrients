@@ -587,3 +587,5 @@
 .home .news-card small { font-size: 11px; color: #6d7e65; margin-top: auto; }
 .home .news-skeleton { height: 128px; border-radius: 16px; background: linear-gradient(90deg, #f1f4ec 25%, #f8faf5 37%, #f1f4ec 63%); background-size: 400% 100%; animation: shimmer 1.4s ease infinite; }
 @media (max-width: 800px) { .home .news-grid { grid-template-columns: 1fr; gap: 10px; } .home .news-card { min-height: 0; } .home .news-section { padding-bottom: 32px; } }
+.home .search-option > span:not(.option-type) { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.home .search-option small { display: block; font-size: 11px; color: #6d7e65; margin-top: 1px; }

@@ -72,6 +72,19 @@ def stamp_assets() -> None:
     log.info("자산 버전 스탬프: HTML %d개 갱신", changed)
 
 
+def build_product_names() -> None:
+    """제품 검색용 경량 색인(data/products/names.json): 제품 id·이름·성분 번호만 담아 검색창에서 지연 로드한다.
+    (전체 색인 products.json 은 2.8MB 라 검색창에서 바로 쓰기엔 무겁다)"""
+    products = read_json(DATA_DIR / "products.json", {"_meta": {}, "items": []}) or {}
+    items = products.get("items", [])
+    ids = sorted({i for it in items for i in it.get("ingredients", [])})
+    idx = {i: n for n, i in enumerate(ids)}
+    data = {"_meta": {"updatedAt": products.get("_meta", {}).get("updatedAt"), "total": len(items)}, "i": ids,
+            "p": [[it["id"], it["name"], [idx[i] for i in it.get("ingredients", []) if i in idx]] for it in items]}
+    write_json(DATA_DIR / "products" / "names.json", data, compact=True, quiet=True)
+    log.info("제품 검색 색인: %d개 (data/products/names.json)", len(items))
+
+
 def check_icons() -> None:
     """HTML·JS·데이터에서 쓰는 lucide 아이콘 이름이 assets/js/icons.js 번들에 모두 있는지 확인 (없으면 `npm run icons`)."""
     bundle = ROOT / "assets/js/icons.js"
@@ -507,6 +520,7 @@ def main() -> int:
     guides = build_guides(core, cfg)
     build_sitemap(ingredients["items"], cfg, data_date, guides)
     inject_verification(cfg)
+    build_product_names()
     check_icons()
     stamp_assets()
     products = read_json(DATA_DIR / "products.json", {"_meta": {}, "items": []})

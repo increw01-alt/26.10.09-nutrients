@@ -22,15 +22,15 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap">
   <link rel="stylesheet" href="assets/css/style.css?v=3ac24970">
-  <link rel="stylesheet" href="assets/css/home.css?v=7ff4a29b">
-  <link rel="stylesheet" href="assets/css/tailwind.css?v=45fa267f">
+  <link rel="stylesheet" href="assets/css/home.css?v=18aa3147">
+  <link rel="stylesheet" href="assets/css/tailwind.css?v=bde9783c">
   <link rel="preload" as="image" href="assets/images/home/hero-bottles.webp">
   <script src="assets/js/icons.js?v=855be4f6" defer></script>
   <script src="assets/js/config.js?v=c8b8f436" defer></script>
-  <script src="assets/js/data.js?v=c2683ffc" defer></script>
+  <script src="assets/js/data.js?v=e085e0ef" defer></script>
   <script src="assets/js/affiliate.js?v=65f5cd0f" defer></script>
-  <script src="assets/js/layout.js?v=c14699bb" defer></script>
-  <script src="assets/js/pages/home.js?v=c38e3fe5" defer></script>
+  <script src="assets/js/layout.js?v=feebaca3" defer></script>
+  <script src="assets/js/pages/home.js?v=ed2a0ab5" defer></script>
   <script type="application/ld+json">
   {"@context":"https://schema.org","@graph":[
     {"@type":"WebSite","name":"영양제.kr","url":"https://xn--og5b1hx9c.kr/","description":"영양제 성분 정보와 영양제 간 궁합, 복용 시간표를 제공하는 정보 사이트","potentialAction":{"@type":"SearchAction","target":"https://xn--og5b1hx9c.kr/ingredients.html?q={search_term_string}","query-input":"required name=search_term_string"}},
@@ -65,18 +65,18 @@
         <div class="hero-copy">
           <p class="hero-eyebrow"><i data-lucide="leaf" class="icon"></i> 영양제 정보 · 궁합 · 복용 시간표</p>
           <h1 id="hero-title">내가 먹는 영양제,<br><em>같이 먹어도 될까?</em></h1>
-          <p class="hero-description"><strong>영양제 추천은 제품이 아니라 성분부터.</strong>성분별 효능·권장량, 같이 먹으면 안 되는 조합,<br class="desktop-break">먹는 시간과 순서, 고민별 가이드까지 한곳에서 확인하세요.</p>
+          <p class="hero-description"><strong>영양제 추천은 제품이 아니라 성분부터.</strong>성분별 효능·권장량, 같이 먹으면 안 되는 조합,<br class="desktop-break">먹는 시간과 순서, 내 영양제의 성분 확인까지 한곳에서.</p>
           <label class="search-label" for="ingredient-search">성분 검색</label>
           <div class="search-area" id="search-area">
             <form action="ingredients.html" class="search-form" id="search-form" method="get" role="search">
               <i data-lucide="search" class="icon"></i>
-              <input id="ingredient-search" name="q" type="search" role="combobox" aria-autocomplete="list" aria-controls="search-list" aria-describedby="search-help" aria-expanded="false" autocomplete="off" placeholder="성분명 또는 고민으로 검색 (예: 마그네슘, 눈 건강, 피로)">
+              <input id="ingredient-search" name="q" type="search" role="combobox" aria-autocomplete="list" aria-controls="search-list" aria-describedby="search-help" aria-expanded="false" autocomplete="off" placeholder="성분명·제품명·고민으로 검색 (예: 마그네슘, 락토핏, 눈 건강)">
               <button type="submit" aria-label="성분 및 가이드 검색"><i data-lucide="arrow-right" class="icon"></i></button>
             </form>
-            <span class="sr-only" id="search-help">성분 사전과 가이드를 검색합니다. 결과를 고르면 해당 페이지로 이동합니다.</span>
+            <span class="sr-only" id="search-help">성분 사전, 식약처 신고 제품, 가이드를 검색합니다. 결과를 고르면 해당 페이지로 이동합니다.</span>
             <div class="search-results" id="search-results" hidden>
               <ul class="search-list" id="search-list" role="listbox" aria-label="검색 결과"></ul>
-              <div class="search-result-footer"><span>성분 사전·가이드 검색</span><a href="ingredients.html">전체 성분 사전 →</a></div>
+              <div class="search-result-footer"><span>성분 사전·신고 제품·가이드 검색</span><a href="ingredients.html">전체 성분 사전 →</a></div>
             </div>
             <div class="sr-only" id="search-status" role="status" aria-live="polite"></div>
           </div>

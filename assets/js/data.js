@@ -33,10 +33,12 @@
     ingredientUrl: function (id) { return ROOT + "i/" + encodeURIComponent(id) + ".html"; },
     compatUrl: function (ids) { return ROOT + "compatibility.html?items=" + ids.map(encodeURIComponent).join(","); },
     productsUrl: function (id) { return ROOT + "products.html" + (id ? "?ingredient=" + encodeURIComponent(id) : ""); },
+    productUrl: function (id) { return ROOT + "product.html?id=" + encodeURIComponent(id); },
 
     ingredients: function () { return load("ingredients"); },
     interactions: function () { return load("interactions"); },
     products: function () { return load("products"); },
+    productNames: function () { return load("products/names"); },   // 검색용 경량 색인 { i:[성분id], p:[[제품id, 이름, [성분번호]]] }
     news: function () { return load("news"); },
     meta: function () { return load("meta"); },
     deeplinks: function () { return load("deeplinks").catch(function () { return { coupang: {} }; }); },
