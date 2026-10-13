@@ -54,45 +54,49 @@
 
   /* 성분·가이드 검색 (가이드 목록은 처음 입력할 때 한 번만 불러옴) */
   function norm(s) { return String(s || "").normalize("NFKC").toLowerCase().replace(/[\s·\-]+/g, ""); }
+  var POPULAR = ["vitamin-d", "omega-3", "magnesium", "probiotics"];
+  var EXAMPLES = ["마그네슘", "비타민D", "락토핏", "센트룸", "눈 건강"];   // 빈 검색창 안내 행의 예시 (누르면 검색어로 들어감)
+  /* 가이드·제품·의약품 색인은 검색창과 빠른 궁합 체크가 함께 쓰므로 처음 필요할 때 한 번만 불러온다 */
+  var extra = { guides: null, products: null, drugs: null, prodMatch: null, drugMatch: null, loading: null };
+  function loadExtra() {
+    if (extra.loading) return extra.loading;
+    extra.loading = Promise.all([
+      D.guides().then(function (g) { extra.guides = (g && g.items) || []; }).catch(function () { extra.guides = []; }),
+      D.productNames().then(function (n) { extra.products = n && n.p ? n : { i: [], p: [] }; }).catch(function () { extra.products = { i: [], p: [] }; }).then(function () { extra.prodMatch = D.nameMatcher(extra.products.p.map(function (p) { return p[1]; })); }),
+      D.drugNames().then(function (n) { extra.drugs = n && n.p ? n : { i: [], p: [] }; }).catch(function () { extra.drugs = { i: [], p: [] }; }).then(function () { extra.drugMatch = D.nameMatcher(extra.drugs.p.map(function (p) { return p[1]; })); })   // 의약품 수집 전이면 빈 색인
+    ]);
+    return extra.loading;
+  }
   function initSearch(core) {
     var input = document.getElementById("ingredient-search"), form = document.getElementById("search-form"), box = document.getElementById("search-results");
     var list = document.getElementById("search-list"), status = document.getElementById("search-status"), area = document.getElementById("search-area");
     if (!input || !form || !box || !list) return;
-    var POPULAR = ["vitamin-d", "omega-3", "magnesium", "probiotics"];
-    var EXAMPLES = ["마그네슘", "비타민D", "락토핏", "센트룸", "눈 건강"];   // 빈 검색창 안내 행의 예시 (누르면 검색어로 들어감)
-    var guides = null, products = null, drugs = null, prodMatch = null, drugMatch = null, extraLoading = null, matches = [], active = -1;
-    function loadExtra() {   // 가이드·제품 색인은 처음 입력할 때 한 번만
-      if (extraLoading) return extraLoading;
-      extraLoading = Promise.all([
-        D.guides().then(function (g) { guides = (g && g.items) || []; }).catch(function () { guides = []; }),
-        D.productNames().then(function (n) { products = n && n.p ? n : { i: [], p: [] }; }).catch(function () { products = { i: [], p: [] }; }).then(function () { prodMatch = D.nameMatcher(products.p.map(function (p) { return p[1]; })); }),
-        D.drugNames().then(function (n) { drugs = n && n.p ? n : { i: [], p: [] }; }).catch(function () { drugs = { i: [], p: [] }; }).then(function () { drugMatch = D.nameMatcher(drugs.p.map(function (p) { return p[1]; })); })   // 의약품 수집 전이면 빈 색인
-      ]);
-      return extraLoading;
-    }
+    var matches = [], active = -1;
     function entries(q) {
       var nq = norm(q);
       if (!nq) return [{ hint: true }].concat(POPULAR.map(function (id) { return core.byId[id]; }).filter(Boolean).map(function (it) { return { title: it.name, type: "성분", icon: "pill", href: D.ingredientUrl(it.id) }; }));
       var ings = D.search(core.items, q, 4).map(function (it) { return { title: it.name, html: D.markMatch(it.name, q), type: "성분", icon: "pill", href: D.ingredientUrl(it.id) }; });
       // 제품·의약품은 자모 단위로 비교 → 일부만 입력해도('락ㅌ', 'ㄹㅌㅍ') 관련 제품이 나온다
-      var ph = prodMatch ? prodMatch(q, 8) : { idx: [], total: 0 };
+      var ph = extra.prodMatch ? extra.prodMatch(q, 8) : { idx: [], total: 0 };
       var prods = ph.idx.map(function (i) {
-        var pp = products.p[i]; var names = pp[2].map(function (k) { var it = core.byId[products.i[k]]; return it ? it.name : null; }).filter(Boolean);
-        var maker = (products.c || [])[pp[3]] || "";
+        var pp = extra.products.p[i]; var names = pp[2].map(function (k) { var it = core.byId[extra.products.i[k]]; return it ? it.name : null; }).filter(Boolean);
+        var maker = (extra.products.c || [])[pp[3]] || "";
         return { title: pp[1], html: D.markMatch(pp[1], q), type: "제품", icon: "package", href: D.productUrl(pp[0]), subHtml: (maker ? '<span class="maker">' + esc(maker) + '</span> · ' : "") + esc(names.length ? "성분: " + names.slice(0, 3).join(" · ") : "성분 사전과 연결된 성분 없음") };
       });
-      var dh = drugMatch ? drugMatch(q, 3) : { idx: [], total: 0 };
+      var dh = extra.drugMatch ? extra.drugMatch(q, 3) : { idx: [], total: 0 };
       var meds = dh.idx.map(function (i) {
-        var pp = drugs.p[i]; var names = pp[2].map(function (k) { var it = core.byId[drugs.i[k]]; return it ? it.name : null; }).filter(Boolean);
+        var pp = extra.drugs.p[i]; var names = pp[2].map(function (k) { var it = core.byId[extra.drugs.i[k]]; return it ? it.name : null; }).filter(Boolean);
         var sub = (pp[3] ? "주성분: " + pp[3] : "") + (names.length ? (pp[3] ? " · " : "") + "영양 성분: " + names.slice(0, 2).join(", ") : "") + (pp[4] === 2 ? " · 전문의약품" : "");
-        var maker = (drugs.c || [])[pp[5]] || "";
+        var maker = (extra.drugs.c || [])[pp[5]] || "";
         return { title: pp[1], html: D.markMatch(pp[1], q), type: "의약품", icon: "pill-bottle", href: D.drugUrl(pp[0]), subHtml: (maker ? '<span class="maker">' + esc(maker) + '</span> · ' : "") + esc(sub || "식약처 허가 의약품") };
       });
-      var gs = (guides || []).filter(function (g) { return D.has([g.title, g.h1, (g.keywords || []).join(" ")].join(" "), q); }).slice(0, 2)
+      var gs = (extra.guides || []).filter(function (g) { return D.has([g.title, g.h1, (g.keywords || []).join(" ")].join(" "), q); }).slice(0, 2)
         .map(function (g) { return { title: String(g.h1 || g.title || "").split(" — ")[0], type: "가이드", icon: "book-open", href: D.guideUrl(g.slug) }; });
-      var list = ings.concat(prods.slice(0, 4), meds, gs);
-      if (list.length < 9) list = list.concat(prods.slice(4, 4 + 9 - list.length));   // 자리가 남으면 제품 예시를 더 보여준다
-      list = list.slice(0, 9);
+      // 성분 4 · 제품 3 · 가이드 2 · 의약품 2 까지 먼저 채우고, 자리가 남으면 제품·의약품 예시를 더 보여준다 (최대 11)
+      var list = ings.concat(prods.slice(0, 3), gs, meds.slice(0, 2));
+      if (list.length < 11) list = list.concat(prods.slice(3, 3 + 11 - list.length));
+      if (list.length < 11) list = list.concat(meds.slice(2, 2 + 11 - list.length));
+      list = list.slice(0, 11);
       var total = ph.total + dh.total;
       if (list.length) list.push({ title: "‘" + q + "’ 전체 검색 결과 보기" + (total > prods.length + meds.length ? " (제품·의약품 " + total.toLocaleString() + "건)" : ""), type: "검색", icon: "search", href: D.searchUrl(q), all: true });
       return list;
@@ -152,37 +156,119 @@
     });
   }
 
-  /* 빠른 궁합 체크 — 두 성분을 고르면 즉시 등급·제목을 보여주고, 자세한 결과는 궁합 페이지로 */
+  /* 빠른 궁합 체크 — 성분·제품·의약품 이름으로 두 가지를 고르면 즉시 요약을 보여주고, 자세한 결과는 궁합 페이지로.
+   * 제품·의약품은 성분 사전과 연결된 영양 성분들로 계산한다 (연결된 성분이 없으면 해당 페이지로 안내). */
   function initChecker(core) {
-    var first = document.getElementById("first-ingredient"), second = document.getElementById("second-ingredient");
     var form = document.getElementById("compatibility-form"), fb = document.getElementById("pair-feedback");
-    if (!first || !second || !form || !fb) return;
-    var cats = core.categories;
-    var html = '<option value="">선택하기</option>' + Object.keys(cats).map(function (k) {
-      var items = core.items.filter(function (i) { return i.category === k; }).sort(function (a, b) { return a.name.localeCompare(b.name, "ko"); });
-      return items.length ? '<optgroup label="' + esc(cats[k].label) + '">' + items.map(function (it) { return '<option value="' + esc(it.id) + '">' + esc(it.name) + '</option>'; }).join("") + "</optgroup>" : "";
-    }).join("");
-    first.innerHTML = html; second.innerHTML = html;
-    function err(msg, el) { fb.textContent = msg; fb.className = "form-feedback error"; el.setAttribute("aria-invalid", "true"); }
+    if (!form || !fb) return;
+    var slots = ["first", "second"].map(function (k) {
+      return { key: k, wrap: document.querySelector('.pick-wrap[data-pick="' + k + '"]'), input: document.getElementById(k + "-ingredient"), list: document.getElementById(k + "-ingredient-list"), sub: document.getElementById(k + "-ingredient-sub"), sel: null, matches: [], active: -1 };
+    });
+    if (slots.some(function (s) { return !s.wrap || !s.input || !s.list; })) return;
+    slots.forEach(function (s) { s.clear = s.wrap.querySelector(".pick-clear"); });
+    var order = { avoid: 0, caution: 1, synergy: 2, neutral: 3 };
+    function namesOf(ids) { return ids.map(function (k) { return core.byId[k] ? core.byId[k].name : null; }).filter(Boolean); }
+    function candidates(q) {
+      var nq = norm(q), out = [];
+      if (!nq) return POPULAR.map(function (id) { return core.byId[id]; }).filter(Boolean).map(function (it) { return { kind: "ing", id: it.id, name: it.name, ids: [it.id], type: "성분", icon: "pill" }; });
+      D.search(core.items, q, 5).forEach(function (it) { out.push({ kind: "ing", id: it.id, name: it.name, html: D.markMatch(it.name, q), ids: [it.id], type: "성분", icon: "pill" }); });
+      if (extra.prodMatch) extra.prodMatch(q, 4).idx.forEach(function (i) {
+        var pp = extra.products.p[i], ids = pp[2].map(function (k) { return extra.products.i[k]; }).filter(function (k) { return !!core.byId[k]; });
+        out.push({ kind: "prod", id: pp[0], name: pp[1], html: D.markMatch(pp[1], q), ids: ids, type: "제품", icon: "package", maker: (extra.products.c || [])[pp[3]] || "", sub: ids.length ? "성분: " + namesOf(ids).slice(0, 3).join(" · ") : "연결된 영양 성분 없음" });
+      });
+      if (extra.drugMatch) extra.drugMatch(q, 3).idx.forEach(function (i) {
+        var pp = extra.drugs.p[i], ids = pp[2].map(function (k) { return extra.drugs.i[k]; }).filter(function (k) { return !!core.byId[k]; });
+        out.push({ kind: "drug", id: pp[0], name: pp[1], html: D.markMatch(pp[1], q), ids: ids, type: "의약품", icon: "pill-bottle", maker: (extra.drugs.c || [])[pp[5]] || "", sub: (pp[3] ? "주성분: " + pp[3] : "") + (ids.length ? (pp[3] ? " · " : "") + "영양 성분: " + namesOf(ids).slice(0, 2).join(", ") : "") });
+      });
+      return out.slice(0, 9);
+    }
+    function close(s) { s.list.hidden = true; s.input.setAttribute("aria-expanded", "false"); s.input.removeAttribute("aria-activedescendant"); s.active = -1; }
+    function setActive(s, i) {
+      s.active = i;
+      Array.prototype.forEach.call(s.list.querySelectorAll('[role="option"]'), function (o, k) { o.setAttribute("aria-selected", k === i ? "true" : "false"); if (k === i) { s.input.setAttribute("aria-activedescendant", o.id); o.scrollIntoView({ block: "nearest" }); } });
+    }
+    function open(s) {
+      var q = s.input.value.trim();
+      s.matches = candidates(q); s.active = -1; s.input.removeAttribute("aria-activedescendant");
+      var hint = !q ? '<li class="pick-hint" role="presentation">많이 찾는 성분이에요. 성분명이나 제품명(락토핏, 우루사 …)을 입력해 보세요.</li>' : "";
+      s.list.innerHTML = hint + (s.matches.length
+        ? s.matches.map(function (m, i) { return '<li class="pick-option" id="' + s.key + '-ingredient-opt-' + i + '" role="option" aria-selected="false" data-i="' + i + '"><i data-lucide="' + m.icon + '" class="icon"></i><span>' + (m.html || esc(m.name)) + ((m.sub || m.maker) ? '<small>' + (m.maker ? '<span class="maker">' + esc(m.maker) + '</span>' + (m.sub ? " · " : "") : "") + esc(m.sub || "") + '</small>' : "") + '</span><span class="option-type">' + m.type + '</span></li>'; }).join("")
+        : '<li class="pick-empty" role="presentation">찾지 못했어요. 성분명이나 제품명 일부로 다시 입력해 보세요.</li>');
+      D.icons(s.list);
+      s.list.hidden = false; s.input.setAttribute("aria-expanded", "true");
+    }
+    function openWithExtra(s) { var p = loadExtra(); open(s); if (p) p.then(function () { if (!s.list.hidden && document.activeElement === s.input) open(s); }); }
+    function select(s, m) {
+      s.sel = m; s.input.value = m.name; s.input.classList.add("has-value"); s.input.removeAttribute("aria-invalid");
+      if (s.clear) s.clear.hidden = false;
+      if (s.sub) {
+        if (m.kind === "ing") { s.sub.hidden = true; s.sub.textContent = ""; }
+        else { s.sub.hidden = false; s.sub.innerHTML = (m.maker ? '<span class="maker">' + esc(m.maker) + '</span> · ' : "") + (m.ids.length ? "영양 성분: " + esc(namesOf(m.ids).join(", ")) : "성분 사전과 연결된 영양 성분이 없어 궁합 계산은 어려워요"); }
+      }
+      close(s); update();
+    }
+    function clearSlot(s) { s.sel = null; s.input.value = ""; s.input.classList.remove("has-value"); if (s.clear) s.clear.hidden = true; if (s.sub) { s.sub.hidden = true; s.sub.textContent = ""; } close(s); update(); }
+    function err(msg, s) { fb.textContent = msg; fb.className = "form-feedback error"; if (s) s.input.setAttribute("aria-invalid", "true"); }
+    function pageOf(m) { return m.kind === "prod" ? D.productUrl(m.id) : m.kind === "drug" ? D.drugUrl(m.id) : D.ingredientUrl(m.id); }
+    function unionIds(a, b) { var seen = {}, out = []; a.concat(b).forEach(function (k) { if (!seen[k]) { seen[k] = true; out.push(k); } }); return out; }
     function update() {
-      [first, second].forEach(function (s) { s.classList.toggle("has-value", !!s.value); s.removeAttribute("aria-invalid"); });
+      slots.forEach(function (s) { s.input.removeAttribute("aria-invalid"); });
       fb.className = "form-feedback";
-      if (first.value && first.value === second.value) { err("서로 다른 두 가지 성분을 선택해 주세요.", second); return; }
-      if (first.value && second.value) {
-        var p = D.findPair(core, first.value, second.value), t = p && core.types[p.type];
-        fb.textContent = t ? t.short + " · " + p.title : "알려진 특별한 상호작용이 없는 조합이에요. 자세한 내용은 궁합 페이지에서 확인하세요.";
+      var A = slots[0].sel, B = slots[1].sel;
+      if (!A || !B) { fb.textContent = "성분은 물론 락토핏·우루사 같은 제품명으로도 고를 수 있어요. 자세한 결과는 궁합 페이지에서 확인합니다."; return; }
+      if (A.kind === B.kind && A.id === B.id) { err("서로 다른 두 가지를 골라 주세요.", slots[1]); return; }
+      if (!A.ids.length || !B.ids.length) {
+        var who = !A.ids.length ? A : B;
+        fb.innerHTML = '<strong>' + esc(who.name) + '</strong>' + (who.kind === "drug" ? "은(는) 의약품이라 " : "은(는) ") + '성분 사전과 연결된 영양 성분이 없어 궁합을 계산할 수 없어요. <a href="' + esc(pageOf(who)) + '">' + (who.kind === "drug" ? "의약품 정보와 함께 챙기면 좋은 영양제 보기 →" : "제품 정보 보기 →") + '</a>';
         fb.classList.add("ready"); return;
       }
-      fb.textContent = "선택한 성분의 자세한 결과는 궁합 페이지에서 확인합니다.";
+      var shared = A.ids.filter(function (k) { return B.ids.indexOf(k) >= 0; });
+      var pairs = [];
+      A.ids.forEach(function (a) { B.ids.forEach(function (b) { if (a === b) return; pairs.push({ a: a, b: b, p: D.findPair(core, a, b) }); }); });
+      if (A.ids.length === 1 && B.ids.length === 1) {
+        var p1 = pairs[0] && pairs[0].p, t1 = p1 && core.types[p1.type];
+        fb.textContent = t1 ? t1.short + " · " + p1.title : "알려진 특별한 상호작용이 없는 조합이에요. 자세한 내용은 궁합 페이지에서 확인하세요.";
+        fb.classList.add("ready"); return;
+      }
+      var known = pairs.filter(function (x) { return x.p; }).sort(function (x, y) { return (order[x.p.type] === undefined ? 9 : order[x.p.type]) - (order[y.p.type] === undefined ? 9 : order[y.p.type]); });
+      var counts = {}; known.forEach(function (x) { counts[x.p.type] = (counts[x.p.type] || 0) + 1; });
+      var parts = [];
+      if (counts.avoid) parts.push("피해야 할 조합 " + counts.avoid);
+      if (counts.caution) parts.push("주의 " + counts.caution);
+      if (counts.synergy) parts.push("좋은 궁합 " + counts.synergy);
+      var notable = known.filter(function (x) { return x.p.type !== "neutral"; });
+      var head = notable.length ? '<strong>' + esc((core.types[notable[0].p.type] || {}).short || "") + '</strong> · ' + esc(core.byId[notable[0].a].name) + " + " + esc(core.byId[notable[0].b].name) + " — " + esc(notable[0].p.title) : "알려진 특별한 상호작용이 없는 조합이에요.";
+      fb.innerHTML = head + ' <span class="muted">(' + pairs.length + '개 조합' + (parts.length ? ' 중 ' + esc(parts.join(" · ")) : " 확인") + ')</span>' + (shared.length ? ' · 겹치는 성분: ' + esc(namesOf(shared).join(", ")) + ' (중복 섭취 주의)' : "");
+      fb.classList.add("ready");
     }
-    first.addEventListener("change", update); second.addEventListener("change", update);
-    form.addEventListener("submit", function (e) {
-      e.preventDefault(); update();
-      if (!core.byId[first.value]) { err("첫 번째 영양제를 선택해 주세요.", first); first.focus(); return; }
-      if (!core.byId[second.value]) { err("두 번째 영양제를 선택해 주세요.", second); second.focus(); return; }
-      if (first.value === second.value) { second.focus(); return; }
-      location.href = D.compatUrl([first.value, second.value]);
+    slots.forEach(function (s) {
+      s.input.addEventListener("input", function () {
+        if (s.sel) { s.sel = null; s.input.classList.remove("has-value"); if (s.sub) s.sub.hidden = true; update(); }
+        if (s.clear) s.clear.hidden = !s.input.value;
+        openWithExtra(s);
+      });
+      s.input.addEventListener("focus", function () { openWithExtra(s); });
+      s.input.addEventListener("keydown", function (e) {
+        if (e.isComposing || e.keyCode === 229) return;
+        if (e.key === "Escape") { e.preventDefault(); close(s); return; }
+        if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); if (s.list.hidden) open(s); if (!s.matches.length) return; setActive(s, (s.active + (e.key === "ArrowDown" ? 1 : -1) + s.matches.length) % s.matches.length); return; }
+        if (e.key === "Enter" && !s.list.hidden) { e.preventDefault(); var m = s.matches[s.active >= 0 ? s.active : 0]; if (m) select(s, m); }
+      });
+      s.list.addEventListener("pointerdown", function (e) { e.preventDefault(); });
+      s.list.addEventListener("click", function (e) { var li = e.target.closest("[data-i]"); if (li) select(s, s.matches[+li.getAttribute("data-i")]); });
+      if (s.clear) s.clear.addEventListener("click", function () { clearSlot(s); s.input.focus(); });
     });
+    document.addEventListener("click", function (e) { slots.forEach(function (s) { if (!s.wrap.contains(e.target)) close(s); }); });
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var A = slots[0].sel, B = slots[1].sel;
+      if (!A) { err("첫 번째 영양제를 고르세요. 성분명이나 제품명을 입력하면 목록이 나옵니다.", slots[0]); slots[0].input.focus(); return; }
+      if (!B) { err("두 번째 영양제를 고르세요.", slots[1]); slots[1].input.focus(); return; }
+      if (A.kind === B.kind && A.id === B.id) { err("서로 다른 두 가지를 골라 주세요.", slots[1]); slots[1].input.focus(); return; }
+      if (!A.ids.length || !B.ids.length) { location.href = pageOf(!A.ids.length ? A : B); return; }
+      location.href = D.compatUrl(unionIds(A.ids, B.ids));
+    });
+    update();
   }
 
   /* 최신 뉴스 3건 */

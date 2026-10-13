@@ -19,7 +19,7 @@
   function load(name) {
     if (!cache[name]) {
       cache[name] = fetchJSON(ROOT + "data/" + name + ".json").catch(function (err) {
-        (/HTTP 404/.test(err.message) ? console.warn : console.error)("[data] " + name + " 로드 실패:", err.message);
+        (/HTTP 404|Failed to fetch|NetworkError|abort/i.test(err.message) ? console.warn : console.error)("[data] " + name + " 로드 실패:", err.message);   // 404·페이지 이동 중 취소는 경고로만
         delete cache[name];
         throw err;
       });
@@ -101,6 +101,29 @@
       var h = 0; id = String(id || "");
       for (var i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) % 1000003;
       var n = h % 128; return (n < 10 ? "00" : n < 100 ? "0" : "") + n;
+    },
+    /* 의약품별 '함께 챙기면 좋은/주의할 영양 성분' 규칙 (data/drug-pairings.json, 수동 관리) */
+    drugPairings: function () { return load("drug-pairings").catch(function () { return { rules: [] }; }); },
+    drugPairingFor: function (rules, drug, core) {   // → { good:[{id, why, hours, label}], caution:[…], notes:[…], labels:[…] }
+      var out = { good: [], caution: [], notes: [], labels: [] };
+      if (!rules || !rules.rules || !drug) return out;
+      var tokens = ((drug.ingrEn && drug.ingrEn.length) ? drug.ingrEn : (drug.ingr || [])).map(function (t) { return String(t).toLowerCase(); });
+      var cls = String(drug.cls || ""), name = String(drug.name || "");
+      var external = /연고|크림|로션|패취|패치|플라스타|카타플라스마|좌제|점안|점비|점이|외용|스프레이|가글|구강용|습포|테이프|밴드|소독|파스|샴푸|비누|세정제|관장|질정|주사|수액|겔(제|$|\(|\d)/.test(name);
+      var own = {}; (drug.ingredients || []).forEach(function (i) { own[i] = true; });
+      var seen = { good: {}, caution: {} };
+      rules.rules.forEach(function (r) {
+        if (r.oralOnly && external) return;
+        var hit = (r.ingr || []).some(function (k) { k = k.toLowerCase(); return tokens.some(function (t) { return t.indexOf(k) >= 0; }); })
+          || (r.cls || []).some(function (c) { return cls && (cls === c || cls.indexOf(c) >= 0); })
+          || (r.names || []).some(function (n) { return name.indexOf(n) >= 0; });
+        if (!hit) return;
+        out.labels.push(r.label || r.id);
+        (r.good || []).forEach(function (g) { if (own[g.id] || seen.good[g.id] || (core && !core.byId[g.id])) return; seen.good[g.id] = true; out.good.push({ id: g.id, why: g.why, hours: g.hours, label: r.label }); });
+        (r.caution || []).forEach(function (c) { if (seen.caution[c.id] || (core && !core.byId[c.id])) return; seen.caution[c.id] = true; out.caution.push({ id: c.id, why: c.why, hours: c.hours, label: r.label }); });
+        if (r.note) out.notes.push(r.note);
+      });
+      return out;
     },
     drugDetail: function (id) {
       return load("drugs/detail/" + Data.drugShard(id)).then(function (d) {

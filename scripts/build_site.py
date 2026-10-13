@@ -87,6 +87,17 @@ def build_product_names() -> None:
     log.info("제품 검색 색인: %d개 (data/products/names.json)", len(items))
 
 
+def validate_drug_pairings(valid_ids: set[str]) -> None:
+    """data/drug-pairings.json (의약품별 함께 챙기면 좋은/주의할 영양 성분) 의 성분 id 가 성분 사전에 있는지 확인."""
+    data = read_json(DATA_DIR / "drug-pairings.json", None)
+    if not data:
+        return
+    bad = [(r.get("id"), x.get("id")) for r in data.get("rules", []) for k in ("good", "caution") for x in r.get(k, []) if x.get("id") not in valid_ids]
+    if bad:
+        raise SystemExit(f"drug-pairings.json 에 없는 성분 id: {bad}")
+    log.info("의약품 영양 성분 규칙 검증 통과: %d개 규칙", len(data.get("rules", [])))
+
+
 def ensure_drug_index() -> None:
     """의약품 검색 색인(scripts/fetch_drugs.py 가 생성)이 아직 없으면 빈 색인을 둔다 — 검색 스크립트가 404 를 만나지 않도록."""
     path = DATA_DIR / "drugs" / "names.json"
@@ -532,6 +543,7 @@ def main() -> int:
     build_sitemap(ingredients["items"], cfg, data_date, guides)
     inject_verification(cfg)
     build_product_names()
+    validate_drug_pairings(set(core["by_id"].keys()))
     ensure_drug_index()
     check_icons()
     stamp_assets()

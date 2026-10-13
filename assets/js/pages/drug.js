@@ -46,8 +46,24 @@
       : '<p class="mt-2 text-sm text-ink-400">' + (empty || "식약처 e약은요에 등록된 내용이 없습니다.") + '</p>';
   }
 
-  function render(core, p) {
+  function pairingHtml(core, p, pr) {
+    if (!pr || (!pr.good.length && !pr.caution.length && !pr.notes.length)) return "";
+    var body = '<p class="mt-2 text-sm text-ink-500">이 약의 주성분·분류(' + esc(pr.labels.join(", ")) + ') 기준으로 정리한 참고 정보입니다. 의약품을 복용 중이라면 영양제를 추가하기 전에 약사·의사와 상담하세요.</p>';
+    if (pr.good.length) body += '<div class="mt-4 grid gap-4 sm:grid-cols-2">' + pr.good.map(function (g) {
+      var it = core.byId[g.id];
+      return ingCard(core, it, '<p class="mt-1.5 text-sm leading-relaxed text-ink-700">' + esc(g.why) + '</p>');
+    }).join("") + '</div>';
+    if (pr.caution.length) body += '<p class="mt-5 text-sm font-bold text-ink-800">같이 먹을 때 주의할 영양제</p><ul class="mt-2 space-y-2">' + pr.caution.map(function (c) {
+      var it = core.byId[c.id];
+      return '<li class="flex flex-wrap items-start gap-2 rounded-xl border p-3 card-caution"><span class="badge badge-caution">주의</span><span class="min-w-0 flex-1 text-sm text-ink-700"><a class="font-bold text-ink-900 hover:text-brand-700" href="' + D.ingredientUrl(it.id) + '">' + esc(it.name) + '</a> — ' + esc(c.why) + (c.hours ? ' <span class="text-xs font-bold text-amber-700">(' + c.hours + '시간 이상 간격)</span>' : "") + '</span></li>';
+    }).join("") + '</ul>';
+    if (pr.notes.length) body += '<ul class="list-warn mt-4 text-sm text-ink-600">' + pr.notes.map(function (n) { return '<li>' + esc(n) + '</li>'; }).join("") + '</ul>';
+    return section("sec-pairing", "이 약과 함께 챙기면 좋은 영양제", "sparkles", body);
+  }
+
+  function render(core, p, rules) {
     var S = window.SITE || {};
+    var pairing = D.drugPairingFor(rules, p, core);
     var ids = (p.ingredients || []).filter(function (x) { return !!core.byId[x]; });
     var ings = ids.map(function (x) { return core.byId[x]; });
     var ingr = p.ingr || [];
@@ -68,7 +84,8 @@
       (ingr.length ? '<div class="mt-4 flex flex-wrap items-center gap-2"><span class="text-xs font-bold text-ink-400">주성분</span>' + ingr.map(function (t) { return '<span class="chip cursor-default">' + esc(t) + '</span>'; }).join("") + '</div>'
         : '<p class="mt-4 text-sm text-ink-500">주성분 정보는 허가정보와 연결되는 대로 표시됩니다. 아래 식약처 설명을 참고하세요.</p>') +
       (ings.length ? '<div class="mt-2 flex flex-wrap items-center gap-2"><span class="text-xs font-bold text-ink-400">영양 성분</span>' + ings.map(function (i) { return '<a class="chip active" href="' + D.ingredientUrl(i.id) + '">' + esc(i.name) + '</a>'; }).join("") + '</div>' : "") +
-      '<div class="mt-6 flex flex-wrap items-center gap-3">' + (ids.length ? '<a href="' + compatHref + '" class="btn-primary"><i data-lucide="heart-handshake"></i>이 약의 영양 성분으로 궁합·시간표 보기 <i data-lucide="arrow-right"></i></a>' : "") +
+      '<div class="mt-6 flex flex-wrap items-center gap-3">' + (ids.length ? '<a href="' + compatHref + '" class="btn-primary"><i data-lucide="heart-handshake"></i>이 약의 영양 성분으로 궁합·시간표 보기 <i data-lucide="arrow-right"></i></a>'
+        : (pairing.good.length || pairing.caution.length) ? '<a href="#sec-pairing" class="btn-primary"><i data-lucide="sparkles"></i>함께 챙기면 좋은 영양제 보기 <i data-lucide="arrow-right"></i></a>' : "") +
       '<a href="#sec-interaction" class="btn-outline"><i data-lucide="triangle-alert" class="text-amber-600"></i>상호작용·주의사항 보기</a></div>' +
       '</div>' +
       (p.image ? '<div id="drug-img" class="mt-6 shrink-0 md:mt-0"><div class="rounded-2xl border border-ink-100 bg-white p-3 shadow-card"><img src="' + esc(p.image) + '" alt="' + esc(p.name) + ' 제품 이미지" class="mx-auto h-40 w-auto max-w-[260px] object-contain" loading="lazy" decoding="async" referrerpolicy="no-referrer"></div><p class="mt-1 text-center text-[11px] text-ink-400">이미지: 식약처 의약품안전나라</p></div>' : "") +
@@ -77,7 +94,7 @@
     var main = document.getElementById("drug-main");
     var nutrientsHtml = ings.length
       ? '<p class="mt-2 text-sm text-ink-500">이 약의 주성분 가운데 성분 사전(영양소)에 있는 것입니다. 함량은 의약품 설명서를 확인하세요.</p><div class="mt-4 grid gap-4 sm:grid-cols-2">' + ings.map(function (i) { return ingCard(core, i); }).join("") + '</div>'
-      : '<p class="mt-2 text-sm leading-relaxed text-ink-600">' + (ingr.length ? '주성분(' + esc(ingr.join(", ")) + ')은 성분 사전의 영양소와 겹치지 않습니다. 이 약은 영양제가 아닌 의약품이므로, 함께 먹을 영양제는 아래 <a class="font-bold text-brand-700 hover:underline" href="#sec-interaction">상호작용</a> 항목을 읽고 약사·의사와 확인하세요.' : '주성분 정보가 아직 연결되지 않았습니다. 식약처 허가정보는 매일 새벽 갱신됩니다.') + '</p>';
+      : '<p class="mt-2 text-sm leading-relaxed text-ink-600">' + (ingr.length ? '주성분(' + esc(ingr.join(", ")) + ')은 성분 사전의 영양소와 겹치지 않습니다. 이 약은 영양제가 아닌 의약품이므로, ' + ((pairing.good.length || pairing.caution.length) ? '아래 <a class="font-bold text-brand-700 hover:underline" href="#sec-pairing">함께 챙기면 좋은 영양제</a>와 ' : '') + '<a class="font-bold text-brand-700 hover:underline" href="#sec-interaction">상호작용</a> 항목을 읽고 약사·의사와 확인하세요.' : '주성분 정보가 아직 연결되지 않았습니다. 식약처 허가정보는 매일 새벽 갱신됩니다.') + '</p>';
     var goodHtml = pr.good.length
       ? '<p class="mt-2 text-sm text-ink-500">이 약의 영양 성분과 함께 먹었을 때 흡수나 작용을 서로 돕는 것으로 알려진 성분입니다. 의약품을 복용 중이라면 영양제 추가 전에 약사와 상의하세요.</p><div class="mt-4 grid gap-4 sm:grid-cols-2">' + pr.good.map(function (e) {
           var it = core.byId[e.id]; var r = e.reasons[0];
@@ -94,6 +111,7 @@
 
     main.innerHTML =
       section("sec-nutrients", "이 약에 들어 있는 영양 성분", "badge-check", nutrientsHtml) +
+      pairingHtml(core, p, pairing) +
       (ids.length ? section("sec-good", "함께 먹으면 더 좋은 성분", "heart-handshake", goodHtml) + section("sec-warn", "시간을 띄우거나 주의할 조합", "clock-alert", warnHtml) : "") +
       section("sec-efficacy", "효능·효과", "heart-pulse", para(p.efficacy)) +
       section("sec-usage", "사용법", "clock", para(p.usage)) +
@@ -135,14 +153,14 @@
 
   document.addEventListener("DOMContentLoaded", function () {
     if (!id) { show("drug-missing"); D.icons(); return; }
-    Promise.all([D.core(), D.drugDetail(id)]).then(function (r) {
-      var core = r[0], p = r[1];
-      if (p) { render(core, p); return; }
+    Promise.all([D.core(), D.drugDetail(id), D.drugPairings()]).then(function (r) {
+      var core = r[0], p = r[1], rules = r[2];
+      if (p) { render(core, p, rules); return; }
       // 상세 조각에 없으면 검색 색인의 최소 정보로라도 표시
       return D.drugNames().then(function (n) {
         var hit = (n.p || []).filter(function (x) { return x[0] === id; })[0];
         if (!hit) { show("drug-missing"); D.icons(); return; }
-        render(core, { id: hit[0], name: hit[1], ingredients: hit[2].map(function (i) { return n.i[i]; }), ingr: hit[3] ? hit[3].split(" · ") : [], otc: hit[4] === 2 ? "전문의약품" : hit[4] === 1 ? "일반의약품" : "", company: (n.c || [])[hit[5]] || "" });
+        render(core, { id: hit[0], name: hit[1], ingredients: hit[2].map(function (i) { return n.i[i]; }), ingr: hit[3] ? hit[3].split(" · ") : [], otc: hit[4] === 2 ? "전문의약품" : hit[4] === 1 ? "일반의약품" : "", company: (n.c || [])[hit[5]] || "" }, rules);
       });
     }).catch(function (e) { if (window.console) console.warn(e); show("drug-missing"); D.icons(); });
   });

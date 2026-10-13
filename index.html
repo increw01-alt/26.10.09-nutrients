@@ -22,15 +22,15 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap">
   <link rel="stylesheet" href="assets/css/style.css?v=40343463">
-  <link rel="stylesheet" href="assets/css/home.css?v=baee56cd">
+  <link rel="stylesheet" href="assets/css/home.css?v=4e0a079e">
   <link rel="stylesheet" href="assets/css/tailwind.css?v=6bc1b44b">
   <link rel="preload" as="image" href="assets/images/home/hero-bottles.webp">
   <script src="assets/js/icons.js?v=37990267" defer></script>
   <script src="assets/js/config.js?v=c8b8f436" defer></script>
-  <script src="assets/js/data.js?v=3d7a1210" defer></script>
+  <script src="assets/js/data.js?v=ea0e72f9" defer></script>
   <script src="assets/js/affiliate.js?v=65f5cd0f" defer></script>
   <script src="assets/js/layout.js?v=6679f8fe" defer></script>
-  <script src="assets/js/pages/home.js?v=dc9a0475" defer></script>
+  <script src="assets/js/pages/home.js?v=c0f372f0" defer></script>
   <script type="application/ld+json">
   {"@context":"https://schema.org","@graph":[
     {"@type":"WebSite","name":"영양제.kr","url":"https://xn--og5b1hx9c.kr/","description":"영양제 성분 정보와 영양제 간 궁합, 복용 시간표를 제공하는 정보 사이트","potentialAction":{"@type":"SearchAction","target":"https://xn--og5b1hx9c.kr/ingredients.html?q={search_term_string}","query-input":"required name=search_term_string"}},
@@ -101,29 +101,33 @@
               <img class="checker-leaf" src="assets/images/home/leaf.webp" alt="" width="29" height="34" decoding="async">
               <h2 id="checker-title">영양제 궁합 빠른 체크</h2>
             </div>
-            <p class="checker-intro">두 가지 성분을 고르면 바로 결과를 보여드려요</p>
+            <p class="checker-intro">성분명이나 제품명을 입력해 두 가지를 고르면 바로 결과를 보여드려요</p>
             <form action="compatibility.html" id="compatibility-form" method="get" novalidate>
               <div class="pair-fields">
                 <div class="pair-field">
                   <label for="first-ingredient"><span class="field-number">01</span> 첫 번째 영양제</label>
-                  <div class="select-wrap">
+                  <div class="pick-wrap" data-pick="first">
                     <i data-lucide="pill" class="icon"></i>
-                    <select id="first-ingredient" aria-describedby="pair-feedback" aria-required="true"><option value="">선택하기</option></select>
-                    <i data-lucide="chevron-down" class="icon"></i>
+                    <input id="first-ingredient" class="pick-input" type="text" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="first-ingredient-list" aria-describedby="pair-feedback" aria-required="true" placeholder="성분명·제품명 입력 (예: 마그네슘, 우루사)">
+                    <button type="button" class="pick-clear" hidden aria-label="선택 지우기"><i data-lucide="x" class="icon"></i></button>
+                    <ul class="pick-list" id="first-ingredient-list" role="listbox" aria-label="첫 번째 영양제 후보" hidden></ul>
                   </div>
+                  <p class="pick-sub" id="first-ingredient-sub" hidden></p>
                 </div>
                 <div class="pair-plus" aria-hidden="true"><i data-lucide="plus" class="icon"></i></div>
                 <div class="pair-field">
                   <label for="second-ingredient"><span class="field-number">02</span> 두 번째 영양제</label>
-                  <div class="select-wrap">
+                  <div class="pick-wrap" data-pick="second">
                     <i data-lucide="pill" class="icon"></i>
-                    <select id="second-ingredient" aria-describedby="pair-feedback" aria-required="true"><option value="">선택하기</option></select>
-                    <i data-lucide="chevron-down" class="icon"></i>
+                    <input id="second-ingredient" class="pick-input" type="text" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="second-ingredient-list" aria-describedby="pair-feedback" aria-required="true" placeholder="성분명·제품명 입력 (예: 비타민D, 락토핏)">
+                    <button type="button" class="pick-clear" hidden aria-label="선택 지우기"><i data-lucide="x" class="icon"></i></button>
+                    <ul class="pick-list" id="second-ingredient-list" role="listbox" aria-label="두 번째 영양제 후보" hidden></ul>
                   </div>
+                  <p class="pick-sub" id="second-ingredient-sub" hidden></p>
                 </div>
               </div>
               <button class="button primary check-submit" type="submit"><span>궁합 확인하기</span><i data-lucide="arrow-right" class="icon"></i></button>
-              <p class="form-feedback" id="pair-feedback" role="status" aria-live="polite">선택한 성분의 자세한 결과는 궁합 페이지에서 확인합니다.</p>
+              <p class="form-feedback" id="pair-feedback" role="status" aria-live="polite">성분은 물론 락토핏·우루사 같은 제품명으로도 고를 수 있어요. 자세한 결과는 궁합 페이지에서 확인합니다.</p>
             </form>
             <p class="checker-footer">3개 이상 한꺼번에 보려면<br class="checker-break"> <a href="compatibility.html">궁합 체크 페이지에서 <i data-lucide="arrow-right" class="icon"></i></a></p>
           </section>

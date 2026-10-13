@@ -606,3 +606,34 @@
 .home .search-hint .ex:hover { border-color: #9cc49c; background: #eff5ec; color: #175136; }
 .home .search-option small .maker { color: #3a463c; font-weight: 650; }
 .home .popular .chip small { font-size: 9px; font-weight: 600; color: #6d7e65; margin-left: 1px; }
+
+/* 빠른 궁합 체크: 검색형 선택란 (성분·제품·의약품) */
+.home .pick-wrap { position: relative; display: flex; align-items: center; }
+.home .pick-wrap > .icon:first-child { position: absolute; left: 12px; pointer-events: none; color: #819778; width: 18px; height: 18px; }
+.home .pick-input { width: 100%; min-width: 0; height: 45px; background: #fff; border: 1px solid #dbe4d5; border-radius: 8px; padding: 8px 40px 8px 37px; color: #274d30; font-size: 13px; outline: 0 !important; }
+.home .pick-input::placeholder { color: #687b61; opacity: 1; }
+.home .pick-input:focus { border-color: #5e8f60; box-shadow: 0 0 0 3px #4b824817; }
+.home .pick-input.has-value { border-color: #adc59e; background: #f6fbf0; font-weight: 650; }
+.home .pick-input[aria-invalid=true] { border-color: #b2573c; }
+.home .pick-clear { position: absolute; right: 8px; width: 26px; height: 26px; border-radius: 9999px; display: grid; place-items: center; color: #66765e; background: #eef4e9; }
+.home .pick-clear:hover { background: #dde9d3; color: #175136; }
+.home .pick-clear .icon { width: 14px; height: 14px; }
+.home .pick-list { position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 35; margin: 0; padding: 6px; list-style: none; background: #fff; border: 1px solid #d7e3d0; border-radius: 12px; box-shadow: 0 18px 45px #233d2a23; max-height: 262px; overflow: auto; }
+.home .pick-option { display: flex; align-items: center; gap: 9px; padding: 9px 10px; border-radius: 8px; font-size: 13px; cursor: pointer; user-select: none; }
+.home .pick-option:hover, .home .pick-option[aria-selected=true] { background: #eef5e8; }
+.home .pick-option > .icon { width: 16px; height: 16px; color: #628559; flex: none; }
+.home .pick-option > span:not(.option-type) { min-width: 0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.home .pick-option small { display: block; font-size: 11px; color: #6d7e65; margin-top: 1px; }
+.home .pick-option small .maker { color: #3a463c; font-weight: 650; }
+.home .pick-option mark { background: #e3efdc; color: #175136; border-radius: 3px; padding: 0 1px; }
+.home .pick-hint { padding: 8px 10px 4px; font-size: 11px; color: #6d7967; }
+.home .pick-empty { padding: 10px; font-size: 12px; color: #6d7967; }
+.home .pick-sub { margin: 6px 2px 0; font-size: 11px; line-height: 1.5; color: #5d7259; }
+.home .pick-sub .maker { color: #3a463c; font-weight: 650; }
+.home .form-feedback a { color: var(--green); font-weight: 650; text-decoration: underline; }
+@media (max-width: 767px) {
+  .home .pick-input { font-size: 16px; padding: 8px 38px 8px 31px; height: 46px; letter-spacing: -.3px; }
+  .home .pick-wrap > .icon:first-child { left: 9px; width: 16px; height: 16px; }
+}
+.home .form-feedback strong { color: #27322a; font-weight: 700; }
+.home .form-feedback .muted { color: #6d7967; font-weight: 500; }
