@@ -26,7 +26,7 @@ python scripts/fetch_news.py / fetch_materials.py / fetch_products.py / fetch_dr
 - `data/` : 성분·궁합·가이드(수동) / 제품·원료·뉴스(자동). 제품은 목록(`products.json`) + 성분별 상위(`products/top/`) + 상세 조각(`products/detail/`) + 검색용 경량 색인(`products/names.json`, 빌드가 생성). 제품 상세는 `product.html?id=…`(`pages/product.js`: 함유 성분·함께 먹으면 좋은 성분·주의 조합·신고 정보, noindex)
 - 검색: 메인 검색창·전역 검색(/)은 자동완성(성분·제품·의약품·가이드 + '전체 검색 결과 보기'), Enter·검색 버튼은 통합 검색 결과 페이지 `search.html?q=…`(`pages/search.js`: 섹션별 결과, 결과 없으면 비슷한 이름 제안과 검색 요령, noindex·robots 제외)로 간다
 - 의약품(`scripts/fetch_drugs.py`, 공공데이터포털 `DATA_GO_KR_KEY` 필요): `data/drugs/names.json`(검색 색인) + `data/drugs/detail/<000~127>.json`(상세 조각) + `data/drugs/permit.json`(허가정보 캐시, 지우면 첫 실행처럼 목록 전체를 다시 받음). 상세는 `drug.html?id=품목기준코드`(`pages/drug.js`). 의약품에는 구매 링크를 넣지 않는다(온라인 판매 금지). 수집 전에는 `names.json` 이 없어 검색 결과가 비는 것이 정상
-- `scripts/` : 수집·빌드 파이썬. `fetch_products.py` 의 `NUTRIENT_RULES`·`HERBAL_RULES`·`EXCIPIENT_RE` 가 제품-성분 매칭 규칙
+- `scripts/` : 수집·빌드 파이썬. `fetch_products.py` 의 `NUTRIENT_RULES`·`HERBAL_RULES`·`EXCIPIENT_RE` 가 제품-성분 매칭 규칙. `fetch_drugs.py` 의 `SALT_RULES`·`CONTAIN_RULES`(한글·영문)가 의약품 주성분-영양 성분 규칙, `drug_ingr_ko.py` 가 영문 주성분 → 한글 표시 사전 (규칙·사전을 고친 뒤 `python scripts/fetch_drugs.py --rebuild`)
 - 현황·이력·다음 할 일: `docs/PROJECT-STATUS.md`
 
 ## 새 성분·가이드 추가 절차

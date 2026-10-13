@@ -41,6 +41,7 @@ import requests
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from common import DATA_DIR, env, load_ingredients, log, now_iso, read_json, write_json  # noqa: E402
+from drug_ingr_ko import to_korean  # noqa: E402
 
 DEFAULT_API_BASE = "https://apis.data.go.kr/1471000"
 DEFAULT_EASY_SERVICE = "DrbEasyDrugInfoService/getDrbEasyDrugList"
@@ -66,7 +67,7 @@ BULK_MAX_PAGES = 600           # 목록 전체 순회 상한 (약 6만 건)
 TEXT_LIMIT = 3000              # e약은요 본문 항목별 보관 글자 수
 DETAIL_SHARDS = 128            # data/drugs/detail/<NNN>.json 조각 수 (assets/js/data.js 의 drugShard() 와 동일)
 INGR_TOKENS_MAX = 12
-MATCHER_VERSION = 1
+MATCHER_VERSION = 2            # 2: 영문 주성분 규칙·한글 표시 사전
 
 DIR_NAME = "drugs"
 OTC_FLAG = {"일반의약품": 1, "전문의약품": 2}
@@ -98,46 +99,52 @@ MULTIVITAMIN_MIN = 5
 
 # 미네랄은 '영양 보급용 염'일 때만 인정 (토큰 전체에 대해 앞부분부터 검사). 약물의 염(아토르바스타틴칼슘), 제산제(수산화마그네슘) 제외
 SALT_RULES: dict[str, re.Pattern] = {
-    "calcium": re.compile(r"^(탄산|구연산|시트르산|글루콘산|젖산|인산수소|제이인산|제삼인산|아세트산|염화|글리세로인산|아스파르트산|l-아스파르트산|우유|산호|해조|침강탄산)?칼슘(?!도베실|도부실)"),
-    "magnesium": re.compile(r"^(산화|탄산|구연산|시트르산|글루콘산|젖산|염화|아스파르트산|l-아스파르트산|글리시네이트|비스글리시네이트|피돌산|오로트산|중)?마그네슘"),
-    "zinc": re.compile(r"^(산화|황산|글루콘산|피콜린산|구연산|아세트산|아스파르트산|l-아스파르트산|킬레이트)?아연"),
+    "calcium": re.compile(r"^(탄산|구연산|시트르산|글루콘산|젖산|인산수소|제이인산|제삼인산|아세트산|염화|글리세로인산|아스파르트산|l-아스파르트산|우유|산호|해조|침강탄산)?칼슘(?!도베실|도부실)"
+                          r"|^(precipitated |dried |tribasic |dibasic |tricalcium |dicalcium )?calcium( (carbonate|citrate|gluconate|lactate|phosphate|hydrogen ?phosphate|acetate|chloride|glycerophosphate|aspartate|l-aspartate|hydroxyapatite|lactate gluconate)|$)"
+                          r"|^(dibasic|tribasic) calcium phosphate|^oyster shell"),
+    "magnesium": re.compile(r"^(산화|탄산|구연산|시트르산|글루콘산|젖산|염화|아스파르트산|l-아스파르트산|글리시네이트|비스글리시네이트|피돌산|오로트산|중)?마그네슘"
+                            r"|^(light |heavy )?magnesium( (oxide|carbonate|citrate|gluconate|lactate|chloride|aspartate|l-aspartate|glycerophosphate|glycinate|bisglycinate|pidolate|orotate|sulfate)|$)"),
+    "zinc": re.compile(r"^(산화|황산|글루콘산|피콜린산|구연산|아세트산|아스파르트산|l-아스파르트산|킬레이트)?아연"
+                       r"|^zinc( (oxide|sulfate|gluconate|picolinate|citrate|acetate|aspartate|chloride|bisglycinate)|$)"),
 }
 # 토큰 안에 들어 있으면 인정
 CONTAIN_RULES: dict[str, list[str]] = {
-    "vitamin-a": ["레티놀", "레티닐", "비타민a", "베타카로틴", "베타-카로틴"],
-    "vitamin-c": ["아스코르브산", "아스코르빈산", "아스코브산", "아스코르베이트", "비타민c"],
-    "vitamin-d": ["콜레칼시페롤", "에르고칼시페롤", "비타민d"],
-    "vitamin-e": ["토코페롤", "토코페릴", "비타민e"],
-    "vitamin-k": ["피토나디온", "메나테트레논", "메나디온", "필로퀴논", "비타민k"],
+    "vitamin-a": ["레티놀", "레티닐", "비타민a", "베타카로틴", "베타-카로틴", "retinol", "retinyl", "beta-carotene", "betacarotene", "vitamin a"],
+    "vitamin-c": ["아스코르브산", "아스코르빈산", "아스코브산", "아스코르베이트", "비타민c", "ascorbic acid", "ascorbate", "vitamin c"],
+    "vitamin-d": ["콜레칼시페롤", "에르고칼시페롤", "비타민d", "cholecalciferol", "ergocalciferol", "vitamin d"],
+    "vitamin-e": ["토코페롤", "토코페릴", "비타민e", "tocopherol", "tocopheryl", "tocotrienol", "vitamin e"],
+    "vitamin-k": ["피토나디온", "메나테트레논", "메나디온", "필로퀴논", "비타민k", "phytonadione", "menatetrenone", "menadione", "phylloquinone", "vitamin k"],
     "vitamin-b-complex": ["티아민", "푸르설티아민", "벤포티아민", "비스벤티아민", "옥토티아민", "리보플라빈", "피리독신", "피리독살", "니코틴산아미드", "니아신아미드",
-                          "니코틴산", "판토텐산", "덱스판테놀", "판테놀", "비타민b1", "비타민b2", "비타민b6", "비타민b군", "비타민b복합"],
-    "vitamin-b12": ["코발라민", "비타민b12"],
-    "folate": ["폴산", "엽산", "메틸폴레이트", "메틸테트라히드로"],
-    "biotin": ["비오틴"],
-    "selenium": ["셀레늄", "아셀렌산", "셀레노메티오닌", "셀렌"],
-    "iron": ["철"],
-    "copper": ["구리"],
-    "omega-3": ["오메가-3", "오메가3", "에이코사펜타엔산", "도코사헥사엔산", "epa", "dha"],
-    "probiotics": ["락토바실", "비피도박테리움", "비피더스", "바실루스", "바실러스", "스트렙토코쿠스", "엔테로코쿠스", "락토민", "유산균", "사카로미세스", "클로스트리디움부티리쿰"],
-    "lutein": ["루테인"],
-    "coq10": ["유비데카레논", "코엔자임q10", "유비퀴논", "코큐텐"],
-    "milk-thistle": ["실리마린", "실리빈", "밀크시슬", "밀크씨슬", "카르두스마리아누스", "엉겅퀴"],
-    "red-ginseng": ["홍삼", "인삼"],
-    "glucosamine": ["글루코사민"],
-    "msm": ["메틸설포닐메탄", "디메틸설폰"],
-    "collagen": ["콜라겐"],
-    "green-tea-extract": ["녹차", "카테킨"],
-    "curcumin": ["쿠르쿠민", "커큐민", "강황", "울금"],
-    "arginine": ["아르기닌"],
-    "theanine": ["테아닌"],
-    "saw-palmetto": ["쏘팔메토", "소팔메토", "톱야자"],
-    "garcinia": ["가르시니아"],
-    "ginkgo": ["은행엽", "은행잎", "징코"],
-    "psyllium": ["차전자", "질경이씨", "사일리움", "플란타고"],
-    "l-carnitine": ["카르니틴", "카니틴"],
-    "boswellia": ["보스웰리아", "유향"],
-    "phosphatidylserine": ["포스파티딜세린"],
-    "propolis": ["프로폴리스"],
+                          "니코틴산", "판토텐산", "덱스판테놀", "판테놀", "비타민b1", "비타민b2", "비타민b6", "비타민b군", "비타민b복합",
+                          "thiamine", "fursultiamine", "benfotiamine", "bisbentiamine", "octotiamine", "riboflavin", "pyridoxine", "pyridoxal", "nicotinamide", "niacinamide", "nicotinic acid", "pantothen", "dexpanthenol", "panthenol", "vitamin b1", "vitamin b2", "vitamin b6"],
+    "vitamin-b12": ["코발라민", "비타민b12", "cobalamin", "vitamin b12"],
+    "folate": ["폴산", "엽산", "메틸폴레이트", "메틸테트라히드로", "folic acid", "folate", "methyltetrahydrofol"],
+    "biotin": ["비오틴", "biotin"],
+    "selenium": ["셀레늄", "아셀렌산", "셀레노메티오닌", "셀렌", "selenium", "selenite", "selenomethionine"],
+    "iron": ["철", "ferrous", "ferric", "iron", "ferritin"],
+    "copper": ["구리", "copper", "cupric"],
+    "omega-3": ["오메가-3", "오메가3", "에이코사펜타엔산", "도코사헥사엔산", "omega-3", "omega 3", "eicosapentaenoic", "docosahexaenoic", "fish oil"],
+    "probiotics": ["락토바실", "비피도박테리움", "비피더스", "바실루스", "바실러스", "스트렙토코쿠스", "엔테로코쿠스", "락토민", "유산균", "사카로미세스", "클로스트리디움부티리쿰",
+                   "lactobacillus", "bifidobacterium", "bacillus", "streptococcus", "enterococcus", "saccharomyces", "clostridium butyricum", "lactomin", "lactic acid bacteria"],
+    "lutein": ["루테인", "lutein"],
+    "coq10": ["유비데카레논", "코엔자임q10", "유비퀴논", "코큐텐", "ubidecarenone", "coenzyme q10", "ubiquinone", "ubiquinol"],
+    "milk-thistle": ["실리마린", "실리빈", "밀크시슬", "밀크씨슬", "카르두스마리아누스", "엉겅퀴", "silymarin", "silybin", "milk thistle", "milk-thistle", "carduus"],
+    "red-ginseng": ["홍삼", "인삼", "ginseng"],
+    "glucosamine": ["글루코사민", "glucosamine"],
+    "msm": ["메틸설포닐메탄", "디메틸설폰", "methylsulfonylmethane", "dimethyl sulfone"],
+    "collagen": ["콜라겐", "collagen"],
+    "green-tea-extract": ["녹차", "카테킨", "green tea", "catechin"],
+    "curcumin": ["쿠르쿠민", "커큐민", "강황", "울금", "curcumin", "turmeric", "curcuma"],
+    "arginine": ["아르기닌", "arginine"],
+    "theanine": ["테아닌", "theanine"],
+    "saw-palmetto": ["쏘팔메토", "소팔메토", "톱야자", "saw palmetto", "serenoa", "sabal"],
+    "garcinia": ["가르시니아", "garcinia"],
+    "ginkgo": ["은행엽", "은행잎", "징코", "ginkgo"],
+    "psyllium": ["차전자", "질경이씨", "사일리움", "플란타고", "psyllium", "plantago"],
+    "l-carnitine": ["카르니틴", "카니틴", "carnitine"],
+    "boswellia": ["보스웰리아", "유향", "boswellia", "frankincense"],
+    "phosphatidylserine": ["포스파티딜세린", "phosphatidylserine"],
+    "propolis": ["프로폴리스", "propolis"],
 }
 # 외용제·주사제 등 '먹는 약'이 아닌 제형 — 영양 성분으로 연결하지 않음 (연고의 산화아연 등)
 EXTERNAL_RE = re.compile(r"연고|크림|로션|패취|패치|플라스타|카타플라스마|좌제|점안|점비|점이|외용|스프레이|가글|구강용|습포|테이프|밴드|소독|파스|샴푸|비누|세정제|관장|질정|주사|수액|겔(제|$|\(|\d)")
@@ -165,7 +172,7 @@ def match_ids(name: str, tokens: list[str], valid: set[str]) -> list[str]:
     """제품명·주성분 토큰에서 성분 사전 id 를 찾는다."""
     if EXTERNAL_RE.search(name or ""):
         return []
-    cands = [t.lower().replace(" ", "") for t in tokens] + [t.lower() for t in NAME_SPLIT_RE.split(name or "") if t]
+    cands = [re.sub(r"\s+", " ", t.lower()).strip() for t in tokens] + [t.lower().replace(" ", "") for t in tokens] + [t.lower() for t in NAME_SPLIT_RE.split(name or "") if t]
     found: list[str] = []
     for iid, rx in SALT_RULES.items():
         if iid in valid and any(rx.search(c) for c in cands):
@@ -173,6 +180,8 @@ def match_ids(name: str, tokens: list[str], valid: set[str]) -> list[str]:
     for iid, kws in CONTAIN_RULES.items():
         if iid in valid and iid not in found and any(k in c for c in cands for k in kws):
             found.append(iid)
+    if "omega-3" in valid and "omega-3" not in found and any(re.search(r"\b(epa|dha)\b", c) for c in cands):
+        found.append("omega-3")
     if "multivitamin" in valid and sum(1 for i in found if i in NUTRIENT_IDS) >= MULTIVITAMIN_MIN:
         found.append("multivitamin")
     return found
@@ -431,7 +440,12 @@ def normalize(row: dict, permit: dict | None, valid: set[str]) -> dict | None:
     if not seq or not name:
         return None
     permit = permit or {}
-    tokens = ingr_tokens(permit.get("ingr", ""))
+    tokens = ingr_tokens(permit.get("ingr", ""))          # 허가정보 주성분 (영문 INN)
+    display = [to_korean(t) for t in tokens]
+    if len(tokens) == 1 and display[0] == tokens[0]:        # 사전에 없으면 제품명 괄호의 한글 성분명을 쓴다: 우루사정(우르소데옥시콜산)
+        m = re.search(r"\(([가-힣][가-힣A-Za-z0-9·\-\s]*)\)\s*$", name)
+        if m:
+            display = [m.group(1).strip()]
     otc = permit.get("otc", "")
     otc = "일반의약품" if "일반" in otc else "전문의약품" if "전문" in otc else otc
     rec = {
@@ -440,7 +454,8 @@ def normalize(row: dict, permit: dict | None, valid: set[str]) -> dict | None:
         "company": re.sub(r"\s+", " ", str(row.get("entpName") or "")).strip(),
         "otc": otc,
         "cls": permit.get("cls", ""),
-        "ingr": tokens,
+        "ingr": display,
+        "ingrEn": tokens if display != tokens else [],
         "ingredients": match_ids(name, tokens, valid),
         "efficacy": clean_text(row.get("efcyQesitm")),
         "usage": clean_text(row.get("useMethodQesitm")),
@@ -449,7 +464,7 @@ def normalize(row: dict, permit: dict | None, valid: set[str]) -> dict | None:
         "interaction": clean_text(row.get("intrcQesitm")),
         "sideEffects": clean_text(row.get("seQesitm")),
         "storage": clean_text(row.get("depositMethodQesitm")),
-        "image": str(row.get("itemImage") or "").strip(),
+        "image": str(row.get("itemImage") or permit.get("img") or "").strip(),
         "openDe": ymd(row.get("openDe")),
         "updateDe": ymd(row.get("updateDe")),
         "permitDate": permit.get("date", ""),
@@ -554,7 +569,8 @@ def main() -> int:
         seq = str(row.get("itemSeq") or "").strip()
         permit = permit_cache.get(seq)
         if permit is None and args.rebuild and seq in full_prev:   # 캐시가 없으면 저장된 토큰으로
-            permit = {"ingr": "|".join(full_prev[seq].get("ingr", [])), "otc": full_prev[seq].get("otc", ""), "cls": full_prev[seq].get("cls", ""), "date": full_prev[seq].get("permitDate", ""), "cancel": full_prev[seq].get("cancel", "")}
+            prev = full_prev[seq]
+            permit = {"ingr": "|".join(prev.get("ingrEn") or prev.get("ingr", [])), "otc": prev.get("otc", ""), "cls": prev.get("cls", ""), "date": prev.get("permitDate", ""), "cancel": prev.get("cancel", ""), "img": prev.get("image", "")}
         rec = normalize(row, permit, valid)
         if rec:
             items[rec["id"]] = rec

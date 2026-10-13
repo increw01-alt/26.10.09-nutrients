@@ -149,7 +149,8 @@ python scripts/build_site.py
 - 허가정보는 `data/drugs/permit.json` 에 캐시합니다. 처음에는 목록을 통째로 넘기며 채우고(일반의약품 필터가 되면 약 200회, 아니면 약 450회 호출), 그 뒤로는 새 품목만 개별 조회합니다. `DRUG_API_BUDGET`(기본 900회)·`DRUG_TIME_BUDGET`(기본 780초) 을 넘기면 받은 것까지 저장하고 나머지는 다음 날로 미룹니다.
 - 허가정보 API 경로(`DrugPrdtPrmsnInfoService06/…`)는 식약처가 스키마를 바꾸면 버전이 올라갑니다. 기본 경로가 거부되면 스크립트가 후보 경로를 차례로 확인해 쓰고, 모두 실패하면 응답 내용을 로그에 남기고 주성분 없이 e약은요 정보만 저장합니다. 경로가 확인되면 저장소 Variables `DRUG_PERMIT_SERVICE` 로 고정할 수 있습니다.
 - 주성분 중 성분 사전에 있는 영양소(비타민·미네랄·유산균·실리마린 등)를 찾아 `ingredients` 로 연결하고, 의약품 페이지(`drug.html?id=품목기준코드`)에서 그 성분 기준의 '함께 먹으면 좋은 성분'·'주의할 조합'을 보여줍니다. 약물의 염(아토르바스타틴칼슘), 제산제(수산화마그네슘), 외용제(연고의 산화아연)는 영양 성분으로 보지 않습니다.
-- 파일: `data/drugs/names.json`(검색 색인: 품목코드·이름·영양 성분·주성분 요약·전문/일반), `data/drugs/detail/<000~127>.json`(상세 조각, `assets/js/data.js` 의 `drugShard()` 와 같은 해시). 의약품은 온라인 판매가 금지되어 구매 링크를 넣지 않습니다.
+- 허가정보의 주성분은 영문(INN, 예: `Ursodeoxycholic Acid`)으로 오므로 `scripts/drug_ingr_ko.py` 사전으로 한글(우르소데옥시콜산)로 바꿔 보여주고, 영문 원문은 `ingrEn` 에 함께 저장합니다. 사전에 없는 이름은 영문 그대로 나옵니다(단일 성분 약은 제품명 괄호의 한글을 씁니다).
+- 파일: `data/drugs/names.json`(검색 색인: 품목코드·이름·영양 성분·주성분 요약·전문/일반·제조사), `data/drugs/detail/<000~127>.json`(상세 조각, `assets/js/data.js` 의 `drugShard()` 와 같은 해시). 의약품은 온라인 판매가 금지되어 구매 링크를 넣지 않습니다.
 - 규칙을 바꾼 뒤에는 `python scripts/fetch_drugs.py --rebuild` 로 API 호출 없이 다시 생성할 수 있습니다.
 
 ### 제품 매칭 기준

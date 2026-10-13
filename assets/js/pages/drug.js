@@ -105,7 +105,7 @@
       section("sec-side", "부작용", "stethoscope", para(p.sideEffects) + '<p class="mt-3 text-xs text-ink-500">이상반응이 나타나면 복용을 중단하고 의사·약사와 상의하세요.</p>') +
       section("sec-storage", "보관법", "shield", para(p.storage)) +
       section("sec-info", "허가·공개 정보", "database",
-        '<dl class="kv-table mt-3">' + kv("업체", p.company) + kv("구분", p.otc) + kv("분류", p.cls) + kv("주성분", ingr.join(", ")) + kv("품목기준코드", p.id) + kv("허가일", p.permitDate ? D.fmtDate(p.permitDate) : "") + kv("정보 공개일", p.openDe ? D.fmtDate(p.openDe) : "") + kv("정보 수정일", p.updateDe ? D.fmtDate(p.updateDe) : "") + '</dl>' +
+        '<dl class="kv-table mt-3">' + kv("업체", p.company) + kv("구분", p.otc) + kv("분류", p.cls) + kv("주성분", ingr.join(", ")) + kv("주성분(영문)", (p.ingrEn || []).join(", ")) + kv("품목기준코드", p.id) + kv("허가일", p.permitDate ? D.fmtDate(p.permitDate) : "") + kv("정보 공개일", p.openDe ? D.fmtDate(p.openDe) : "") + kv("정보 수정일", p.updateDe ? D.fmtDate(p.updateDe) : "") + '</dl>' +
         '<p class="mt-3 text-xs text-ink-400">출처: 식품의약품안전처 의약품개요정보(e약은요)·의약품 제품 허가정보(공공데이터포털). 허가 사항은 변경될 수 있으며 실제 제품 설명서가 우선합니다.</p>') +
       '<p class="text-xs text-ink-400">이 정보는 식약처 공개 자료를 옮긴 일반 정보이며 진단·처방·복약지도를 대신하지 않습니다. 의약품은 약사·의사의 안내에 따라 복용하세요.</p>';
 
