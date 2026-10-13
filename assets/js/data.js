@@ -34,11 +34,13 @@
     compatUrl: function (ids) { return ROOT + "compatibility.html?items=" + ids.map(encodeURIComponent).join(","); },
     productsUrl: function (id) { return ROOT + "products.html" + (id ? "?ingredient=" + encodeURIComponent(id) : ""); },
     productUrl: function (id) { return ROOT + "product.html?id=" + encodeURIComponent(id); },
+    drugUrl: function (id) { return ROOT + "drug.html?id=" + encodeURIComponent(id); },
 
     ingredients: function () { return load("ingredients"); },
     interactions: function () { return load("interactions"); },
     products: function () { return load("products"); },
     productNames: function () { return load("products/names"); },   // 검색용 경량 색인 { i:[성분id], p:[[제품id, 이름, [성분번호]]] }
+    drugNames: function () { return load("drugs/names"); },         // 의약품 검색 색인 { i:[성분id], p:[[품목코드, 이름, [성분번호], 주성분요약, 1=일반·2=전문]] } (수집 전이면 404)
     news: function () { return load("news"); },
     meta: function () { return load("meta"); },
     deeplinks: function () { return load("deeplinks").catch(function () { return { coupang: {} }; }); },
@@ -69,6 +71,18 @@
     },
     productDetail: function (id) {
       return load("products/detail/" + Data.productShard(id)).then(function (d) {
+        var hit = ((d && d.items) || []).filter(function (p) { return p.id === id; })[0];
+        return hit || null;
+      }).catch(function () { return null; });
+    },
+    /* 의약품 데이터 구조 (scripts/fetch_drugs.py): data/drugs/names.json(검색 색인) + data/drugs/detail/<NNN>.json(상세 조각 128개) */
+    drugShard: function (id) {              // scripts/fetch_drugs.py 의 shard_of() 와 동일한 계산
+      var h = 0; id = String(id || "");
+      for (var i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) % 1000003;
+      var n = h % 128; return (n < 10 ? "00" : n < 100 ? "0" : "") + n;
+    },
+    drugDetail: function (id) {
+      return load("drugs/detail/" + Data.drugShard(id)).then(function (d) {
         var hit = ((d && d.items) || []).filter(function (p) { return p.id === id; })[0];
         return hit || null;
       }).catch(function () { return null; });

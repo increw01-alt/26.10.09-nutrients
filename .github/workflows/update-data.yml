@@ -1,4 +1,4 @@
-name: Update data (products · news · deeplinks · static pages)
+name: Update data (products · drugs · news · deeplinks · static pages)
 
 on:
   schedule:
@@ -58,6 +58,14 @@ jobs:
           FOODSAFETY_SERVICE: ${{ vars.FOODSAFETY_SERVICE }}
           FOODSAFETY_MAX_ROWS: ${{ vars.FOODSAFETY_MAX_ROWS }}
         run: python scripts/fetch_products.py
+
+      - name: Fetch drugs (MFDS e약은요 · 허가정보)
+        timeout-minutes: 20
+        env:
+          CI: "true"
+          DATA_GO_KR_KEY: ${{ secrets.DATA_GO_KR_KEY }}
+          DRUG_API_BUDGET: ${{ vars.DRUG_API_BUDGET }}
+        run: python scripts/fetch_drugs.py
 
       - name: Build Coupang deeplinks
         timeout-minutes: 5

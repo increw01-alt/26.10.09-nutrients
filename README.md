@@ -114,15 +114,16 @@ project/
 | 용도 | 발급처 | 환경변수 |
 |---|---|---|
 | 식약처 건강기능식품 신고 제품·기능성 원료 (필수) | [식품안전나라 Open API](https://www.foodsafetykorea.go.kr/api/openApiInfo.do) → 서비스 `C003`, `I-0040`, `I-0050` 신청 | `FOODSAFETY_API_KEY` |
+| 식약처 의약품 정보 — 제품명 검색·의약품 페이지 (선택) | [공공데이터포털](https://www.data.go.kr) 회원가입 → **식품의약품안전처_의약품개요정보(e약은요)** 와 **식품의약품안전처_의약품 제품 허가정보** 를 각각 활용신청(개발계정은 즉시 승인) → 마이페이지 → 일반 인증키(Decoding) | `DATA_GO_KR_KEY` |
 | 네이버 뉴스 (선택) | [네이버 개발자센터](https://developers.naver.com/apps) 검색 API | `NAVER_CLIENT_ID`, `NAVER_CLIENT_SECRET` |
 | 쿠팡 파트너스 딥링크 (선택) | 쿠팡 파트너스 → 링크 생성 → API 키 | `COUPANG_ACCESS_KEY`, `COUPANG_SECRET_KEY` |
 
 ### GitHub Actions 설정
 저장소 **Settings → Secrets and variables → Actions** 에서
-- Secrets: `FOODSAFETY_API_KEY`, (선택) `NAVER_CLIENT_ID`, `NAVER_CLIENT_SECRET`, `COUPANG_ACCESS_KEY`, `COUPANG_SECRET_KEY`
-- Variables(선택): `SITE_URL`, `COUPANG_SUB_ID`, `FOODSAFETY_SERVICE`(기본 C003), `FOODSAFETY_MAX_ROWS`(기본 15000)
+- Secrets: `FOODSAFETY_API_KEY`, (선택) `DATA_GO_KR_KEY`, `NAVER_CLIENT_ID`, `NAVER_CLIENT_SECRET`, `COUPANG_ACCESS_KEY`, `COUPANG_SECRET_KEY`
+- Variables(선택): `SITE_URL`, `COUPANG_SUB_ID`, `FOODSAFETY_SERVICE`(기본 C003), `FOODSAFETY_MAX_ROWS`(기본 15000), `DRUG_API_BUDGET`(실행당 의약품 API 호출 상한, 기본 900)
 
-`update-data.yml` 이 매일 03:15 KST 에 실행되어 뉴스 → 기능성 원료 → 제품 → 딥링크 → 정적 페이지 순으로 갱신하고 변경이 있을 때만 커밋합니다.
+`update-data.yml` 이 매일 03:15 KST 에 실행되어 뉴스 → 기능성 원료 → 제품 → 의약품 → 딥링크 → 정적 페이지 순으로 갱신하고 변경이 있을 때만 커밋합니다.
 Actions 탭에서 **Run workflow** 로 즉시 실행할 수도 있습니다. 키가 없는 단계는 건너뛰며 기존 데이터를 유지합니다.
 
 ### 로컬에서 수동 실행
@@ -132,6 +133,7 @@ cp config/.env.example .env   # 값 입력 후
 set -a; source .env; set +a   # (Windows PowerShell: $env:FOODSAFETY_API_KEY="...")
 python scripts/fetch_news.py
 python scripts/fetch_products.py
+python scripts/fetch_drugs.py        # DATA_GO_KR_KEY 가 있을 때 (또는 --rebuild)
 python scripts/build_affiliate_links.py
 python scripts/build_site.py
 ```
@@ -141,6 +143,13 @@ python scripts/build_site.py
 - `data/products/top/<성분id>.json`: 성분 상세 페이지용 상위 60개(제품명에 성분이 드러나는 단일 목적 제품 우선)
 - `data/products/detail/<00~63>.json`: 전체 신고 정보(원재료·섭취방법·주의사항 등). 제품 id 해시로 조각을 나누며 `assets/js/data.js`의 `productShard()`와 스크립트의 `shard_of()`가 같은 계산을 씁니다.
 - 매칭 규칙을 바꾼 뒤에는 `python scripts/fetch_products.py --rebuild` 로 API 호출 없이 저장된 레코드로 다시 생성할 수 있습니다.
+
+### 의약품 데이터 (`scripts/fetch_drugs.py`)
+- 공공데이터포털의 **e약은요(의약품개요정보)** 전체(일반의약품 중심 약 4,700건: 효능·사용법·경고·주의사항·상호작용·부작용·보관법·이미지)를 매일 다시 받고, **의약품 제품 허가정보(목록)** 에서 주성분·전문/일반 구분·분류를 품목기준코드로 연결합니다.
+- 허가정보는 `data/drugs/permit.json` 에 캐시합니다. 처음에는 목록을 통째로 넘기며 채우고(일반의약품 필터가 되면 약 200회, 아니면 약 450회 호출), 그 뒤로는 새 품목만 개별 조회합니다. `DRUG_API_BUDGET`(기본 900회) 을 넘기면 나머지는 다음 날로 미룹니다.
+- 주성분 중 성분 사전에 있는 영양소(비타민·미네랄·유산균·실리마린 등)를 찾아 `ingredients` 로 연결하고, 의약품 페이지(`drug.html?id=품목기준코드`)에서 그 성분 기준의 '함께 먹으면 좋은 성분'·'주의할 조합'을 보여줍니다. 약물의 염(아토르바스타틴칼슘), 제산제(수산화마그네슘), 외용제(연고의 산화아연)는 영양 성분으로 보지 않습니다.
+- 파일: `data/drugs/names.json`(검색 색인: 품목코드·이름·영양 성분·주성분 요약·전문/일반), `data/drugs/detail/<000~127>.json`(상세 조각, `assets/js/data.js` 의 `drugShard()` 와 같은 해시). 의약품은 온라인 판매가 금지되어 구매 링크를 넣지 않습니다.
+- 규칙을 바꾼 뒤에는 `python scripts/fetch_drugs.py --rebuild` 로 API 호출 없이 다시 생성할 수 있습니다.
 
 ### 제품 매칭 기준
 - 비타민·미네랄은 식약처가 기능성 함량 이상일 때만 표기하는 **기능성 문구**(예: 칼슘 "뼈와 치아 형성에 필요")와 제품명으로 판정합니다. 부형제(스테아린산마그네슘 등)는 제외합니다.

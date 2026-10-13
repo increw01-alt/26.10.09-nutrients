@@ -52,13 +52,14 @@ data/
 
 ## 4. 자동화 (GitHub Actions `update-data.yml`)
 
-매일 03:15 KST, 또는 Actions 탭 → Run workflow 로 수동 실행. 순서는 뉴스 → 기능성 원료 → 제품 → 쿠팡 딥링크 → 정적 페이지·sitemap·meta → 변경 시 커밋·푸시.
+매일 03:15 KST, 또는 Actions 탭 → Run workflow 로 수동 실행. 순서는 뉴스 → 기능성 원료 → 제품 → 의약품 → 쿠팡 딥링크 → 정적 페이지·sitemap·meta → 변경 시 커밋·푸시.
 
 | 단계 | 스크립트 | 비고 |
 |---|---|---|
 | 뉴스 | `scripts/fetch_news.py` | 구글 뉴스 RSS 5개 검색어, 60건 유지. `NAVER_CLIENT_ID/SECRET` 등록 시 네이버 뉴스 병합 |
 | 기능성 원료 | `scripts/fetch_materials.py` | I-0040·I-0050 수집, 인정번호로 병합, 원료명 기준 성분 연결. 약 10초 |
 | 제품 | `scripts/fetch_products.py` | C003 최신 15,000건 역순 수집(API 1,000건당 20~40초, 키당 동시 1요청). 기능성 문구 기준 매칭, 성분별 400건 상한, 신규(90일)·변경·삭제 이력. 2~9분 |
+| 의약품 | `scripts/fetch_drugs.py` | 공공데이터포털 e약은요 전체(약 4,700건, 100건씩 약 50회) + 허가정보 주성분 연결(캐시 `data/drugs/permit.json`, 첫 실행만 200~450회). `DATA_GO_KR_KEY` 등록 시 동작, 실행당 `DRUG_API_BUDGET`(기본 900회) 상한 |
 | 딥링크 | `scripts/build_affiliate_links.py` | `COUPANG_ACCESS_KEY/SECRET_KEY` 등록 시 동작 |
 | 빌드 | `scripts/build_site.py` | 데이터 검증, 성분 37·가이드 28·허브 페이지 생성, sitemap, meta |
 
@@ -75,6 +76,7 @@ data/
 | 네이버 서치어드바이저 | 완료 (10-12, HTML 태그로 소유확인, sitemap 제출). 루트에 `naver8763….html` 확인 파일도 둠. 이후 '요청 → 웹 페이지 수집'·'검증 → robots.txt' 는 선택 |
 | 링크프라이스 (`config.js` → `linkprice.affiliateId`, `enabled: true`) | 미완 — 11번가·G마켓 버튼은 현재 일반 검색 링크 |
 | 쿠팡 파트너스 (`COUPANG_ACCESS_KEY`, `COUPANG_SECRET_KEY` Secret) | 미완 — 쿠팡 버튼은 현재 일반 검색 링크 |
+| 공공데이터포털 키 (`DATA_GO_KR_KEY` Secret) — 의약품 검색 | 미완 — data.go.kr 에서 'e약은요'·'의약품 제품 허가정보' 활용신청 후 일반 인증키(Decoding) 등록 → Actions 'Run workflow'. 등록 전에는 의약품 검색 결과가 비어 있음 |
 | 네이버 뉴스 API (`NAVER_CLIENT_ID`, `NAVER_CLIENT_SECRET`) | 선택 |
 | 문의 이메일 (`config.js` `contactEmail`, `about.html`) | 미완 — `contact@example.com` 교체 필요 |
 | OG 썸네일 (`assets/images/og-default.svg`) | 기본 이미지 — PNG 1200×630 교체 권장 |
@@ -96,16 +98,18 @@ data/
 | 10-12 | 휴대폰에서 새 HTML 과 옛 JS/CSS 캐시가 섞여 빠른 궁합 체크 선택 상자가 비어 보이던 문제 수정: 빌드가 자산 링크에 내용 해시(`?v=`)를 붙이고 `_headers` 로 Cloudflare 캐시 정책 지정 |
 | 10-12 | 속도 개선: Tailwind Play CDN(런타임 컴파일, 수백 KB) → 정적 빌드 CSS 29KB, unpkg lucide 전체 번들 356KB → 사용 아이콘 77개만 담은 16KB `icons.js`, 모든 스크립트 `defer`, 폰트 preconnect. `npm run assets` + `build-assets.yml` 워크플로로 재생성 자동화, 빌드에 아이콘 누락 점검 추가 |
 | 10-13 | 제품명 검색: 메인 검색창·전역 검색(/)에서 식약처 신고 제품 약 6,700건(10-13 기준 6,714건)을 이름으로 검색(경량 색인 `products/names.json`, 입력 시 지연 로드). 제품 상세 페이지 `product.html` 신설 — 함유 성분 카드, 궁합 데이터로 계산한 '함께 먹으면 더 좋은 성분'·'주의할 조합', 성분으로 궁합·시간표 만들기, 신고 정보, 구매처. 의약품(예: 우루사)은 건강기능식품이 아니라 검색되지 않음을 안내 |
+| 10-13 | 의약품 검색: 공공데이터포털 식약처 e약은요·의약품 허가정보 수집기 `scripts/fetch_drugs.py`(전체 수집, 허가정보 캐시, 호출 예산, 포털 오류 안내, `--rebuild`), 워크플로 단계 추가. 메인·전역 검색에 '의약품' 결과(주성분·영양 성분 요약), 의약품 상세 페이지 `drug.html` — 주성분, 성분 사전과 연결된 영양 성분과 그 기준의 좋은 궁합·주의 조합, 효능·사용법·상호작용·주의사항·부작용·보관법, 허가 정보, 약국 구입 안내(구매 링크 없음). `DATA_GO_KR_KEY` 등록 후 동작 |
 
 ## 7. 다음 할 일 (우선순위순)
 
-1. 서치콘솔 sitemap 상태 '성공' 확인 후 홈·주요 페이지 색인 요청, 네이버 웹 페이지 수집 요청 (등록·제출은 완료)
-2. 링크프라이스·쿠팡 파트너스 승인 후 ID/키 등록 → 제휴 링크 활성화
-3. 문의 이메일·OG 이미지 교체
-4. 네이버 키워드 도구 검색량 기준으로 가이드 보강·추가 (`data/guides.json` 에 항목 추가 후 빌드)
-5. 성분 사전 확장 (크롬·비타민B6 단일·히알루론산·아스타잔틴 등) 과 궁합 쌍 추가
-6. 제품 찾기 페이지 데이터(`data/products.json` 2.8MB, 압축 전송 시 약 1/5)를 더 줄이려면 최신순 일부만 먼저 싣고 전체 색인은 검색·필터 때 불러오는 구조로 분리
-7. 운영 중 발견되는 제품 매칭 오탐은 `scripts/fetch_products.py` 의 규칙(`NUTRIENT_RULES`, `HERBAL_RULES`, `EXCIPIENT_RE`) 보정
+1. 공공데이터포털 `DATA_GO_KR_KEY` 등록 → Actions 'Run workflow' 로 첫 의약품 수집 (약 5~10분) → 검색창에서 '우루사' 확인. 첫 실행 로그에 '허가 목록' 건수가 찍히면 주성분 연결 정상
+2. 서치콘솔 sitemap 상태 '성공' 확인 후 홈·주요 페이지 색인 요청, 네이버 웹 페이지 수집 요청 (등록·제출은 완료)
+3. 링크프라이스·쿠팡 파트너스 승인 후 ID/키 등록 → 제휴 링크 활성화
+4. 문의 이메일·OG 이미지 교체
+5. 네이버 키워드 도구 검색량 기준으로 가이드 보강·추가 (`data/guides.json` 에 항목 추가 후 빌드)
+6. 성분 사전 확장 (크롬·비타민B6 단일·히알루론산·아스타잔틴 등) 과 궁합 쌍 추가
+7. 제품 찾기 페이지 데이터(`data/products.json` 2.8MB, 압축 전송 시 약 1/5)를 더 줄이려면 최신순 일부만 먼저 싣고 전체 색인은 검색·필터 때 불러오는 구조로 분리
+8. 운영 중 발견되는 제품 매칭 오탐은 `scripts/fetch_products.py` 의 규칙(`NUTRIENT_RULES`, `HERBAL_RULES`, `EXCIPIENT_RE`) 보정
 
 ## 8. 로컬에서 작업하기
 
@@ -116,5 +120,6 @@ cp config/.env.example .env            # 키 입력 후 source
 python scripts/fetch_news.py
 python scripts/fetch_materials.py
 python scripts/fetch_products.py       # 또는 --rebuild
+python scripts/fetch_drugs.py          # DATA_GO_KR_KEY 필요, 또는 --rebuild
 python scripts/build_site.py           # 성분·가이드 페이지·sitemap 재생성 (데이터 수정 후 필수)
 ```

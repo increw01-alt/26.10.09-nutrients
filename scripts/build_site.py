@@ -85,6 +85,15 @@ def build_product_names() -> None:
     log.info("제품 검색 색인: %d개 (data/products/names.json)", len(items))
 
 
+def ensure_drug_index() -> None:
+    """의약품 검색 색인(scripts/fetch_drugs.py 가 생성)이 아직 없으면 빈 색인을 둔다 — 검색 스크립트가 404 를 만나지 않도록."""
+    path = DATA_DIR / "drugs" / "names.json"
+    if path.exists():
+        return
+    write_json(path, {"_meta": {"source": "none", "total": 0, "updatedAt": None, "note": "DATA_GO_KR_KEY 를 등록하고 scripts/fetch_drugs.py 를 실행하면 채워집니다"}, "i": [], "p": []}, compact=True, quiet=True)
+    log.info("의약품 검색 색인이 없어 빈 색인 생성 (data/drugs/names.json) — DATA_GO_KR_KEY 등록 후 fetch_drugs.py 로 수집")
+
+
 def check_icons() -> None:
     """HTML·JS·데이터에서 쓰는 lucide 아이콘 이름이 assets/js/icons.js 번들에 모두 있는지 확인 (없으면 `npm run icons`)."""
     bundle = ROOT / "assets/js/icons.js"
@@ -521,11 +530,13 @@ def main() -> int:
     build_sitemap(ingredients["items"], cfg, data_date, guides)
     inject_verification(cfg)
     build_product_names()
+    ensure_drug_index()
     check_icons()
     stamp_assets()
     products = read_json(DATA_DIR / "products.json", {"_meta": {}, "items": []})
     news = read_json(DATA_DIR / "news.json", {"_meta": {}, "items": []})
     materials = read_json(DATA_DIR / "materials.json", {"_meta": {}, "items": []})
+    drugs_meta = (read_json(DATA_DIR / "drugs" / "names.json", {}) or {}).get("_meta", {})
     write_json(DATA_DIR / "meta.json", {
         "builtAt": now_iso(),
         "ingredients": len(ingredients["items"]),
@@ -533,6 +544,7 @@ def main() -> int:
         "guides": len(guides.get("items", [])),
         "products": {"source": products.get("_meta", {}).get("source", "sample"), "updatedAt": products.get("_meta", {}).get("updatedAt"), "total": len(products.get("items", []))},
         "news": {"source": news.get("_meta", {}).get("source", "sample"), "updatedAt": news.get("_meta", {}).get("updatedAt"), "total": len(news.get("items", []))},
+        "drugs": {"source": drugs_meta.get("source", "none"), "updatedAt": drugs_meta.get("updatedAt"), "total": drugs_meta.get("total", 0), "withNutrients": drugs_meta.get("withNutrients", 0)},
         "materials": {"source": materials.get("_meta", {}).get("source", "sample"), "updatedAt": materials.get("_meta", {}).get("updatedAt"), "total": len(materials.get("items", [])), "matched": materials.get("_meta", {}).get("matched", 0),
                       "ingredients": sorted(f.stem for f in (DATA_DIR / "materials").glob("*.json"))},
     })

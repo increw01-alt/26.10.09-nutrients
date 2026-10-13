@@ -15,7 +15,8 @@ python -m http.server 8080            # 로컬 확인 (Windows: dev.bat 또는 .
 python scripts/build_site.py           # 데이터 검증 + 성분·가이드 페이지·sitemap·meta 생성 (데이터 수정 후 필수)
 npm run assets                         # Tailwind CSS 재생성 + 아이콘 번들 (클래스·아이콘을 바꿨을 때, 그다음 build_site.py)
 python scripts/fetch_products.py --rebuild   # 매칭 규칙 변경 후 API 호출 없이 제품 파일 재생성
-python scripts/fetch_news.py / fetch_materials.py / fetch_products.py   # API 키(.env) 있을 때 수집
+python scripts/fetch_drugs.py --rebuild      # 의약품 성분 규칙 변경 후 API 호출 없이 재생성 (수집은 DATA_GO_KR_KEY 필요)
+python scripts/fetch_news.py / fetch_materials.py / fetch_products.py / fetch_drugs.py   # API 키(.env) 있을 때 수집
 ```
 자동 수집은 `.github/workflows/update-data.yml` 이 매일 03:15 KST 에 실행하며, 수집 결과 커밋(`chore(data): 자동 데이터 갱신`)이 원격에 쌓이므로 작업 전 `git pull` 을 먼저 한다.
 
@@ -23,6 +24,7 @@ python scripts/fetch_news.py / fetch_materials.py / fetch_products.py   # API �
 - `assets/js/` : `config.js`(설정) · `data.js`(JSON 로더·검색) · `affiliate.js`(쇼핑 링크) · `layout.js`(헤더·푸터·검색 오버레이·메뉴·모바일 탭 바) · `schedule.js`(복용 시간표) · `illus.js`(병·캡슐 SVG 일러스트, 사진 대신 사용) · `pages/*.js`(페이지별)
 - 디자인 체계: 딥 그린(`brand-*`)·크림(`cream-*`)·피치(`peach-*`) 색상은 `tailwind.config.cjs`(빌드 설정), 공통 스타일(헤더 워드마크·탭·카드)은 `assets/css/style.css`. 메인(`index.html`)은 실사형 시안을 옮긴 전용 스타일 `assets/css/home.css`(모든 규칙이 `.home` 아래로 한정)를 쓴다. 내부 페이지는 상단 `.page-hero` 밴드 + `.eyebrow-kicker`/`.page-title`/`.page-lead` 제목 묶음, `.btn-primary`/`.btn-outline` 버튼, `.ing-card` 성분 카드로 같은 결을 유지한다. 연출 이미지는 `assets/images/home/*.webp`(분류별 알약 사진은 `Illus.photoFor(category)`), 성분명이 적힌 병은 `Illus.bottle` SVG 를 쓴다. 헤더 높이는 `--header-h`(모바일 68px·데스크톱 84px) 변수로 관리하며 고정 탭(`.detail-tabs`)이 이를 참조한다.
 - `data/` : 성분·궁합·가이드(수동) / 제품·원료·뉴스(자동). 제품은 목록(`products.json`) + 성분별 상위(`products/top/`) + 상세 조각(`products/detail/`) + 검색용 경량 색인(`products/names.json`, 빌드가 생성). 제품 상세는 `product.html?id=…`(`pages/product.js`: 함유 성분·함께 먹으면 좋은 성분·주의 조합·신고 정보, noindex)
+- 의약품(`scripts/fetch_drugs.py`, 공공데이터포털 `DATA_GO_KR_KEY` 필요): `data/drugs/names.json`(검색 색인) + `data/drugs/detail/<000~127>.json`(상세 조각) + `data/drugs/permit.json`(허가정보 캐시, 지우면 첫 실행처럼 목록 전체를 다시 받음). 상세는 `drug.html?id=품목기준코드`(`pages/drug.js`). 의약품에는 구매 링크를 넣지 않는다(온라인 판매 금지). 수집 전에는 `names.json` 이 없어 검색 결과가 비는 것이 정상
 - `scripts/` : 수집·빌드 파이썬. `fetch_products.py` 의 `NUTRIENT_RULES`·`HERBAL_RULES`·`EXCIPIENT_RE` 가 제품-성분 매칭 규칙
 - 현황·이력·다음 할 일: `docs/PROJECT-STATUS.md`
 

@@ -1,5 +1,5 @@
 {
-  "builtAt": "2026-10-13T10:48:25+09:00",
+  "builtAt": "2026-10-13T11:29:05+09:00",
   "ingredients": 37,
   "pairs": 97,
   "guides": 28,
@@ -12,6 +12,12 @@
     "source": "live",
     "updatedAt": "2026-10-12T16:07:47+09:00",
     "total": 60
+  },
+  "drugs": {
+    "source": "none",
+    "updatedAt": null,
+    "total": 0,
+    "withNutrients": 0
   },
   "materials": {
     "source": "mfds",
