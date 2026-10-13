@@ -57,11 +57,12 @@
   var POPULAR = ["vitamin-d", "omega-3", "magnesium", "probiotics"];
   var EXAMPLES = ["마그네슘", "비타민D", "락토핏", "센트룸", "눈 건강"];   // 빈 검색창 안내 행의 예시 (누르면 검색어로 들어감)
   /* 가이드·제품·의약품 색인은 검색창과 빠른 궁합 체크가 함께 쓰므로 처음 필요할 때 한 번만 불러온다 */
-  var extra = { guides: null, products: null, drugs: null, prodMatch: null, drugMatch: null, loading: null };
+  var extra = { guides: null, products: null, drugs: null, prodMatch: null, drugMatch: null, pairings: null, loading: null };
   function loadExtra() {
     if (extra.loading) return extra.loading;
     extra.loading = Promise.all([
       D.guides().then(function (g) { extra.guides = (g && g.items) || []; }).catch(function () { extra.guides = []; }),
+      D.drugPairings().then(function (r) { extra.pairings = r; }).catch(function () { extra.pairings = { rules: [] }; }),   // 의약품별 함께 챙기면 좋은/주의할 영양 성분 규칙
       D.productNames().then(function (n) { extra.products = n && n.p ? n : { i: [], p: [] }; }).catch(function () { extra.products = { i: [], p: [] }; }).then(function () { extra.prodMatch = D.nameMatcher(extra.products.p.map(function (p) { return p[1]; })); }),
       D.drugNames().then(function (n) { extra.drugs = n && n.p ? n : { i: [], p: [] }; }).catch(function () { extra.drugs = { i: [], p: [] }; }).then(function () { extra.drugMatch = D.nameMatcher(extra.drugs.p.map(function (p) { return p[1]; })); })   // 의약품 수집 전이면 빈 색인
     ]);
@@ -200,6 +201,9 @@
     function openWithExtra(s) { var p = loadExtra(); open(s); if (p) p.then(function () { if (!s.list.hidden && document.activeElement === s.input) open(s); }); }
     function select(s, m) {
       s.sel = m; s.input.value = m.name; s.input.classList.add("has-value"); s.input.removeAttribute("aria-invalid");
+      if (m.kind === "drug" && !m.loaded) {   // 규칙 판정에 필요한 주성분(영문)·분류는 상세 조각에 있다
+        D.drugDetail(m.id).then(function (d) { m.detail = d || null; }).catch(function () { m.detail = null; }).then(function () { m.loaded = true; if (s.sel === m) update(); });
+      }
       if (s.clear) s.clear.hidden = false;
       if (s.sub) {
         if (m.kind === "ing") { s.sub.hidden = true; s.sub.textContent = ""; }
@@ -211,6 +215,16 @@
     function err(msg, s) { fb.textContent = msg; fb.className = "form-feedback error"; if (s) s.input.setAttribute("aria-invalid", "true"); }
     function pageOf(m) { return m.kind === "prod" ? D.productUrl(m.id) : m.kind === "drug" ? D.drugUrl(m.id) : D.ingredientUrl(m.id); }
     function unionIds(a, b) { var seen = {}, out = []; a.concat(b).forEach(function (k) { if (!seen[k]) { seen[k] = true; out.push(k); } }); return out; }
+    function short(name) { var t = String(name || "").replace(/\s*\([^)]*\)\s*$/, "").trim(); return t.length > 18 ? t.slice(0, 17) + "…" : t; }
+    function nameOf(id) { return core.byId[id] ? core.byId[id].name : id; }
+    function ruleHits(drugSel, otherIds) {   // 의약품 규칙(data/drug-pairings.json)과 상대 성분의 교집합
+      if (drugSel.kind !== "drug" || !extra.pairings) return null;
+      var d = drugSel.detail || { name: drugSel.name, ingr: [], cls: "", ingredients: drugSel.ids };
+      var pr = D.drugPairingFor(extra.pairings, d, core);
+      return { good: pr.good.filter(function (g) { return otherIds.indexOf(g.id) >= 0; }), caution: pr.caution.filter(function (c) { return otherIds.indexOf(c.id) >= 0; }),
+        suggest: pr.good.filter(function (g) { return otherIds.indexOf(g.id) < 0; }).slice(0, 3), any: !!(pr.good.length || pr.caution.length || pr.notes.length) };
+    }
+    function drugLink(drugSel, otherIds) { return D.drugUrl(drugSel.id) + "&with=" + otherIds.map(encodeURIComponent).join(",") + "#sec-pairing"; }
     function update() {
       slots.forEach(function (s) { s.input.removeAttribute("aria-invalid"); });
       fb.className = "form-feedback";
@@ -218,14 +232,43 @@
       if (!A || !B) { fb.textContent = "성분은 물론 락토핏·우루사 같은 제품명으로도 고를 수 있어요. 자세한 결과는 궁합 페이지에서 확인합니다."; return; }
       if (A.kind === B.kind && A.id === B.id) { err("서로 다른 두 가지를 골라 주세요.", slots[1]); return; }
       if (!A.ids.length || !B.ids.length) {
-        var who = !A.ids.length ? A : B;
-        fb.innerHTML = '<strong>' + esc(who.name) + '</strong>' + (who.kind === "drug" ? "은(는) 의약품이라 " : "은(는) ") + '성분 사전과 연결된 영양 성분이 없어 궁합을 계산할 수 없어요. <a href="' + esc(pageOf(who)) + '">' + (who.kind === "drug" ? "의약품 정보와 함께 챙기면 좋은 영양제 보기 →" : "제품 정보 보기 →") + '</a>';
+        var drug = (!A.ids.length && A.kind === "drug") ? A : (!B.ids.length && B.kind === "drug") ? B : null;
+        var other = drug === A ? B : A;
+        if (!drug) {   // 영양 성분이 연결되지 않은 건강기능식품
+          var who = !A.ids.length ? A : B;
+          fb.innerHTML = '<strong>' + esc(short(who.name)) + '</strong>은(는) 성분 사전과 연결된 영양 성분이 없어 궁합을 계산할 수 없어요. <a href="' + esc(pageOf(who)) + '">제품 정보 보기 →</a>';
+          fb.classList.add("ready"); return;
+        }
+        if (!other.ids.length) {   // 둘 다 영양 성분 없음 (의약품 + 의약품 등)
+          fb.innerHTML = '두 가지 모두 영양 성분이 연결되지 않아 영양제 궁합으로는 계산할 수 없어요. 각 페이지의 상호작용 항목과 약사 상담을 참고하세요. <a href="' + esc(pageOf(A)) + '">' + esc(short(A.name)) + ' →</a> · <a href="' + esc(pageOf(B)) + '">' + esc(short(B.name)) + ' →</a>';
+          fb.classList.add("ready"); return;
+        }
+        if (!drug.loaded) { fb.textContent = "의약품 정보를 확인하는 중…"; return; }
+        var h = ruleHits(drug, other.ids);
+        var link = ' <a href="' + esc(drugLink(drug, other.ids)) + '">자세히 보기 →</a>';
+        if (h && h.caution.length) {
+          var c = h.caution[0];
+          fb.innerHTML = '<strong>주의</strong> · ' + esc(short(drug.name)) + ' + ' + esc(nameOf(c.id)) + ' — ' + esc(c.why) + (c.hours ? ' (' + c.hours + '시간 이상 간격)' : "") + link;
+        } else if (h && h.good.length) {
+          var g = h.good[0];
+          fb.innerHTML = '<strong>함께 챙기면 좋아요</strong> · ' + esc(short(drug.name)) + ' + ' + esc(nameOf(g.id)) + ' — ' + esc(g.why) + link;
+        } else {
+          fb.innerHTML = '<strong>알려진 특별한 상호작용 없음</strong> · ' + esc(short(drug.name)) + ' 복용 중 ' + esc(namesOf(other.ids).join(", ")) + '을(를) 함께 먹는 것에 대해 기록된 주의사항은 없어요. 약의 상호작용 항목과 약사 상담을 참고하세요.' +
+            (h && h.suggest.length ? ' <span class="muted">함께 챙기면 좋은 영양제: ' + esc(h.suggest.map(function (g) { return nameOf(g.id); }).join(", ")) + '</span>' : "") + link;
+        }
         fb.classList.add("ready"); return;
       }
       var shared = A.ids.filter(function (k) { return B.ids.indexOf(k) >= 0; });
       var pairs = [];
       A.ids.forEach(function (a) { B.ids.forEach(function (b) { if (a === b) return; pairs.push({ a: a, b: b, p: D.findPair(core, a, b) }); }); });
-      if (A.ids.length === 1 && B.ids.length === 1) {
+      var notes = [];   // 의약품 쪽 규칙(제산제+철분 등)은 성분 조합과 별도로 덧붙인다
+      [A, B].forEach(function (x, i) {
+        if (x.kind !== "drug" || !x.loaded) return;
+        var h = ruleHits(x, (i === 0 ? B : A).ids); if (!h) return;
+        h.caution.forEach(function (c) { notes.push('<strong>주의</strong> · ' + esc(short(x.name)) + ' + ' + esc(nameOf(c.id)) + ' — ' + esc(c.why) + (c.hours ? ' (' + c.hours + '시간 이상 간격)' : "")); });
+        h.good.forEach(function (g) { notes.push('<strong>함께 챙기면 좋아요</strong> · ' + esc(short(x.name)) + ' + ' + esc(nameOf(g.id)) + ' — ' + esc(g.why)); });
+      });
+      if (A.ids.length === 1 && B.ids.length === 1 && !notes.length) {
         var p1 = pairs[0] && pairs[0].p, t1 = p1 && core.types[p1.type];
         fb.textContent = t1 ? t1.short + " · " + p1.title : "알려진 특별한 상호작용이 없는 조합이에요. 자세한 내용은 궁합 페이지에서 확인하세요.";
         fb.classList.add("ready"); return;
@@ -238,7 +281,7 @@
       if (counts.synergy) parts.push("좋은 궁합 " + counts.synergy);
       var notable = known.filter(function (x) { return x.p.type !== "neutral"; });
       var head = notable.length ? '<strong>' + esc((core.types[notable[0].p.type] || {}).short || "") + '</strong> · ' + esc(core.byId[notable[0].a].name) + " + " + esc(core.byId[notable[0].b].name) + " — " + esc(notable[0].p.title) : "알려진 특별한 상호작용이 없는 조합이에요.";
-      fb.innerHTML = head + ' <span class="muted">(' + pairs.length + '개 조합' + (parts.length ? ' 중 ' + esc(parts.join(" · ")) : " 확인") + ')</span>' + (shared.length ? ' · 겹치는 성분: ' + esc(namesOf(shared).join(", ")) + ' (중복 섭취 주의)' : "");
+      fb.innerHTML = head + ' <span class="muted">(' + pairs.length + '개 조합' + (parts.length ? ' 중 ' + esc(parts.join(" · ")) : " 확인") + ')</span>' + (shared.length ? ' · 겹치는 성분: ' + esc(namesOf(shared).join(", ")) + ' (중복 섭취 주의)' : "") + (notes.length ? '<br>' + notes.slice(0, 2).join("<br>") : "");
       fb.classList.add("ready");
     }
     slots.forEach(function (s) {
@@ -265,7 +308,10 @@
       if (!A) { err("첫 번째 영양제를 고르세요. 성분명이나 제품명을 입력하면 목록이 나옵니다.", slots[0]); slots[0].input.focus(); return; }
       if (!B) { err("두 번째 영양제를 고르세요.", slots[1]); slots[1].input.focus(); return; }
       if (A.kind === B.kind && A.id === B.id) { err("서로 다른 두 가지를 골라 주세요.", slots[1]); slots[1].input.focus(); return; }
-      if (!A.ids.length || !B.ids.length) { location.href = pageOf(!A.ids.length ? A : B); return; }
+      if (!A.ids.length || !B.ids.length) {
+        var drug = (!A.ids.length && A.kind === "drug") ? A : (!B.ids.length && B.kind === "drug") ? B : null, other = drug === A ? B : A;
+        location.href = (drug && other.ids.length) ? drugLink(drug, other.ids) : pageOf(!A.ids.length ? A : B); return;
+      }
       location.href = D.compatUrl(unionIds(A.ids, B.ids));
     });
     update();
