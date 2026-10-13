@@ -73,14 +73,16 @@ def stamp_assets() -> None:
 
 
 def build_product_names() -> None:
-    """제품 검색용 경량 색인(data/products/names.json): 제품 id·이름·성분 번호만 담아 검색창에서 지연 로드한다.
+    """제품 검색용 경량 색인(data/products/names.json): 제품 id·이름·성분 번호·제조사 번호만 담아 검색창에서 지연 로드한다.
     (전체 색인 products.json 은 2.8MB 라 검색창에서 바로 쓰기엔 무겁다)"""
     products = read_json(DATA_DIR / "products.json", {"_meta": {}, "items": []}) or {}
     items = products.get("items", [])
     ids = sorted({i for it in items for i in it.get("ingredients", [])})
     idx = {i: n for n, i in enumerate(ids)}
-    data = {"_meta": {"updatedAt": products.get("_meta", {}).get("updatedAt"), "total": len(items)}, "i": ids,
-            "p": [[it["id"], it["name"], [idx[i] for i in it.get("ingredients", []) if i in idx]] for it in items]}
+    companies = sorted({(it.get("company") or "").strip() for it in items} - {""})
+    cidx = {c: n for n, c in enumerate(companies)}
+    data = {"_meta": {"updatedAt": products.get("_meta", {}).get("updatedAt"), "total": len(items)}, "i": ids, "c": companies,
+            "p": [[it["id"], it["name"], [idx[i] for i in it.get("ingredients", []) if i in idx], cidx.get((it.get("company") or "").strip(), -1)] for it in items]}
     write_json(DATA_DIR / "products" / "names.json", data, compact=True, quiet=True)
     log.info("제품 검색 색인: %d개 (data/products/names.json)", len(items))
 

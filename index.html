@@ -22,15 +22,15 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap">
   <link rel="stylesheet" href="assets/css/style.css?v=40343463">
-  <link rel="stylesheet" href="assets/css/home.css?v=eb3acd82">
+  <link rel="stylesheet" href="assets/css/home.css?v=baee56cd">
   <link rel="stylesheet" href="assets/css/tailwind.css?v=6bc1b44b">
   <link rel="preload" as="image" href="assets/images/home/hero-bottles.webp">
   <script src="assets/js/icons.js?v=37990267" defer></script>
   <script src="assets/js/config.js?v=c8b8f436" defer></script>
-  <script src="assets/js/data.js?v=48422d74" defer></script>
+  <script src="assets/js/data.js?v=3d7a1210" defer></script>
   <script src="assets/js/affiliate.js?v=65f5cd0f" defer></script>
-  <script src="assets/js/layout.js?v=7e20cc45" defer></script>
-  <script src="assets/js/pages/home.js?v=1e1ffbc3" defer></script>
+  <script src="assets/js/layout.js?v=6679f8fe" defer></script>
+  <script src="assets/js/pages/home.js?v=dc9a0475" defer></script>
   <script type="application/ld+json">
   {"@context":"https://schema.org","@graph":[
     {"@type":"WebSite","name":"영양제.kr","url":"https://xn--og5b1hx9c.kr/","description":"영양제 성분 정보와 영양제 간 궁합, 복용 시간표를 제공하는 정보 사이트","potentialAction":{"@type":"SearchAction","target":"https://xn--og5b1hx9c.kr/ingredients.html?q={search_term_string}","query-input":"required name=search_term_string"}},
@@ -66,12 +66,12 @@
           <p class="hero-eyebrow"><i data-lucide="leaf" class="icon"></i> 영양제 정보 · 궁합 · 복용 시간표</p>
           <h1 id="hero-title">내가 먹는 영양제,<br><em>같이 먹어도 될까?</em></h1>
           <p class="hero-description"><strong>영양제 추천은 제품이 아니라 성분부터.</strong>성분별 효능·권장량, 같이 먹으면 안 되는 조합,<br class="desktop-break">먹는 시간과 순서, 내 영양제의 성분 확인까지 한곳에서.</p>
-          <label class="search-label" for="ingredient-search">성분 검색</label>
+          <label class="search-label" for="ingredient-search">성분·제품명 검색 <span class="search-label-sub">성분명이나 제품명으로 검색해 보세요 (예: 마그네슘, 락토핏 골드)</span></label>
           <div class="search-area" id="search-area">
             <form action="ingredients.html" class="search-form" id="search-form" method="get" role="search">
               <i data-lucide="search" class="icon"></i>
               <input id="ingredient-search" name="q" type="search" role="combobox" aria-autocomplete="list" aria-controls="search-list" aria-describedby="search-help" aria-expanded="false" autocomplete="off" placeholder="성분명·제품명·의약품명으로 검색 (예: 마그네슘, 락토핏, 우루사)">
-              <button type="submit" aria-label="성분 및 가이드 검색"><i data-lucide="arrow-right" class="icon"></i></button>
+              <button type="submit" aria-label="성분·제품 검색"><i data-lucide="arrow-right" class="icon"></i></button>
             </form>
             <span class="sr-only" id="search-help">성분 사전, 식약처 신고 건강기능식품과 허가 의약품, 가이드를 검색합니다. 결과를 고르면 해당 페이지로 이동합니다.</span>
             <div class="search-results" id="search-results" hidden>
@@ -87,6 +87,7 @@
             <a class="chip" href="i/magnesium.html">마그네슘</a>
             <a class="chip" href="i/probiotics.html">유산균</a>
             <a class="chip" href="compatibility.html?items=calcium,iron">칼슘+철분</a>
+            <a class="chip" href="search.html?q=%EB%9D%BD%ED%86%A0%ED%95%8F">락토핏 <small>제품</small></a>
           </div>
           <a class="button primary hero-cta" href="#quick-check">지금 궁합 체크하기 <i data-lucide="arrow-right" class="icon"></i></a>
         </div>

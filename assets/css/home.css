@@ -595,3 +595,14 @@
 .home .search-option.all .icon { color: var(--green); }
 .home .search-empty a { color: var(--green); font-weight: 650; white-space: nowrap; }
 .home .search-option mark { background: #e3efdc; color: #175136; border-radius: 3px; padding: 0 1px; }
+
+/* 검색 라벨 보조 문구, 드롭다운 안내 행, 제조사 표시 */
+.home .search-label-sub { display: block; margin-top: 3px; font-size: 11px; font-weight: 500; color: #5d7259; }
+@media (min-width: 768px) { .home .search-label-sub { display: inline; margin-left: 8px; } }
+.home .search-hint { padding: 10px 11px 8px; font-size: 12px; color: #5d7259; }
+.home .search-hint strong { color: #27322a; font-weight: 700; }
+.home .search-hint .examples { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 7px; }
+.home .search-hint .ex { border: 1px solid #d3e0ca; background: #f7faf3; border-radius: 9999px; padding: 4px 10px; font-size: 11px; font-weight: 600; color: #3a463c; cursor: pointer; }
+.home .search-hint .ex:hover { border-color: #9cc49c; background: #eff5ec; color: #175136; }
+.home .search-option small .maker { color: #3a463c; font-weight: 650; }
+.home .popular .chip small { font-size: 9px; font-weight: 600; color: #6d7e65; margin-left: 1px; }

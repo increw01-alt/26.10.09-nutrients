@@ -426,8 +426,11 @@ def write_outputs(data_dir: Path, items: list[dict], meta: dict, valid_ids: list
     (d / "detail").mkdir(parents=True, exist_ok=True)
     used = sorted({i for it in items for i in it["ingredients"]})
     idx = {i: n for n, i in enumerate(used)}
-    names = {"_meta": meta, "i": used,
-             "p": [[it["id"], it["name"], [idx[i] for i in it["ingredients"]], " · ".join(it["ingr"][:3])[:40], OTC_FLAG.get(it["otc"], 0)] for it in items]}
+    companies = sorted({it["company"] for it in items if it["company"]})
+    cidx = {c: n for n, c in enumerate(companies)}
+    # p 항목: [품목기준코드, 이름, [영양 성분 번호], 주성분 요약, 1=일반·2=전문, 제조사 번호]
+    names = {"_meta": meta, "i": used, "c": companies,
+             "p": [[it["id"], it["name"], [idx[i] for i in it["ingredients"]], " · ".join(it["ingr"][:3])[:40], OTC_FLAG.get(it["otc"], 0), cidx.get(it["company"], -1)] for it in items]}
     write_json(d / "names.json", names, compact=True)
     shards: dict[str, list[dict]] = {}
     for it in items:

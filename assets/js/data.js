@@ -60,8 +60,8 @@
     ingredients: function () { return load("ingredients"); },
     interactions: function () { return load("interactions"); },
     products: function () { return load("products"); },
-    productNames: function () { return load("products/names"); },   // 검색용 경량 색인 { i:[성분id], p:[[제품id, 이름, [성분번호]]] }
-    drugNames: function () { return load("drugs/names"); },         // 의약품 검색 색인 { i:[성분id], p:[[품목코드, 이름, [성분번호], 주성분요약, 1=일반·2=전문]] } (수집 전이면 404)
+    productNames: function () { return load("products/names"); },   // 검색용 경량 색인 { i:[성분id], c:[제조사], p:[[제품id, 이름, [성분번호], 제조사번호]] }
+    drugNames: function () { return load("drugs/names"); },         // 의약품 검색 색인 { i:[성분id], c:[제조사], p:[[품목코드, 이름, [성분번호], 주성분요약, 1=일반·2=전문, 제조사번호]] } (수집 전이면 빈 색인)
     news: function () { return load("news"); },
     meta: function () { return load("meta"); },
     deeplinks: function () { return load("deeplinks").catch(function () { return { coupang: {} }; }); },

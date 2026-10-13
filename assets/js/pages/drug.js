@@ -142,7 +142,7 @@
       return D.drugNames().then(function (n) {
         var hit = (n.p || []).filter(function (x) { return x[0] === id; })[0];
         if (!hit) { show("drug-missing"); D.icons(); return; }
-        render(core, { id: hit[0], name: hit[1], ingredients: hit[2].map(function (i) { return n.i[i]; }), ingr: hit[3] ? hit[3].split(" · ") : [], otc: hit[4] === 2 ? "전문의약품" : hit[4] === 1 ? "일반의약품" : "" });
+        render(core, { id: hit[0], name: hit[1], ingredients: hit[2].map(function (i) { return n.i[i]; }), ingr: hit[3] ? hit[3].split(" · ") : [], otc: hit[4] === 2 ? "전문의약품" : hit[4] === 1 ? "일반의약품" : "", company: (n.c || [])[hit[5]] || "" });
       });
     }).catch(function (e) { if (window.console) console.warn(e); show("drug-missing"); D.icons(); });
   });

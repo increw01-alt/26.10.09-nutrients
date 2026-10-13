@@ -59,13 +59,15 @@
     if (ph.total) html += section("sec-products", "건강기능식품", "package", ph.total.toLocaleString() + "건",
       '<p class="mt-1 text-xs text-ink-400">식약처 품목신고 제품 · 이름 앞부분이 맞는 순</p><ul class="mt-3 divide-y divide-ink-100">' + ph.idx.map(function (i) {
         var pp = products.p[i]; var ids = pp[2].map(function (k) { return products.i[k]; }).filter(function (k) { return !!core.byId[k]; });
-        return '<li class="py-3"><div class="flex flex-wrap items-center gap-x-3 gap-y-1"><a class="min-w-0 text-[15px] font-bold text-ink-900 hover:text-brand-700" href="' + D.productUrl(pp[0]) + '">' + D.markMatch(pp[1], q) + '</a>' + (ids.length ? '<a class="text-xs font-bold text-brand-700 hover:underline" href="' + D.compatUrl(ids) + '">궁합 보기</a>' : "") + '</div>' +
+        var maker = (products.c || [])[pp[3]] || "";
+        return '<li class="py-3"><div class="flex flex-wrap items-center gap-x-3 gap-y-1"><a class="min-w-0 text-[15px] font-bold text-ink-900 hover:text-brand-700" href="' + D.productUrl(pp[0]) + '">' + D.markMatch(pp[1], q) + '</a>' + (maker ? '<span class="text-xs font-semibold text-ink-500">' + esc(maker) + '</span>' : "") + (ids.length ? '<a class="text-xs font-bold text-brand-700 hover:underline" href="' + D.compatUrl(ids) + '">궁합 보기</a>' : "") + '</div>' +
           (ids.length ? '<div class="mt-1.5 flex flex-wrap gap-1">' + ingChips(core, ids) + '</div>' : '<p class="mt-1 text-xs text-ink-400">성분 사전과 연결된 성분 없음</p>') + '</li>';
       }).join("") + '</ul>' + (ph.total > ph.idx.length ? '<p class="mt-3 text-xs text-ink-500">상위 ' + ph.idx.length + '건만 표시했어요. 제품명을 더 정확히 입력하면 좁혀집니다.</p>' : ""));
     if (dh.total) html += section("sec-drugs", "의약품", "pill-bottle", dh.total.toLocaleString() + "건",
       '<p class="mt-1 text-xs text-ink-400">식약처 e약은요 등록 의약품 · 약국에서 구입</p><ul class="mt-3 divide-y divide-ink-100">' + dh.idx.map(function (i) {
         var pp = drugs.p[i]; var ids = pp[2].map(function (k) { return drugs.i[k]; }).filter(function (k) { return !!core.byId[k]; });
-        return '<li class="py-3"><div class="flex flex-wrap items-center gap-x-3 gap-y-1"><a class="min-w-0 text-[15px] font-bold text-ink-900 hover:text-brand-700" href="' + D.drugUrl(pp[0]) + '">' + D.markMatch(pp[1], q) + '</a>' + (pp[4] === 2 ? '<span class="badge badge-neutral">전문의약품</span>' : pp[4] === 1 ? '<span class="badge badge-neutral">일반의약품</span>' : "") + '</div>' +
+        var dmaker = (drugs.c || [])[pp[5]] || "";
+        return '<li class="py-3"><div class="flex flex-wrap items-center gap-x-3 gap-y-1"><a class="min-w-0 text-[15px] font-bold text-ink-900 hover:text-brand-700" href="' + D.drugUrl(pp[0]) + '">' + D.markMatch(pp[1], q) + '</a>' + (dmaker ? '<span class="text-xs font-semibold text-ink-500">' + esc(dmaker) + '</span>' : "") + (pp[4] === 2 ? '<span class="badge badge-neutral">전문의약품</span>' : pp[4] === 1 ? '<span class="badge badge-neutral">일반의약품</span>' : "") + '</div>' +
           '<p class="mt-1 text-xs text-ink-500">' + (pp[3] ? "주성분: " + esc(pp[3]) : "") + (ids.length ? (pp[3] ? " · " : "") + "영양 성분: " + ids.map(function (k) { return core.byId[k].name; }).join(", ") : "") + '</p></li>';
       }).join("") + '</ul>');
     if (gs.length) html += section("sec-guides", "가이드", "book-open", gs.length + "건",

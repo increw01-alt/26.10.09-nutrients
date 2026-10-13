@@ -59,6 +59,7 @@
     var list = document.getElementById("search-list"), status = document.getElementById("search-status"), area = document.getElementById("search-area");
     if (!input || !form || !box || !list) return;
     var POPULAR = ["vitamin-d", "omega-3", "magnesium", "probiotics"];
+    var EXAMPLES = ["마그네슘", "비타민D", "락토핏", "센트룸", "눈 건강"];   // 빈 검색창 안내 행의 예시 (누르면 검색어로 들어감)
     var guides = null, products = null, drugs = null, prodMatch = null, drugMatch = null, extraLoading = null, matches = [], active = -1;
     function loadExtra() {   // 가이드·제품 색인은 처음 입력할 때 한 번만
       if (extraLoading) return extraLoading;
@@ -71,19 +72,21 @@
     }
     function entries(q) {
       var nq = norm(q);
-      if (!nq) return POPULAR.map(function (id) { return core.byId[id]; }).filter(Boolean).map(function (it) { return { title: it.name, type: "성분", icon: "pill", href: D.ingredientUrl(it.id) }; });
+      if (!nq) return [{ hint: true }].concat(POPULAR.map(function (id) { return core.byId[id]; }).filter(Boolean).map(function (it) { return { title: it.name, type: "성분", icon: "pill", href: D.ingredientUrl(it.id) }; }));
       var ings = D.search(core.items, q, 4).map(function (it) { return { title: it.name, html: D.markMatch(it.name, q), type: "성분", icon: "pill", href: D.ingredientUrl(it.id) }; });
       // 제품·의약품은 자모 단위로 비교 → 일부만 입력해도('락ㅌ', 'ㄹㅌㅍ') 관련 제품이 나온다
       var ph = prodMatch ? prodMatch(q, 8) : { idx: [], total: 0 };
       var prods = ph.idx.map(function (i) {
         var pp = products.p[i]; var names = pp[2].map(function (k) { var it = core.byId[products.i[k]]; return it ? it.name : null; }).filter(Boolean);
-        return { title: pp[1], html: D.markMatch(pp[1], q), type: "제품", icon: "package", href: D.productUrl(pp[0]), sub: names.length ? "성분: " + names.slice(0, 3).join(" · ") : "성분 사전과 연결된 성분 없음" };
+        var maker = (products.c || [])[pp[3]] || "";
+        return { title: pp[1], html: D.markMatch(pp[1], q), type: "제품", icon: "package", href: D.productUrl(pp[0]), subHtml: (maker ? '<span class="maker">' + esc(maker) + '</span> · ' : "") + esc(names.length ? "성분: " + names.slice(0, 3).join(" · ") : "성분 사전과 연결된 성분 없음") };
       });
       var dh = drugMatch ? drugMatch(q, 3) : { idx: [], total: 0 };
       var meds = dh.idx.map(function (i) {
         var pp = drugs.p[i]; var names = pp[2].map(function (k) { var it = core.byId[drugs.i[k]]; return it ? it.name : null; }).filter(Boolean);
         var sub = (pp[3] ? "주성분: " + pp[3] : "") + (names.length ? (pp[3] ? " · " : "") + "영양 성분: " + names.slice(0, 2).join(", ") : "") + (pp[4] === 2 ? " · 전문의약품" : "");
-        return { title: pp[1], html: D.markMatch(pp[1], q), type: "의약품", icon: "pill-bottle", href: D.drugUrl(pp[0]), sub: sub || "식약처 허가 의약품" };
+        var maker = (drugs.c || [])[pp[5]] || "";
+        return { title: pp[1], html: D.markMatch(pp[1], q), type: "의약품", icon: "pill-bottle", href: D.drugUrl(pp[0]), subHtml: (maker ? '<span class="maker">' + esc(maker) + '</span> · ' : "") + esc(sub || "식약처 허가 의약품") };
       });
       var gs = (guides || []).filter(function (g) { return D.has([g.title, g.h1, (g.keywords || []).join(" ")].join(" "), q); }).slice(0, 2)
         .map(function (g) { return { title: String(g.h1 || g.title || "").split(" — ")[0], type: "가이드", icon: "book-open", href: D.guideUrl(g.slug) }; });
@@ -95,6 +98,7 @@
       return list;
     }
     function close() { box.hidden = true; input.setAttribute("aria-expanded", "false"); input.removeAttribute("aria-activedescendant"); active = -1; }
+    function selectable() { return matches.filter(function (m) { return !m.hint; }); }
     function setActive(i) {
       active = i;
       var opts = list.querySelectorAll('[role="option"]');
@@ -103,16 +107,26 @@
     }
     function render() {
       matches = entries(input.value.trim()); active = -1; input.removeAttribute("aria-activedescendant");
+      var hasHint = matches.length && matches[0].hint;
       list.innerHTML = matches.length
-        ? matches.map(function (m, i) { return '<li class="search-option' + (m.all ? " all" : "") + '" id="search-option-' + i + '" role="option" aria-selected="false" data-href="' + esc(m.href) + '"><i data-lucide="' + m.icon + '" class="icon"></i><span class="min-w-0">' + (m.html || esc(m.title)) + (m.sub ? '<small>' + esc(m.sub) + '</small>' : '') + '</span><span class="option-type">' + m.type + '</span></li>'; }).join("")
+        ? matches.map(function (m, i) {
+            if (m.hint) return '<li class="search-hint" role="presentation"><strong>성분명</strong>이나 <strong>제품명</strong>으로 검색해 보세요. 제품명은 일부만 입력해도 됩니다.<div class="examples">' + EXAMPLES.map(function (x) { return '<button type="button" class="ex" data-example="' + esc(x) + '">' + esc(x) + '</button>'; }).join("") + '</div></li>';
+            return '<li class="search-option' + (m.all ? " all" : "") + '" id="search-option-' + i + '" role="option" aria-selected="false" data-href="' + esc(m.href) + '"><i data-lucide="' + m.icon + '" class="icon"></i><span class="min-w-0">' + (m.html || esc(m.title)) + (m.subHtml ? '<small>' + m.subHtml + '</small>' : m.sub ? '<small>' + esc(m.sub) + '</small>' : '') + '</span><span class="option-type">' + m.type + '</span></li>';
+          }).join("")
         : '<li class="search-empty" role="presentation">성분·제품·의약품·가이드에서 찾지 못했어요. 제품명 일부나 성분명으로 다시 입력해 보세요. <a href="' + esc(D.searchUrl(input.value.trim())) + '">비슷한 이름 찾아보기 →</a></li>';
       D.icons(list);
       box.hidden = false; input.setAttribute("aria-expanded", "true");
+      if (hasHint) matches = selectable();   // 안내 행은 선택 대상이 아님 (option id 는 렌더 순서 기준이므로 다시 매김)
+      if (hasHint) Array.prototype.forEach.call(list.querySelectorAll('[role="option"]'), function (o, k) { o.id = "search-option-" + k; });
       if (status) status.textContent = matches.length ? "검색 결과 " + matches.length + "개가 있습니다. 화살표 키로 선택하세요." : "검색 결과가 없습니다.";
     }
     function renderWithGuides() { var p = loadExtra(); render(); if (p) p.then(function () { if (!box.hidden) render(); }); }
     list.addEventListener("pointerdown", function (e) { e.preventDefault(); });
-    list.addEventListener("click", function (e) { var li = e.target.closest("[data-href]"); if (li) location.href = li.getAttribute("data-href"); });
+    list.addEventListener("click", function (e) {
+      var ex = e.target.closest("[data-example]");
+      if (ex) { input.value = ex.getAttribute("data-example"); input.focus(); renderWithGuides(); return; }   // 예시를 누르면 검색어로 넣고 바로 결과 표시
+      var li = e.target.closest("[data-href]"); if (li) location.href = li.getAttribute("data-href");
+    });
     input.addEventListener("input", renderWithGuides);
     input.addEventListener("focus", renderWithGuides);
     input.addEventListener("keydown", function (e) {

@@ -153,10 +153,12 @@
         }).join("");
         if (prods.length) html += '<p class="px-5 pb-1 pt-3 text-[11px] font-bold text-ink-400">식약처 신고 제품</p>' + prods.map(function (pp) {
           var ingNames = pp[2].map(function (i) { var it = byId[names.i[i]]; return it ? it.name : null; }).filter(Boolean);
-          return row(D.productUrl(pp[0]), '<span class="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-cream-200 text-brand-700"><i data-lucide="package" class="h-4 w-4"></i></span>', D.markMatch(pp[1], q), ingNames.length ? "성분: " + esc(ingNames.slice(0, 3).join(" · ")) : "성분 사전과 연결된 성분 없음");
+          var maker = (names.c || [])[pp[3]] || "";
+          return row(D.productUrl(pp[0]), '<span class="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-cream-200 text-brand-700"><i data-lucide="package" class="h-4 w-4"></i></span>', D.markMatch(pp[1], q), (maker ? '<span class="font-semibold text-ink-700">' + esc(maker) + '</span> · ' : "") + (ingNames.length ? "성분: " + esc(ingNames.slice(0, 3).join(" · ")) : "성분 사전과 연결된 성분 없음"));
         }).join("");
         if (meds.length) html += '<p class="px-5 pb-1 pt-3 text-[11px] font-bold text-ink-400">식약처 허가 의약품</p>' + meds.map(function (pp) {
-          return row(D.drugUrl(pp[0]), '<span class="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-amber-50 text-amber-700 ring-1 ring-amber-200"><i data-lucide="pill-bottle" class="h-4 w-4"></i></span>', D.markMatch(pp[1], q), (pp[3] ? "주성분: " + esc(pp[3]) : "식약처 허가 의약품") + (pp[4] === 2 ? " · 전문의약품" : ""));
+          var dmaker = (drugs.c || [])[pp[5]] || "";
+          return row(D.drugUrl(pp[0]), '<span class="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-amber-50 text-amber-700 ring-1 ring-amber-200"><i data-lucide="pill-bottle" class="h-4 w-4"></i></span>', D.markMatch(pp[1], q), (dmaker ? '<span class="font-semibold text-ink-700">' + esc(dmaker) + '</span> · ' : "") + (pp[3] ? "주성분: " + esc(pp[3]) : "식약처 허가 의약품") + (pp[4] === 2 ? " · 전문의약품" : ""));
         }).join("");
         var total = ph.total + dh.total;
         html += '<a class="search-result justify-center border-t border-ink-100 text-sm font-bold text-brand-700" href="' + esc(D.searchUrl(q.trim())) + '">‘' + esc(q.trim()) + '’ 전체 검색 결과 보기' + (total > prods.length + meds.length ? ' (제품·의약품 ' + total.toLocaleString() + '건)' : '') + ' →</a>';
