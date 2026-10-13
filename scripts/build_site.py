@@ -73,7 +73,7 @@ def stamp_assets() -> None:
     log.info("자산 버전 스탬프: HTML %d개 갱신", changed)
 
 
-SEARCH_RECENT_YEARS = 6        # 검색 색인 1단(names.json)에 담을 신고 연도 범위. 그보다 오래된 제품은 names-old.json 으로 (검색창이 뒤이어 불러온다)
+SEARCH_RECENT_YEARS = 3        # 검색 색인 1단(names.json)에 담을 신고 연도 범위(올해 포함 약 3년). 그보다 오래된 제품은 names-old.json 으로 (검색창이 먼저 1단으로 결과를 보여주고 뒤이어 불러와 합친다)
 
 
 def build_product_names() -> None:
@@ -91,7 +91,7 @@ def build_product_names() -> None:
     idx = {i: n for n, i in enumerate(ids)}
     companies = sorted({(it.get("company") or "").strip() for it in rows} - {""})
     cidx = {c: n for n, c in enumerate(companies)}
-    cutoff = f"{datetime.now(KST).year - SEARCH_RECENT_YEARS}-01-01"
+    cutoff = f"{datetime.now(KST).year - SEARCH_RECENT_YEARS + 1}-01-01"
     entry = lambda it: [it["id"], it["name"], [idx[i] for i in it.get("ingredients", []) if i in idx], cidx.get((it.get("company") or "").strip(), -1)]
     recent = [entry(it) for it in rows if (it.get("registeredAt") or "9999") >= cutoff]
     older = [entry(it) for it in rows if (it.get("registeredAt") or "9999") < cutoff]

@@ -57,13 +57,16 @@
   var POPULAR = ["vitamin-d", "omega-3", "magnesium", "probiotics"];
   var EXAMPLES = ["마그네슘", "비타민D", "락토핏", "센트룸", "눈 건강"];   // 빈 검색창 안내 행의 예시 (누르면 검색어로 들어감)
   /* 가이드·제품·의약품 색인은 검색창과 빠른 궁합 체크가 함께 쓰므로 처음 필요할 때 한 번만 불러온다 */
-  var extra = { guides: null, products: null, drugs: null, prodMatch: null, drugMatch: null, pairings: null, loading: null };
+  var extra = { guides: null, products: null, drugs: null, prodMatch: null, drugMatch: null, pairings: null, loading: null, onMore: [] };
   function loadExtra() {
     if (extra.loading) return extra.loading;
     extra.loading = Promise.all([
       D.guides().then(function (g) { extra.guides = (g && g.items) || []; }).catch(function () { extra.guides = []; }),
       D.drugPairings().then(function (r) { extra.pairings = r; }).catch(function () { extra.pairings = { rules: [] }; }),   // 의약품별 함께 챙기면 좋은/주의할 영양 성분 규칙
-      D.productNames().then(function (n) { extra.products = n && n.p ? n : { i: [], p: [] }; }).catch(function () { extra.products = { i: [], p: [] }; }).then(function () { extra.prodMatch = D.nameMatcher(D.indexText(extra.products, 3)); }),
+      D.productNames().then(function (n) { extra.products = n && n.p ? n : { i: [], p: [] }; }).catch(function () { extra.products = { i: [], p: [] }; }).then(function () {
+        extra.prodMatch = D.nameMatcher(D.indexText(extra.products, 3));
+        if (extra.products.more) extra.products.more.then(function () { extra.prodMatch = D.nameMatcher(D.indexText(extra.products, 3)); extra.onMore.forEach(function (f) { f(); }); });   // 과거 제품이 합쳐지면 다시 그리기
+      }),
       D.drugNames().then(function (n) { extra.drugs = n && n.p ? n : { i: [], p: [] }; }).catch(function () { extra.drugs = { i: [], p: [] }; }).then(function () { extra.drugMatch = D.nameMatcher(D.indexText(extra.drugs, 5)); })   // 의약품 수집 전이면 빈 색인
     ]);
     return extra.loading;
@@ -126,6 +129,7 @@
       if (status) status.textContent = matches.length ? "검색 결과 " + matches.length + "개가 있습니다. 화살표 키로 선택하세요." : "검색 결과가 없습니다.";
     }
     function renderWithGuides() { var p = loadExtra(); render(); if (p) p.then(function () { if (!box.hidden) render(); }); }
+    extra.onMore.push(function () { if (!box.hidden) render(); });
     list.addEventListener("pointerdown", function (e) { e.preventDefault(); });
     list.addEventListener("click", function (e) {
       var ex = e.target.closest("[data-example]");
@@ -302,6 +306,7 @@
       if (s.clear) s.clear.addEventListener("click", function () { clearSlot(s); s.input.focus(); });
     });
     document.addEventListener("click", function (e) { slots.forEach(function (s) { if (!s.wrap.contains(e.target)) close(s); }); });
+    extra.onMore.push(function () { slots.forEach(function (s) { if (!s.list.hidden) open(s); }); });
     form.addEventListener("submit", function (e) {
       e.preventDefault();
       var A = slots[0].sel, B = slots[1].sel;

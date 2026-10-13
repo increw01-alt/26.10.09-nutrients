@@ -91,7 +91,7 @@
     Promise.all([
       D.core(),
       D.guides().then(function (g) { return (g && g.items) || []; }).catch(function () { return []; }),
-      D.productNames().then(function (n) { return n && n.p ? n : { i: [], p: [] }; }).catch(function () { return { i: [], p: [] }; }),
+      D.productNames().then(function (n) { return n && n.more ? n.more : (n && n.p ? n : { i: [], p: [] }); }).catch(function () { return { i: [], p: [] }; }),   // 과거 색인까지 합쳐진 뒤
       D.drugNames().then(function (n) { return n && n.p ? n : { i: [], p: [] }; }).catch(function () { return { i: [], p: [] }; }),
       D.meta().catch(function () { return {}; })
     ]).then(function (r) { render(q, r[0], r[1], r[2], r[3], r[4]); }).catch(function (e) {

@@ -60,11 +60,12 @@
     ingredients: function () { return load("ingredients"); },
     interactions: function () { return load("interactions"); },
     products: function () { return load("products"); },
-    productNames: function () {   // 검색용 경량 색인 { i:[성분id], c:[제조사], p:[[제품id, 이름, [성분번호], 제조사번호]] } — 과거(names-old)가 있으면 이어 붙인다
+    productNames: function () {   // 검색용 경량 색인 { i:[성분id], c:[제조사], p:[[제품id, 이름, [성분번호], 제조사번호]] }
+      // 최근 제품(names.json)을 먼저 돌려주고, 과거 제품(names-old.json)은 n.more 가 끝나면 n.p 에 이어 붙는다 → 호출한 쪽은 n.more.then(다시 그리기)
       if (!cache.__productNames) {
         cache.__productNames = load("products/names").then(function (n) {
-          if (!n || !n._meta || !n._meta.old) return n;
-          return load("products/names-old").then(function (o) { n.p = n.p.concat((o && o.p) || []); return n; }).catch(function () { return n; });
+          n.more = (n._meta && n._meta.old) ? load("products/names-old").then(function (o) { n.p = n.p.concat((o && o.p) || []); return n; }).catch(function () { return n; }) : Promise.resolve(n);
+          return n;
         });
         cache.__productNames.catch(function () { delete cache.__productNames; });
       }
