@@ -637,3 +637,9 @@
 }
 .home .form-feedback strong { color: #27322a; font-weight: 700; }
 .home .form-feedback .muted { color: #6d7967; font-weight: 500; }
+/* 검색형 선택란은 모바일에서도 세로로 쌓아 후보 목록이 카드 너비 전체를 쓰게 한다 */
+@media (max-width: 800px) {
+  .home .pair-fields { grid-template-columns: minmax(0, 1fr); align-items: stretch; gap: 4px; }
+  .home .pair-plus { height: 22px; }
+  .home .pick-sub { margin-bottom: 4px; }
+}
