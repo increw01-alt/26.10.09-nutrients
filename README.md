@@ -121,7 +121,7 @@ project/
 ### GitHub Actions 설정
 저장소 **Settings → Secrets and variables → Actions** 에서
 - Secrets: `FOODSAFETY_API_KEY`, (선택) `DATA_GO_KR_KEY`, `NAVER_CLIENT_ID`, `NAVER_CLIENT_SECRET`, `COUPANG_ACCESS_KEY`, `COUPANG_SECRET_KEY`
-- Variables(선택): `SITE_URL`, `COUPANG_SUB_ID`, `FOODSAFETY_SERVICE`(기본 C003), `FOODSAFETY_MAX_ROWS`(기본 15000), `DRUG_API_BUDGET`(실행당 의약품 API 호출 상한, 기본 900)
+- Variables(선택): `SITE_URL`, `COUPANG_SUB_ID`, `FOODSAFETY_SERVICE`(기본 C003), `FOODSAFETY_MAX_ROWS`(기본 15000), `DRUG_API_BUDGET`(실행당 의약품 API 호출 상한, 기본 900), `DRUG_EASY_SERVICE`·`DRUG_PERMIT_SERVICE`(공공데이터포털 API 경로가 바뀌었을 때만)
 
 `update-data.yml` 이 매일 03:15 KST 에 실행되어 뉴스 → 기능성 원료 → 제품 → 의약품 → 딥링크 → 정적 페이지 순으로 갱신하고 변경이 있을 때만 커밋합니다.
 Actions 탭에서 **Run workflow** 로 즉시 실행할 수도 있습니다. 키가 없는 단계는 건너뛰며 기존 데이터를 유지합니다.

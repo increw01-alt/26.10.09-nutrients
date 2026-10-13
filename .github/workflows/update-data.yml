@@ -65,6 +65,8 @@ jobs:
           CI: "true"
           DATA_GO_KR_KEY: ${{ secrets.DATA_GO_KR_KEY }}
           DRUG_API_BUDGET: ${{ vars.DRUG_API_BUDGET }}
+          DRUG_EASY_SERVICE: ${{ vars.DRUG_EASY_SERVICE }}       # API 경로가 바뀌면 Variables 로 덮어쓰기 (기본 DrbEasyDrugInfoService/getDrbEasyDrugList)
+          DRUG_PERMIT_SERVICE: ${{ vars.DRUG_PERMIT_SERVICE }}   # 기본 DrugPrdtPrmsnInfoService06/getDrugPrdtPrmsnInq06
         run: python scripts/fetch_drugs.py
 
       - name: Build Coupang deeplinks
