@@ -30,6 +30,18 @@ def esc(s) -> str:
     return html.escape(str(s if s is not None else ""), quote=True)
 
 
+def page_url(cfg: dict, path: str) -> str:
+    """사이트 상대 경로(index.html, i/vitamin-d.html …) → 검색엔진에 알릴 정식 주소.
+    Cloudflare Pages 는 `/foo.html` 요청을 `/foo` 로, `/index.html` 을 `/` 로 리다이렉트하고 확장자 없는 주소로 서비스하므로
+    canonical·og:url·sitemap·구조화 데이터는 그 형태를 써야 한다 (내부 링크는 로컬 http.server 확인을 위해 .html 유지)."""
+    p = path.strip("/")
+    if p.endswith(".html"):
+        p = p[:-5]
+    if p == "index" or p.endswith("/index"):
+        p = p[:-5]
+    return f"{cfg['url']}/{p}"
+
+
 def site_config() -> dict:
     """assets/js/config.js 에서 name/url/description 을 읽어옵니다 (정규식 추출)."""
     src = (ROOT / "assets/js/config.js").read_text(encoding="utf-8")
@@ -240,7 +252,7 @@ def render_page(it: dict, core: dict, cfg: dict) -> str:
     cat = cats.get(it["category"], {})
     title = f"{it['name']} 효능·권장량·궁합 | {cfg['name']}"
     desc = it["summary"][:150]
-    url = f"{cfg['url']}/i/{it['id']}.html"
+    url = page_url(cfg, f"i/{it['id']}.html")
     by_id = core["by_id"]
 
     # 궁합 목록 (정적)
@@ -281,7 +293,7 @@ def render_page(it: dict, core: dict, cfg: dict) -> str:
     ld = {"@context": "https://schema.org", "@graph": [
         {"@type": "BreadcrumbList", "itemListElement": [
             {"@type": "ListItem", "position": 1, "name": "홈", "item": f"{cfg['url']}/"},
-            {"@type": "ListItem", "position": 2, "name": "성분 사전", "item": f"{cfg['url']}/ingredients.html"},
+            {"@type": "ListItem", "position": 2, "name": "성분 사전", "item": page_url(cfg, "ingredients.html")},
             {"@type": "ListItem", "position": 3, "name": it["name"], "item": url}]},
         {"@type": "Article", "headline": f"{it['name']} 효능·권장량·궁합", "description": desc, "mainEntityOfPage": url,
          "author": {"@type": "Organization", "name": cfg["name"]}, "publisher": {"@type": "Organization", "name": cfg["name"]}, "dateModified": core.get("updated_at") or now_iso()[:10]},
@@ -361,7 +373,7 @@ def render_page(it: dict, core: dict, cfg: dict) -> str:
 
 
 def head_html(cfg: dict, *, title: str, desc: str, path: str, root: str, keywords: str = "", og_type: str = "article", extra_scripts: str = "", ld: dict | None = None) -> str:
-    url = f"{cfg['url']}/{path}"
+    url = page_url(cfg, path)
     return f"""<!DOCTYPE html>
 <html lang="ko" data-root="{root}">
 <head>
@@ -418,12 +430,12 @@ def render_guide(gd: dict, guides: dict, core: dict, cfg: dict) -> str:
     by_id = core["by_id"]
     cats = core["categories"]
     path = f"guide/{gd['slug']}.html"
-    url = f"{cfg['url']}/{path}"
+    url = page_url(cfg, path)
     desc = gd["description"]
     ld = {"@context": "https://schema.org", "@graph": [
         {"@type": "BreadcrumbList", "itemListElement": [
             {"@type": "ListItem", "position": 1, "name": "홈", "item": f"{cfg['url']}/"},
-            {"@type": "ListItem", "position": 2, "name": "영양제 가이드", "item": f"{cfg['url']}/guides.html"},
+            {"@type": "ListItem", "position": 2, "name": "영양제 가이드", "item": page_url(cfg, "guides.html")},
             {"@type": "ListItem", "position": 3, "name": gd["h1"], "item": url}]},
         {"@type": "Article", "headline": gd["title"], "description": desc, "mainEntityOfPage": url, "keywords": ", ".join(gd["keywords"]),
          "author": {"@type": "Organization", "name": cfg["name"]}, "publisher": {"@type": "Organization", "name": cfg["name"]}, "dateModified": guides["_meta"].get("updatedAt", "")},
@@ -503,8 +515,8 @@ def render_guide(gd: dict, guides: dict, core: dict, cfg: dict) -> str:
 def render_guides_hub(guides: dict, cfg: dict) -> str:
     types = guides["_meta"]["types"]
     ld = {"@context": "https://schema.org", "@graph": [
-        {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "홈", "item": f"{cfg['url']}/"}, {"@type": "ListItem", "position": 2, "name": "영양제 가이드", "item": f"{cfg['url']}/guides.html"}]},
-        {"@type": "CollectionPage", "name": "영양제 추천 가이드", "url": f"{cfg['url']}/guides.html", "hasPart": [{"@type": "Article", "headline": g["title"], "url": f"{cfg['url']}/guide/{g['slug']}.html"} for g in guides["items"]]},
+        {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "홈", "item": f"{cfg['url']}/"}, {"@type": "ListItem", "position": 2, "name": "영양제 가이드", "item": page_url(cfg, "guides.html")}]},
+        {"@type": "CollectionPage", "name": "영양제 추천 가이드", "url": page_url(cfg, "guides.html"), "hasPart": [{"@type": "Article", "headline": g["title"], "url": page_url(cfg, f"guide/{g['slug']}.html")} for g in guides["items"]]},
     ]}
     head = head_html(cfg, title=f"영양제 추천 가이드 — 고민별·대상별·복용법 총정리 | {cfg['name']}",
                      desc="피로·눈·간·관절·수면·면역 등 고민별, 20대부터 50대 이상·임산부·수험생·어린이까지 대상별 영양제 추천 성분과 조합, 먹는 시간·조합·권장량·약물 상호작용 가이드를 한곳에 모았습니다.",
@@ -555,10 +567,11 @@ def build_guides(core: dict, cfg: dict) -> dict:
 def build_sitemap(ingredients: list[dict], cfg: dict, data_date: str, guides: dict | None = None) -> None:
     today = now_iso()[:10]
     dynamic = ("index.html", "news.html", "products.html")
-    urls = [(f"{cfg['url']}/{p}", "daily" if p in dynamic else "monthly", "1.0" if p == "index.html" else "0.8", today if p in dynamic else data_date) for p in STATIC_PAGES]
-    urls += [(f"{cfg['url']}/i/{it['id']}.html", "monthly", "0.7", data_date) for it in ingredients]
+    # 주소는 Cloudflare Pages 가 실제로 서비스하는 확장자 없는 형태(홈은 /) — .html 주소는 리다이렉트되어 색인에 불리하다
+    urls = [(page_url(cfg, p), "daily" if p in dynamic else "monthly", "1.0" if p == "index.html" else "0.8", today if p in dynamic else data_date) for p in STATIC_PAGES]
+    urls += [(page_url(cfg, f"i/{it['id']}.html"), "monthly", "0.7", data_date) for it in ingredients]
     gdate = (guides or {}).get("_meta", {}).get("updatedAt") or data_date
-    urls += [(f"{cfg['url']}/guide/{g['slug']}.html", "monthly", "0.8", gdate) for g in (guides or {}).get("items", [])]
+    urls += [(page_url(cfg, f"guide/{g['slug']}.html"), "monthly", "0.8", gdate) for g in (guides or {}).get("items", [])]
     body = "".join(f"  <url><loc>{esc(u)}</loc><lastmod>{d}</lastmod><changefreq>{c}</changefreq><priority>{p}</priority></url>\n" for u, c, p, d in urls)
     (ROOT / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + body + "</urlset>\n", encoding="utf-8")
     log.info("sitemap.xml: %d URL", len(urls))

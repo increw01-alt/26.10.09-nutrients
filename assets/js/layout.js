@@ -202,10 +202,11 @@
     try {
       var base = (S.url || "").replace(/\/+$/, "");
       if (!base || /example\.com/.test(base)) return; // 도메인 미설정 시 건너뜀
-      var path = document.body.getAttribute("data-path") || location.pathname.split("/").pop() || "index.html";
+      // Cloudflare Pages 는 /foo.html 을 /foo 로(/index.html 은 /) 리다이렉트해 확장자 없이 서비스하므로 canonical 도 그 형태로 맞춘다 (원본 HTML 의 태그와 동일해야 함)
+      var path = (document.body.getAttribute("data-path") || location.pathname.replace(/^\/+/, "") || "index.html").replace(/\.html$/, "").replace(/(^|\/)index$/, "$1");
       var canonical = document.querySelector('link[rel="canonical"]');
       if (canonical) canonical.href = base + "/" + path.replace(/^\/+/, "");
-      var og = document.querySelector('meta[property="og:url"]'); if (og) og.content = canonical ? canonical.href : base;
+      var og = document.querySelector('meta[property="og:url"]'); if (og) og.content = canonical ? canonical.href : base + "/" + path.replace(/^\/+/, "");   // canonical 이 없는 noindex 페이지도 같은 형태
       var ogi = document.querySelector('meta[property="og:image"]'); if (ogi && !/^https?:/.test(ogi.content)) ogi.content = base + "/" + (S.ogImage || "").replace(/^\/+/, "");
       // 소유 확인 메타태그는 검색엔진이 원본 HTML 에서 읽어야 하므로 JS 로 넣지 않고 build_site.py 가 index.html 에 정적으로 삽입한다.
     } catch (e) { /* 무시 */ }

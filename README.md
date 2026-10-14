@@ -101,7 +101,7 @@ project/
    - `linkprice.affiliateId` / `enabled: true`, 머천트 코드 확인
    - `coupang.enabled: true` (딥링크는 아래 스크립트가 생성)
    - 네이버 서치어드바이저·구글 서치콘솔 확인 코드
-2. **도메인**: 현재 `영양제.kr`(퓨니코드 `https://xn--og5b1hx9c.kr`) 기준으로 canonical·OG·sitemap 이 설정되어 있습니다. 도메인을 바꾸려면 아래처럼 일괄 치환한 뒤 `python scripts/build_site.py` 를 실행하세요.
+2. **도메인**: 현재 `영양제.kr`(퓨니코드 `https://xn--og5b1hx9c.kr`) 기준으로 canonical·OG·sitemap 이 설정되어 있습니다. Cloudflare Pages 는 `/foo.html` 요청을 `/foo` 로(`/index.html` 은 `/`) 리다이렉트하므로 canonical·OG·sitemap·구조화 데이터의 주소는 확장자 없는 형태(홈은 `https://xn--og5b1hx9c.kr/`)로 적습니다. 내부 링크는 로컬 확인을 위해 `.html` 을 그대로 씁니다. 도메인을 바꾸려면 아래처럼 일괄 치환한 뒤 `python scripts/build_site.py` 를 실행하세요.
    ```bash
    grep -rl "xn--og5b1hx9c.kr" --include="*.html" --include="*.js" --include="*.txt" --include="*.py" . | xargs sed -i 's#https://xn--og5b1hx9c.kr#https://your-domain.com#g'
    ```
