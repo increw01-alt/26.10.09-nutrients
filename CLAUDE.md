@@ -33,4 +33,5 @@ python scripts/fetch_news.py / fetch_materials.py / fetch_products.py / fetch_dr
 ## 새 성분·가이드 추가 절차
 1. `data/ingredients.json` 또는 `data/guides.json` 에 항목 추가 (성분 id 참조는 빌드 시 검증됨)
 2. 궁합이 필요하면 `data/interactions.json` 에 쌍 추가
-3. `python scripts/build_site.py` → 생성 파일 확인 → 로컬 서버에서 페이지 확인 → 커밋·푸시
+3. 가이드를 추가했으면 `scripts/home_tabs.py` 의 `SHORT`(짧은 제목)·`ORDER`(탭별 순서)에 slug 를 넣고 `python scripts/home_tabs.py` 실행 (홈 탭 `home.js` 와 `index.html` 정적 카드 생성)
+4. `python scripts/build_site.py` → 생성 파일 확인 → 로컬 서버에서 페이지 확인 → 커밋·푸시
