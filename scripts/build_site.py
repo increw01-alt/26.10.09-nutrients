@@ -67,7 +67,8 @@ def stamp_assets() -> None:
     def digest(path: Path) -> str:
         key = str(path)
         if key not in cache:
-            cache[key] = hashlib.sha1(path.read_bytes()).hexdigest()[:8] if path.exists() else "0"
+            # 줄끝을 LF 로 맞춘 뒤 해시: Windows 의 core.autocrlf 로 CRLF 가 된 체크아웃에서도 CI(Linux) 와 같은 값이 나오게
+            cache[key] = hashlib.sha1(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()[:8] if path.exists() else "0"
         return cache[key]
 
     files = sorted(ROOT.glob("*.html")) + sorted(OUT_DIR.glob("*.html")) + sorted((ROOT / "guide").glob("*.html"))
