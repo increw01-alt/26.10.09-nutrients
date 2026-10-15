@@ -1661,6 +1661,292 @@
       "title": "기전이 다른 식후 혈당 조합",
       "detail": "여주 추출물과 수용성 식이섬유는 작용 방식이 달라 식사 직전에 함께 쓰는 제품이 있습니다.",
       "tip": "식사 직전 물과 함께. 혈당약 복용자는 상담 후에."
+    },
+    {
+      "pair": [
+        "octacosanol",
+        "vitamin-b-complex"
+      ],
+      "type": "synergy",
+      "level": 1,
+      "title": "아침 활력·지구력 조합",
+      "detail": "B군은 에너지 대사에 필요하고 옥타코사놀은 지구력 증진 기능성입니다. 아침 식후 함께 먹는 남성 활력 제품이 많습니다.",
+      "tip": "아침 식후에 함께. 저녁 늦게는 피하세요."
+    },
+    {
+      "pair": [
+        "octacosanol",
+        "saw-palmetto"
+      ],
+      "type": "neutral",
+      "level": 0,
+      "title": "남성 제품의 흔한 조합, 간섭 없음",
+      "detail": "쏘팔메토(전립선 건강)와 옥타코사놀(지구력)은 기능성이 달라 함께 든 제품이 많고 서로 방해하지 않습니다.",
+      "tip": "둘 다 식후에."
+    },
+    {
+      "pair": [
+        "octacosanol",
+        "policosanol"
+      ],
+      "type": "neutral",
+      "level": 0,
+      "title": "이름은 비슷하지만 다른 원료",
+      "detail": "옥타코사놀은 지구력 증진, 폴리코사놀은 혈중 콜레스테롤 개선으로 기능성이 다르고 함께 먹어도 간섭이 없습니다.",
+      "tip": "목적을 확인하고 필요한 쪽만 드세요."
+    },
+    {
+      "pair": [
+        "soy-isoflavone",
+        "calcium"
+      ],
+      "type": "synergy",
+      "level": 1,
+      "title": "갱년기 뼈 건강 조합",
+      "detail": "대두이소플라본은 뼈 건강 기능성, 칼슘은 뼈 형성에 필요한 미네랄입니다. 폐경 후 뼈 관리에 함께 씁니다.",
+      "tip": "칼슘은 비타민D 와 저녁 식후에, 이소플라본은 아침 식후에."
+    },
+    {
+      "pair": [
+        "soy-isoflavone",
+        "vitamin-d"
+      ],
+      "type": "synergy",
+      "level": 1,
+      "title": "뼈 건강을 함께 돌보는 조합",
+      "detail": "비타민D 는 칼슘 흡수와 뼈 형성에 필요하고 대두이소플라본은 뼈 건강 기능성입니다.",
+      "tip": "식후에 함께."
+    },
+    {
+      "pair": [
+        "soy-isoflavone",
+        "sophora"
+      ],
+      "type": "caution",
+      "level": 1,
+      "title": "에스트로겐 유사 성분을 겹치지 않기",
+      "detail": "둘 다 식물성 에스트로겐 유사 작용을 하는 원료라 함께 먹을 이유가 적고, 호르몬 의존성 질환이 있으면 더 주의해야 합니다.",
+      "tip": "뼈 목적이면 이소플라본, 갱년기 증상이면 회화나무 — 하나만."
+    },
+    {
+      "pair": [
+        "chondroitin",
+        "glucosamine"
+      ],
+      "type": "synergy",
+      "level": 2,
+      "title": "관절 영양제의 대표 조합",
+      "detail": "둘 다 '관절 및 연골 건강' 기능성이고 작용 지점이 달라 함께 든 제품이 가장 많습니다.",
+      "tip": "식후에 함께. 와파린 복용자는 상담 후에."
+    },
+    {
+      "pair": [
+        "chondroitin",
+        "msm"
+      ],
+      "type": "synergy",
+      "level": 1,
+      "title": "관절 3종 조합의 한 축",
+      "detail": "MSM(식이유황)과 콘드로이친은 관절·연골 건강 기능성이 같고 흡수를 방해하지 않습니다.",
+      "tip": "식후에 함께."
+    },
+    {
+      "pair": [
+        "chondroitin",
+        "hyaluronic-acid"
+      ],
+      "type": "neutral",
+      "level": 0,
+      "title": "관절 제품에 함께 들지만 기능성은 다름",
+      "detail": "히알루론산은 먹는 제품의 식약처 기능성이 피부 보습이라, 관절 제품의 부원료로 든 경우 관절 효과를 보장하지는 않습니다.",
+      "tip": "관절 목적이라면 콘드로이친·글루코사민 함량을 기준으로."
+    },
+    {
+      "pair": [
+        "green-lipped-mussel",
+        "glucosamine"
+      ],
+      "type": "synergy",
+      "level": 1,
+      "title": "기전이 다른 관절 조합",
+      "detail": "초록입홍합 오일은 지질 성분, 글루코사민은 연골 구성 성분으로 작용 방식이 달라 함께 쓰는 제품이 있습니다.",
+      "tip": "둘 다 식후에."
+    },
+    {
+      "pair": [
+        "green-lipped-mussel",
+        "omega-3"
+      ],
+      "type": "neutral",
+      "level": 0,
+      "title": "둘 다 지질 성분, 함께 가능",
+      "detail": "서로 흡수를 방해하지 않습니다. 둘 다 출혈 경향과 약한 관련이 있어 항응고제 복용자는 상담.",
+      "tip": "식후에 함께."
+    },
+    {
+      "pair": [
+        "green-lipped-mussel",
+        "boswellia"
+      ],
+      "type": "neutral",
+      "level": 0,
+      "title": "관절 제품의 조합, 간섭 없음",
+      "detail": "보스웰리아와 초록입홍합 오일은 함께 든 관절 제품이 있고 서로 방해하지 않습니다.",
+      "tip": "식후에 함께, 위장 불편이 있으면 하나씩."
+    },
+    {
+      "pair": [
+        "sophora",
+        "calcium"
+      ],
+      "type": "synergy",
+      "level": 1,
+      "title": "갱년기 증상과 뼈를 함께",
+      "detail": "회화나무열매추출물은 갱년기 여성 건강, 칼슘은 폐경 후 빨라지는 뼈 손실을 보충합니다.",
+      "tip": "회화나무는 아침, 칼슘은 저녁 식후에."
+    },
+    {
+      "pair": [
+        "sophora",
+        "red-ginseng"
+      ],
+      "type": "neutral",
+      "level": 0,
+      "title": "갱년기 제품의 조합, 간섭 없음",
+      "detail": "홍삼의 기능성에 '갱년기 여성의 건강'이 포함된 원료도 있어 함께 든 제품이 있습니다. 서로 방해하지 않습니다.",
+      "tip": "둘 다 아침에."
+    },
+    {
+      "pair": [
+        "lactium",
+        "theanine"
+      ],
+      "type": "synergy",
+      "level": 1,
+      "title": "취침 전 진정 조합",
+      "detail": "락티움은 수면의 질 개선, 테아닌은 긴장 완화 기능성으로 함께 든 수면 제품이 많습니다.",
+      "tip": "취침 30~60분 전에 함께."
+    },
+    {
+      "pair": [
+        "lactium",
+        "magnesium"
+      ],
+      "type": "synergy",
+      "level": 1,
+      "title": "근육 이완과 수면의 질",
+      "detail": "마그네슘은 신경·근육 기능 유지에 필요하고 락티움은 수면의 질 개선 기능성입니다. 저녁 조합으로 무난합니다.",
+      "tip": "저녁 식후 마그네슘, 취침 전 락티움."
+    },
+    {
+      "pair": [
+        "lactium",
+        "rhodiola"
+      ],
+      "type": "neutral",
+      "level": 0,
+      "title": "아침 활력, 저녁 수면으로 나누기",
+      "detail": "홍경천은 각성 성향, 락티움은 수면 쪽이라 같은 시간에 먹을 이유가 없습니다.",
+      "tip": "홍경천은 아침, 락티움은 취침 전."
+    },
+    {
+      "pair": [
+        "cynanchum",
+        "soy-isoflavone"
+      ],
+      "type": "caution",
+      "level": 1,
+      "title": "갱년기·에스트로겐 유사 성분 중복",
+      "detail": "백수오 복합추출물과 대두이소플라본을 겹쳐 먹을 이유가 적고 호르몬 의존성 질환이 있으면 더 주의합니다.",
+      "tip": "하나를 골라 8~12주 평가하세요."
+    },
+    {
+      "pair": [
+        "cynanchum",
+        "calcium"
+      ],
+      "type": "synergy",
+      "level": 1,
+      "title": "갱년기 증상과 뼈 관리",
+      "detail": "백수오 복합추출물은 갱년기 여성 건강, 칼슘·비타민D 는 폐경 후 뼈 손실 관리에 씁니다.",
+      "tip": "백수오는 아침, 칼슘은 저녁 식후에."
+    },
+    {
+      "pair": [
+        "cynanchum",
+        "ginkgo"
+      ],
+      "type": "caution",
+      "level": 1,
+      "title": "당귀와 은행잎, 출혈 경향 주의",
+      "detail": "백수오 복합추출물에 든 당귀와 은행잎 추출물은 모두 출혈 경향과 관련이 있어 항응고제 복용자는 겹치지 마세요.",
+      "tip": "수술 2주 전에는 둘 다 중단."
+    },
+    {
+      "pair": [
+        "ecklonia",
+        "lactium"
+      ],
+      "type": "synergy",
+      "level": 1,
+      "title": "수면의 질을 함께 돌보는 조합",
+      "detail": "감태추출물과 락티움 모두 수면의 질 개선 기능성으로 함께 든 제품이 있습니다.",
+      "tip": "취침 전에 함께. 졸음이 과하면 하나로."
+    },
+    {
+      "pair": [
+        "ecklonia",
+        "theanine"
+      ],
+      "type": "synergy",
+      "level": 1,
+      "title": "긴장 완화·수면 조합",
+      "detail": "둘 다 스트레스로 인한 긴장 완화 기능성이 있고 감태는 수면의 질 개선까지 인정됐습니다.",
+      "tip": "저녁·취침 전에."
+    },
+    {
+      "pair": [
+        "ecklonia",
+        "selenium"
+      ],
+      "type": "neutral",
+      "level": 0,
+      "title": "해조류 요오드와 갑상선, 함께는 무방",
+      "detail": "감태는 요오드가 든 해조류라 갑상선 질환자는 주의가 필요하지만 셀레늄과의 직접 상호작용은 없습니다.",
+      "tip": "갑상선 질환이 있으면 둘 다 상담 후에."
+    },
+    {
+      "pair": [
+        "pomegranate",
+        "collagen"
+      ],
+      "type": "synergy",
+      "level": 1,
+      "title": "피부 보습 이너뷰티 조합",
+      "detail": "석류농축분말과 저분자 콜라겐펩타이드 모두 피부 보습 기능성이고 자외선 피부 손상 보호도 공통입니다.",
+      "tip": "같은 시간에 함께."
+    },
+    {
+      "pair": [
+        "pomegranate",
+        "sophora"
+      ],
+      "type": "neutral",
+      "level": 0,
+      "title": "둘 다 갱년기 기능성, 겹칠 이유는 적음",
+      "detail": "석류추출물과 회화나무열매추출물은 같은 '갱년기 여성 건강' 기능성이라 함께 먹어도 더해진다는 근거가 없습니다.",
+      "tip": "하나를 골라 8~12주 평가하세요."
+    },
+    {
+      "pair": [
+        "pomegranate",
+        "vitamin-c"
+      ],
+      "type": "neutral",
+      "level": 0,
+      "title": "항산화 조합, 간섭 없음",
+      "detail": "서로 흡수를 방해하지 않습니다.",
+      "tip": "식후에 함께."
     }
   ]
 }
