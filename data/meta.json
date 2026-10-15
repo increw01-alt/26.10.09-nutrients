@@ -1,12 +1,12 @@
 {
-  "builtAt": "2026-10-15T10:37:59+09:00",
-  "ingredients": 37,
-  "pairs": 97,
+  "builtAt": "2026-10-15T14:09:35+09:00",
+  "ingredients": 43,
+  "pairs": 119,
   "guides": 28,
   "products": {
     "source": "mfds",
     "updatedAt": "2026-10-15T06:39:08+09:00",
-    "total": 6719
+    "total": 7527
   },
   "news": {
     "source": "live",
@@ -17,7 +17,7 @@
     "source": "mfds-drug",
     "updatedAt": "2026-10-15T06:40:23+09:00",
     "total": 4729,
-    "withNutrients": 1374
+    "withNutrients": 1375
   },
   "materials": {
     "source": "mfds",

@@ -146,6 +146,13 @@ CONTAIN_RULES: dict[str, list[str]] = {
     "boswellia": ["보스웰리아", "유향", "boswellia", "frankincense"],
     "phosphatidylserine": ["포스파티딜세린", "phosphatidylserine"],
     "propolis": ["프로폴리스", "propolis"],
+    # 2026-10 추가 성분 (NUTRIENT_IDS 에는 넣지 않아 종합비타민 판정은 그대로)
+    "chromium": ["크롬", "chromium", "chromic chloride"],
+    "vitamin-b6": ["피리독신", "피리독살", "비타민b6", "pyridoxine", "pyridoxal", "vitamin b6"],
+    "hyaluronic-acid": ["히알루론산", "hyaluron"],
+    "astaxanthin": ["아스타잔틴", "astaxanthin", "haematococcus"],
+    "policosanol": ["폴리코사놀", "policosanol"],
+    "rhodiola": ["홍경천", "rhodiola"],
 }
 # 키워드가 들어 있어도 영양 성분이 아닌 경우 (약물의 염·착염): 후보 문자열이 이 패턴에 맞으면 그 후보는 무시
 NEGATIVE_RULES: dict[str, re.Pattern] = {
