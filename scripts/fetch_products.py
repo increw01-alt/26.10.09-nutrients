@@ -47,7 +47,7 @@ DEFAULT_MAX_ROWS = 15000       # 최신 신고분부터 거꾸로 수집할 기�
 PER_INGREDIENT_CAP = 400       # 제품 찾기 목록(products.json)의 성분별 최대 건수 (최신 신고순). 상세 조각·검색 색인에는 상한 없음
 CHANGELOG_KEEP = 200
 
-MATCHER_VERSION = 2            # 매칭 규칙이 바뀌면 올립니다 → 다음 수집에서 변경 이력을 새로 시작
+MATCHER_VERSION = 3            # 매칭 규칙이 바뀌면 올립니다 → 다음 수집에서 변경 이력을 새로 시작 (3: 짧은 영문 약어 단어 경계, 비타민C·E 첨가물 제외)
 RAW_HEAD = 160                 # 원재료 목록 앞부분(주원료로 보는 범위) 글자 수
 
 # 원재료 목록에서 제거할 부형제·첨가물 (기능성 원료가 아닌데 성분명이 들어 있는 것들)
@@ -85,7 +85,7 @@ HERBAL_RULES: dict[str, tuple[list[str], list[str]]] = {
     "milk-thistle": (["밀크씨슬", "실리마린", "밀크시슬", "엉겅퀴"], []),
     "red-ginseng": (["홍삼"], ["혈소판 응집억제"]),
     "glucosamine": (["글루코사민"], []),
-    "msm": (["msm", "디메틸설폰", "식이유황", "메틸설포닐메탄"], []),
+    "msm": (["msm", "optimsm", "엠에스엠", "디메틸설폰", "식이유황", "메틸설포닐메탄"], []),   # 'msm' 은 단어 경계 검사 → OptiMSM·엠에스엠 표기는 따로
     "collagen": (["콜라겐"], []),
     "green-tea-extract": (["녹차추출물", "카테킨", "egcg"], []),
     "curcumin": (["커큐민", "강황", "울금", "터메릭", "테라큐민"], []),
@@ -97,7 +97,7 @@ HERBAL_RULES: dict[str, tuple[list[str], list[str]]] = {
     "psyllium": (["차전자피", "질경이씨", "차전자", "사일리움"], []),
     "l-carnitine": (["카르니틴"], []),
     "boswellia": (["보스웰리아", "유향", "보스웰릭산", "akba"], []),
-    "phosphatidylserine": (["포스파티딜세린", "피에스"], ["인지력 개선"]),
+    "phosphatidylserine": (["포스파티딜세린", "ps"], ["인지력 개선"]),   # '피에스'는 '피에스트로'(피부 제품) 오탐 → 단어 경계 검사되는 'ps'로
     "propolis": (["프로폴리스"], ["구강에서의 항균"]),
     # 2026-10 추가 성분. 크롬·비타민B6 는 영양소지만 종합비타민 판정(NUTRIENT_RULES 5종 이상)이 바뀌지 않도록 여기서 이름·문구로만 연결
     "chromium": (["크롬"], ["체내 탄수화물, 지방, 단백질 대사에 관여"]),
@@ -108,6 +108,18 @@ HERBAL_RULES: dict[str, tuple[list[str], list[str]]] = {
     "rhodiola": (["홍경천"], ["스트레스로 인한 피로 개선", "스트레스로 인한 피로개선"]),
 }
 MULTIVITAMIN_MIN = 5           # 영양소 5종 이상이면 종합비타민·미네랄로도 분류
+# 비타민C·E 는 산화방지제(첨가물)로도 쓰여 원재료 뒷부분에 '비타민C', 'd-α-토코페롤'로 흔히 등장한다.
+# 기능성 문구에 이름이 없고 공유 문구(유해산소…)만 있을 때는 (고시형) 표기·주원료 범위·'혼합제제'(영양 프리믹스)일 때만 영양 성분으로 본다.
+ADDITIVE_PRONE = {"vitamin-c", "vitamin-e"}
+_TAG_RE = r"[^,;()]{0,12}\((?:고시형|개별인정형|개별인정|고시)\)"
+_SHORT_ASCII_RE = re.compile(r"^[a-z0-9\-]{1,4}$")
+
+
+def kw_in(k: str, text: str) -> bool:
+    """키워드 포함 검사. 짧은 영문 약어(epa·dha·hca·msm·rtg 등)는 단어 경계를 요구해 Hepazone·Ashwagandha·Healthcare 같은 오탐을 막는다."""
+    if _SHORT_ASCII_RE.match(k):
+        return re.search(r"(?<![a-z])" + re.escape(k) + r"(?![a-z])", text) is not None
+    return k in text
 
 
 def build_matchers(ingredients: list[dict]):
@@ -133,16 +145,19 @@ def match_ingredients(row: dict, matchers) -> list[str]:
     raw_head = raw[:RAW_HEAD]
     found: list[str] = []
     for iid, (names, claims, shared, fn_name_ok) in nut.items():
-        hit = any(k in name for k in names) or any(c in func for c in claims)
+        hit = any(kw_in(k, name) for k in names) or any(c in func for c in claims)
         if not hit and fn_name_ok:
-            hit = any(k in func for k in names)
+            hit = any(kw_in(k, func) for k in names)
         if not hit and shared and shared in func:
-            hit = any(k in raw for k in names)
+            hits = [k for k in names if kw_in(k, raw)]
+            if hits and iid in ADDITIVE_PRONE:
+                hits = [k for k in hits if k in raw_head or re.search(re.escape(k) + _TAG_RE, raw) or re.search(re.escape(k) + r"\s*혼합제제", raw)]
+            hit = bool(hits)
         if hit:
             found.append(iid)
     nutrient_count = len(found)
     for iid, (kws, claims) in herb.items():
-        if any(k in name for k in kws) or any(k in func for k in kws) or any(k in raw_head for k in kws) or any(c in func for c in claims):
+        if any(kw_in(k, name) for k in kws) or any(kw_in(k, func) for k in kws) or any(kw_in(k, raw_head) for k in kws) or any(c in func for c in claims):
             found.append(iid)
     if nutrient_count >= MULTIVITAMIN_MIN:
         found.append("multivitamin")
