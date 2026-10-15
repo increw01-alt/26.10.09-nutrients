@@ -1,7 +1,27 @@
+# 검색엔진 크롤러는 허용합니다 (검색 결과 페이지·스크립트·설정만 제외)
 User-agent: *
 Allow: /
 Disallow: /scripts/
 Disallow: /config/
 Disallow: /search.html
+
+# AI 학습용 크롤러는 차단합니다. 이 사이트의 콘텐츠와 데이터베이스는 저작권법으로 보호되며
+# 기계학습 모델 학습용 수집을 허락하지 않습니다 (https://xn--og5b1hx9c.kr/terms).
+# 검색·사용자 요청용 에이전트(OAI-SearchBot, ChatGPT-User, Claude-SearchBot, Claude-User 등)는 위 규칙을 따릅니다.
+User-agent: GPTBot
+User-agent: CCBot
+User-agent: ClaudeBot
+User-agent: anthropic-ai
+User-agent: Claude-Web
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: Bytespider
+User-agent: meta-externalagent
+User-agent: cohere-ai
+User-agent: AI2Bot
+User-agent: Diffbot
+User-agent: omgili
+User-agent: img2dataset
+Disallow: /
 
 Sitemap: https://xn--og5b1hx9c.kr/sitemap.xml

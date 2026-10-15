@@ -23,7 +23,7 @@ from common import DATA_DIR, KST, ROOT, env, log, now_iso, read_json, write_json
 
 OUT_DIR = ROOT / "i"
 GUIDE_DIR = ROOT / "guide"
-STATIC_PAGES = ["index.html", "ingredients.html", "compatibility.html", "guides.html", "products.html", "news.html", "materials.html", "about.html"]
+STATIC_PAGES = ["index.html", "ingredients.html", "compatibility.html", "guides.html", "products.html", "news.html", "materials.html", "about.html", "terms.html"]
 
 
 def esc(s) -> str:

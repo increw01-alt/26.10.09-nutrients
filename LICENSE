@@ -1,0 +1,96 @@
+영양제.kr 저작권 및 이용 허락 안내
+Copyright (c) 2026 영양제.kr (yeongyangje.kr). All rights reserved.
+(English summary at the end of this file)
+
+이 저장소(이하 "저장소")의 모든 파일은 별도 표시가 없는 한 영양제.kr 운영자(이하 "권리자")의
+저작물이거나 권리자가 제작한 데이터베이스입니다. 저장소가 공개되어 있다는 사실은 열람을 가능하게
+할 뿐 이용을 허락하는 것이 아닙니다. 이 파일은 오픈소스 라이선스가 아니며, MIT·Apache·GPL·
+Creative Commons 등 어떤 공개 라이선스도 이 저장소에 적용되지 않습니다.
+
+
+제1조 코드와 콘텐츠
+
+1. 대상: 루트의 *.html 과 i/, guide/ 의 생성 페이지, assets/ 의 CSS·JavaScript·이미지·SVG 일러스트,
+   scripts/ 의 Python 스크립트, 설정 파일(tailwind.config.cjs, package.json, _headers 등),
+   문서(README.md, CLAUDE.md, docs/).
+2. 허용: 저장소를 열람하고 사이트의 동작을 이해하기 위해 개인적으로 읽는 것. 저작권법 제28조의
+   범위에서 출처를 밝히고 짧게 인용하는 것. GitHub 이용약관이 공개 저장소에 대해 허용하는
+   열람·포크(fork)는 그 범위 안에서 가능합니다.
+3. 금지: 권리자의 사전 서면 허락 없이 복제, 수정, 2차적 저작물 작성, 배포, 공중송신, 상업적 이용,
+   다른 사이트·서비스에의 전용(일부라도). 포크한 저장소를 배포하거나 사이트·서비스로 운영하는 것도
+   허용되지 않습니다.
+
+
+제2조 수동 작성 데이터 (데이터베이스)
+
+1. 대상:
+   - data/ingredients.json      성분 사전 (분류·기능성·권장량·상한·섭취 시간·주의·태그)
+   - data/interactions.json     성분 궁합 (쌍별 시너지·주의·회피 판정, 간격 시간)
+   - data/guides.json           영양제 가이드 콘텐츠
+   - data/drug-pairings.json    의약품 주성분·분류별 함께 챙기면 좋은/주의할 영양 성분
+   - data/brand-priority.json   검색 순위용 브랜드 가중치
+   - scripts/drug_ingr_ko.py    의약품 주성분 영문 → 한글 표시 사전
+   - scripts/fetch_products.py, scripts/fetch_drugs.py 의 제품·의약품-영양 성분 매칭 규칙
+   - 위 규칙으로 생성된 연결 결과: data/products/, data/drugs/ 안의 영양 성분 연결 필드와
+     검색 색인(names*.json), data/materials/ 의 성분별 연결
+2. 이 데이터는 소재의 선택·배열·검증에 상당한 투자를 한 데이터베이스로서 저작권법 제4장
+   (데이터베이스제작자의 보호, 제91조 이하)에 따라 보호되며, 편집물로서의 저작권도 함께 주장합니다.
+3. 금지: 권리자의 사전 서면 허락 없이 전부 또는 상당한 부분을 복제·배포·전송하는 것, 반복적·
+   체계적으로 추출하는 것, 재가공해 다른 서비스·앱·API·챗봇으로 제공하는 것, 인공지능·기계학습
+   모델의 학습·미세조정·평가용 데이터셋으로 이용하는 것.
+4. 개별 항목 몇 건을 출처(영양제.kr)를 밝혀 인용하는 것은 가능합니다.
+
+
+제3조 자동 수집 공공데이터
+
+1. 대상: data/products.json, data/products/, data/materials.json, data/materials/, data/news.json,
+   data/drugs/ 에 담긴 원천 정보(제품명·업소명·기능성 문구·원재료, 기능성 원료 인정 정보,
+   의약품의 효능·용법·주의사항 등)와 data/deeplinks.json.
+2. 원천 정보의 권리는 각 제공 기관에 있으며, 그 기관이 정한 이용조건을 따릅니다.
+   - 식품의약품안전처 식품안전나라 Open API (건강기능식품 품목제조신고 정보, 기능성 원료 인정현황)
+   - 공공데이터포털 data.go.kr (식품의약품안전처 의약품개요정보 e약은요, 의약품 제품 허가정보)
+   - 뉴스·자료: 각 언론사·기관 (제목과 링크만 수집)
+3. 권리자는 원천 정보 자체에 대해 권리를 주장하지 않습니다. 원천 정보가 필요하면 이 저장소가 아니라
+   해당 기관의 공식 경로에서 직접 받으십시오. 다만 권리자가 원천 정보를 선별·정제·연결한 결과
+   (제2조 제1항의 연결 결과·검색 색인)에는 제2조가 적용됩니다.
+
+
+제4조 제3자 구성요소
+
+Tailwind CSS(MIT License), lucide(ISC License), Pretendard(SIL Open Font License 1.1)는 각자의
+라이선스를 따르며 이 안내의 적용을 받지 않습니다. 해당 라이브러리는 저장소에 포함되지 않고
+빌드 시 내려받거나(devDependencies) CDN 으로 불러옵니다.
+
+
+제5조 보증의 부인과 책임 제한
+
+저장소의 코드와 데이터는 "있는 그대로" 제공되며, 권리자는 정확성·완전성·특정 목적 적합성을
+보증하지 않습니다. 성분·궁합·의약품 정보는 일반적인 건강 정보로서 의학적 진단·치료·처방을
+대신하지 않으며, 건강기능식품은 질병의 예방·치료를 위한 의약품이 아닙니다. 코드·데이터 이용으로
+발생한 결과에 대해 권리자는 법이 허용하는 범위에서 책임을 지지 않습니다.
+
+
+제6조 문의
+
+이용 허락·인용·제휴·정정 요청은 사이트의 이용약관 · 데이터 이용 정책 페이지
+(https://xn--og5b1hx9c.kr/terms, 한글 주소 https://영양제.kr/terms)에 안내된 이메일로 보내 주십시오.
+문의 이메일은 assets/js/config.js 의 SITE.contactEmail 에서 관리합니다.
+
+
+----------------------------------------------------------------------------------------------------
+English summary
+
+This repository is NOT open source. Copyright (c) 2026 영양제.kr (yeongyangje.kr). All rights reserved.
+
+The source code, text, illustrations and the hand-curated data files (data/ingredients.json,
+data/interactions.json, data/guides.json, data/drug-pairings.json, data/brand-priority.json, and the
+matching rules and dictionaries in scripts/) are protected under the Copyright Act of the Republic of
+Korea, including the database producer's right in Chapter 4 of that Act. You may view the repository
+and fork it as permitted by the GitHub Terms of Service. You may not copy, modify, redistribute, host,
+scrape, or use any part of it to train, fine-tune or evaluate machine-learning models without the
+prior written permission of the rights holder.
+
+Public data collected from the Ministry of Food and Drug Safety (foodsafetykorea.go.kr) and the Korean
+public data portal (data.go.kr) remains subject to those providers' own terms; the rights holder claims
+no rights in that source data itself. Third-party components (Tailwind CSS, lucide, Pretendard) keep
+their own licenses.

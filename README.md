@@ -25,6 +25,7 @@ project/
 ├─ news.html                  # 뉴스·자료 (식약처/연구/뉴스 분류)
 ├─ materials.html             # 식약처 기능성 원료 인정현황 (검색·성분 필터)
 ├─ about.html                 # 소개·데이터 출처·제휴 고지·면책
+├─ terms.html                 # 이용약관 · 데이터 이용 정책 (저작권·데이터베이스제작자 권리 고지)
 ├─ 404.html
 ├─ robots.txt · sitemap.xml · .nojekyll
 ├─ assets/
@@ -65,6 +66,7 @@ project/
 ├─ docs/PROJECT-STATUS.md     # 프로젝트 현황·작업 이력 정리
 ├─ CLAUDE.md                  # Claude Code 작업 지침
 ├─ dev.ps1 · dev.bat · dev.sh # 로컬 개발 서버 실행 스크립트 (Windows / WSL·mac)
+├─ LICENSE                    # 저작권·이용 허락 안내 (오픈소스 라이선스 아님, 수동 데이터·공공데이터 조항 분리)
 └─ README.md
 ```
 
@@ -106,7 +108,7 @@ project/
    grep -rl "xn--og5b1hx9c.kr" --include="*.html" --include="*.js" --include="*.txt" --include="*.py" . | xargs sed -i 's#https://xn--og5b1hx9c.kr#https://your-domain.com#g'
    ```
    한글 도메인은 검색엔진·소셜 공유 호환을 위해 퓨니코드(ASCII) 형태로 적는 것이 안전합니다. 사용자에게 보이는 문구에는 `영양제.kr` 을 그대로 씁니다.
-3. `about.html` 의 문의 이메일, `assets/images/og-default.svg` 교체(선택)
+3. `assets/images/og-default.svg` 교체(선택). 문의 이메일은 `config.js` 의 `contactEmail` 하나만 바꾸면 소개·이용약관 페이지와 푸터에 반영됩니다
 
 ## 데이터 자동 업데이트
 
@@ -192,6 +194,9 @@ python scripts/build_site.py
 ## 검색엔진 등록
 - `sitemap.xml` 을 구글 서치콘솔·네이버 서치어드바이저에 제출
 - `config.js` 의 `naverSiteVerification` / `googleSiteVerification` 에 확인 코드 입력 → `python scripts/build_site.py` 실행 → 커밋·푸시 (빌드가 `index.html` 머리에 정적 메타태그로 넣어 주며, 검색엔진 확인 크롤러는 JS 를 실행하지 않으므로 이 절차가 필요)
+
+## 라이선스
+이 저장소는 오픈소스가 아닙니다. 코드·글·일러스트는 저작권법으로, `data/` 의 수동 작성 데이터(성분 사전·궁합·가이드·의약품 연결·브랜드 가중치)와 매칭 규칙·사전은 저작권법 제4장 데이터베이스제작자의 권리로 보호되며, 사전 서면 허락 없는 복제·재배포·크롤링·AI 학습용 이용을 금합니다. 식약처·공공데이터포털에서 수집한 공공데이터는 원 출처의 이용조건을 따릅니다. 자세한 조건은 [LICENSE](LICENSE) 와 사이트의 [이용약관 · 데이터 이용 정책](terms.html)을 참고하세요.
 
 ## 주의
 - 성분 정보는 식약처 기능성 고시·한국인 영양소 섭취기준(2020)을 참고해 일반 성인 기준으로 요약한 것으로 의학적 조언이 아닙니다. 수치·문구는 공개 전 한 번 더 검토를 권장합니다.

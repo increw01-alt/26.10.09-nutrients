@@ -100,7 +100,11 @@
             '<p><strong class="text-ink-700">의학적 면책:</strong> 이 사이트의 정보는 일반적인 건강 정보 제공을 목적으로 하며 의학적 진단·처방을 대신하지 않습니다. 질환이 있거나 약을 복용 중이라면 영양제 섭취 전 의사·약사와 상담하세요. 건강기능식품은 질병의 예방·치료를 위한 의약품이 아닙니다.</p>' +
             '<p><strong class="text-ink-700">제휴 고지:</strong> ' + esc(A.disclosure || "") + '</p>' +
           '</div>' +
-          '<div class="mt-6 flex flex-col items-start justify-between gap-2 text-xs text-ink-400 sm:flex-row sm:items-center"><p>© ' + new Date().getFullYear() + ' ' + esc(S.name) + '. All rights reserved.</p><p>제품·가격 정보는 각 쇼핑몰 기준이며 변동될 수 있습니다.</p></div>' +
+          '<div class="mt-6 flex flex-col items-start justify-between gap-3 text-xs text-ink-400 sm:flex-row sm:items-end">' +
+            '<div class="space-y-1"><p>© ' + new Date().getFullYear() + ' ' + esc(S.name) + '. All rights reserved. · <a class="underline hover:text-brand-700" href="' + D.url("terms.html") + '">이용약관 · 데이터 이용 정책</a></p>' +
+            '<p>콘텐츠와 데이터베이스는 저작권법으로 보호됩니다. 무단 복제·크롤링·재배포를 금합니다.</p></div>' +
+            '<p>제품·가격 정보는 각 쇼핑몰 기준이며 변동될 수 있습니다.</p>' +
+          '</div>' +
         '</div>' +
       '</footer>';
     D.meta().then(function (m) {
@@ -212,6 +216,15 @@
     } catch (e) { /* 무시 */ }
   }
 
+  /* data-contact-email 요소에 config.js 의 문의 이메일을 채움 (소개·이용약관 페이지가 주소를 하드코딩하지 않게) */
+  function fillContact() {
+    if (!S.contactEmail) return;
+    document.querySelectorAll("[data-contact-email]").forEach(function (el) {
+      el.textContent = S.contactEmail;
+      if (el.tagName === "A") el.href = "mailto:" + S.contactEmail;
+    });
+  }
+
   /* 맨 위로 버튼 */
   function topButton() {
     var b = document.createElement("button");
@@ -231,7 +244,7 @@
 
   document.addEventListener("DOMContentLoaded", function () {
     page = document.body.getAttribute("data-page") || "";
-    renderHeader(); renderFooter(); renderTabbar(); fixMeta(); topButton(); D.icons();
+    renderHeader(); renderFooter(); renderTabbar(); fixMeta(); fillContact(); topButton(); D.icons();
   });
   window.Layout = { openSearch: openSearch, closeSearch: closeSearch };
 })();
