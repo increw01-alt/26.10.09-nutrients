@@ -105,6 +105,83 @@ KO: dict[str, str] = {
     "lactobacillus rhamnosus": "락토바실루스람노수스", "lactobacillus plantarum": "락토바실루스플란타룸", "bacillus coagulans": "바실루스코아귤란스",
     "chlorpheniramine maleate": "클로르페니라민말레산염", "pseudoephedrine hydrochloride": "슈도에페드린염산염", "sodium selenite": "아셀렌산나트륨",
     "calcium citrate": "구연산칼슘", "manganese": "망간", "chromium": "크롬", "molybdenum": "몰리브덴", "iodine": "요오드",
+    # ---- 2026-10 보강: 허가정보에서 영문으로 남던 이름 (빈도순 점검 결과)
+    # 소화효소 (뒤의 역가 표기 'Cellulase 2000 II', 'Lipase AP6' 는 ENZYME_RE 가 붙여 준다)
+    "diastase": "디아스타제", "biodiastase": "비오디아스타제", "protease": "프로테아제", "hemicellulase": "헤미셀룰라제", "prozyme": "프로자임",
+    "pancellase": "판셀라제", "panprosin": "판프로신", "newlase": "뉴라제", "pancrelipase": "판크렐리파제", "papain": "파파인", "pepsin": "펩신",
+    "saccharated pepsin": "당화펩신", "beta-galactosidase": "베타-갈락토시다제", "pancreatin enteric": "판크레아틴장용",
+    "pancreatin enteric tablets": "판크레아틴장용정", "pancreatin enteric pellets": "판크레아틴장용펠렛", "aspirin enteric": "아스피린장용",
+    "pancrease": "판크레아스", "peg": "폴리에틸렌글리콜", "ox bile": "우담즙", "alginic acid": "알긴산", "cholecalciferol mixture": "콜레칼시페롤",
+    "sodium sulfamethoxazole": "설파메톡사졸나트륨", "sodium n-acetylaspartylglutamate": "N-아세틸아스파틸글루탐산나트륨", "belladonna alkaloid": "벨라돈나알칼로이드",
+    # 비타민·미네랄·아미노산
+    "vitamin a": "비타민A", "vitamin c": "비타민C", "vitamin d": "비타민D", "vitamin d3": "비타민D3", "vitamin e": "비타민E",
+    "vitamin b1": "비타민B1", "vitamin b2": "비타민B2", "vitamin b6": "비타민B6", "vitamin b12": "비타민B12",
+    "alpha-tocopherol": "알파-토코페롤", "dl-alpha-tocopherol": "dl-알파-토코페롤", "alpha-tocopherol acetate": "알파-토코페롤아세테이트",
+    "tocopheryl acetate": "토코페릴아세테이트", "d-alpha-tocopheryl acetate": "d-알파-토코페릴아세테이트", "dl-alpha-tocopheryl acetate": "dl-알파-토코페릴아세테이트",
+    "thiamine monophosphate": "티아민일인산", "thiamine disulfide": "티아민디설피드", "pantethine": "판테틴", "calcium folinate": "폴린산칼슘",
+    "yeast": "효모", "molybden": "몰리브덴", "chromic chloride": "염화크롬", "copper sulfate": "황산구리", "zinc histidine": "히스티딘아연",
+    "pyrithione zinc": "피리티온아연", "magnesium aspartate": "아스파르트산마그네슘", "magnesium pidolate": "피돌산마그네슘",
+    "magnesium lactate": "젖산마그네슘", "magnesium hydrogen phosphate": "인산수소마그네슘", "light magnesium oxide": "경질산화마그네슘",
+    "heavy magnesium oxide": "중질산화마그네슘", "potassium l-aspartate": "L-아스파르트산칼륨", "sennoside calcium": "센노시드칼슘",
+    "sodium ferric gluconate complex": "글루콘산제이철나트륨착염", "iron acetyl transferrin": "철아세틸트랜스페린", "ferric manitol ovalbumin": "철만니톨오브알부민",
+    "chlorophyllin copper": "클로로필린구리", "chlorophyllin copper complex sodium": "클로로필린구리나트륨착염",
+    "l-glutamine": "L-글루타민", "glutamine": "글루타민", "l-alanine": "L-알라닌", "alanine": "알라닌", "l-glutamic acid": "L-글루탐산",
+    "glutamic acid": "글루탐산", "l-citrulline": "L-시트룰린", "l-ornithine": "L-오르니틴", "levocarnitine": "레보카르니틴",
+    "carnitine orotate": "카르니틴오로트산염", "arginine tidiacicate": "아르기닌티디아시케이트", "dl-phosphoserine": "DL-포스포세린",
+    "l-phosphoserine": "L-포스포세린", "l-phosphothreonine": "L-포스포트레오닌", "glucuronolactone": "글루쿠로노락톤", "adenine": "아데닌",
+    "cytidine": "시티딘", "uridine": "우리딘", "orotic acid": "오로트산", "beta-sitosterol": "베타-시토스테롤",
+    "unsaponifiable matter of soybean oil": "대두유불검화물", "antitoxic liver": "항독성간장", "liver hydrolysate": "간장가수분해물", "cattle gallstone": "우황",
+    # 해열·진통·감기·소화기·기타 약물
+    "nizatidine": "니자티딘", "domperidone": "돔페리돈", "berberine tannate": "베르베린탄닌산염", "nifuroxazide": "니푸록사지드",
+    "flubendazole": "플루벤다졸", "sobrerol": "소브레롤", "troxerutin": "트록세루틴", "casanthranol": "카산트라놀", "lactitol": "락티톨",
+    "bismuth subcarbonate": "차탄산비스무트", "boehmite": "보에마이트", "methylmethionine sulfonium chloride": "메틸메티오닌설포늄염화물",
+    "dihydroxydibutyl ether": "디히드록시디부틸에테르", "isopropylantipyrine": "이소프로필안티피린", "allylisopropylacetylurea": "알릴이소프로필아세틸우레아",
+    "ibuprofen arginine": "이부프로펜아르기닌", "ibuprofen lysine": "이부프로펜리신", "prednisolone valeroacetate": "프레드니솔론발레로아세테이트",
+    "d-chlorpheniramine": "d-클로르페니라민", "dexchlorpheniramine": "덱스클로르페니라민", "pheniramine": "페니라민", "clemastine": "클레마스틴",
+    "cyproheptadine": "시프로헵타딘", "l-carbocisteine": "L-카르보시스테인", "butamirate citrate": "구연산부타미레이트", "benproperine": "벤프로페린",
+    "levocloperastine fendizoate": "레보클로페라스틴펜디조산염", "diprophylline": "디프로필린", "ammonium chloride": "염화암모늄",
+    "ammonium glycyrrhizinate": "글리시리진산암모늄", "difenidol": "디페니돌", "glycopyrrolate": "글리코피롤레이트", "brimonidine": "브리모니딘",
+    "sodium cromoglicate": "크로몰린나트륨", "nicotine polacrilex": "니코틴폴라크릴렉스", "medicinal carbon": "약용탄", "alfatradiol": "알파트라디올",
+    "ethyl aminobenzoate": "아미노안식향산에틸", "diclofenac diethylamine": "디클로페낙디에틸아민", "diclofenac epolamine": "디클로페낙에폴아민",
+    "diethylamine salicylate": "살리실산디에틸아민", "mucopolysaccharide polysulfate": "뮤코폴리사카리드폴리설페이트",
+    "purified and flavonoid fraction": "미세정제플라보노이드분획물", "standardized lyophyllized of bacterial lysate": "표준화동결건조세균용해물",
+    # 외용·소독·항진균
+    "butenafine": "부테나핀", "econazole": "에코나졸", "isoconazole": "이소코나졸", "sertaconazole": "세르타코나졸", "nifuratel": "니푸라텔",
+    "nystatin": "니스타틴", "fusidic acid": "푸시드산", "hinokitiol": "히노키티올", "azelaic acid": "아젤라산", "benzoyl peroxide": "과산화벤조일",
+    "carbamide peroxide": "카바마이드퍼옥사이드", "hydrogen peroxide": "과산화수소", "peracetic acid": "과아세트산", "sodium percarbonate": "과탄산나트륨",
+    "sodium hypochlorite": "차아염소산나트륨", "ethylene oxide": "에틸렌옥사이드", "propanol": "프로판올", "octenidine": "옥테니딘",
+    "phenoxyethanol": "페녹시에탄올", "alkyldiaminoethylglycine": "알킬디아미노에틸글리신", "methylbenzethonium chloride": "메틸벤제토늄염화물",
+    "9-aminoacridine undecylenate": "9-아미노아크리딘운데실렌산염", "nonoxynol 9": "노녹시놀9", "tannic acid": "탄닌산", "lanolin": "라놀린",
+    "trolamine": "트롤아민", "piperonyl butoxide": "피페로닐부톡시드", "pyrethrin": "피레트린", "sodium fluoride": "불화나트륨", "guaiacol": "구아야콜",
+    "dl-menthol": "dl-멘톨", "borneol": "보르네올", "camphen": "캄펜", "camphene": "캄펜", "anethole": "아네톨", "fenchone": "펜콘", "pinene": "피넨",
+    "menthone": "멘톤", "cineole": "시네올", "sterile water for irrigation": "관류용멸균증류수", "sterile sea water": "멸균해수",
+    "sterile isotonic sea water": "멸균등장해수",
+    # 부형제·염류
+    "carbomer": "카보머", "povidone": "포비돈", "polysorbate 80": "폴리소르베이트80", "polyethylene glycol 400": "폴리에틸렌글리콜400",
+    "polyethylene glycol 3350": "폴리에틸렌글리콜3350", "polyethylene glycol 4000": "폴리에틸렌글리콜4000", "d-sorbitol": "D-소르비톨",
+    "sorbitol": "소르비톨", "lactose": "유당", "potassium citrate": "구연산칼륨", "sodium citrate": "구연산나트륨", "potassium bicarbonate": "탄산수소칼륨",
+    "dibasic potassium phosphate": "인산수소칼륨", "monobasic sodium phosphate": "인산이수소나트륨", "sodium hydrogen phosphate": "인산수소나트륨",
+    "ammonium lactate": "젖산암모늄",
+    # 유산균
+    "enterococcus lactis sf68": "엔테로코쿠스락티스SF68", "enterococcus faecalis bio-4r": "엔테로코쿠스페칼리스BIO-4R",
+    "bacteria culture of lactobacillus rhamnosus r0011 and lactobacillus helveticus r0052": "락토바실루스람노수스R0011·헬베티쿠스R0052배양물",
+    # 생약 (대한약전 생약명)
+    "liriope tuber": "맥문동", "oryzae semen": "갱미", "angelica gigas root": "당귀", "angelica dahurica root": "백지", "coptis rhizome": "황련",
+    "polygala root": "원지", "swertia herb": "당약", "gentian root and rhizome": "용담", "atractylodes rhizome white": "백출", "cnidium rhizome": "천궁",
+    "lycium fruit": "구기자", "apricot kernel": "행인", "perilla leaf": "자소엽", "hawthorn fruit": "산사", "poncirus immature fruit": "지실",
+    "aurantii fructus immaturus": "지실", "rhubarb": "대황", "mume fruit": "오매", "coix seed": "의이인", "arctium fruit": "우방자",
+    "forsythia fruit": "연교", "schizonepeta spike": "형개", "gypsum fibrosum": "석고", "ostericum root": "강활", "saposhnikovia root": "방풍",
+    "lonicera flower": "금은화", "lophatheri herba": "담죽엽", "mentha herb": "박하", "glycine semen preparatum": "담두시",
+    "gazellae seu saigae cornu": "영양각", "aucklandiae radix": "목향", "scutellaria root": "황금", "curcuma root": "울금", "curcuma root radix": "울금",
+    "moutan root bark": "목단피", "lithospermum root": "자근", "bupleurum root": "시호", "magnoliae flos": "신이", "trichosanthes seed": "과루인",
+    "raw ginger": "생강", "cervi parvum cornu": "녹용", "eucommiae cortex": "두충", "polygonatum rhizome": "황정", "epimedium herb": "음양곽",
+    "astragali radix": "황기", "artemisiae capillaris herba": "인진호", "nandina domestica thunberg": "남천", "ivy leaf": "아이비엽",
+    "vitis vinifera leaf": "포도엽", "bilberry fruit": "빌베리", "aesculus hippocastanum l. seeds": "서양칠엽수씨", "cardus marianus": "카르두스마리아누스",
+    "milk-thistle fruit": "밀크씨슬열매", "st. john's wort": "세인트존스워트", "chamomilla": "카모밀라", "chamomiila": "카모밀라", "cepae": "양파",
+    "allium sativum": "마늘", "geranium herb": "현초", "plantago herb": "차전초", "psyllium husk": "차전자피", "senega": "세네가", "capsicum": "고추",
+    "sennae fructus": "센나열매", "senna fruit": "센나열매", "tinnevelly senna fruit": "센나열매",
+    # 한방 처방 (영문 음역)
+    "bangpungtongsungsan": "방풍통성산", "socheongryongtang": "소청룡탕", "ssanghwatang": "쌍화탕", "hyangsosan": "향소산", "maegmundongtang": "맥문동탕",
 }
 # 염·형태 접미사 (영문 끝말 → 한글 접미)
 SALT_KO: dict[str, str] = {
@@ -112,12 +189,25 @@ SALT_KO: dict[str, str] = {
     "hydrochloride": "염산염", "hydrobromide": "브롬화수소산염", "maleate": "말레산염", "nitrate": "질산염", "sulfate": "황산염", "sulphate": "황산염",
     "sodium phosphate": "인산나트륨", "sodium": "나트륨", "potassium": "칼륨", "acetate": "아세테이트", "tartrate": "타르타르산염", "bitartrate": "중타르타르산염",
     "citrate": "시트르산염", "phosphate": "인산염", "gluconate": "글루콘산염", "fumarate": "푸마르산염", "succinate": "숙신산염", "mesylate": "메실산염",
-    "besylate": "베실산염", "butyrate": "부티르산염", "lactate": "젖산염", "pamoate": "파모산염", "valerate": "발레레이트", "propionate": "프로피오네이트",
+    "besylate": "베실산염", "butyrate": "부티르산염", "lactate": "젖산염", "pamoate": "파모산염", "valerate": "발레레이트", "propionate": "프로피오네이트", "orotate": "오로트산염",
     "dipropionate": "디프로피오네이트", "palmitate": "팔미테이트", "hibenzate": "히벤즈산염", "lysinate": "리시네이트", "methylsulfate": "메틸황산염",
     "chloride": "염화물", "oxide": "산화물", "hemihydrate": "반수화물", "monohydrate": "일수화물", "dihydrate": "이수화물", "trihydrate": "삼수화물", "pentahydrate": "오수화물",
 }
-FORM_KO = [(" ethanol soft extract", "연조엑스"), (" soft extract", "연조엑스"), (" dried extract", "건조엑스"), (" ethanol extract", "엑스"), (" extract", "엑스"), (" tincture", "팅크"), (" oil", "유")]
-STRIP_RE = re.compile(r"\b(powder|granules?|coated|concentrate|concentrated|fine|micronized|microencapsulated|dried|dry|anhydrous|hydrous|solution|crystalline|crystallized|usp|ep|kp|bp|liquid|d\.c)\b")
+# 제형 접미사 (긴 것부터). '30% Ethanol Fluid Extract' 처럼 앞의 농도 표기는 _norm 이 지운다
+FORM_KO = [
+    (" ethanol soft extract", "연조엑스"), (" methanol soft extract", "연조엑스"), (" soft extract", "연조엑스"),
+    (" ethanol dried extract", "건조엑스"), (" methanol dried extract", "건조엑스"), (" dried extract", "건조엑스"),
+    (" ethanol fluid extract", "유동엑스"), (" fluid extract", "유동엑스"), (" fluidextract", "유동엑스"),
+    (" ethanol extract", "엑스"), (" extract", "엑스"), (" ethanol tincture", "팅크"), (" tincture", "팅크"), (" oil", "유"),
+    (" culture", "배양물"), (" decoction", "탕"),
+]
+# 접두사 (Dried Ferrous Sulfate → 건조황산철, Light Magnesium Oxide → 경질산화마그네슘)
+PREFIX_KO = [("dried ", "건조"), ("light ", "경질"), ("heavy ", "중질"), ("synthetic ", "합성"), ("precipitated ", "침강"), ("sterile ", "멸균")]
+# 소화효소 + 역가 표기: 'Cellulase 2000 II' → 셀룰라제2000II, 'Lipase AP6' → 리파제AP6, 'Protease N 1' → 프로테아제N1
+_DESIG = r"(?:[a-z]{0,3}\d+[a-z]*|i{1,3}|n)"
+ENZYME_RE = re.compile(r"^(diastase|biodiastase|protease|cellulase|hemicellulase|lipase|prozyme|pancellase|panprosin|newlase|pancreatin|pancrelipase|papain|pepsin|trypsin|bromelain|lysozyme)"
+                       rf"(?:\s+({_DESIG}(?:\s+{_DESIG})*))?$")
+STRIP_RE = re.compile(r"\b(powder|granules?|granular|coated|concentrate|concentrated|fine|micronized|microencapsulated|dry|anhydrous|hydrous|solution|crystalline|crystallized|usp|ep|kp|bp|liquid|d\.c)\b")
 
 
 def _norm(token: str) -> str:
@@ -125,7 +215,45 @@ def _norm(token: str) -> str:
     low = re.sub(r"\s*\([^)]*\)", "", low)
     low = re.sub(r"\d+(\.\d+)?\s*%", " ", low)
     low = STRIP_RE.sub(" ", low)
-    return re.sub(r"\s+", " ", low).strip(" ,.")
+    low = re.sub(r"\s+type\s*\S+$", "", low)          # 'Calcium Pantothenate Type S', 'Cholecalciferol Type100CWS'
+    low = re.sub(r"\s+", " ", low).strip(" ,.")
+    return re.sub(r"\s+dried$", "", low)               # 'Phytonadione Dried Powder' → powder 를 지우고 끝에 남은 dried
+
+
+def _translate(low: str) -> str | None:
+    """정규화된 소문자 영문 → 한글 (사전·제형·염·접두사를 재귀로 조합). 못 바꾸면 None."""
+    if not low:
+        return None
+    if low in KO:
+        return KO[low]
+    m = ENZYME_RE.match(low)
+    if m and m.group(1) in KO:
+        return KO[m.group(1)] + (m.group(2) or "").replace(" ", "").upper()
+    m = re.fullmatch(r"(.+?) in (?:dried )?yeast", low)   # 'Selenium in Dried Yeast' → 셀레늄효모
+    if m:
+        inner = _translate(m.group(1))
+        if inner:
+            return inner + "효모"
+    for suffix, ko in FORM_KO:                             # ~ extract / tincture / oil
+        if low.endswith(suffix):
+            inner = _translate(low[: -len(suffix)].strip())
+            if inner:
+                return inner + ko
+    for salt in sorted(SALT_KO, key=len, reverse=True):    # 염·수화물 접미 (겹치면 안쪽부터: Lidocaine Hydrochloride Monohydrate)
+        if low.endswith(" " + salt):
+            inner = _translate(low[: -len(salt) - 1].strip())
+            if inner:
+                return inner + SALT_KO[salt]
+    if low.endswith(" hydrate"):                           # '… Hydrate' 는 수화물
+        inner = _translate(low[: -len(" hydrate")].strip())
+        if inner:
+            return inner + "수화물"
+    for prefix, ko in PREFIX_KO:
+        if low.startswith(prefix):
+            inner = _translate(low[len(prefix):].strip())
+            if inner:
+                return ko + inner
+    return None
 
 
 def to_korean(token: str) -> str:
@@ -133,29 +261,7 @@ def to_korean(token: str) -> str:
     raw = (token or "").strip()
     if not raw or re.search(r"[가-힣]", raw):
         return raw
-    low = _norm(raw)
-    if not low:
-        return raw
-    if low in KO:
-        return KO[low]
-    for suffix, ko in FORM_KO:                       # ~ extract / tincture / oil
-        if low.endswith(suffix):
-            base = low[: -len(suffix)].strip()
-            if base in KO:
-                return KO[base] + ko
-    for salt in sorted(SALT_KO, key=len, reverse=True):   # 염·수화물 접미
-        if low.endswith(" " + salt):
-            base = low[: -len(salt) - 1].strip()
-            if base in KO:
-                return KO[base] + SALT_KO[salt]
-            for suffix, ko in FORM_KO:
-                if base.endswith(suffix) and base[: -len(suffix)].strip() in KO:
-                    return KO[base[: -len(suffix)].strip()] + ko + SALT_KO[salt]
-    if low.endswith(" hydrate"):                           # '… Hydrate' 는 수화물
-        inner = to_korean(low[: -len(" hydrate")].strip())
-        if not re.fullmatch(r"[a-z0-9 .,()\-·%]+", inner):
-            return inner + "수화물"
-    return raw
+    return _translate(_norm(raw)) or raw
 
 
 def coverage(tokens) -> float:

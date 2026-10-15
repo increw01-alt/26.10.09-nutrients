@@ -68,7 +68,7 @@ BULK_MAX_PAGES = 600           # 목록 전체 순회 상한 (약 6만 건)
 TEXT_LIMIT = 3000              # e약은요 본문 항목별 보관 글자 수
 DETAIL_SHARDS = 128            # data/drugs/detail/<NNN>.json 조각 수 (assets/js/data.js 의 drugShard() 와 동일)
 INGR_TOKENS_MAX = 12
-MATCHER_VERSION = 2            # 2: 영문 주성분 규칙·한글 표시 사전
+MATCHER_VERSION = 3            # 2: 영문 주성분 규칙·한글 표시 사전 / 3: 용법 기반 외용 제외, 약물 염 제외, 사전 보강
 
 DIR_NAME = "drugs"
 OTC_FLAG = {"일반의약품": 1, "전문의약품": 2}
@@ -103,10 +103,10 @@ SALT_RULES: dict[str, re.Pattern] = {
     "calcium": re.compile(r"^(탄산|구연산|시트르산|글루콘산|젖산|인산수소|제이인산|제삼인산|아세트산|염화|글리세로인산|아스파르트산|l-아스파르트산|우유|산호|해조|침강탄산)?칼슘(?!도베실|도부실)"
                           r"|^(precipitated |dried |tribasic |dibasic |tricalcium |dicalcium )?calcium( (carbonate|citrate|gluconate|lactate|phosphate|hydrogen ?phosphate|acetate|chloride|glycerophosphate|aspartate|l-aspartate|hydroxyapatite|lactate gluconate)|$)"
                           r"|^(dibasic|tribasic) calcium phosphate|^oyster shell"),
-    "magnesium": re.compile(r"^(산화|탄산|구연산|시트르산|글루콘산|젖산|염화|아스파르트산|l-아스파르트산|글리시네이트|비스글리시네이트|피돌산|오로트산|중)?마그네슘"
-                            r"|^(light |heavy )?magnesium( (oxide|carbonate|citrate|gluconate|lactate|chloride|aspartate|l-aspartate|glycerophosphate|glycinate|bisglycinate|pidolate|orotate|sulfate)|$)"),
-    "zinc": re.compile(r"^(산화|황산|글루콘산|피콜린산|구연산|아세트산|아스파르트산|l-아스파르트산|킬레이트)?아연"
-                       r"|^zinc( (oxide|sulfate|gluconate|picolinate|citrate|acetate|aspartate|chloride|bisglycinate)|$)"),
+    "magnesium": re.compile(r"^(산화|경질산화|중질산화|탄산|구연산|시트르산|글루콘산|젖산|염화|인산수소|아스파르트산|l-아스파르트산|글리시네이트|비스글리시네이트|피돌산|오로트산|중)?마그네슘"
+                            r"|^(light |heavy )?magnesium( (oxide|carbonate|citrate|gluconate|lactate|chloride|aspartate|l-aspartate|glycerophosphate|glycinate|bisglycinate|pidolate|orotate|sulfate|hydrogen ?phosphate)|$)"),
+    "zinc": re.compile(r"^(산화|황산|글루콘산|피콜린산|구연산|아세트산|아스파르트산|l-아스파르트산|히스티딘|킬레이트)?아연"
+                       r"|^zinc( (oxide|sulfate|gluconate|picolinate|citrate|acetate|aspartate|chloride|bisglycinate|histidine)|$)"),
 }
 # 토큰 안에 들어 있으면 인정
 CONTAIN_RULES: dict[str, list[str]] = {
@@ -119,7 +119,7 @@ CONTAIN_RULES: dict[str, list[str]] = {
                           "니코틴산", "판토텐산", "덱스판테놀", "판테놀", "비타민b1", "비타민b2", "비타민b6", "비타민b군", "비타민b복합",
                           "thiamine", "fursultiamine", "benfotiamine", "bisbentiamine", "octotiamine", "riboflavin", "pyridoxine", "pyridoxal", "nicotinamide", "niacinamide", "nicotinic acid", "pantothen", "dexpanthenol", "panthenol", "vitamin b1", "vitamin b2", "vitamin b6"],
     "vitamin-b12": ["코발라민", "비타민b12", "cobalamin", "vitamin b12"],
-    "folate": ["폴산", "엽산", "메틸폴레이트", "메틸테트라히드로", "folic acid", "folate", "methyltetrahydrofol"],
+    "folate": ["폴산", "엽산", "폴린산", "메틸폴레이트", "메틸테트라히드로", "folic acid", "folate", "folinate", "folinic", "methyltetrahydrofol"],
     "biotin": ["비오틴", "biotin"],
     "selenium": ["셀레늄", "아셀렌산", "셀레노메티오닌", "셀렌", "selenium", "selenite", "selenomethionine"],
     "iron": ["철", "ferrous", "ferric", "iron", "ferritin"],
@@ -141,14 +141,28 @@ CONTAIN_RULES: dict[str, list[str]] = {
     "saw-palmetto": ["쏘팔메토", "소팔메토", "톱야자", "saw palmetto", "serenoa", "sabal"],
     "garcinia": ["가르시니아", "garcinia"],
     "ginkgo": ["은행엽", "은행잎", "징코", "ginkgo"],
-    "psyllium": ["차전자", "질경이씨", "사일리움", "플란타고", "psyllium", "plantago"],
+    "psyllium": ["차전자", "질경이씨", "사일리움", "플란타고오바타", "psyllium", "plantago ovata", "plantago seed", "plantaginis semen"],   # 차전초(Plantago Herb, 거담 생약)는 제외
     "l-carnitine": ["카르니틴", "카니틴", "carnitine"],
     "boswellia": ["보스웰리아", "유향", "boswellia", "frankincense"],
     "phosphatidylserine": ["포스파티딜세린", "phosphatidylserine"],
     "propolis": ["프로폴리스", "propolis"],
 }
+# 키워드가 들어 있어도 영양 성분이 아닌 경우 (약물의 염·착염): 후보 문자열이 이 패턴에 맞으면 그 후보는 무시
+NEGATIVE_RULES: dict[str, re.Pattern] = {
+    "arginine": re.compile(r"ibuprofen|tidiacic|이부프로펜|티디아시"),   # 이부프로펜아르기닌(진통제 염), 아르기닌티디아시케이트(간장약)
+    "copper": re.compile(r"chlorophyllin|클로로필린"),                  # 클로로필린구리착염(구취·점막 치료 성분)
+}
 # 외용제·주사제 등 '먹는 약'이 아닌 제형 — 영양 성분으로 연결하지 않음 (연고의 산화아연 등)
 EXTERNAL_RE = re.compile(r"연고|크림|로션|패취|패치|플라스타|카타플라스마|좌제|점안|점비|점이|외용|스프레이|가글|구강용|습포|테이프|밴드|소독|파스|샴푸|비누|세정제|관장|질정|주사|수액|겔(제|$|\(|\d)")
+# 제품명에 제형이 드러나지 않는 외용제(복합마이녹실액, 득생만통고 같은 경고제)는 e약은요 용법 문구로 가려낸다
+EXTERNAL_USE_RE = re.compile(r"바르|도포|환부|두피|붙입니다|붙이|산포|점안|점비|점이|가글|양치|질 ?내|항문")
+ORAL_USE_RE = re.compile(r"복용|섭취|먹|경구|마시|씹|녹여")
+
+
+def is_external_usage(usage: str) -> bool:
+    """용법 문구가 바르는·붙이는 사용만 말하면 True (복용 표현이 하나라도 있으면 내복으로 본다)."""
+    u = usage or ""
+    return bool(EXTERNAL_USE_RE.search(u)) and not ORAL_USE_RE.search(u)
 TOKEN_SPLIT_RE = re.compile(r"[|;,/·+]|\s{2,}")
 NAME_SPLIT_RE = re.compile(r"[()\[\]【】,/·+\s]+")
 
@@ -169,9 +183,9 @@ def ingr_tokens(raw: str) -> list[str]:
     return out[:INGR_TOKENS_MAX]
 
 
-def match_ids(name: str, tokens: list[str], valid: set[str]) -> list[str]:
-    """제품명·주성분 토큰에서 성분 사전 id 를 찾는다."""
-    if EXTERNAL_RE.search(name or ""):
+def match_ids(name: str, tokens: list[str], valid: set[str], external: bool = False) -> list[str]:
+    """제품명·주성분 토큰에서 성분 사전 id 를 찾는다. external=True(용법이 외용)면 연결하지 않는다."""
+    if external or EXTERNAL_RE.search(name or ""):
         return []
     cands = [re.sub(r"\s+", " ", t.lower()).strip() for t in tokens] + [t.lower().replace(" ", "") for t in tokens] + [t.lower() for t in NAME_SPLIT_RE.split(name or "") if t]
     found: list[str] = []
@@ -179,7 +193,10 @@ def match_ids(name: str, tokens: list[str], valid: set[str]) -> list[str]:
         if iid in valid and any(rx.search(c) for c in cands):
             found.append(iid)
     for iid, kws in CONTAIN_RULES.items():
-        if iid in valid and iid not in found and any(k in c for c in cands for k in kws):
+        if iid not in valid or iid in found:
+            continue
+        neg = NEGATIVE_RULES.get(iid)
+        if any(k in c and not (neg and neg.search(c)) for c in cands for k in kws):
             found.append(iid)
     if "omega-3" in valid and "omega-3" not in found and any(re.search(r"\b(epa|dha)\b", c) for c in cands):
         found.append("omega-3")
@@ -457,7 +474,7 @@ def normalize(row: dict, permit: dict | None, valid: set[str]) -> dict | None:
         "cls": permit.get("cls", ""),
         "ingr": display,
         "ingrEn": tokens if display != tokens else [],
-        "ingredients": match_ids(name, tokens, valid),
+        "ingredients": match_ids(name, tokens, valid, external=is_external_usage(str(row.get("useMethodQesitm") or ""))),
         "efficacy": clean_text(row.get("efcyQesitm")),
         "usage": clean_text(row.get("useMethodQesitm")),
         "warn": clean_text(row.get("atpnWarnQesitm")),
