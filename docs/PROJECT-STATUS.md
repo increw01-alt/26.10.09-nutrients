@@ -84,7 +84,7 @@ data/
 | 쿠팡 파트너스 (`COUPANG_ACCESS_KEY`, `COUPANG_SECRET_KEY` Secret) | 미완 — 쿠팡 버튼은 현재 일반 검색 링크 |
 | 공공데이터포털 키 (`DATA_GO_KR_KEY` Secret) — 의약품 검색 | 완료 (10-13) — e약은요·의약품 제품 허가정보 활용신청·등록, 첫 수집 4,729건(허가정보 경로 `DrugPrdtPrmsnInfoService08/getDrugPrdtPrmsnInq08` 자동 확인) |
 | 네이버 뉴스 API (`NAVER_CLIENT_ID`, `NAVER_CLIENT_SECRET`) | 선택 |
-| 문의 이메일 (`config.js` `contactEmail`, `about.html`) | 미완 — `contact@example.com` 교체 필요 |
+| 문의 이메일 (`config.js` `contactEmail`) | 완료 (10-15) — `help@usdt.io.kr`, 소개·이용약관·푸터에 반영 |
 | OG 썸네일 (`assets/images/og-default.png`) | 완료 (10-15) — SVG 디자인을 PNG 1200×630 으로 렌더링(`scripts/make_og_image.py`, Pillow + Pretendard), 모든 페이지에 `og:image:width/height` 추가. 문구·사진을 바꾸려면 스크립트 옵션(`--headline`, `--sub`)으로 재생성 |
 
 ## 6. 작업 이력
@@ -127,7 +127,6 @@ data/
 
 1. 서치콘솔·서치어드바이저에 사이트맵 재제출(10-14 주소 형태 수정 반영) 후 홈·주요 페이지 색인 요청·웹 페이지 수집 요청. 노출까지는 보통 구글 1~3주, 네이버는 그 이상 걸리므로 '페이지' 보고서의 오류 항목만 확인하며 기다리기
 2. 링크프라이스·쿠팡 파트너스 승인 후 ID/키 등록 → 제휴 링크 활성화
-3. 문의 이메일 교체 (`config.js` 의 `contactEmail`, 현재 `contact@example.com`)
 3-1. 저장소 공개 범위 결정 — 현재 PUBLIC 이며 `LICENSE` 로 권리 유보는 명시됨. 비공개로 돌려도 Cloudflare Pages 의 GitHub 연동과 Actions 는 유지되지만 Actions 무료 사용량 한도가 적용됨
 4. 가이드 추가 후보(네이버 키워드 도구 검색량으로 우선순위 확인 후): 오메가3 고르는 법(rTG·EPA/DHA 함량·산패), 유산균 고르는 법(균주·보장균수·장용), 흡연자 영양제(고용량 베타카로틴 주의), 수유부 영양제, 입병·구내염(B군), 눈 떨림(마그네슘), 혈당 관리(식약처 '식후 혈당 상승 억제' 원료는 성분 사전에 아직 없음). 홈 화면 가이드 탭(`assets/js/pages/home.js` 의 `GUIDE_GROUPS`)은 유형별 6개 고정이라 새 가이드를 노출하려면 목록 교체 필요
 5. 성분 사전 추가 확장 후보: 지아잔틴 단일, 감마리놀렌산(달맞이꽃종자유), 알로에 겔, 스피루리나·클로렐라, 공액리놀레산(CLA), 홍국, 프락토올리고당 등 식약처 고시형 원료와 궁합 쌍. 기능성 문구·일일섭취량은 `data/materials.json` 과 신고 제품의 기능성 표시에서 확인한 값만 쓰고, 추가 후 `fetch_products.py --rebuild`·`fetch_drugs.py --rebuild`·빌드, 관련 가이드의 핵심 성분에도 연결

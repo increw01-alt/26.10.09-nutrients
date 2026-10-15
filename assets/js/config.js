@@ -8,7 +8,7 @@ window.SITE = {
   tagline: "영양제 추천 · 궁합 · 복용 가이드",
   url: "https://xn--og5b1hx9c.kr",             // 영양제.kr (퓨니코드 표기 — canonical·OG·sitemap에 사용)
   description: "영양제 추천 성분, 영양제 궁합, 먹는 시간과 순서까지. 성분별 효능·권장량·주의사항과 식약처 건강기능식품 정보, 고민별·대상별 영양제 가이드를 제공합니다.",
-  contactEmail: "contact@example.com",           // TODO: 문의 이메일
+  contactEmail: "help@usdt.io.kr",                 // 문의 이메일 (소개·이용약관·푸터에 반영)
   ogImage: "assets/images/og-default.png",       // 소셜 공유 썸네일 PNG 1200x630 (디자인 원본은 scripts/make_og_image.py 로 재생성)
   // 검색엔진 소유 확인 메타태그 값 (없으면 빈 문자열 유지)
   naverSiteVerification: "ea7f0a747323533a9bc41af6ff79b0e82413bfd6",                     // 네이버 서치어드바이저 HTML 태그의 content 값 → python scripts/build_site.py 실행 시 index.html 에 삽입
