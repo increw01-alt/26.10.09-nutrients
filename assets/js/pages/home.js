@@ -5,22 +5,30 @@
 
   /* 고민·대상·복용법 가이드 (slug 는 data/guides.json 과 일치해야 함) */
   var PALETTE = [["#fbf1db", "#b48a3d"], ["#eaf1e3", "#789664"], ["#f8e9e0", "#bc9479"], ["#ececf7", "#9393b3"], ["#e9f1f5", "#7c9dad"], ["#f2ede2", "#a79876"]];
-  var GUIDE_GROUPS = {   // 데스크톱 6열 그리드 → 탭당 12개(2줄)까지. 나머지는 guides.html 에서
+  var GUIDE_GROUPS = {   // guides.json 의 모든 가이드. 순서·짧은 제목은 scripts/build_site.py 가 아니라 여기서 관리 (데스크톱 6열 그리드)
     concerns: { label: "고민별 가이드", items: [
       { slug: "fatigue", title: "피로회복", icon: "zap" }, { slug: "eye-health", title: "눈 건강", icon: "eye" }, { slug: "gut-health", title: "장 건강", icon: "microscope" },
-      { slug: "sleep", title: "수면", icon: "moon" }, { slug: "immunity", title: "면역력", icon: "shield-check" }, { slug: "joint-health", title: "관절", icon: "bone" },
-      { slug: "stress", title: "스트레스", icon: "activity" }, { slug: "cholesterol", title: "콜레스테롤", icon: "heart-pulse" }, { slug: "skin-health", title: "피부", icon: "sparkles" },
-      { slug: "hair-health", title: "탈모·모발", icon: "user" }, { slug: "diet", title: "다이어트", icon: "scale" }, { slug: "eye-twitch", title: "눈 떨림", icon: "eye" } ] },
+      { slug: "sleep", title: "수면", icon: "moon" }, { slug: "immunity", title: "면역력", icon: "shield-check" }, { slug: "joint-health", title: "관절", icon: "activity" },
+      { slug: "stress", title: "스트레스", icon: "activity" }, { slug: "cholesterol", title: "콜레스테롤", icon: "heart-pulse" }, { slug: "blood-sugar", title: "혈당 관리", icon: "activity" },
+      { slug: "skin-health", title: "피부", icon: "sparkles" }, { slug: "hair-health", title: "탈모·모발", icon: "sparkles" }, { slug: "diet", title: "다이어트", icon: "scale" },
+      { slug: "eye-twitch", title: "눈 떨림", icon: "eye" }, { slug: "anemia", title: "빈혈·철분", icon: "droplets" }, { slug: "gastritis", title: "위염·역류", icon: "stethoscope" },
+      { slug: "liver-health", title: "간 건강", icon: "leaf" }, { slug: "menopause", title: "갱년기", icon: "heart" }, { slug: "blood-circulation", title: "혈행", icon: "heart-pulse" },
+      { slug: "acne", title: "여드름", icon: "sparkles" }, { slug: "exercise", title: "운동·헬스", icon: "dumbbell" }, { slug: "mouth-ulcer", title: "입병·구내염", icon: "circle-dot" },
+      { slug: "gout", title: "통풍·요산", icon: "triangle-alert" } ] },
     people: { label: "대상별 가이드", items: [
-      { slug: "20s", title: "20대", icon: "sun" }, { slug: "30s-men", title: "30대 남자", icon: "dumbbell" }, { slug: "40s-women", title: "40대 여성", icon: "heart" },
-      { slug: "50s-plus", title: "50대 이상", icon: "users" }, { slug: "pregnancy", title: "임산부·임신 준비", icon: "baby" }, { slug: "breastfeeding", title: "수유부", icon: "heart" },
-      { slug: "office-workers", title: "직장인", icon: "briefcase" }, { slug: "students", title: "수험생", icon: "book-open" }, { slug: "kids", title: "어린이", icon: "baby" },
-      { slug: "parents-gift", title: "부모님 선물", icon: "gift" }, { slug: "vegan", title: "채식·비건", icon: "leaf" }, { slug: "smokers", title: "흡연자", icon: "flame" } ] },
+      { slug: "20s", title: "20대", icon: "user" }, { slug: "30s-men", title: "30대 남자", icon: "dumbbell" }, { slug: "40s-women", title: "40대 여성", icon: "heart" },
+      { slug: "50s-plus", title: "50대 이상", icon: "users" }, { slug: "seniors-70", title: "70대 이상", icon: "users" }, { slug: "pregnancy", title: "임산부·임신 준비", icon: "baby" },
+      { slug: "breastfeeding", title: "수유부", icon: "heart" }, { slug: "kids", title: "어린이", icon: "baby" }, { slug: "students", title: "수험생", icon: "book-open" },
+      { slug: "office-workers", title: "직장인", icon: "briefcase" }, { slug: "shift-workers", title: "교대 근무", icon: "sunset" }, { slug: "parents-gift", title: "부모님 선물", icon: "gift" },
+      { slug: "vegan", title: "채식·비건", icon: "leaf" }, { slug: "smokers", title: "흡연자", icon: "flame" }, { slug: "hypertension", title: "혈압약 복용자", icon: "heart-pulse" },
+      { slug: "nsaid-users", title: "관절염 약 복용자", icon: "bone" }, { slug: "thyroid", title: "갑상선 질환자", icon: "stethoscope" }, { slug: "kidney", title: "신장 질환자", icon: "droplets" } ] },
     safety: { label: "복용법·안전 가이드", items: [
       { slug: "when-to-take", title: "먹는 시간", icon: "clock" }, { slug: "how-to-combine", title: "조합 원칙", icon: "list-checks" }, { slug: "do-not-take-together", title: "같이 먹으면 안되는 영양제", icon: "octagon-alert" },
       { slug: "empty-stomach", title: "공복 영양제", icon: "sunrise" }, { slug: "daily-limit", title: "권장량·과다복용", icon: "flask-conical" }, { slug: "with-medication", title: "약과 영양제", icon: "stethoscope" },
       { slug: "storage-expiry", title: "유통기한·보관", icon: "package" }, { slug: "multivitamin-guide", title: "종합비타민 고르기", icon: "pill" }, { slug: "omega3-guide", title: "오메가3 고르기", icon: "fish" },
-      { slug: "magnesium-guide", title: "마그네슘 종류", icon: "moon" } ] }
+      { slug: "magnesium-guide", title: "마그네슘 종류", icon: "moon" }, { slug: "vitamin-d-guide", title: "비타민D 고르기", icon: "sun" }, { slug: "zinc-guide", title: "아연 고르기", icon: "shield" },
+      { slug: "calcium-guide", title: "칼슘 고르기", icon: "bone" }, { slug: "vitamin-c-guide", title: "비타민C 고르기", icon: "citrus" }, { slug: "collagen-guide", title: "콜라겐 고르기", icon: "sparkles" },
+      { slug: "probiotics-guide", title: "유산균 균주", icon: "microscope" } ] }
   };
 
   function categoryCard(g, i) {
