@@ -271,7 +271,8 @@ def diff_changelog(old_items: list[dict], new_items: list[dict], window_oldest: 
 
 INDEX_FUNCTION_CHARS = 110     # 목록 파일에 넣을 기능성 요약 길이
 INDEX_FIELDS = ("id", "name", "company", "registeredAt", "shape", "ingredients")
-FULL_DIR_NAME = "products"     # data/products/top/<성분id>.json(성분별 상위), data/products/detail/<NN>.json(전체 레코드 조각)
+LIST_RECENT_ITEMS = 600        # products.json 에 싣는 최신 신고 제품 수(첫 화면과 앞 25페이지). 전체 목록은 products/all.json 으로 분리
+FULL_DIR_NAME = "products"     # data/products/top/<성분id>.json(성분별 상위), data/products/detail/<NN>.json(전체 레코드 조각), data/products/all.json(목록 전체)
 TOP_PER_INGREDIENT = 60        # 성분 상세 페이지용 성분별 상위 제품 수
 DETAIL_SHARDS = 64             # 전체 레코드 조각 파일 수
 
@@ -333,11 +334,16 @@ def write_outputs(data_dir: Path, items: list[dict], meta: dict, changelog: dict
         if p.get("isNew"):
             slim["isNew"] = True
         index_items.append(slim)
-    write_json(data_dir / "products.json", {"_meta": meta, "changelog": changelog, "items": index_items}, compact=True)
-
     full_dir = data_dir / FULL_DIR_NAME
     top_dir, detail_dir = full_dir / "top", full_dir / "detail"
     top_dir.mkdir(parents=True, exist_ok=True)
+    # products.json 에는 최신 LIST_RECENT_ITEMS 건(첫 화면·앞 페이지)만 싣고, 전체 목록은 products/all.json 으로 분리해
+    # 제품 찾기 페이지가 필터·검색·뒷페이지에서만 불러오게 한다 (전체 약 3MB 를 첫 화면마다 받지 않도록)
+    index_items.sort(key=lambda x: x.get("registeredAt") or "", reverse=True)
+    shapes = sorted({p["shape"] for p in index_items if p.get("shape")})
+    list_meta = meta | {"listed": min(LIST_RECENT_ITEMS, len(index_items)), "shapes": shapes, "files": (meta.get("files") or {}) | {"all": f"data/{FULL_DIR_NAME}/all.json"}}
+    write_json(data_dir / "products.json", {"_meta": list_meta, "changelog": changelog, "items": index_items[:LIST_RECENT_ITEMS]}, compact=True)
+    write_json(full_dir / "all.json", {"_meta": {"updatedAt": meta.get("updatedAt"), "total": len(index_items)}, "items": index_items}, compact=True, quiet=True)
     detail_dir.mkdir(parents=True, exist_ok=True)
     # 2) 성분별 상위 제품 (성분 상세 페이지용)
     by_ing: dict[str, list[dict]] = {}

@@ -4,7 +4,7 @@
   var D = window.Data, esc = D.esc;
   var PAGE = 24;
   var state = { q: D.qs("q") || "", ingredient: D.qs("ingredient") || "", shape: "", page: 1 };
-  var core, products;
+  var core, products, allLoaded = false, allLoading = null;   // products.json 에는 최신 일부만 실려 있고, 필터·검색·뒷페이지에서 products/all.json 을 받아 바꿔 끼운다
 
   function detailHtml(p) {
     return (p.reportNo ? '<div><dt class="inline font-bold">신고번호</dt> <dd class="inline">' + esc(p.reportNo) + '</dd></div>' : "") +
@@ -63,9 +63,31 @@
     return items;
   }
 
+  function hasFilter() { return !!(state.ingredient || state.shape || state.q.trim()); }
+  function needsAll() {   // 필터·검색·실린 범위 밖 페이지는 전체 목록이 필요
+    return hasFilter() || state.page * PAGE > products.items.length;
+  }
+  function ensureAll() {
+    if (allLoaded) return Promise.resolve(products);
+    if (!allLoading) {
+      allLoading = D.productsAll().then(function (all) {
+        if (all && all.items && all.items.length >= products.items.length) products.items = all.items;
+        allLoaded = true; return products;
+      }).catch(function () { allLoaded = true; return products; });   // 전체 파일이 없으면 실린 목록으로 계속
+    }
+    return allLoading;
+  }
+
   function render() {
+    if (!allLoaded && needsAll()) {
+      document.getElementById("product-count").textContent = "전체 제품 목록 불러오는 중…";
+      ensureAll().then(render);
+      return;
+    }
     var items = filtered();
-    var total = items.length, pages = Math.max(1, Math.ceil(total / PAGE));
+    var known = Number((products._meta || {}).total || 0);
+    var total = (!allLoaded && !hasFilter() && known > items.length) ? known : items.length;   // 최신 일부만 실린 상태면 전체 건수·페이지 수는 _meta 기준
+    var pages = Math.max(1, Math.ceil(total / PAGE));
     if (state.page > pages) state.page = pages;
     var slice = items.slice((state.page - 1) * PAGE, state.page * PAGE);
     document.getElementById("product-list").innerHTML = slice.map(card).join("");
@@ -101,23 +123,32 @@
     D.icons(box);
   }
 
-  document.addEventListener("DOMContentLoaded", function () {
-    D.productNames().then(function (n) {
+  var namesLoading = null;
+  function loadNames() {   // 검색 색인은 검색창을 쓸 때만 받는다 (첫 화면 전송량 절약)
+    if (namesLoading) return namesLoading;
+    namesLoading = D.productNames().then(function (n) {
       names = n && n.p ? n : null; if (!names) return;
       var apply = function () { nameMatch = D.productMatcher(names); if (state.q && products && core) render(); };
       apply(); if (names.more) names.more.then(apply);   // 과거 제품 색인이 합쳐지면 한 번 더
     }).catch(function () {});
+    return namesLoading;
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    if (state.q) loadNames();
     Promise.all([D.core(), D.products(), window.Affiliate.ready()]).then(function (r) {
       core = r[0]; products = r[1];
       var sel = document.getElementById("filter-ingredient");
       sel.innerHTML = '<option value="">전체 성분</option>' + core.items.slice().sort(function (a, b) { return a.name.localeCompare(b.name, "ko"); }).map(function (i) { return '<option value="' + esc(i.id) + '">' + esc(i.name) + "</option>"; }).join("");
       sel.value = state.ingredient; sel.addEventListener("change", function () { state.ingredient = sel.value; state.page = 1; render(); });
-      var shapes = {}; products.items.forEach(function (p) { if (p.shape) shapes[p.shape] = 1; });
+      var shapeList = (products._meta && products._meta.shapes) || null;   // 전체 목록의 제형 목록은 수집기가 _meta 에 실어 둔다
+      if (!shapeList) { var shapes = {}; products.items.forEach(function (p) { if (p.shape) shapes[p.shape] = 1; }); shapeList = Object.keys(shapes).sort(); }
       var ssel = document.getElementById("filter-shape");
-      ssel.innerHTML = '<option value="">모든 형태</option>' + Object.keys(shapes).sort().map(function (s) { return '<option value="' + esc(s) + '">' + esc(s) + "</option>"; }).join("");
+      ssel.innerHTML = '<option value="">모든 형태</option>' + shapeList.map(function (s) { return '<option value="' + esc(s) + '">' + esc(s) + "</option>"; }).join("");
       ssel.addEventListener("change", function () { state.shape = ssel.value; state.page = 1; render(); });
       var input = document.getElementById("product-search"); input.value = state.q;
-      input.addEventListener("input", function () { state.q = input.value; state.page = 1; render(); });
+      input.addEventListener("focus", loadNames);
+      input.addEventListener("input", function () { loadNames(); state.q = input.value; state.page = 1; render(); });
       document.getElementById("product-list").addEventListener("click", function (e) { var sm = e.target.closest("summary"); if (sm) lazyDetail(sm.parentElement); });
       document.getElementById("pagination").addEventListener("click", function (e) { var b = e.target.closest("[data-page]"); if (!b) return; state.page = Number(b.getAttribute("data-page")); render(); document.getElementById("product-list").scrollIntoView({ behavior: "smooth", block: "start" }); });
       var quick = document.getElementById("quick-ingredients");

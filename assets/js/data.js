@@ -70,7 +70,10 @@
 
     ingredients: function () { return load("ingredients"); },
     interactions: function () { return load("interactions"); },
-    products: function () { return load("products"); },
+    products: function () { return load("products"); },          // 최신 일부(_meta.listed 건) + 변경 이력·제형 목록. 전체 목록은 productsAll()
+    productsAll: function () {                                        // 제품 찾기 전체 목록 (필터·검색·뒷페이지에서 지연 로드). 파일이 없으면(구버전 데이터) 목록 파일로 대체
+      return load("products/all").catch(function () { return load("products"); });
+    },
     productNames: function () {   // 검색용 경량 색인 { i:[성분id], c:[제조사], p:[[제품id, 이름, [성분번호], 제조사번호]] }
       // 최근 제품(names.json)을 먼저 돌려주고, 과거 제품(names-old.json)은 n.more 가 끝나면 n.p 에 이어 붙는다 → 호출한 쪽은 n.more.then(다시 그리기)
       if (!cache.__productNames) {
@@ -98,14 +101,15 @@
     deeplinks: function () { return load("deeplinks").catch(function () { return { coupang: {} }; }); },
 
     /* 제품 데이터 구조
-     *  data/products.json                 — 가벼운 목록(제품 찾기 페이지)
+     *  data/products.json                 — 가벼운 목록 중 최신 일부(제품 찾기 첫 화면) + 변경 이력
+     *  data/products/all.json             — 가벼운 목록 전체 (필터·검색·뒷페이지에서 지연 로드)
      *  data/products/top/<성분id>.json     — 성분별 상위 제품 (성분 상세 페이지)
      *  data/products/detail/<NN>.json     — 전체 레코드 조각 (제품 '더보기' 펼칠 때)
      */
     productsTop: function (iid) {
       return load("products/top/" + iid).then(function (d) { return (d && d.items) || []; }).catch(function () {
-        // 성분별 파일이 없으면(샘플 상태 등) 목록에서 걸러서 사용
-        return load("products").then(function (d) { return (d.items || []).filter(function (p) { return (p.ingredients || []).indexOf(iid) >= 0; }); }).catch(function () { return []; });
+        // 성분별 파일이 없으면(샘플 상태 등) 전체 목록에서 걸러서 사용
+        return Data.productsAll().then(function (d) { return (d.items || []).filter(function (p) { return (p.ingredients || []).indexOf(iid) >= 0; }); }).catch(function () { return []; });
       });
     },
     guides: function () { return load("guides"); },

@@ -621,7 +621,7 @@ def main() -> int:
         "ingredients": len(ingredients["items"]),
         "pairs": len(interactions["pairs"]),
         "guides": len(guides.get("items", [])),
-        "products": {"source": products.get("_meta", {}).get("source", "sample"), "updatedAt": products.get("_meta", {}).get("updatedAt"), "total": len(products.get("items", []))},
+        "products": {"source": products.get("_meta", {}).get("source", "sample"), "updatedAt": products.get("_meta", {}).get("updatedAt"), "total": products.get("_meta", {}).get("total") or len(products.get("items", []))},   # products.json 은 최신 일부만 싣고 total 은 _meta 에
         "news": {"source": news.get("_meta", {}).get("source", "sample"), "updatedAt": news.get("_meta", {}).get("updatedAt"), "total": len(news.get("items", []))},
         "drugs": {"source": drugs_meta.get("source", "none"), "updatedAt": drugs_meta.get("updatedAt"), "total": drugs_meta.get("total", 0), "withNutrients": drugs_meta.get("withNutrients", 0)},
         "materials": {"source": materials.get("_meta", {}).get("source", "sample"), "updatedAt": materials.get("_meta", {}).get("updatedAt"), "total": len(materials.get("items", [])), "matched": materials.get("_meta", {}).get("matched", 0),
