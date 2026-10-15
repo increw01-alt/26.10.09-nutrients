@@ -30,7 +30,7 @@ project/
 ├─ robots.txt · sitemap.xml · .nojekyll
 ├─ assets/
 │  ├─ css/style.css           # 공통 스타일 (배지·카드·매트릭스 등)
-│  ├─ images/favicon.svg, og-default.svg
+│  ├─ images/favicon.svg, og-default.png
 │  └─ js/
 │     ├─ config.js            # ★ 브랜드명·도메인·제휴 ID 설정 (여기만 수정)
 │     ├─ tailwind.config.js   # Tailwind CDN 색상·폰트 설정
@@ -108,7 +108,7 @@ project/
    grep -rl "xn--og5b1hx9c.kr" --include="*.html" --include="*.js" --include="*.txt" --include="*.py" . | xargs sed -i 's#https://xn--og5b1hx9c.kr#https://your-domain.com#g'
    ```
    한글 도메인은 검색엔진·소셜 공유 호환을 위해 퓨니코드(ASCII) 형태로 적는 것이 안전합니다. 사용자에게 보이는 문구에는 `영양제.kr` 을 그대로 씁니다.
-3. `assets/images/og-default.svg` 교체(선택). 문의 이메일은 `config.js` 의 `contactEmail` 하나만 바꾸면 소개·이용약관 페이지와 푸터에 반영됩니다
+3. `assets/images/og-default.png` 교체(선택). 문의 이메일은 `config.js` 의 `contactEmail` 하나만 바꾸면 소개·이용약관 페이지와 푸터에 반영됩니다
 
 ## 데이터 자동 업데이트
 

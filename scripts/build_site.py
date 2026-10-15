@@ -335,7 +335,9 @@ def render_page(it: dict, core: dict, cfg: dict) -> str:
   <meta property="og:title" content="{esc(title)}">
   <meta property="og:description" content="{esc(desc)}">
   <meta property="og:url" content="{esc(url)}">
-  <meta property="og:image" content="{esc(cfg["url"])}/assets/images/og-default.svg">
+  <meta property="og:image" content="{esc(cfg["url"])}/assets/images/og-default.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="../assets/images/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
@@ -390,7 +392,9 @@ def head_html(cfg: dict, *, title: str, desc: str, path: str, root: str, keyword
   <meta property="og:title" content="{esc(title)}">
   <meta property="og:description" content="{esc(desc)}">
   <meta property="og:url" content="{esc(url)}">
-  <meta property="og:image" content="{esc(cfg['url'])}/assets/images/og-default.svg">
+  <meta property="og:image" content="{esc(cfg['url'])}/assets/images/og-default.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="{root}assets/images/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
