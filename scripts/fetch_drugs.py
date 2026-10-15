@@ -156,6 +156,8 @@ CONTAIN_RULES: dict[str, list[str]] = {
     "gla": ["감마리놀렌산", "달맞이꽃", "gamma-linolenic", "evening primrose"],
     "red-yeast-rice": ["홍국", "red yeast"],
     "fos": ["프락토올리고당", "fructooligosaccharide"],
+    "garlic": ["마늘", "garlic", "allium sativum"],
+    "bitter-melon": ["여주", "momordica", "bitter melon"],
     # 알로에(의약품은 완하제용 전잎)·바나바·CLA·난소화성말토덱스트린은 의약품 연결 대상이 아니라 규칙 없음
 }
 # 키워드가 들어 있어도 영양 성분이 아닌 경우 (약물의 염·착염): 후보 문자열이 이 패턴에 맞으면 그 후보는 무시
