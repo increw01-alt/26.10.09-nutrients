@@ -25,13 +25,16 @@ window.SITE = {
  * --------------------------------------------------------- */
 window.AFFILIATE = {
   linkprice: {
-    enabled: false,                              // TODO: 링크프라이스 승인 후 true
-    affiliateId: "A100000000",                   // TODO: 링크프라이스 어필리에이트 ID
-    // 머천트 코드 (링크프라이스 머천트 목록 기준으로 확인·수정)
+    enabled: true,                               // 2026-10-16 링크프라이스 승인 (사이트 영양제.kr 등록)
+    affiliateId: "A100708741",                   // 링크프라이스 어필리에이트 ID (링크에 그대로 노출되는 값)
+    // 머천트 코드 (링크프라이스 머천트 목록 2026-10-16 기준). 여기 있는 shop key 만 제휴 링크로 바뀌고, 없는 쇼핑몰은 일반 검색 링크로 간다.
+    // 승인완료: gmarket(G마켓)·auction(옥션)·dswellife(대상웰라이프 웰라이프몰, 최대 7%)·iherb(아이허브)·lotteon·cjbrand·pulmuone·emart
+    // 승인대기: 11st(11번가) — 승인되면 아래에 "11st": "11st" 추가. coupang 도 링크프라이스 경유 승인대기(현재 쿠팡 버튼은 쿠팡 파트너스 직접 연동)
     merchants: {
-      "11st": "11st",
       "gmarket": "gmarket",
-      "auction": "auction"
+      "auction": "auction",
+      "wellife": "dswellife",
+      "iherb": "iherb"
     },
     // 링크프라이스 딥링크 형식 — 관리자 페이지의 '딥링크 생성' 형식과 다르면 여기만 수정
     buildUrl: function (merchantCode, targetUrl) {
@@ -52,6 +55,10 @@ window.AFFILIATE = {
       searchUrl: function (q) { return "https://search.11st.co.kr/Search.tmall?kwd=" + encodeURIComponent(q); } },
     { key: "gmarket", label: "G마켓", short: "G마켓", color: "#00c73c", network: "linkprice",
       searchUrl: function (q) { return "https://browse.gmarket.co.kr/search?keyword=" + encodeURIComponent(q); } },
+    { key: "wellife", label: "웰라이프몰", short: "웰라이프", color: "#6b4fbb", network: "linkprice",   // 대상웰라이프 공식몰(뉴케어·락피도·건강식품), 검색 결과 /products/result?query=
+      searchUrl: function (q) { return "https://www.wellife.co.kr/products/result?query=" + encodeURIComponent(q); } },
+    { key: "iherb", label: "아이허브", short: "아이허브", color: "#458500", network: "linkprice",
+      searchUrl: function (q) { return "https://kr.iherb.com/search?kw=" + encodeURIComponent(q); } },
     { key: "naver", label: "네이버쇼핑", short: "네이버", color: "#03c75a", network: null,
       searchUrl: function (q) { return "https://search.shopping.naver.com/search/all?query=" + encodeURIComponent(q); } }
   ],
