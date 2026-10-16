@@ -61,6 +61,30 @@
       grid.setAttribute("aria-labelledby", "tab-" + name);
       if (status) status.textContent = g.label + " 항목을 표시했습니다.";
       D.icons(grid);
+      grid.classList.add("is-collapsed");
+      updateMore();
+    }
+    /* 카드가 많은 탭은 처음에 일부만 보이고(CSS nth-child), 버튼으로 나머지를 펼친다 */
+    var more = document.getElementById("category-more"), moreBtn = more && more.querySelector("button"), moreLabel = document.getElementById("category-more-label");
+    function updateMore() {
+      if (!more) return;
+      var collapsed = grid.classList.contains("is-collapsed");
+      var cards = Array.prototype.slice.call(grid.querySelectorAll(".category-card"));
+      var hidden = collapsed ? cards.filter(function (c) { return c.offsetParent === null; }).length : 0;
+      if (collapsed && hidden === 0) { more.hidden = true; return; }
+      more.hidden = false;
+      moreBtn.setAttribute("aria-expanded", collapsed ? "false" : "true");
+      if (moreLabel) moreLabel.textContent = collapsed ? "나머지 " + hidden + "개 가이드 더 보기" : "가이드 접기";
+    }
+    if (moreBtn) {
+      moreBtn.addEventListener("click", function () {
+        var open = grid.classList.toggle("is-collapsed");   // true = 접힘
+        updateMore();
+        if (status) status.textContent = open ? "가이드 목록을 접었습니다." : "가이드 목록을 모두 펼쳤습니다.";
+        if (open) grid.scrollIntoView({ block: "nearest" });
+      });
+      var rt; window.addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(updateMore, 120); });
+      updateMore();
     }
     tabs.forEach(function (t, i) {
       t.addEventListener("click", function () { setGroup(t.getAttribute("data-group")); });

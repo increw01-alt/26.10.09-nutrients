@@ -155,6 +155,14 @@
 .home .category-icon .icon { width:25px;height:25px }
 .home .category-card h3 { font-size:14px;font-weight:700;line-height:1.5;min-height:21px }
 .home .category-subtitle { font-size:10px;color:#72846a;margin-top:6px }
+/* 가이드 탭 접기: 데스크톱(6열)은 12개, 모바일(3열)은 9개만 먼저 보이고 '더 보기'로 펼침 */
+.home .category-grid.is-collapsed .category-card:nth-child(n+13) { display:none }
+.home .category-more { display:flex;justify-content:center;margin-top:16px }
+.home .category-more[hidden] { display:none }
+.home .category-more button { display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:8px 18px;border:1px solid #d7e2cd;border-radius:999px;background:#fff;color:var(--green);font-size:13px;font-weight:600;transition:background .18s,border-color .18s }
+.home .category-more button:hover { background:#f3f6ee;border-color:#bbd0ac }
+.home .category-more button .icon { width:16px;height:16px;transition:transform .18s }
+.home .category-more button[aria-expanded=true] .icon { transform:rotate(180deg) }
 .home .category-end { display:flex;justify-content:flex-end;margin-top:8px }
 .home .category-end .arrow-link { font-size:11px;min-height:32px }
 .home .product-banner { position:relative;isolation:isolate;display:flex;align-items:center;gap:50px;min-height:245px;padding:31px 36px;margin-bottom:32px;border:1px solid #e7ede0;background:linear-gradient(115deg,#edf5ec,#f7faf2 48%,#edf2e2);border-radius:20px;overflow:hidden }
@@ -399,6 +407,8 @@
   .home .guide-tabs button { flex:1;font-size:12px;padding-inline:13px;min-height:38px }
   .home .section-heading p { font-size:12px }
   .home .category-grid { grid-template-columns:repeat(3,minmax(0,1fr));gap:11px }
+  .home .category-grid.is-collapsed .category-card:nth-child(n+10) { display:none }
+  .home .category-grid.is-collapsed .category-card:nth-child(-n+9) { display:flex }
   .home .category-card { padding:16px 10px 14px }
   .home .category-card h3 { font-size:13px }
   .home .category-subtitle { font-size:10px }

@@ -72,7 +72,7 @@ home.write_text(s, encoding="utf-8", newline="")
 # index.html 정적 카드 (고민별 탭 초기 표시)
 idx = ROOT / "index.html"
 h = idx.read_text(encoding="utf-8")
-m = re.search(r'(<div class="category-grid" id="category-grid"[^>]*>\n)(.*?)(\n\s*</div>\n\s*<div id="guide-status")', h, re.S)
+m = re.search(r'(<div class="category-grid[^"]*" id="category-grid"[^>]*>\n)(.*?)(\n\s*</div>\n\s*<div class="category-more")', h, re.S)
 assert m, "category-grid 블록을 찾지 못함"
 pal = [("#fbf1db", "#b48a3d"), ("#eaf1e3", "#789664"), ("#f8e9e0", "#bc9479"), ("#ececf7", "#9393b3"), ("#e9f1f5", "#7c9dad"), ("#f2ede2", "#a79876")]
 tmpl = '<a class="category-card" href="guide/{slug}.html" aria-label="{title} 가이드 읽기"><span class="category-icon" style="--cat-bg:{bg};--cat-color:{fg}"><i data-lucide="{icon}" class="icon"></i></span><h3>{title}</h3><span class="category-subtitle">가이드 살펴보기</span></a>'
