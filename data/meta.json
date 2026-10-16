@@ -1,12 +1,12 @@
 {
-  "builtAt": "2026-10-16T16:00:28+09:00",
+  "builtAt": "2026-10-17T06:05:36+09:00",
   "ingredients": 81,
   "pairs": 369,
   "guides": 87,
   "products": {
     "source": "mfds",
-    "updatedAt": "2026-10-16T06:20:39+09:00",
-    "total": 9171
+    "updatedAt": "2026-10-17T06:04:30+09:00",
+    "total": 8948
   },
   "news": {
     "source": "live",
@@ -21,9 +21,9 @@
   },
   "materials": {
     "source": "mfds",
-    "updatedAt": "2026-10-16T06:19:23+09:00",
+    "updatedAt": "2026-10-17T06:02:54+09:00",
     "total": 788,
-    "matched": 368,
+    "matched": 376,
     "ingredients": [
       "arginine",
       "astaxanthin",
@@ -33,11 +33,14 @@
       "chitosan",
       "chondroitin",
       "cla",
+      "coleus-forskohlii",
       "collagen",
       "coq10",
+      "creatine",
       "curcumin",
       "cynanchum",
       "ecklonia",
+      "fgo",
       "fos",
       "garcinia",
       "garlic",
@@ -47,6 +50,7 @@
       "glucosamine",
       "green-lipped-mussel",
       "green-tea-extract",
+      "ht042",
       "hyaluronic-acid",
       "indigestible-dextrin",
       "l-carnitine",
@@ -61,6 +65,7 @@
       "pomegranate",
       "probiotics",
       "propolis",
+      "pu-erh",
       "pycnogenol",
       "red-ginseng",
       "red-yeast-rice",
