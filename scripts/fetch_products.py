@@ -75,6 +75,11 @@ NUTRIENT_RULES: dict[str, tuple[list[str], list[str], str | None, bool]] = {
     "iron": (["철분", "헴철", "푸마르산철", "황산철", "피로인산철", "구연산철", "비스글리시네이트철", "철(ii)", "철 (ii)"], ["체내 산소운반과 혈액생성"], None, True),
     "selenium": (["셀레늄", "셀렌"], [], "유해산소로부터 세포를 보호", True),
     "copper": (["구리"], ["철의 운반과 이용에 필요"], None, True),
+    # B군 단일 성분: B군 복합제 규칙과 함께 잡히며(함유 사실), 종합비타민 판정 수(B_SINGLE_IDS)에서는 제외
+    "vitamin-b1": (["비타민b1", "비타민 b1", "티아민", "벤포티아민", "푸르설티아민"], ["탄수화물과 에너지 대사에 필요"], None, True),
+    "vitamin-b2": (["비타민b2", "비타민 b2", "리보플라빈"], [], "체내 에너지 생성에 필요", True),
+    "niacin": (["나이아신", "니코틴산", "니아신"], [], "체내 에너지 생성에 필요", True),
+    "pantothenic-acid": (["판토텐산", "판테놀", "비타민b5", "비타민 b5"], [], "지방, 탄수화물, 단백질 대사와 에너지 생성", True),   # 비오틴과 같은 공유 문구
     "manganese": (["망간"], ["뼈 형성에 필요"], None, True),
     "molybdenum": (["몰리브덴"], ["환원 효소의 활성", "환원효소의 활성"], None, True),
     "iodine": (["요오드", "아이오딘"], ["갑상선 호르몬의 합성", "갑상선호르몬의 합성"], None, True),
@@ -141,6 +146,7 @@ HERBAL_RULES: dict[str, tuple[list[str], list[str]]] = {
     "pu-erh": (["보이차추출물", "보이차 추출물", "보이차추출분말"], []),   # '보이차' 단독은 차 음료 오탐 가능
 }
 MULTIVITAMIN_MIN = 5           # 영양소 5종 이상이면 종합비타민·미네랄로도 분류
+B_SINGLE_IDS = {"vitamin-b1", "vitamin-b2", "niacin", "pantothenic-acid"}   # B군 복합제 규칙과 중복되므로 종합비타민 판정 수에서 제외
 # 비타민C·E 는 산화방지제(첨가물)로도 쓰여 원재료 뒷부분에 '비타민C', 'd-α-토코페롤'로 흔히 등장한다.
 # 기능성 문구에 이름이 없고 공유 문구(유해산소…)만 있을 때는 (고시형) 표기·주원료 범위·'혼합제제'(영양 프리믹스)일 때만 영양 성분으로 본다.
 ADDITIVE_PRONE = {"vitamin-c", "vitamin-e"}
@@ -152,6 +158,8 @@ def kw_in(k: str, text: str) -> bool:
     """키워드 포함 검사. 짧은 영문 약어(epa·dha·hca·msm·rtg 등)는 단어 경계를 요구해 Hepazone·Ashwagandha·Healthcare 같은 오탐을 막는다."""
     if _SHORT_ASCII_RE.match(k):
         return re.search(r"(?<![a-z])" + re.escape(k) + r"(?![a-z])", text) is not None
+    if k[-1].isdigit():   # '비타민b1' 이 '비타민b12' 에, 'b6' 가 'b60' 에 걸리지 않게 뒤에 숫자가 이어지면 제외
+        return re.search(re.escape(k) + r"(?!\d)", text) is not None
     return k in text
 
 
@@ -188,7 +196,7 @@ def match_ingredients(row: dict, matchers) -> list[str]:
             hit = bool(hits)
         if hit:
             found.append(iid)
-    nutrient_count = len(found)
+    nutrient_count = sum(1 for i in found if i not in B_SINGLE_IDS)
     for iid, (kws, claims) in herb.items():
         if any(kw_in(k, name) for k in kws) or any(kw_in(k, func) for k in kws) or any(kw_in(k, raw_head) for k in kws) or any(c in func for c in claims):
             found.append(iid)

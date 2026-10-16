@@ -124,6 +124,10 @@ CONTAIN_RULES: dict[str, list[str]] = {
     "selenium": ["셀레늄", "아셀렌산", "셀레노메티오닌", "셀렌", "selenium", "selenite", "selenomethionine"],
     "iron": ["철", "ferrous", "ferric", "iron", "ferritin"],
     "copper": ["구리", "copper", "cupric"],
+    "vitamin-b1": ["티아민", "푸르설티아민", "벤포티아민", "비스벤티아민", "옥토티아민", "비타민b1", "thiamine", "fursultiamine", "benfotiamine", "bisbentiamine", "octotiamine", "vitamin b1"],
+    "vitamin-b2": ["리보플라빈", "비타민b2", "riboflavin", "vitamin b2"],
+    "niacin": ["니코틴산아미드", "니아신아미드", "니코틴산", "나이아신", "nicotinamide", "niacinamide", "nicotinic acid", "niacin"],
+    "pantothenic-acid": ["판토텐산", "덱스판테놀", "판테놀", "pantothen", "dexpanthenol", "panthenol"],
     "manganese": ["망간", "manganese"],
     "molybdenum": ["몰리브덴", "molybdenum", "molybdate"],
     "iodine": ["요오드화칼륨", "요오드화나트륨", "potassium iodide", "sodium iodide"],   # 포비돈요오드·요오드 조영제는 제외
@@ -175,6 +179,7 @@ CONTAIN_RULES: dict[str, list[str]] = {
 NEGATIVE_RULES: dict[str, re.Pattern] = {
     "arginine": re.compile(r"ibuprofen|tidiacic|이부프로펜|티디아시"),   # 이부프로펜아르기닌(진통제 염), 아르기닌티디아시케이트(간장약)
     "copper": re.compile(r"chlorophyllin|클로로필린"),
+    "niacin": re.compile(r"nicotinate|니코틴산메틸|니코틴산벤질|메틸니코틴|벤질니코틴"),   # 바르는 온열제(니코틴산메틸 등) 제외
     "iodine": re.compile(r"povidone|포비돈|iohexol|iopromide|iodixanol|조영"),
     "potassium": re.compile(r"losartan|clavulan|diclofenac|로사르탄|클라불란|디클로페낙"),                  # 클로로필린구리착염(구취·점막 치료 성분)
 }
@@ -215,6 +220,13 @@ def ingr_tokens(raw: str) -> list[str]:
     return out[:INGR_TOKENS_MAX]
 
 
+def kw_hit(k: str, text: str) -> bool:
+    """키워드 포함 검사. 숫자로 끝나는 키워드('비타민b1'·'vitamin b1')는 뒤에 숫자가 이어지면('비타민b12') 제외."""
+    if k and k[-1].isdigit():
+        return re.search(re.escape(k) + r"(?!\d)", text) is not None
+    return k in text
+
+
 def match_ids(name: str, tokens: list[str], valid: set[str], external: bool = False) -> list[str]:
     """제품명·주성분 토큰에서 성분 사전 id 를 찾는다. external=True(용법이 외용)면 연결하지 않는다."""
     if external or EXTERNAL_RE.search(name or ""):
@@ -232,7 +244,7 @@ def match_ids(name: str, tokens: list[str], valid: set[str], external: bool = Fa
         if pneg and pneg.search(alltext):
             continue
         neg = NEGATIVE_RULES.get(iid)
-        if any(k in c and not (neg and neg.search(c)) for c in cands for k in kws):
+        if any(kw_hit(k, c) and not (neg and neg.search(c)) for c in cands for k in kws):
             found.append(iid)
     found = [i for i in found if not (PRODUCT_NEGATIVE_RULES.get(i) and PRODUCT_NEGATIVE_RULES[i].search(alltext))]
     if "omega-3" in valid and "omega-3" not in found and any(re.search(r"\b(epa|dha)\b", c) for c in cands):
