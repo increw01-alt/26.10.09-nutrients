@@ -16,7 +16,7 @@
       { slug: "acne", title: "여드름", icon: "sparkles" }, { slug: "exercise", title: "운동·헬스", icon: "dumbbell" }, { slug: "mouth-ulcer", title: "입병·구내염", icon: "circle-dot" },
       { slug: "gout", title: "통풍·요산", icon: "triangle-alert" }, { slug: "migraine", title: "편두통", icon: "brain" }, { slug: "dental", title: "치과·구강 건강", icon: "shield-check" },
       { slug: "numbness", title: "손발 저림", icon: "zap" }, { slug: "dryness", title: "안구·구강 건조", icon: "droplets" }, { slug: "prostate", title: "야간 빈뇨·전립선", icon: "circle-dot" },
-      { slug: "pms", title: "생리통·PMS", icon: "calendar-days" }, { slug: "tinnitus-dizziness", title: "이명·어지럼", icon: "compass" } ] },
+      { slug: "pms", title: "생리통·PMS", icon: "calendar-days" }, { slug: "tinnitus-dizziness", title: "이명·어지럼", icon: "compass" }, { slug: "pcos", title: "다낭성난소증후군", icon: "activity" } ] },
     people: { label: "대상별 가이드", items: [
       { slug: "20s", title: "20대", icon: "user" }, { slug: "30s-men", title: "30대 남자", icon: "dumbbell" }, { slug: "40s-women", title: "40대 여성", icon: "heart" },
       { slug: "50s-plus", title: "50대 이상", icon: "users" }, { slug: "seniors-70", title: "70대 이상", icon: "users" }, { slug: "sarcopenia", title: "노인 근감소증", icon: "users" },
@@ -28,9 +28,10 @@
       { slug: "diabetes-meds", title: "당뇨약 복용자", icon: "activity" }, { slug: "nsaid-users", title: "관절염 약 복용자", icon: "bone" }, { slug: "thyroid", title: "갑상선 질환자", icon: "stethoscope" },
       { slug: "kidney", title: "신장 질환자", icon: "droplets" }, { slug: "liver-disease", title: "간 질환자", icon: "stethoscope" }, { slug: "osteoporosis-meds", title: "골다공증 약 복용자", icon: "bone" },
       { slug: "antidepressant-users", title: "우울·불안 약 복용자", icon: "brain" }, { slug: "contraceptive-users", title: "피임약·호르몬 치료", icon: "pill" }, { slug: "hair-loss-meds", title: "탈모약 복용자", icon: "user" },
-      { slug: "antibiotics", title: "항생제 복용 중", icon: "pill-bottle" }, { slug: "ppi-users", title: "위산억제제 복용자", icon: "flask-conical" }, { slug: "dialysis", title: "투석 환자", icon: "droplets" },
-      { slug: "athletes", title: "운동선수·도핑", icon: "dumbbell" }, { slug: "weight-loss-drugs", title: "다이어트 약 복용자", icon: "scale" }, { slug: "cancer-treatment", title: "항암 치료 중", icon: "stethoscope" },
-      { slug: "surgery", title: "수술 전후", icon: "calendar-check" }, { slug: "bariatric", title: "위 절제·비만수술 후", icon: "utensils" } ] },
+      { slug: "antibiotics", title: "항생제 복용 중", icon: "pill-bottle" }, { slug: "antihistamine-users", title: "비염약 복용자", icon: "shield" }, { slug: "ppi-users", title: "위산억제제 복용자", icon: "flask-conical" },
+      { slug: "gout-meds", title: "통풍약 복용자", icon: "octagon-alert" }, { slug: "dialysis", title: "투석 환자", icon: "droplets" }, { slug: "athletes", title: "운동선수·도핑", icon: "dumbbell" },
+      { slug: "weight-loss-drugs", title: "다이어트 약 복용자", icon: "scale" }, { slug: "cancer-treatment", title: "항암 치료 중", icon: "stethoscope" }, { slug: "surgery", title: "수술 전후", icon: "calendar-check" },
+      { slug: "bariatric", title: "위 절제·비만수술 후", icon: "utensils" }, { slug: "travel-jetlag", title: "장거리 여행·시차", icon: "sunrise" } ] },
     safety: { label: "복용법·안전 가이드", items: [
       { slug: "when-to-take", title: "먹는 시간", icon: "clock" }, { slug: "how-to-combine", title: "조합 원칙", icon: "list-checks" }, { slug: "do-not-take-together", title: "같이 먹으면 안되는 영양제", icon: "octagon-alert" },
       { slug: "empty-stomach", title: "공복 영양제", icon: "sunrise" }, { slug: "daily-limit", title: "권장량·과다복용", icon: "flask-conical" }, { slug: "with-medication", title: "약과 영양제", icon: "stethoscope" },
