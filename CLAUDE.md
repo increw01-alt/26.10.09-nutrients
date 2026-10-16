@@ -13,6 +13,7 @@
 ```bash
 python -m http.server 8080            # 로컬 확인 (Windows: dev.bat 또는 .\dev.ps1)
 python scripts/build_site.py           # 데이터 검증 + 성분·가이드 페이지·sitemap·meta 생성 (데이터 수정 후 필수)
+python scripts/check_site.py           # 빌드 뒤 점검: 깨진 링크·sitemap·JSON-LD·제목 중복(실패), 연결 빈틈·조사 표기·'미인정' 문구(경고)
 npm run assets                         # Tailwind CSS 재생성 + 아이콘 번들 (클래스·아이콘을 바꿨을 때, 그다음 build_site.py)
 python scripts/fetch_products.py --rebuild   # 매칭 규칙 변경 후 API 호출 없이 제품 파일 재생성
 python scripts/fetch_drugs.py --rebuild      # 의약품 성분 규칙 변경 후 API 호출 없이 재생성 (수집은 DATA_GO_KR_KEY 필요)
