@@ -183,3 +183,11 @@ python scripts/fetch_products.py       # 또는 --rebuild
 python scripts/fetch_drugs.py          # DATA_GO_KR_KEY 필요, 또는 --rebuild
 python scripts/build_site.py           # 성분·가이드 페이지·sitemap 재생성 (데이터 수정 후 필수)
 ```
+
+### 다른 PC 에서 이어서 작업하기 (10-16 기준)
+
+1. 저장소 받기: `git clone https://github.com/increw01-alt/26.10.09-nutrients.git` 뒤 작업 브랜치 `claude/supplement-info-compatibility-site-1o2qrj` 로 체크아웃(기본 브랜치이자 Cloudflare Pages 배포 브랜치). 이미 받아 둔 PC 라면 `git pull` 만.
+2. 준비물: Python 3.11+ 와 `pip install -r requirements.txt`(openpyxl 은 머천트 엑셀을 읽을 때만 필요). Node 는 Tailwind 클래스나 아이콘을 바꿀 때만(`npm run assets`) 필요하고, 없으면 push 후 GitHub Actions 가 자산을 재생성해 커밋한다.
+3. 비밀값은 저장소에 없다: `.env`(식약처·공공데이터·네이버 API 키)는 수동 수집에만 필요하고 매일 03:15 KST 자동 수집이 GitHub Secrets 로 돈다. 쿠팡 파트너스 키도 GitHub Secrets 에 넣는다. 링크프라이스 어필리에이트 ID 는 공개 값이라 `assets/js/config.js` 에 있다.
+4. 작업 순서: `git pull` → 데이터·템플릿 수정 → `python scripts/build_site.py` → `python scripts/check_site.py`(실패 0 확인) → 로컬 서버로 화면 확인 → 커밋(한국어)·푸시. 생성 파일(i/·guide/·guides.html·sitemap.xml·data/meta.json·data/guides-index.json·HTML 의 `?v=` 해시)이 함께 바뀌는 것이 정상.
+5. Claude Code 로 이어서 할 때: 이 문서의 7절(다음 할 일)과 CLAUDE.md 의 '작업 요령'이 이전 세션의 맥락을 대신한다. 10-16 기준 계획된 콘텐츠 확장(성분 81·궁합 369·가이드 87)은 끝났고, 남은 것은 운영 점검과 사용자 몫(서치콘솔·서치어드바이저 재제출, 쿠팡 파트너스 최종승인·API 키, 11번가 링크프라이스 승인 대기, 저장소 공개 범위, 저작권 등록).

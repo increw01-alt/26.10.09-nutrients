@@ -31,6 +31,14 @@ python scripts/fetch_news.py / fetch_materials.py / fetch_products.py / fetch_dr
 - `scripts/` : 수집·빌드 파이썬. `fetch_products.py` 의 `NUTRIENT_RULES`·`HERBAL_RULES`·`EXCIPIENT_RE` 가 제품-성분 매칭 규칙. `fetch_drugs.py` 의 `SALT_RULES`·`CONTAIN_RULES`(한글·영문)가 의약품 주성분-영양 성분 규칙, `drug_ingr_ko.py` 가 영문 주성분 → 한글 표시 사전 (규칙·사전을 고친 뒤 `python scripts/fetch_drugs.py --rebuild`)
 - 현황·이력·다음 할 일: `docs/PROJECT-STATUS.md`
 
+## 작업 요령 (Claude Code)
+- 작업 시작은 `git pull`, 끝은 `python scripts/build_site.py` → `python scripts/check_site.py` → 커밋·푸시. 커밋 뒤 `git show --stat` 으로 실제 변경 파일을 확인한다(앞 단계가 실패했는데 커밋만 되는 일을 막기 위해 명령 체인은 `&&` 로만 잇는다).
+- 수백 줄 데이터 추가 스크립트나 `
+`·`\d` 같은 이스케이프가 든 패치는 Bash heredoc 대신 파일로 써서 실행한다(heredoc 은 길이 제한이 있고 백슬래시가 한 번 벗겨진다). 한글 출력은 `PYTHONUTF8=1 PYTHONIOENCODING=utf-8` 로, `python -I` 는 이를 무시해 깨진다.
+- 성분명으로 문장을 생성할 때 조사(이/가·은/는·과/와)는 받침으로 판별하되 Q10·B6·D3·B1 처럼 숫자로 끝나는 이름은 '은/이/과'로 교정한다(`check_site.py` 가 경고).
+- 로컬 확인용 `.claude/launch.json`(python -m http.server 8080)은 커밋 전에 지운다. 모바일 뷰포트로 확인한 뒤에는 데스크톱으로 되돌린다.
+- 기능성 문구·일일섭취량은 `data/materials.json`·신고 제품 표시·식약처 고시 보도로 확인한 값만 쓰고, 확인이 안 되면 추가하지 말고 `docs/PROJECT-STATUS.md` 다음 할 일에 보류 사유를 적는다.
+
 ## 새 성분·가이드 추가 절차
 1. `data/ingredients.json` 또는 `data/guides.json` 에 항목 추가 (성분 id 참조는 빌드 시 검증됨)
 2. 궁합이 필요하면 `data/interactions.json` 에 쌍 추가
