@@ -63,5 +63,5 @@ window.AFFILIATE = {
       searchUrl: function (q) { return "https://search.shopping.naver.com/search/all?query=" + encodeURIComponent(q); } }
   ],
   // 제휴 고지 문구 (쿠팡 파트너스 운영 정책상 필수 문구 포함)
-  disclosure: "이 사이트는 쿠팡 파트너스 및 링크프라이스 등 제휴 마케팅 활동의 일환으로, 구매 시 일정액의 수수료를 제공받을 수 있습니다. 수수료는 구매 가격에 영향을 주지 않습니다."
+  disclosure: "이 사이트는 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다. 링크프라이스 등 다른 제휴 프로그램 링크도 포함되며, 수수료는 구매 가격에 영향을 주지 않습니다."
 };
