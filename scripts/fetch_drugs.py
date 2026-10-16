@@ -95,7 +95,7 @@ class QuotaExceeded(PortalError):
 
 # ---------------------------------------------------------------- 성분 매칭 규칙
 NUTRIENT_IDS = {"vitamin-a", "vitamin-c", "vitamin-d", "vitamin-e", "vitamin-k", "vitamin-b-complex", "vitamin-b12", "folate", "biotin",
-                "calcium", "magnesium", "zinc", "iron", "selenium", "copper"}
+                "calcium", "magnesium", "zinc", "iron", "selenium", "copper", "manganese", "molybdenum", "iodine", "potassium"}
 MULTIVITAMIN_MIN = 5
 
 # 미네랄은 '영양 보급용 염'일 때만 인정 (토큰 전체에 대해 앞부분부터 검사). 약물의 염(아토르바스타틴칼슘), 제산제(수산화마그네슘) 제외
@@ -124,6 +124,10 @@ CONTAIN_RULES: dict[str, list[str]] = {
     "selenium": ["셀레늄", "아셀렌산", "셀레노메티오닌", "셀렌", "selenium", "selenite", "selenomethionine"],
     "iron": ["철", "ferrous", "ferric", "iron", "ferritin"],
     "copper": ["구리", "copper", "cupric"],
+    "manganese": ["망간", "manganese"],
+    "molybdenum": ["몰리브덴", "molybdenum", "molybdate"],
+    "iodine": ["요오드화칼륨", "요오드화나트륨", "potassium iodide", "sodium iodide"],   # 포비돈요오드·요오드 조영제는 제외
+    "potassium": ["염화칼륨", "구연산칼륨", "글루콘산칼륨", "potassium chloride", "potassium citrate", "potassium gluconate"],   # 로사르탄칼륨 같은 염은 제외
     "omega-3": ["오메가-3", "오메가3", "에이코사펜타엔산", "도코사헥사엔산", "omega-3", "omega 3", "eicosapentaenoic", "docosahexaenoic", "fish oil"],
     "probiotics": ["락토바실", "비피도박테리움", "비피더스", "바실루스", "바실러스", "스트렙토코쿠스", "엔테로코쿠스", "락토민", "유산균", "사카로미세스", "클로스트리디움부티리쿰",
                    "lactobacillus", "bifidobacterium", "bacillus", "streptococcus", "enterococcus", "saccharomyces", "clostridium butyricum", "lactomin", "lactic acid bacteria"],
@@ -170,7 +174,9 @@ CONTAIN_RULES: dict[str, list[str]] = {
 # 키워드가 들어 있어도 영양 성분이 아닌 경우 (약물의 염·착염): 후보 문자열이 이 패턴에 맞으면 그 후보는 무시
 NEGATIVE_RULES: dict[str, re.Pattern] = {
     "arginine": re.compile(r"ibuprofen|tidiacic|이부프로펜|티디아시"),   # 이부프로펜아르기닌(진통제 염), 아르기닌티디아시케이트(간장약)
-    "copper": re.compile(r"chlorophyllin|클로로필린"),                  # 클로로필린구리착염(구취·점막 치료 성분)
+    "copper": re.compile(r"chlorophyllin|클로로필린"),
+    "iodine": re.compile(r"povidone|포비돈|iohexol|iopromide|iodixanol|조영"),
+    "potassium": re.compile(r"losartan|clavulan|diclofenac|로사르탄|클라불란|디클로페낙"),                  # 클로로필린구리착염(구취·점막 치료 성분)
 }
 # 외용제·주사제 등 '먹는 약'이 아닌 제형 — 영양 성분으로 연결하지 않음 (연고의 산화아연 등)
 EXTERNAL_RE = re.compile(r"연고|크림|로션|패취|패치|플라스타|카타플라스마|좌제|점안|점비|점이|외용|스프레이|가글|구강용|습포|테이프|밴드|소독|파스|샴푸|비누|세정제|관장|질정|주사|수액|겔(제|$|\(|\d)")
@@ -186,6 +192,12 @@ def is_external_usage(usage: str) -> bool:
 TOKEN_SPLIT_RE = re.compile(r"[|;,/·+]|\s{2,}")
 NAME_SPLIT_RE = re.compile(r"[()\[\]【】,/·+\s]+")
 
+# 주성분 전체(토큰을 합친 문자열)에 아래 패턴이 있으면 해당 성분을 연결하지 않음 — 장 세척제(염화칼륨+폴리에틸렌글리콜)·인공 타액(염화칼슘·염화칼륨+카르복시메틸셀룰로오스)은 영양 보충이 아님
+PRODUCT_NEGATIVE_RULES: dict[str, re.Pattern] = {
+    "potassium": re.compile(r"폴리에틸렌글리콜|macrogol|polyethylene glycol|카르복시메틸셀룰로오스|카르복시메틸셀룰로스|carboxymethylcellulose|carmellose"),
+    "calcium": re.compile(r"카르복시메틸셀룰로오스|카르복시메틸셀룰로스|carboxymethylcellulose|carmellose"),
+    "magnesium": re.compile(r"카르복시메틸셀룰로오스|카르복시메틸셀룰로스|carboxymethylcellulose|carmellose"),
+}
 
 def ingr_tokens(raw: str) -> list[str]:
     """허가정보 주성분 문자열 → 성분명 토큰 목록. '성분명 : X|분량 : ...' 형식과 'A|B|C' 형식을 모두 처리."""
@@ -208,6 +220,7 @@ def match_ids(name: str, tokens: list[str], valid: set[str], external: bool = Fa
     if external or EXTERNAL_RE.search(name or ""):
         return []
     cands = [re.sub(r"\s+", " ", t.lower()).strip() for t in tokens] + [t.lower().replace(" ", "") for t in tokens] + [t.lower() for t in NAME_SPLIT_RE.split(name or "") if t]
+    alltext = " | ".join(cands)
     found: list[str] = []
     for iid, rx in SALT_RULES.items():
         if iid in valid and any(rx.search(c) for c in cands):
@@ -215,9 +228,13 @@ def match_ids(name: str, tokens: list[str], valid: set[str], external: bool = Fa
     for iid, kws in CONTAIN_RULES.items():
         if iid not in valid or iid in found:
             continue
+        pneg = PRODUCT_NEGATIVE_RULES.get(iid)
+        if pneg and pneg.search(alltext):
+            continue
         neg = NEGATIVE_RULES.get(iid)
         if any(k in c and not (neg and neg.search(c)) for c in cands for k in kws):
             found.append(iid)
+    found = [i for i in found if not (PRODUCT_NEGATIVE_RULES.get(i) and PRODUCT_NEGATIVE_RULES[i].search(alltext))]
     if "omega-3" in valid and "omega-3" not in found and any(re.search(r"\b(epa|dha)\b", c) for c in cands):
         found.append("omega-3")
     if "multivitamin" in valid and sum(1 for i in found if i in NUTRIENT_IDS) >= MULTIVITAMIN_MIN:

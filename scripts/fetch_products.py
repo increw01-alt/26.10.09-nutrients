@@ -75,6 +75,10 @@ NUTRIENT_RULES: dict[str, tuple[list[str], list[str], str | None, bool]] = {
     "iron": (["철분", "헴철", "푸마르산철", "황산철", "피로인산철", "구연산철", "비스글리시네이트철", "철(ii)", "철 (ii)"], ["체내 산소운반과 혈액생성"], None, True),
     "selenium": (["셀레늄", "셀렌"], [], "유해산소로부터 세포를 보호", True),
     "copper": (["구리"], ["철의 운반과 이용에 필요"], None, True),
+    "manganese": (["망간"], ["뼈 형성에 필요"], None, True),
+    "molybdenum": (["몰리브덴"], ["환원 효소의 활성", "환원효소의 활성"], None, True),
+    "iodine": (["요오드", "아이오딘"], ["갑상선 호르몬의 합성", "갑상선호르몬의 합성"], None, True),
+    "potassium": (["염화칼륨", "구연산칼륨", "글루콘산칼륨"], ["체내 물과 전해질 균형"], None, False),   # '칼륨' 단독은 폴리감마글루탐산칼륨 등 오탐
 }
 # 기능성 원료: 제품명 / 기능성 텍스트 / 원재료 앞부분(주원료) / 고유 기능성 문구 로 판정
 HERBAL_RULES: dict[str, tuple[list[str], list[str]]] = {
