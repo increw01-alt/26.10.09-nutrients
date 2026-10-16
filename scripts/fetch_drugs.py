@@ -135,6 +135,8 @@ CONTAIN_RULES: dict[str, list[str]] = {
     "spirulina": ["스피루리나", "spirulina"],
     "chlorella": ["클로렐라", "chlorella"],
     "phytosterol": ["식물스테롤", "시토스테롤", "phytosterol", "sitosterol"],
+    "coleus-forskohlii": ["콜레우스", "포스콜린", "forskolin", "forskohlii"],
+    "pu-erh": ["보이차", "pu-erh", "puerh"],
     "glucosamine": ["글루코사민", "glucosamine"],
     "msm": ["메틸설포닐메탄", "디메틸설폰", "methylsulfonylmethane", "dimethyl sulfone"],
     "collagen": ["콜라겐", "collagen"],

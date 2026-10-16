@@ -14,7 +14,7 @@
       { slug: "eye-twitch", title: "눈 떨림", icon: "eye" }, { slug: "anemia", title: "빈혈·철분", icon: "droplets" }, { slug: "gastritis", title: "위염·역류", icon: "stethoscope" },
       { slug: "liver-health", title: "간 건강", icon: "leaf" }, { slug: "menopause", title: "갱년기", icon: "heart" }, { slug: "blood-circulation", title: "혈행", icon: "heart-pulse" },
       { slug: "acne", title: "여드름", icon: "sparkles" }, { slug: "exercise", title: "운동·헬스", icon: "dumbbell" }, { slug: "mouth-ulcer", title: "입병·구내염", icon: "circle-dot" },
-      { slug: "gout", title: "통풍·요산", icon: "triangle-alert" } ] },
+      { slug: "gout", title: "통풍·요산", icon: "triangle-alert" }, { slug: "migraine", title: "편두통", icon: "brain" }, { slug: "dental", title: "치과·구강 건강", icon: "shield-check" } ] },
     people: { label: "대상별 가이드", items: [
       { slug: "20s", title: "20대", icon: "user" }, { slug: "30s-men", title: "30대 남자", icon: "dumbbell" }, { slug: "40s-women", title: "40대 여성", icon: "heart" },
       { slug: "50s-plus", title: "50대 이상", icon: "users" }, { slug: "seniors-70", title: "70대 이상", icon: "users" }, { slug: "teens", title: "청소년·성장기", icon: "book-open" },
@@ -24,8 +24,9 @@
       { slug: "vegan", title: "채식·비건", icon: "leaf" }, { slug: "smokers", title: "흡연자", icon: "flame" }, { slug: "hypertension", title: "혈압약 복용자", icon: "heart-pulse" },
       { slug: "diabetes-meds", title: "당뇨약 복용자", icon: "activity" }, { slug: "nsaid-users", title: "관절염 약 복용자", icon: "bone" }, { slug: "thyroid", title: "갑상선 질환자", icon: "stethoscope" },
       { slug: "kidney", title: "신장 질환자", icon: "droplets" }, { slug: "liver-disease", title: "간 질환자", icon: "stethoscope" }, { slug: "osteoporosis-meds", title: "골다공증 약 복용자", icon: "bone" },
-      { slug: "antidepressant-users", title: "우울·불안 약 복용자", icon: "brain" }, { slug: "weight-loss-drugs", title: "다이어트 약 복용자", icon: "scale" }, { slug: "cancer-treatment", title: "항암 치료 중", icon: "stethoscope" },
-      { slug: "surgery", title: "수술 전후", icon: "calendar-check" } ] },
+      { slug: "antidepressant-users", title: "우울·불안 약 복용자", icon: "brain" }, { slug: "contraceptive-users", title: "피임약·호르몬 치료", icon: "pill" }, { slug: "antibiotics", title: "항생제 복용 중", icon: "pill-bottle" },
+      { slug: "dialysis", title: "투석 환자", icon: "droplets" }, { slug: "athletes", title: "운동선수·도핑", icon: "dumbbell" }, { slug: "weight-loss-drugs", title: "다이어트 약 복용자", icon: "scale" },
+      { slug: "cancer-treatment", title: "항암 치료 중", icon: "stethoscope" }, { slug: "surgery", title: "수술 전후", icon: "calendar-check" } ] },
     safety: { label: "복용법·안전 가이드", items: [
       { slug: "when-to-take", title: "먹는 시간", icon: "clock" }, { slug: "how-to-combine", title: "조합 원칙", icon: "list-checks" }, { slug: "do-not-take-together", title: "같이 먹으면 안되는 영양제", icon: "octagon-alert" },
       { slug: "empty-stomach", title: "공복 영양제", icon: "sunrise" }, { slug: "daily-limit", title: "권장량·과다복용", icon: "flask-conical" }, { slug: "with-medication", title: "약과 영양제", icon: "stethoscope" },

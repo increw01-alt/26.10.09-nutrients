@@ -1,12 +1,12 @@
 {
-  "builtAt": "2026-10-16T06:22:03+09:00",
-  "ingredients": 68,
-  "pairs": 268,
-  "guides": 66,
+  "builtAt": "2026-10-16T10:04:42+09:00",
+  "ingredients": 70,
+  "pairs": 281,
+  "guides": 72,
   "products": {
     "source": "mfds",
     "updatedAt": "2026-10-16T06:20:39+09:00",
-    "total": 8629
+    "total": 9004
   },
   "news": {
     "source": "live",
