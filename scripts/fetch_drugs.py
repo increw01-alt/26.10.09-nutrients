@@ -145,6 +145,7 @@ CONTAIN_RULES: dict[str, list[str]] = {
     "phytosterol": ["식물스테롤", "시토스테롤", "phytosterol", "sitosterol"],
     "coleus-forskohlii": ["콜레우스", "포스콜린", "forskolin", "forskohlii"],
     "pu-erh": ["보이차", "pu-erh", "puerh"],
+    "creatine": ["크레아틴", "creatine"],
     "glucosamine": ["글루코사민", "glucosamine"],
     "msm": ["메틸설포닐메탄", "디메틸설폰", "methylsulfonylmethane", "dimethyl sulfone"],
     "collagen": ["콜라겐", "collagen"],
@@ -179,6 +180,7 @@ CONTAIN_RULES: dict[str, list[str]] = {
 NEGATIVE_RULES: dict[str, re.Pattern] = {
     "arginine": re.compile(r"ibuprofen|tidiacic|이부프로펜|티디아시"),   # 이부프로펜아르기닌(진통제 염), 아르기닌티디아시케이트(간장약)
     "copper": re.compile(r"chlorophyllin|클로로필린"),
+    "creatine": re.compile(r"판크레아틴|pancreatin"),   # 소화효소 판크레아틴 제외
     "niacin": re.compile(r"nicotinate|니코틴산메틸|니코틴산벤질|메틸니코틴|벤질니코틴"),   # 바르는 온열제(니코틴산메틸 등) 제외
     "iodine": re.compile(r"povidone|포비돈|iohexol|iopromide|iodixanol|조영"),
     "potassium": re.compile(r"losartan|clavulan|diclofenac|로사르탄|클라불란|디클로페낙"),                  # 클로로필린구리착염(구취·점막 치료 성분)
