@@ -13,6 +13,7 @@ from __future__ import annotations
 import html
 import json
 import re
+import unicodedata
 import sys
 from pathlib import Path
 
@@ -525,10 +526,15 @@ def render_guides_hub(guides: dict, cfg: dict) -> str:
     ]}
     head = head_html(cfg, title=f"영양제 추천 가이드 — 고민별·대상별·복용법 총정리 | {cfg['name']}",
                      desc="피로·눈·간·관절·수면·면역 등 고민별, 20대부터 50대 이상·임산부·수험생·어린이까지 대상별 영양제 추천 성분과 조합, 먹는 시간·조합·권장량·약물 상호작용 가이드를 한곳에 모았습니다.",
-                     path="guides.html", root="./", keywords="영양제 추천, 영양제 조합, 영양제 먹는 시간, 고민별 영양제, 대상별 영양제", og_type="website", ld=ld)
+                     path="guides.html", root="./", keywords="영양제 추천, 영양제 조합, 영양제 먹는 시간, 고민별 영양제, 대상별 영양제", og_type="website",
+                     extra_scripts='<script src="assets/js/pages/guides.js" defer></script>', ld=ld)
+    def search_text(g: dict) -> str:   # 허브 검색용: 제목·h1·키워드·설명·분류를 공백·구분자 없이 소문자로 (guides.js 의 norm 과 같은 규칙)
+        t = types.get(g["type"], {})
+        raw = " ".join([g["slug"], g["title"], g["h1"], " ".join(g.get("keywords", [])), g.get("description", ""), t.get("label", ""), t.get("short", "")])
+        return re.sub(r"[\s·\-]+", "", unicodedata.normalize("NFKC", raw)).lower()
     secs = ""
     for key, t in types.items():
-        cards = "".join(guide_card(g, types, "./") for g in guides["items"] if g["type"] == key)
+        cards = "".join(guide_card(g, types, "./").replace("<a ", f'<a data-search="{esc(search_text(g))}" ', 1) for g in guides["items"] if g["type"] == key)
         secs += f'<section id="{key}" class="scroll-mt-24"><h2 class="text-2xl font-extrabold tracking-tight text-ink-900">{esc(t["label"])}</h2><p class="mt-1 text-ink-500">{esc(t["desc"])}</p><div class="mt-5 grid gap-4 md:grid-cols-2 lg:grid-cols-3">{cards}</div></section>'
     body = f"""
 <body data-page="guides" data-path="guides.html" class="min-h-screen antialiased">
@@ -540,8 +546,12 @@ def render_guides_hub(guides: dict, cfg: dict) -> str:
       <h1 class="page-title mt-3">고민과 상황에서 출발하는 영양제 가이드</h1>
       <p class="page-lead mt-4 max-w-2xl">특정 제품이 아니라 <strong>성분과 조합</strong>을 추천합니다. 각 가이드는 식약처 인정 기능성 표현을 기준으로 핵심 성분, 함께 먹으면 좋은 조합, 섭취 시간, 주의할 점을 정리하고 성분 사전·궁합 체크·제품 찾기로 연결됩니다.</p>
       <div class="mt-5 flex flex-wrap gap-2">{''.join(f'<a href="#{k}" class="chip">{esc(t["short"])}</a>' for k, t in types.items())}</div>
+      <form class="relative mt-6 w-full lg:w-96" role="search" onsubmit="return false;"><label for="guide-search" class="sr-only">가이드 검색</label><i data-lucide="search" class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400"></i><input id="guide-search" type="search" placeholder="고민·약 이름·성분으로 가이드 검색 (예: 혈압약, 철분, 수면)" autocomplete="off" class="w-full rounded-full border border-ink-200 bg-white py-3 pl-11 pr-4 text-sm shadow-card outline-none focus:border-brand-400 focus:ring-4 focus:ring-brand-100"></form>
+      <p id="guide-count" class="mt-3 text-sm text-ink-600" aria-live="polite">가이드 {len(guides["items"])}편</p>
     </div></section>
-    <div class="mx-auto max-w-7xl space-y-14 px-4 py-12 sm:px-6">{secs}
+    <div class="mx-auto max-w-7xl space-y-14 px-4 py-12 sm:px-6">
+      <p id="guide-empty" class="hidden rounded-2xl border border-dashed border-ink-200 bg-white p-6 text-sm text-ink-600">일치하는 가이드가 없습니다. 다른 말로 검색하거나 <a class="font-bold text-brand-700 underline" href="search.html">통합 검색</a>에서 성분·제품·의약품까지 찾아보세요.</p>
+      {secs}
       <section class="rounded-3xl bg-cream-200 p-6 sm:p-8"><h2 class="text-lg font-extrabold text-ink-900">가이드를 읽는 법</h2><ul class="list-dot mt-3 text-sm text-ink-700"><li>'추천 성분'은 식약처가 인정한 기능성과 결핍 가능성을 기준으로 고른 것이며 특정 제품·브랜드를 보증하지 않습니다.</li><li>건강기능식품은 질병의 예방·치료 목적이 아닙니다. 증상이 지속되면 진료가 먼저입니다.</li><li>약을 복용 중이라면 <a class="font-bold text-brand-700 underline" href="guide/with-medication.html">약과 영양제 가이드</a>를 먼저 읽고 약사·의사와 상의하세요.</li></ul></section>
     </div>
   </main>
