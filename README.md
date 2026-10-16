@@ -40,9 +40,9 @@ project/
 │     ├─ schedule.js          # 복용 시간표 생성 로직
 │     └─ pages/*.js           # 페이지별 스크립트
 ├─ data/
-│  ├─ ingredients.json        # ★ 성분 사전 (37종) — 효능·권장량·시간·주의·FAQ
-│  ├─ interactions.json       # ★ 궁합 데이터 (97쌍) — synergy/caution/avoid/neutral
-│  ├─ guides.json             # ★ 가이드 콘텐츠 (고민별 12 · 대상별 9 · 복용법·안전 7)
+│  ├─ ingredients.json        # ★ 성분 사전 (현재 수는 docs/PROJECT-STATUS.md) — 효능·권장량·시간·주의·FAQ
+│  ├─ interactions.json       # ★ 궁합 데이터 — synergy/caution/avoid/neutral
+│  ├─ guides.json             # ★ 가이드 콘텐츠 (고민별·대상별·복용법·안전)
 │  ├─ products.json           # 식약처 신고 제품 목록 (자동 수집, 압축 JSON)
 │  ├─ products/top/<id>.json  # 성분별 상위 60개 제품 (성분 상세 페이지)
 │  ├─ products/detail/NN.json # 전체 신고 정보 64조각 (제품 '더보기' 펼칠 때 로드)

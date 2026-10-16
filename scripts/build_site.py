@@ -211,9 +211,12 @@ def inject_verification(cfg: dict) -> None:
         tags.append(f'  <meta name="naver-site-verification" content="{esc(cfg["naverSiteVerification"])}">')
     block = "\n" + "".join(t + "\n" for t in tags) + "  "   # 끝 마커의 들여쓰기 유지
     new_src = html_src[:head_end] + block + html_src[b:]
+    # 홈 메타 설명의 성분 수('NN가지 성분')는 ingredients.json 기준으로 빌드가 갱신 (손으로 고치지 않음)
+    n_ing = len(read_json(DATA_DIR / "ingredients.json", {"items": []}).get("items", []))
+    new_src, n_rep = re.subn(r"\d+가지 성분", f"{n_ing}가지 성분", new_src)
     if new_src != html_src:
         path.write_text(new_src, encoding="utf-8")
-        log.info("index.html 소유 확인 메타태그 %d개 반영", len(tags))
+        log.info("index.html 소유 확인 메타태그 %d개 반영, 성분 수 표기 %d곳 → %d가지", len(tags), n_rep, n_ing)
 
 
 def validate(ingredients: dict, interactions: dict) -> None:
