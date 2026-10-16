@@ -24,6 +24,8 @@ SHORT = {
     "osteoporosis-meds": "골다공증 약 복용자", "surgery": "수술 전후",
     "contraceptive-users": "피임약·호르몬 치료", "antibiotics": "항생제 복용 중", "migraine": "편두통", "dental": "치과·구강 건강",
     "dialysis": "투석 환자", "athletes": "운동선수·도핑",
+    "numbness": "손발 저림", "dryness": "안구·구강 건조", "prostate": "야간 빈뇨·전립선", "hair-loss-meds": "탈모약 복용자",
+    "bariatric": "위 절제·비만수술 후", "pregnancy-symptoms": "입덧·임신 변비",
     "when-to-take": "먹는 시간", "how-to-combine": "조합 원칙", "do-not-take-together": "같이 먹으면 안되는 영양제", "empty-stomach": "공복 영양제",
     "daily-limit": "권장량·과다복용", "with-medication": "약과 영양제", "storage-expiry": "유통기한·보관", "multivitamin-guide": "종합비타민 고르기",
     "omega3-guide": "오메가3 고르기", "magnesium-guide": "마그네슘 종류", "vitamin-d-guide": "비타민D 고르기", "zinc-guide": "아연 고르기",
@@ -31,10 +33,10 @@ SHORT = {
 }
 ORDER = {
     "concerns": ["fatigue", "eye-health", "gut-health", "sleep", "immunity", "joint-health", "stress", "cholesterol", "blood-sugar", "skin-health", "hair-health", "diet",
-                 "eye-twitch", "anemia", "gastritis", "liver-health", "menopause", "blood-circulation", "acne", "exercise", "mouth-ulcer", "gout", "migraine", "dental"],
-    "people": ["20s", "30s-men", "40s-women", "50s-plus", "seniors-70", "teens", "kids", "kids-by-age", "pregnancy", "breastfeeding", "postpartum", "students",
+                 "eye-twitch", "anemia", "gastritis", "liver-health", "menopause", "blood-circulation", "acne", "exercise", "mouth-ulcer", "gout", "migraine", "dental", "numbness", "dryness", "prostate"],
+    "people": ["20s", "30s-men", "40s-women", "50s-plus", "seniors-70", "teens", "kids", "kids-by-age", "pregnancy", "pregnancy-symptoms", "breastfeeding", "postpartum", "students",
                "office-workers", "shift-workers", "parents-gift", "vegan", "smokers", "hypertension", "diabetes-meds", "nsaid-users", "thyroid", "kidney",
-               "liver-disease", "osteoporosis-meds", "antidepressant-users", "contraceptive-users", "antibiotics", "dialysis", "athletes", "weight-loss-drugs", "cancer-treatment", "surgery"],
+               "liver-disease", "osteoporosis-meds", "antidepressant-users", "contraceptive-users", "hair-loss-meds", "antibiotics", "dialysis", "athletes", "weight-loss-drugs", "cancer-treatment", "surgery", "bariatric"],
     "safety": ["when-to-take", "how-to-combine", "do-not-take-together", "empty-stomach", "daily-limit", "with-medication", "storage-expiry", "multivitamin-guide",
                "omega3-guide", "magnesium-guide", "vitamin-d-guide", "zinc-guide", "calcium-guide", "vitamin-c-guide", "collagen-guide", "probiotics-guide"],
 }
