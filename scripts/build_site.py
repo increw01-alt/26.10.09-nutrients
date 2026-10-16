@@ -562,9 +562,21 @@ def render_guides_hub(guides: dict, cfg: dict) -> str:
     return head + body
 
 
+def write_guides_index(guides: dict) -> None:
+    """검색·자동완성·성분 페이지가 쓰는 경량 색인 (data/guides-index.json). 본문(sections·tips·faq)을 뺀 요약 필드만 담아
+    guides.json(약 600KB)을 페이지마다 내려받지 않게 한다. 필드를 바꾸면 data.js 의 guides() 소비처(home.js·search.js·ingredient.js)도 확인."""
+    items = [{"id": g["id"], "slug": g["slug"], "type": g["type"], "icon": g.get("icon", "book-open"), "title": g["title"], "h1": g["h1"],
+              "keywords": g.get("keywords", []), "description": g.get("description", ""), "intro": g.get("intro", ""),
+              "ingredients": [{"id": x["id"]} for x in g.get("ingredients", [])]} for g in guides["items"]]
+    meta = {k: v for k, v in guides.get("_meta", {}).items() if k in ("updatedAt", "types")}
+    meta["note"] = "guides.json 의 요약 색인 — scripts/build_site.py 가 생성, 직접 수정하지 않음"
+    write_json(DATA_DIR / "guides-index.json", {"_meta": meta, "items": items}, compact=True, quiet=True)
+
+
 def build_guides(core: dict, cfg: dict) -> dict:
     guides = read_json(DATA_DIR / "guides.json", {"_meta": {"types": {}}, "items": []})
     guides["by_id"] = {g["id"]: g for g in guides["items"]}
+    write_guides_index(guides)
     GUIDE_DIR.mkdir(exist_ok=True)
     wanted = set()
     for gd in guides["items"]:
