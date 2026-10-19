@@ -242,6 +242,20 @@
     if (canon && /\.pages\.dev$/i.test(location.hostname)) location.replace(canon + location.pathname + location.search + location.hash);
   } catch (e) { /* 무시 */ }
 
+  /* Google Analytics 4 — config.js 의 gaMeasurementId 가 있을 때만 로드. 페이지뷰·기본 이벤트의 집계 통계만 쓰고 개인 식별 정보는 보내지 않는다(이용약관 제9조) */
+  (function () {
+    var id = S.gaMeasurementId;
+    if (!id || !/^G-[A-Z0-9]+$/.test(id)) return;
+    var h = location.hostname;
+    if (h === "localhost" || h === "127.0.0.1" || /\.pages\.dev$/i.test(h)) return;   // 로컬·미리보기 방문은 통계에서 제외
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
+    window.gtag("js", new Date());
+    window.gtag("config", id, { anonymize_ip: true });
+    var sc = document.createElement("script"); sc.async = true; sc.src = "https://www.googletagmanager.com/gtag/js?id=" + encodeURIComponent(id);
+    document.head.appendChild(sc);
+  })();
+
   document.addEventListener("DOMContentLoaded", function () {
     page = document.body.getAttribute("data-page") || "";
     renderHeader(); renderFooter(); renderTabbar(); fixMeta(); fillContact(); topButton(); D.icons();
