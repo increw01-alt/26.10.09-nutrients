@@ -193,6 +193,92 @@
         return { other: core.byId[other], pair: p };
       }).filter(function (r) { return !!r.other; });
     },
+
+    /* 괄호 보충 설명을 뺀 짧은 이름: '오메가3 (EPA·DHA)' → '오메가3' */
+    shortName: function (it) { return String((it && it.name) || "").replace(/\s*\(.*$/, "").trim(); },
+    /* 조사 붙이기 — 받침은 마지막 글자로, 숫자(영·일·삼·육·칠·팔 받침)·영문(L·M·N·R 받침) 끝 이름도 처리. '오메가3' 는 '쓰리'로 읽음 */
+    josa: function (name, kind) {
+      var s = String(name || "").trim().replace(/[)·\s]+$/, ""), b = false;
+      if (s && s !== "오메가3") {
+        var c = s.charAt(s.length - 1), o = c.charCodeAt(0);
+        if (/[0-9]/.test(c)) b = "013678".indexOf(c) >= 0;
+        else if (/[A-Za-z]/.test(c)) b = "LMNR".indexOf(c.toUpperCase()) >= 0;
+        else b = o >= 0xAC00 && o <= 0xD7A3 && (o - 0xAC00) % 28 !== 0;
+      }
+      var J = { "이가": ["이", "가"], "은는": ["은", "는"], "과와": ["과", "와"], "을를": ["을", "를"] }[kind] || ["", ""];
+      return name + (b ? J[0] : J[1]);
+    },
+    /* 궁합 데이터에 없는 쌍을 일반 규칙으로 판정 (inferred: true). 궁합 체크·홈 체커·시간표가 같은 결과를 쓴다.
+       규칙: 식이섬유끼리 → 무난(수분) / 차전자피·키토산·난소화성말토덱스트린이 흡수를 늦추는 상대 → 2시간 간격 주의
+             / 종합비타민 → 중복만 확인 / 지용성끼리 → 식후 동시 섭취 시너지 / 미네랄끼리·그 밖 → 무난 */
+    inferPair: function (core, a, b) {
+      var A = core.byId[a], B = core.byId[b];
+      if (!A || !B || a === b) return null;
+      var J = Data.josa, na = Data.shortName(A), nb = Data.shortName(B);
+      function mk(type, level, title, detail, tip, hours) {
+        var p = { pair: [a, b], type: type, level: level, title: title, detail: detail, tip: tip, inferred: true };
+        if (hours) p.separateHours = hours;
+        return p;
+      }
+      function has(id) { return a === id || b === id; }
+      function other(id) { return a === id ? B : A; }   // id 의 상대 성분
+      var FIBER = { psyllium: 1, "indigestible-dextrin": 1, chitosan: 1 };
+      if (FIBER[a] && FIBER[b]) {
+        return mk("neutral", 0, "식이섬유 계열끼리 — 물을 충분히",
+          J(na, "과와") + " " + J(nb, "은는") + " 서로 흡수를 방해하지 않지만, 둘 다 장에서 부푸는 식이섬유 계열이라 함께 먹으면 포만감·가스가 늘 수 있습니다.",
+          "물을 충분히 마시고 양은 서서히 늘리세요. 다른 영양제·약과는 2시간 이상 간격.");
+      }
+      if (has("psyllium")) {
+        var o = other("psyllium"), on = Data.shortName(o);
+        return mk("caution", 1, "차전자피가 " + on + " 흡수를 늦출 수 있어요",
+          "차전자피 식이섬유는 장에서 부풀어 같은 시간에 먹은 영양제·약의 흡수를 늦춥니다. " + J(on, "은는") + " 시간을 나누면 문제가 없습니다.",
+          "차전자피는 식전에 물 300ml 이상과, " + J(on, "은는") + " 다른 끼니 식후로 2시간 이상 간격.", 2);
+      }
+      if (has("chitosan")) {
+        var oc = other("chitosan"), ocn = Data.shortName(oc);
+        if (oc.id === "multivitamin") {
+          return mk("caution", 1, "키토산이 종합비타민의 미네랄·지용성 비타민 흡수를 줄일 수 있어요",
+            "키토산은 장에서 지방·미네랄과 결합해 배출하는 성분이라, 종합비타민에 든 지용성 비타민(A·D·E·K)과 미네랄의 흡수를 줄일 수 있다는 보고가 있습니다.",
+            "키토산은 식사 직전에, 종합비타민은 다른 끼니 식후로 2시간 이상 간격.", 2);
+        }
+        if (oc.fatSoluble || oc.category === "mineral") {
+          return mk("caution", 1, "키토산이 " + ocn + " 흡수를 줄일 수 있어요",
+            "키토산은 장에서 지방·미네랄과 결합해 배출하는 성분이라 " + (oc.fatSoluble ? "지용성 성분인 " : "미네랄인 ") + J(ocn, "이가") + " 함께 배출될 수 있다는 보고가 있습니다. 시간을 나누면 문제가 없습니다.",
+            "키토산은 식사 직전에, " + J(ocn, "은는") + " 다른 끼니 식후로 2시간 이상 간격.", 2);
+        }
+      }
+      if (has("indigestible-dextrin")) {
+        var od = other("indigestible-dextrin"), odn = Data.shortName(od);
+        if (od.category === "mineral") {
+          return mk("caution", 1, "난소화성말토덱스트린이 " + odn + " 흡수를 늦출 수 있어요",
+            "수용성 식이섬유는 같은 시간에 먹은 미네랄의 흡수를 늦출 수 있습니다. " + J(odn, "은는") + " 시간을 나누면 문제가 없습니다.",
+            "식이섬유는 식사와 함께, " + J(odn, "은는") + " 다른 끼니 식후로 2시간 이상 간격.", 2);
+        }
+      }
+      if (has("multivitamin")) {
+        var om = other("multivitamin"), omn = Data.shortName(om);
+        return mk("neutral", 0, "종합비타민과 함께 — 중복만 확인",
+          "종합비타민·미네랄과 " + J(omn, "은는") + " 서로 흡수를 방해하지 않습니다. 종합비타민에 " + J(omn, "이가") + " 이미 들어 있다면 함량을 합산해 상한을 넘기지 않으면 됩니다.",
+          "종합비타민에 같은 성분이 들어 있는지 라벨에서 확인해 중복 상한만 지키세요.");
+      }
+      if (A.fatSoluble && B.fatSoluble) {
+        return mk("synergy", 1, "지용성끼리 식후에 함께 먹으면 흡수가 좋아요",
+          J(na, "과와") + " " + J(nb, "은는") + " 둘 다 지용성이라 기름기 있는 식사와 함께 먹을 때 흡수가 좋고, 서로 흡수를 방해하지 않습니다.",
+          "아침이나 저녁 식후에 함께. 각각의 상한만 지키세요.");
+      }
+      if (A.category === "mineral" && B.category === "mineral") {
+        return mk("neutral", 0, "특별한 상호작용 없음",
+          J(na, "과와") + " " + J(nb, "은는") + " 일반 함량에서 서로 흡수를 뚜렷이 방해한다는 보고가 없습니다.",
+          "미네랄은 식사와 함께, 고함량 제품이라면 끼니를 나누면 흡수에 유리합니다.");
+      }
+      var tip = has("iron") ? "철분은 아침 공복에 비타민C 와, 상대 성분은 식후에 먹으면 속이 편합니다."
+        : has("probiotics") ? "유산균은 아침 공복, 상대 성분은 식후로 나누면 됩니다."
+        : "같은 시간에 먹어도 됩니다. 각각의 상한만 지키세요.";
+      return mk("neutral", 0, "특별한 상호작용 없음",
+        J(na, "과와") + " " + J(nb, "은는") + " 일반 함량에서 서로 흡수나 작용을 방해한다는 보고가 없습니다.", tip);
+    },
+    /* 데이터의 쌍이 있으면 그것을, 없으면 규칙 판정을 돌려준다 */
+    resolvePair: function (core, a, b) { return Data.findPair(core, a, b) || Data.inferPair(core, a, b); },
     typeOrder: { avoid: 0, caution: 1, synergy: 2, neutral: 3, unknown: 4 },
 
     /* 간단 검색 (이름·별칭·태그·영문) */

@@ -100,7 +100,7 @@
   function pairResults() {
     var out = [];
     for (var i = 0; i < selected.length; i++) for (var j = i + 1; j < selected.length; j++) {
-      var p = D.findPair(core, selected[i], selected[j]);
+      var p = D.resolvePair(core, selected[i], selected[j]);   // 데이터에 없는 쌍은 규칙 판정(inferred)
       out.push({ a: core.byId[selected[i]], b: core.byId[selected[j]], pair: p, type: p ? p.type : "unknown" });
     }
     out.sort(function (x, y) { return D.typeOrder[x.type] - D.typeOrder[y.type] || ((y.pair && y.pair.level) || 0) - ((x.pair && x.pair.level) || 0); });
@@ -120,6 +120,7 @@
       '<h3 class="mt-3 text-lg font-extrabold text-ink-900"><a class="hover:text-brand-700" href="' + D.ingredientUrl(r.a.id) + '">' + esc(r.a.name) + '</a> <span class="text-ink-300">+</span> <a class="hover:text-brand-700" href="' + D.ingredientUrl(r.b.id) + '">' + esc(r.b.name) + '</a></h3>' +
       '<p class="mt-1 font-semibold text-ink-800">' + esc(title) + '</p>' +
       '<p class="mt-2 text-sm leading-relaxed text-ink-600">' + esc(detail) + '</p>' +
+      (r.pair && r.pair.inferred ? '<p class="mt-1 text-xs text-ink-400">두 성분 사이의 개별 자료가 아직 없어 일반 규칙(식이섬유·지용성·종합비타민 중복)으로 안내한 결과예요.</p>' : "") +
       (tip ? '<p class="mt-3 flex items-start gap-2 rounded-xl bg-white/80 p-3 text-sm text-ink-700 ring-1 ring-ink-100"><i data-lucide="lightbulb" class="mt-0.5 h-4 w-4 shrink-0 text-amber-500"></i><span><strong>이렇게 드세요:</strong> ' + esc(tip) + '</span></p>' : "") +
       '</article>';
   }
@@ -132,7 +133,7 @@
     var rows = selected.map(function (ra) {
       return '<tr><th scope="row" class="text-left"><span class="line-clamp-2">' + esc(core.byId[ra].name) + '</span></th>' + selected.map(function (cb) {
         if (ra === cb) return '<td class="cell-self"></td>';
-        var p = D.findPair(core, ra, cb); var type = p ? p.type : "unknown";
+        var p = D.resolvePair(core, ra, cb); var type = p ? p.type : "unknown";
         var sym = { synergy: "○", caution: "△", avoid: "✕", neutral: "–", unknown: "·" }[type];
         return '<td class="cell-' + type + '"><a href="#' + pairAnchor(ra, cb) + '" title="' + esc(core.byId[ra].name + " + " + core.byId[cb].name + (p ? ": " + p.title : "")) + '">' + sym + "</a></td>";
       }).join("") + "</tr>";

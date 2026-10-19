@@ -22,7 +22,7 @@
     function conflicts(id) {
       return ids.filter(function (o) {
         if (o === id || assign[o] !== assign[id]) return false;
-        var p = window.Data.findPair(core, id, o);
+        var p = window.Data.resolvePair(core, id, o);   // 데이터에 없는 쌍도 규칙(차전자피·키토산 2시간 간격)을 적용
         return p && (p.separateHours || 0) >= 1;
       });
     }
@@ -53,7 +53,7 @@
     ids.forEach(function (id) {
       conflicts(id).forEach(function (o) {
         if (id < o) {
-          var p = window.Data.findPair(core, id, o);
+          var p = window.Data.resolvePair(core, id, o);
           notes.push(core.byId[id].name + "과(와) " + core.byId[o].name + "은(는) " + (p.separateHours || 2) + "시간 이상 간격을 두세요. 같은 시간대라면 하나를 다른 끼니로 옮기세요.");
         }
       });

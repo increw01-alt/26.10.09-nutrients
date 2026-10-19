@@ -312,7 +312,7 @@
       }
       var shared = A.ids.filter(function (k) { return B.ids.indexOf(k) >= 0; });
       var pairs = [];
-      A.ids.forEach(function (a) { B.ids.forEach(function (b) { if (a === b) return; pairs.push({ a: a, b: b, p: D.findPair(core, a, b) }); }); });
+      A.ids.forEach(function (a) { B.ids.forEach(function (b) { if (a === b) return; pairs.push({ a: a, b: b, p: D.resolvePair(core, a, b) }); }); });   // 데이터에 없는 쌍은 규칙 판정
       var notes = [];   // 의약품 쪽 규칙(제산제+철분 등)은 성분 조합과 별도로 덧붙인다
       [A, B].forEach(function (x, i) {
         if (x.kind !== "drug" || !x.loaded) return;

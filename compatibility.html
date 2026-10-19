@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="assets/css/tailwind.css?v=287edf6b">
   <script src="assets/js/icons.js?v=37990267" defer></script>
   <script src="assets/js/config.js?v=ff071ff5" defer></script>
-  <script src="assets/js/data.js?v=ae5e8685" defer></script>
+  <script src="assets/js/data.js?v=126a3dae" defer></script>
   <script src="assets/js/affiliate.js?v=65f5cd0f" defer></script>
   <script src="assets/js/layout.js?v=f36edad4" defer></script>
   <title>영양제 궁합 체크 — 같이 먹어도 되는지 바로 확인 | 영양제.kr</title>
@@ -27,8 +27,8 @@
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <script src="assets/js/illus.js?v=5c359cba" defer></script>
-  <script src="assets/js/schedule.js?v=00728c03" defer></script>
-  <script src="assets/js/pages/compat.js?v=fa9051c5" defer></script>
+  <script src="assets/js/schedule.js?v=37658435" defer></script>
+  <script src="assets/js/pages/compat.js?v=63310e70" defer></script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"영양제 궁합 체크","applicationCategory":"HealthApplication","operatingSystem":"Web","url":"https://xn--og5b1hx9c.kr/compatibility","description":"영양제 성분 간 궁합과 복용 시간표를 확인하는 무료 도구","offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"홈","item":"https://xn--og5b1hx9c.kr/"},{"@type":"ListItem","position":2,"name":"궁합 체크","item":"https://xn--og5b1hx9c.kr/compatibility"}]}</script>
 </head>
@@ -94,7 +94,7 @@
         <section id="sec-results" class="mt-6 scroll-mt-36">
           <h2 class="flex items-center gap-2.5 text-lg font-extrabold text-ink-900"><span class="step-num grid h-8 w-8 shrink-0 place-items-center rounded-full bg-brand-600 text-sm font-extrabold text-white">2</span>궁합 결과</h2>
           <div id="summary" class="mt-4"></div>
-          <div id="matrix-wrap" class="mt-6 hidden scroll-mt-36 rounded-2xl border border-ink-100 bg-white p-5 shadow-card"><h3 class="text-sm font-bold text-ink-900">한눈에 보기</h3><p class="mt-1 text-xs text-ink-500">○ 좋은 궁합 · △ 시간 간격/용량 주의 · ✕ 피해야 할 조합 · – 무난 · · 정보 없음 (칸을 누르면 상세 결과로 이동)</p><div class="scroll-x mt-3 overflow-x-auto"><table id="matrix" class="matrix"></table></div></div>
+          <div id="matrix-wrap" class="mt-6 hidden scroll-mt-36 rounded-2xl border border-ink-100 bg-white p-5 shadow-card"><h3 class="text-sm font-bold text-ink-900">한눈에 보기</h3><p class="mt-1 text-xs text-ink-500">○ 좋은 궁합 · △ 시간 간격/용량 주의 · ✕ 피해야 할 조합 · – 무난 (칸을 누르면 상세 결과로 이동)</p><div class="scroll-x mt-3 overflow-x-auto"><table id="matrix" class="matrix"></table></div></div>
           <div id="results" class="mt-6 grid gap-4 md:grid-cols-2"></div>
         </section>
 
@@ -124,7 +124,7 @@
           <div class="rounded-2xl bg-white p-5 shadow-card"><span class="grid h-10 w-10 place-items-center rounded-full bg-rose-50 text-rose-700"><i data-lucide="octagon-alert" class="h-5 w-5"></i></span><span class="badge badge-avoid mt-3">피해야 할 궁합</span><p class="mt-2 text-sm leading-relaxed text-ink-700">부작용 위험이 겹쳐 병용을 권하지 않거나 전문가 상담이 필요한 조합.</p></div>
           <div class="rounded-2xl bg-white p-5 shadow-card"><span class="grid h-10 w-10 place-items-center rounded-full bg-ink-100 text-ink-600"><i data-lucide="circle-check" class="h-5 w-5"></i></span><span class="badge badge-neutral mt-3">무난한 궁합</span><p class="mt-2 text-sm leading-relaxed text-ink-700">알려진 특별한 상호작용이 없는 조합. 각 성분의 권장 시간만 지키면 됩니다.</p></div>
         </div>
-        <p class="mt-4 text-xs text-ink-500">일반 성인의 일반적인 용량을 기준으로 한 참고 정보입니다. 임신·수유 중이거나 질환이 있거나 약을 복용 중이면 반드시 의사·약사와 상담하세요.</p>
+        <p class="mt-4 text-xs text-ink-500">두 성분 사이의 개별 자료가 아직 없는 조합은 식이섬유·지용성·종합비타민 중복 같은 일반 규칙으로 판정해 표시하며, 결과 카드에 그 사실을 적어 둡니다. 일반 성인의 일반적인 용량을 기준으로 한 참고 정보입니다. 임신·수유 중이거나 질환이 있거나 약을 복용 중이면 반드시 의사·약사와 상담하세요.</p>
       </section>
     </div>
   </main>
