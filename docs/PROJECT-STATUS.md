@@ -78,7 +78,7 @@ data/
 | 도메인 `영양제.kr` 연결 (Cloudflare) | 완료 |
 | canonical·OG·sitemap 정식 도메인 반영 | 완료 |
 | 식품안전나라 API 키 (`FOODSAFETY_API_KEY`) | 완료 — C003, I-0040, I-0050, I0030 승인 |
-| Google Analytics 4 (`config.js` → `gaMeasurementId`) | 미완 — 10-19 속성 생성 중(사용자). 측정 ID(G-…)를 넣으면 `layout.js` 가 gtag 를 로드(로컬·pages.dev 제외, anonymize_ip). 이용약관 제12조에 방문 통계·쿠키 고지 추가됨 |
+| Google Analytics 4 (`config.js` → `gaMeasurementId`) | 완료 (10-19, 속성 영양제.kr·웹 스트림, 측정 ID G-ZYTWT7L92T). `layout.js` 가 모든 페이지에 gtag 로드(로컬·pages.dev 제외, anonymize_ip), 이용약관 제12조 고지 |
 | 구글 서치콘솔 | 완료 (10-12, 도메인 속성, Cloudflare DNS TXT 로 소유 확인). sitemap 제출함. 10-14 주소 형태 수정 후: 'Sitemaps' 재제출(또는 상태 '성공' 확인), 'URL 검사'로 `https://영양제.kr/` 색인 요청, '페이지' 보고서에서 '리디렉션이 포함된 페이지'·'중복 페이지' 항목이 줄어드는지 확인 |
 | 네이버 서치어드바이저 | 완료 (10-12, HTML 태그로 소유확인, sitemap 제출). 루트에 `naver8763….html` 확인 파일도 둠. 10-14 주소 형태 수정 후: '요청 → 사이트맵 제출' 재제출, '요청 → 웹 페이지 수집'에 홈·성분 사전·가이드 등 주요 주소(확장자 없이, 예: `https://영양제.kr/guides`)를 하루 50건 한도로 요청, '리포트 → 사이트 현황·수집 현황'에서 수집 오류 확인 |
 | 링크프라이스 (`config.js` → `linkprice.affiliateId`, `enabled: true`) | 완료 (10-16, ID A100708741, 사이트 영양제.kr 등록). 승인완료 머천트 중 G마켓·옥션·웰라이프몰(대상웰라이프, 최대 7%)·아이허브를 연결, 쇼핑 버튼에 웰라이프몰·아이허브 추가. 11번가는 승인대기라 일반 검색 링크 유지 — 승인되면 `merchants` 에 `"11st": "11st"` 추가 |
@@ -161,7 +161,7 @@ data/
 
 ## 7. 다음 할 일 (우선순위순)
 
-0. Google Analytics 4: 속성(영양제.kr, 서울 시간대, KRW) → 웹 데이터 스트림(`https://xn--og5b1hx9c.kr`) → 측정 ID 를 `config.js` `gaMeasurementId` 에 입력 후 빌드·푸시(코드 쪽은 Claude). 실시간 보고서에서 방문이 잡히는지 확인
+0. Google Analytics 4 는 10-19 연동 완료. 며칠 뒤 보고서(실시간·페이지 및 화면)에서 방문이 잡히는지, 서치콘솔과 연결(관리 → 제품 링크 → Search Console)할지 확인
 1. 서치콘솔·서치어드바이저에 사이트맵 재제출(10-14 주소 형태 수정 반영) 후 홈·주요 페이지 색인 요청·웹 페이지 수집 요청. 노출까지는 보통 구글 1~3주, 네이버는 그 이상 걸리므로 '페이지' 보고서의 오류 항목만 확인하며 기다리기
 2. 쿠팡 파트너스: 가입 완료(10-16). ① 내 정보에서 활동 채널로 웹사이트 `https://영양제.kr` 등록 ② 링크 생성으로 만든 링크를 사이트에 쓰고 구매 실적이 생기면 최종승인 심사(파트너스 홈의 '최종승인 가이드' 배너) ③ 최종승인 뒤 추가 기능 → Open API 에서 액세스 키·시크릿 키 발급 → GitHub Secrets(`COUPANG_ACCESS_KEY`·`COUPANG_SECRET_KEY`)에 등록 ④ `config.js` 의 `coupang.enabled` 를 true 로(코드 쪽은 Claude 가 처리). 키가 들어가면 매일 수집 워크플로가 성분별 검색 딥링크(`data/deeplinks.json`)를 만들어 쿠팡 버튼이 제휴 링크로 바뀜. 링크프라이스는 10-16 활성화 완료, 11번가(승인대기) 승인되면 `merchants` 에 추가
 3-1. 저장소 공개 범위 결정 — 현재 PUBLIC 이며 `LICENSE` 로 권리 유보는 명시됨. 비공개로 돌려도 Cloudflare Pages 의 GitHub 연동과 Actions 는 유지되지만 Actions 무료 사용량 한도가 적용됨
