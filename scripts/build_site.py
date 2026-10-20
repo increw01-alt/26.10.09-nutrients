@@ -219,6 +219,52 @@ def inject_verification(cfg: dict) -> None:
         log.info("index.html 소유 확인 메타태그 %d개 반영, 성분 수 표기 %d곳 → %d가지", len(tags), n_rep, n_ing)
 
 
+PWA_START, PWA_END = "<!-- pwa:start -->", "<!-- pwa:end -->"
+PWA_THEME = "#246d4b"
+
+
+def pwa_tags(root: str) -> str:
+    """홈 화면 설치(PWA)용 head 태그 6줄 — 매니페스트·iOS 아이콘·테마색. root 는 페이지의 data-root('./'·'../'·'/')."""
+    return "\n".join([
+        f'<link rel="manifest" href="{root}manifest.webmanifest">',
+        f'<link rel="apple-touch-icon" href="{root}assets/images/app/apple-touch-icon.png">',
+        f'<meta name="theme-color" content="{PWA_THEME}">',
+        '<meta name="mobile-web-app-capable" content="yes">',
+        '<meta name="apple-mobile-web-app-title" content="영양제.kr">',
+        '<meta name="apple-mobile-web-app-status-bar-style" content="default">',
+    ])
+
+
+def pwa_block(root: str, indent: str = "  ") -> str:
+    """마커로 감싼 PWA 태그 블록 (끝에 줄바꿈 없음)."""
+    return f"{indent}{PWA_START}\n" + "".join(f"{indent}{t}\n" for t in pwa_tags(root).split("\n")) + f"{indent}{PWA_END}"
+
+
+def ensure_pwa_tags(html_src: str, root: str) -> str:
+    """마커 블록이 있으면 내용을 갱신하고, 없으면 <link rel="icon"> 줄 바로 뒤에 넣는다. 둘 다 없으면 그대로. 멱등."""
+    a, b = html_src.find(PWA_START), html_src.find(PWA_END)
+    if a >= 0 and b > a:
+        line_start = html_src.rfind("\n", 0, a) + 1
+        return html_src[:line_start] + pwa_block(root, html_src[line_start:a]) + html_src[b + len(PWA_END):]
+    m = re.search(r'^([ \t]*)<link rel="icon"[^>]*>[ \t]*$', html_src, re.M)
+    if not m:
+        return html_src
+    return html_src[:m.end()] + "\n" + pwa_block(root, m.group(1)) + html_src[m.end():]
+
+
+def inject_pwa_tags() -> None:
+    """모든 HTML(루트·i/·guide/)의 <link rel="icon"> 뒤 마커 블록에 PWA 태그를 넣거나 갱신한다 (경로는 각 페이지의 data-root 기준)."""
+    files = sorted(ROOT.glob("*.html")) + sorted(OUT_DIR.glob("*.html")) + sorted(GUIDE_DIR.glob("*.html"))
+    changed = 0
+    for p in files:
+        src = p.read_text(encoding="utf-8")
+        m = re.search(r'data-root="([^"]*)"', src)
+        out = ensure_pwa_tags(src, m.group(1) if m else "./")
+        if out != src:
+            p.write_text(out, encoding="utf-8"); changed += 1
+    log.info("PWA 태그 주입: HTML %d개 갱신", changed)
+
+
 def validate(ingredients: dict, interactions: dict) -> None:
     ids = {i["id"] for i in ingredients["items"]}
     required = ["id", "name", "en", "category", "summary", "benefits", "dosage", "timing", "cautions", "shopQuery", "tags"]
@@ -401,6 +447,7 @@ def head_html(cfg: dict, *, title: str, desc: str, path: str, root: str, keyword
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="{root}assets/images/favicon.svg" type="image/svg+xml">
+{pwa_block(root)}
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <link rel="stylesheet" href="{root}assets/css/style.css">
@@ -636,6 +683,7 @@ def main() -> int:
     guides = build_guides(core, cfg)
     build_sitemap(ingredients["items"], cfg, data_date, guides)
     inject_verification(cfg)
+    inject_pwa_tags()
     build_product_names()
     validate_drug_pairings(set(core["by_id"].keys()))
     ensure_drug_index()

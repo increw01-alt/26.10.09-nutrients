@@ -6,6 +6,7 @@
 검사 항목
   [실패] 내부 링크(href·src)가 가리키는 파일 존재 · sitemap.xml ↔ 생성 HTML 일치(noindex 제외) · JSON-LD 파싱 · 제목 중복
          · 홈 탭(home.js GUIDE_GROUPS)이 모든 가이드를 포함 · data/guides-index.json 이 guides.json 과 같은 수
+         · manifest.webmanifest 존재·파싱·아이콘 파일 존재 · 색인 페이지마다 rel="manifest" 링크(build_site.py 가 주입)
   [경고] <title> 95자 초과 · meta description 없음 또는 50자 미만(noindex 제외) · 가이드 핵심 성분에 한 번도 연결되지 않은 성분
          · 궁합 3쌍 이하 성분 · 다른 가이드의 related 에 한 번도 등장하지 않는 가이드 · 숫자로 끝나는 성분명의 조사(Q10는·B6는·D3는·B1는)
          · '미인정·기능성 원료 아님·인정한 원료 없음' 단정 문장 중 식약처 인정현황(data/materials.json)에 이름이 보이는 것
@@ -92,6 +93,23 @@ def check_html() -> None:
             fail(f"파일은 있으나 sitemap 에 없음: {p}")
     else:
         fail("sitemap.xml 이 없음 (build_site.py 를 먼저 실행)")
+    # 웹 앱 매니페스트 ↔ 아이콘 파일, 색인 페이지의 manifest 링크(build_site.py 가 주입)
+    mf = ROOT / "manifest.webmanifest"
+    if not mf.exists():
+        fail("manifest.webmanifest 이 없음")
+    else:
+        try:
+            for ic in json.loads(mf.read_text(encoding="utf-8")).get("icons", []):
+                if not (ROOT / str(ic.get("src", "")).lstrip("/")).exists():
+                    fail(f"매니페스트 아이콘 파일 없음: {ic.get('src')} — python scripts/build_app_icons.py")
+        except Exception as e:  # noqa: BLE001
+            fail(f"manifest.webmanifest 파싱 오류: {str(e)[:60]}")
+    for h in files:
+        name = rel(h)
+        if name[:-5] in noindex or name == "404.html" or name.startswith("naver"):
+            continue
+        if 'rel="manifest"' not in h.read_text(encoding="utf-8"):
+            fail(f"PWA 매니페스트 링크 없음: {name} — build_site.py 재실행")
     if not QUIET:
         print(f"HTML {len(files)}개 · noindex {len(noindex)}개 검사")
 

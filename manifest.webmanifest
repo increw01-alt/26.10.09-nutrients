@@ -1,0 +1,24 @@
+{
+  "name": "영양제.kr — 영양제 궁합·복용 가이드",
+  "short_name": "영양제",
+  "id": "/",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "lang": "ko",
+  "dir": "ltr",
+  "background_color": "#f8faf5",
+  "theme_color": "#246d4b",
+  "description": "영양제 추천 성분, 영양제 궁합, 먹는 시간과 순서까지. 성분별 효능·권장량·주의사항과 식약처 건강기능식품 정보, 고민별·대상별 영양제 가이드를 제공합니다.",
+  "categories": ["health", "lifestyle"],
+  "icons": [
+    { "src": "/assets/images/app/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/images/app/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/images/app/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "궁합 체크", "url": "/compatibility" },
+    { "name": "성분 사전", "url": "/ingredients" },
+    { "name": "영양제 가이드", "url": "/guides" }
+  ]
+}
