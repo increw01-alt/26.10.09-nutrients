@@ -51,3 +51,31 @@ test("pruneUnknown: 사전에 없는 id 는 제거하고 알려 준다", () => {
   const r = S.pruneUnknown(s, { zinc: {} });
   assert.deepEqual(r.removed, ["gone"]); assert.deepEqual(r.state.items.map(i => i.id), ["zinc"]);
 });
+
+// ---- Task 2: 복용 기록·날짜·통계 ----
+test("dateKey 는 현지 날짜", () => assert.equal(S.dateKey(new Date(2026, 9, 20, 23, 30)), "2026-10-20"));
+test("addDays·lastDays", () => {
+  assert.equal(S.addDays("2026-10-20", -1), "2026-10-19"); assert.equal(S.addDays("2026-10-31", 1), "2026-11-01");
+  assert.deepEqual(S.lastDays("2026-10-20", 3), ["2026-10-18", "2026-10-19", "2026-10-20"]);
+});
+test("markDue·toggleDone·dayStats", () => {
+  let s = S.markDue(S.empty(), "2026-10-20", ["morning_after", "bedtime"]);
+  s = S.toggleDone(s, "2026-10-20", "morning_after", true);
+  s = S.toggleDone(s, "2026-10-20", "nope", true);
+  assert.deepEqual(S.dayStats(s, "2026-10-20"), { due: 2, done: 1, complete: false });
+  s = S.toggleDone(s, "2026-10-20", "bedtime", true);
+  assert.equal(S.dayStats(s, "2026-10-20").complete, true);
+  s = S.markDue(s, "2026-10-20", ["morning_after"]);   // 시간표가 줄면 due 가 줄고 done 도 그에 맞춤
+  assert.deepEqual(S.dayStats(s, "2026-10-20"), { due: 1, done: 1, complete: true });
+  assert.deepEqual(S.dayStats(S.markDue(s, "2026-10-20", []), "2026-10-20"), { due: 0, done: 0, complete: false });
+});
+test("streak: 오늘 미완료면 어제부터 센다", () => {
+  let s = S.empty();
+  for (const k of ["2026-10-17", "2026-10-18", "2026-10-19"]) { s = S.markDue(s, k, ["morning_after"]); s = S.toggleDone(s, k, "morning_after", true); }
+  s = S.markDue(s, "2026-10-20", ["morning_after"]);
+  assert.equal(S.streak(s, "2026-10-20"), 3);
+  assert.equal(S.streak(S.toggleDone(s, "2026-10-20", "morning_after", true), "2026-10-20"), 4);
+  assert.equal(S.streak(S.markDue(s, "2026-10-18", []), "2026-10-20"), 1);   // 중간이 비면 끊김
+  assert.equal(S.streak(S.empty(), "2026-10-20"), 0);
+});
+test("clearLog", () => assert.deepEqual(S.clearLog(S.markDue(S.empty(), "2026-10-20", ["bedtime"])).log, {}));

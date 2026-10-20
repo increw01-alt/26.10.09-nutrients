@@ -115,11 +115,60 @@
     return { state: out, removed: removed };
   }
 
+  /* ---- 복용 기록: 날짜 키는 기기의 현지 날짜 ---- */
+  function pad2(n) { return (n < 10 ? "0" : "") + n; }
+  function dateKey(d) { return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()); }
+  function fromKey(key) { var p = key.split("-"); return new Date(+p[0], +p[1] - 1, +p[2]); }
+  function addDays(key, n) { var d = fromKey(key); d.setDate(d.getDate() + n); return dateKey(d); }
+  /* 오늘을 포함해 n 일, 오래된 날부터 */
+  function lastDays(todayKey, n) {
+    var out = [];
+    for (var i = n - 1; i >= 0; i--) out.push(addDays(todayKey, -i));
+    return out;
+  }
+
+  /* 그날 챙겨야 할 시간대 목록을 기록한다(시간표가 바뀌면 due 가 따라가고 done 은 남은 것만 유지). 비면 그날 기록을 지운다 */
+  function markDue(state, key, slots) {
+    var out = clone(state);
+    var due = (slots || []).filter(isSlot);
+    if (!due.length) { delete out.log[key]; return out; }
+    var prev = out.log[key] || { done: {} };
+    var done = {};
+    due.forEach(function (s) { if (prev.done && prev.done[s]) done[s] = true; });
+    out.log[key] = { due: due, done: done };
+    return out;
+  }
+
+  function toggleDone(state, key, slot, done) {
+    var day = state.log[key];
+    if (!day || day.due.indexOf(slot) < 0) return state;
+    var out = clone(state);
+    if (done) out.log[key].done[slot] = true; else delete out.log[key].done[slot];
+    return out;
+  }
+
+  function dayStats(state, key) {
+    var day = state.log[key];
+    if (!day || !day.due.length) return { due: 0, done: 0, complete: false };
+    var n = day.due.filter(function (s) { return day.done[s]; }).length;
+    return { due: day.due.length, done: n, complete: n === day.due.length };
+  }
+
+  /* 연속 일수: 오늘이 완료면 오늘부터, 아니면 어제부터 거슬러 완료가 이어진 날 수 */
+  function streak(state, todayKey) {
+    var key = dayStats(state, todayKey).complete ? todayKey : addDays(todayKey, -1), n = 0;
+    while (dayStats(state, key).complete) { n++; key = addDays(key, -1); }
+    return n;
+  }
+
+  function clearLog(state) { var out = clone(state); out.log = {}; return out; }
+
   var Store = {
     KEY: KEY, SLOT_ORDER: SLOT_ORDER, SLOT_LABEL: SLOT_LABEL, DEFAULT_TIMES: DEFAULT_TIMES,
     empty: empty, load: load, save: save,
     addItems: addItems, removeItem: removeItem, setSlot: setSlot, overrides: overrides,
-    setTime: setTime, setSetting: setSetting, setSlotOn: setSlotOn, pruneUnknown: pruneUnknown
+    setTime: setTime, setSetting: setSetting, setSlotOn: setSlotOn, pruneUnknown: pruneUnknown,
+    dateKey: dateKey, addDays: addDays, lastDays: lastDays, markDue: markDue, toggleDone: toggleDone, dayStats: dayStats, streak: streak, clearLog: clearLog
   };
   if (typeof window !== "undefined") window.Store = Store;
   if (typeof module !== "undefined") module.exports = Store;
