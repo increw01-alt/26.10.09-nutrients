@@ -99,15 +99,51 @@
       "</section>";
   }
 
-  /* ---- 복용 기록·옮기기 (다음 작업에서 채움) ---- */
-  function sectionAskLog() { return ""; }
-  function sectionLog() { return ""; }
+  /* ---- 복용 기록: 처음 저장했을 때 한 번 묻고, 켜면 오늘 체크·연속 일수·7일/30일 보기 ---- */
+  function today() { return S.dateKey(new Date()); }
+  function sectionAskLog() {
+    if (!state.items.length || state.settings.logEnabled !== null) return "";
+    return '<section class="my-card" id="my-ask-log"><h3>복용 기록도 남길까요?</h3><p>시간대마다 \'먹었어요\'를 체크하고 연속 일수를 볼 수 있어요. 기록은 이 기기에만 남아요.</p>' +
+      '<div class="my-actions"><button type="button" class="btn-primary btn-sm" data-log-enable="true">네, 남길게요</button><button type="button" class="btn-outline btn-sm" data-log-enable="false">아니요</button></div></section>';
+  }
+  function dayClass(key, t) {
+    var st = S.dayStats(state, key);
+    return "my-day" + (st.complete ? " is-complete" : st.done > 0 ? " is-partial" : "") + (key === t ? " is-today" : "") + (key === ui.selectedDay ? " is-selected" : "");
+  }
+  function sectionLog(sched) {
+    if (!state.items.length || state.settings.logEnabled === null) return "";
+    if (state.settings.logEnabled === false) {
+      return '<section class="my-section" id="my-log"><h2><i data-lucide="circle-check"></i>복용 기록</h2><div class="my-row"><div class="my-row-main"><b>복용 기록은 꺼져 있어요</b><small>켜면 시간대별 체크와 연속 일수를 볼 수 있어요.</small></div><button type="button" class="btn-outline btn-sm" data-log-enable="true">켜기</button></div></section>';
+    }
+    var t = today(), st = S.dayStats(state, t), streak = S.streak(state, t);
+    var checks = sched.slots.map(function (s) {
+      var done = !!(state.log[t] && state.log[t].done[s.key]);
+      return '<button type="button" class="my-check' + (done ? " is-done" : "") + '" data-check="' + s.key + '" aria-pressed="' + (done ? "true" : "false") + '"><span class="tick"><i data-lucide="check"></i></span><span><b>' + esc(label(s.key)) + ' <span class="my-muted">' + esc(state.settings.times[s.key]) + '</span></b><small>' + esc(s.items.map(function (it) { return D.shortName(it); }).join(" · ")) + '</small></span></button>';
+    }).join("");
+    var week = S.lastDays(t, 7).map(function (k) { return '<button type="button" class="' + dayClass(k, t) + '" data-day="' + k + '" aria-label="' + k + '"><span>' + (k === t ? "오늘" : k.slice(5).replace("-", "/")) + '</span><span class="dot"></span></button>'; }).join("");
+    var month = S.lastDays(t, 30).map(function (k) { return '<button type="button" class="' + dayClass(k, t) + '" data-day="' + k + '" aria-label="' + k + '"><span>' + parseInt(k.slice(8), 10) + '</span><span class="dot"></span></button>'; }).join("");
+    var detail = "";
+    if (ui.selectedDay) {
+      var day = state.log[ui.selectedDay];
+      detail = '<div class="my-day-detail"><b>' + esc(ui.selectedDay) + '</b> · ' + (day && day.due.length ? day.due.map(function (k) { return (day.done[k] ? "✓ " : "— ") + esc(label(k)); }).join(" · ") : "기록 없음") + "</div>";
+    }
+    return '<section class="my-section" id="my-log"><h2><i data-lucide="circle-check"></i>복용 기록</h2>' +
+      '<p class="my-stat">' + (st.due ? "오늘 " + st.due + "개 중 " + st.done + "개 챙겼어요" : "오늘 시간표에 영양제가 없어요") + ' <span>· 연속 ' + streak + '일</span></p>' +
+      '<div class="my-checks">' + checks + "</div>" +
+      '<p class="my-sub" style="margin-top:1rem">최근 7일</p><div class="my-days">' + week + "</div>" +
+      '<p class="my-sub" style="margin-top:1rem">최근 30일</p><div class="my-days">' + month + "</div>" + detail +
+      '<div class="my-actions"><button type="button" class="btn-outline btn-sm" data-log-enable="false">기록 끄기</button><button type="button" class="btn-outline btn-sm" data-log-clear>기록 지우기</button></div></section>';
+  }
   function sectionTransfer() { return ""; }
   function sectionImport() { return ""; }
 
   function render() {
     var app = document.getElementById("my-app");
     var sched = schedule();
+    if (state.settings.logEnabled === true) {   // 오늘 챙겨야 할 시간대를 기록해 두어야 체크·통계가 시간표를 따라간다
+      var marked = S.markDue(state, today(), sched.slots.map(function (s) { return s.key; }));
+      if (JSON.stringify(marked.log) !== JSON.stringify(state.log)) { state = marked; S.save(state); }
+    }
     app.innerHTML = (ui.notice ? '<div class="my-notice">' + esc(ui.notice) + "</div>" : "") +
       sectionImport() + sectionAskLog() + sectionList() + sectionSchedule(sched) + sectionLog(sched) + sectionReminders(sched) + sectionTransfer();
     D.icons(app);
@@ -117,10 +153,14 @@
 
   function bind(app) {
     app.addEventListener("click", function (e) {
-      var t = e.target.closest("[data-add],[data-remove]");
+      var t = e.target.closest("[data-add],[data-remove],[data-log-enable],[data-check],[data-day],[data-log-clear]");
       if (!t) return;
       if (t.hasAttribute("data-add")) add(t.getAttribute("data-add"));
       else if (t.hasAttribute("data-remove")) { var id = t.getAttribute("data-remove"); commit(S.removeItem(state, id)); toast("삭제했어요"); }
+      else if (t.hasAttribute("data-log-enable")) commit(S.setSetting(state, "logEnabled", t.getAttribute("data-log-enable") === "true"));
+      else if (t.hasAttribute("data-check")) { var k = t.getAttribute("data-check"), tk = today(); commit(S.toggleDone(state, tk, k, !(state.log[tk] && state.log[tk].done[k]))); }
+      else if (t.hasAttribute("data-day")) { var d = t.getAttribute("data-day"); ui.selectedDay = ui.selectedDay === d ? null : d; render(); }
+      else if (t.hasAttribute("data-log-clear")) { if (window.confirm("복용 기록을 모두 지울까요?")) { ui.selectedDay = null; commit(S.clearLog(state)); toast("기록을 지웠어요"); } }
     });
     app.addEventListener("change", function (e) {
       var t = e.target;
