@@ -11,6 +11,7 @@ on:
       - "assets/css/tailwind.src.css"
       - "tailwind.config.cjs"
       - "scripts/build_site.py"
+      - "scripts/sw_template.js"
       - "scripts/build_icons.mjs"
       - "data/ingredients.json"
       - "data/interactions.json"
