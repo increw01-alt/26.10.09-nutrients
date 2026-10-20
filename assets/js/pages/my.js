@@ -269,13 +269,18 @@
       state = S.load();
       var pr = S.pruneUnknown(state, core.byId);
       if (pr.removed.length) { state = pr.state; S.save(state); ui.notice = "성분 사전에서 사라진 항목 " + pr.removed.length + "개를 목록에서 뺐어요."; }
-      /* 가져오기 링크(#import=, 옛 ?import=)는 읽자마자 주소에서 지운다 — 목록이 주소에 남아 공유·기록되지 않게 */
-      var imp = null;
-      try { imp = /[?&#]import=/.test(location.hash + location.search) ? S.importCode(location.href) : null; } catch (e) { /* 무시 */ }
-      if (/[?&#]import=/.test(location.hash + location.search)) {
+      /* 가져오기 링크(#import=, 옛 ?import=)는 읽자마자 주소에서 지운다 — 목록이 주소에 남아 공유·기록되지 않게.
+         이미 열린 페이지에서 조각만 바뀌는 이동(hashchange)도 같은 길로 처리한다 */
+      function readImportFromUrl() {
+        if (!/[?&#]import=/.test(location.hash + location.search)) return false;
+        var imp = null;
+        try { imp = S.importCode(location.href); } catch (e) { /* 무시 */ }
         try { history.replaceState(null, "", location.pathname); } catch (e) { /* 무시 */ }
         if (imp) ui.importPayload = imp; else ui.notice = "가져오기 링크의 코드를 읽을 수 없어요.";
+        return true;
       }
+      readImportFromUrl();
+      window.addEventListener("hashchange", function () { if (readImportFromUrl()) { state = S.load(); render(); } });
       app.addEventListener("input", function (e) { if (e.target.id === "my-import-text") ui.importText = e.target.value; });
       document.addEventListener("visibilitychange", function () { if (!document.hidden && ui.renderedDay && ui.renderedDay !== today()) render(); });   // 자정을 넘겨 다시 열면 오늘 기준으로
       bind(app);

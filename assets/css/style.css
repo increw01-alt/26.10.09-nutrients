@@ -121,6 +121,13 @@ body.has-pwa-banner #top-btn { display: none !important; }   /* 배너와 같은
 .my-item-main a:hover { color: #246d4b; }
 .my-item-main small { display: block; font-size: .75rem; color: #6b7a71; margin-top: .1rem; }
 .my-slot { font: inherit; font-size: .8rem; font-weight: 700; color: #1f5a3c; background: #eef2ef; border: 1px solid #d3e0ca; border-radius: .6rem; padding: .35rem .5rem; max-width: 9.5rem; }
+/* 좁은 화면: 이름이 한 줄을 차지하도록 시간대 select 를 둘째 줄(썸네일 들여쓰기)로 내린다 */
+@media (max-width: 480px) {
+  .my-item { flex-wrap: wrap; row-gap: .4rem; }
+  .my-item-main { flex: 1 1 0; }
+  .my-item .my-icon-btn { order: 2; }
+  .my-item .my-slot { order: 3; flex-basis: calc(100% - 44px - .75rem); margin-left: calc(44px + .75rem); max-width: none; }
+}
 .my-icon-btn { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 9999px; border: 0; background: transparent; color: #8a9684; cursor: pointer; }
 .my-icon-btn:hover { background: #f0f3f1; color: #b23a3a; }
 .my-icon-btn svg { width: 18px; height: 18px; }
