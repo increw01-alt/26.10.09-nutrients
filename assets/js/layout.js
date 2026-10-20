@@ -296,14 +296,29 @@
     document.head.appendChild(sc);
   })();
 
-  /* PWA 서비스워커 등록 — 자산 캐시·오프라인 안내 (sw.js 는 scripts/sw_template.js 에서 빌드가 생성) */
+  /* PWA 서비스워커 등록 — 자산 캐시·오프라인 안내 (sw.js 는 scripts/sw_template.js 에서 빌드가 생성).
+     로컬 확인(localhost·127.0.0.1)에서는 빌드 없이 고친 JS·CSS 가 캐시에 가려지지 않도록 기본은 등록하지 않고 기존 등록을 해제한다.
+     오프라인 동작을 로컬에서 보려면 주소에 ?sw=1 을 한 번 붙여 켜고(localStorage swDev), ?sw=0 으로 끈다 */
+  function shouldRegisterSw(hostname, devFlag) {
+    if (hostname === "localhost" || hostname === "127.0.0.1") return devFlag === "1";
+    return true;
+  }
   if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
-    window.addEventListener("load", function () { navigator.serviceWorker.register(D.url("sw.js")).catch(function () { /* 미지원·차단 시 무시 */ }); });
+    var swDev = null;
+    try {
+      var swQ = new URLSearchParams(location.search).get("sw");
+      if (swQ === "1" || swQ === "0") localStorage.setItem("swDev", swQ);
+      swDev = localStorage.getItem("swDev");
+    } catch (e) { /* 저장소 차단 시 무시 */ }
+    window.addEventListener("load", function () {
+      if (shouldRegisterSw(location.hostname, swDev)) navigator.serviceWorker.register(D.url("sw.js")).catch(function () { /* 미지원·차단 시 무시 */ });
+      else navigator.serviceWorker.getRegistrations().then(function (rs) { rs.forEach(function (r) { r.unregister(); }); }).catch(function () { /* 무시 */ });
+    });
   }
 
   document.addEventListener("DOMContentLoaded", function () {
     page = document.body.getAttribute("data-page") || "";
     renderHeader(); renderFooter(); renderTabbar(); fixMeta(); fillContact(); topButton(); initInstallBanner(); D.icons();
   });
-  window.Layout = { openSearch: openSearch, closeSearch: closeSearch, shouldShowInstallBanner: shouldShowInstallBanner };
+  window.Layout = { openSearch: openSearch, closeSearch: closeSearch, shouldShowInstallBanner: shouldShowInstallBanner, shouldRegisterSw: shouldRegisterSw };
 })();

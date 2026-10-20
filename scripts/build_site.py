@@ -73,8 +73,8 @@ def asset_digest(path: Path) -> str:
 
 
 SW_TEMPLATE = ROOT / "scripts/sw_template.js"
-PRECACHE_EXTRA = ["offline.html", "manifest.webmanifest", "assets/images/favicon.svg", "assets/images/home/leaf.webp",
-                  "assets/images/app/icon-192.png", "assets/images/app/icon-512.png"]
+PRECACHE_EXTRA = ["offline.html", "assets/images/favicon.svg", "assets/images/home/leaf.webp",   # URL 에 해시가 없는 파일 — 내용 해시는 sw_version 에 섞는다
+                  "assets/images/app/icon-192.png", "assets/images/app/icon-512.png"]            # (manifest 는 서비스워커가 건드리지 않아 뺌)
 
 
 def precache_urls() -> list[str]:
@@ -85,17 +85,22 @@ def precache_urls() -> list[str]:
     return sorted(urls)
 
 
-def sw_version(template: str, urls: list[str]) -> str:
-    """템플릿 본문 + precache 목록의 해시 앞 8자 — 자산이 하나라도 바뀌면 바뀌어 옛 캐시를 버리게 한다."""
+def precache_extra_digests() -> list[str]:
+    """해시 없는 precache 파일들의 내용 해시 — 버전 계산에 섞어 offline.html·아이콘이 바뀌어도 새 서비스워커가 배포되게."""
+    return [asset_digest(ROOT / p) for p in PRECACHE_EXTRA if (ROOT / p).exists()]
+
+
+def sw_version(template: str, urls: list[str], extra_digests: list[str] | None = None) -> str:
+    """템플릿 본문 + precache 목록 + 해시 없는 파일의 내용 해시를 합친 sha1 앞 8자 — 무엇이든 바뀌면 버전이 바뀌어 옛 캐시를 버린다."""
     import hashlib
-    return hashlib.sha1((template.replace("\r\n", "\n") + "\n".join(urls)).encode("utf-8")).hexdigest()[:8]
+    return hashlib.sha1((template.replace("\r\n", "\n") + "\n".join(urls) + "\n".join(extra_digests or [])).encode("utf-8")).hexdigest()[:8]
 
 
 def build_sw() -> None:
     """scripts/sw_template.js 에 버전과 precache 목록을 채워 루트 sw.js 를 생성한다 (sw.js 는 생성 파일)."""
     template = SW_TEMPLATE.read_text(encoding="utf-8")
     urls = precache_urls()
-    ver = sw_version(template, urls)
+    ver = sw_version(template, urls, precache_extra_digests())
     out = template.replace('"__VERSION__"', json.dumps(ver)).replace("/*__PRECACHE__*/[]", json.dumps(urls, ensure_ascii=False))
     with open(ROOT / "sw.js", "w", encoding="utf-8", newline="\n") as f:
         f.write(out)

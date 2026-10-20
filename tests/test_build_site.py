@@ -32,7 +32,7 @@ class ServiceWorkerBuildTests(unittest.TestCase):
     def test_precache_urls_are_absolute_and_hashed(self):
         urls = B.precache_urls()
         self.assertIn("/offline.html", urls)
-        self.assertIn("/manifest.webmanifest", urls)
+        self.assertNotIn("/manifest.webmanifest", urls)   # 매니페스트 요청은 서비스워커가 건드리지 않으므로 미리 받지 않는다
         self.assertTrue(any(u.startswith("/assets/js/data.js?v=") and len(u.split("?v=")[1]) == 8 for u in urls))
         self.assertTrue(all(u.startswith("/") for u in urls))
         self.assertEqual(urls, sorted(urls))
@@ -41,6 +41,17 @@ class ServiceWorkerBuildTests(unittest.TestCase):
         t = "var x;"
         self.assertNotEqual(B.sw_version(t, ["/a?v=1"]), B.sw_version(t, ["/a?v=2"]))
         self.assertEqual(len(B.sw_version(t, ["/a"])), 8)
+
+    def test_sw_version_changes_when_unhashed_precache_content_changes(self):
+        # offline.html·아이콘처럼 URL 에 해시가 없는 파일은 내용 해시를 따로 섞어야 바뀐 내용이 배포된다
+        t = "var x;"
+        self.assertNotEqual(B.sw_version(t, ["/offline.html"], ["aaaaaaaa"]), B.sw_version(t, ["/offline.html"], ["bbbbbbbb"]))
+
+    def test_precache_extra_digests_cover_every_unhashed_url(self):
+        urls = B.precache_urls()
+        unhashed = [u for u in urls if "?v=" not in u]
+        self.assertEqual(len(B.precache_extra_digests()), len(unhashed))
+        self.assertTrue(all(len(d) == 8 for d in B.precache_extra_digests()))
 
     def test_build_sw_fills_placeholders(self):
         B.build_sw()
