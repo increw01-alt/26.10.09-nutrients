@@ -1,5 +1,13 @@
 apply plugin: 'com.android.application'
 
+// 릴리스 서명은 GitHub Actions release-android.yml 이 환경변수로 넘긴다(docs/app-release.md 1·2절).
+// 넷 중 하나라도 없으면 서명 설정을 붙이지 않아 debug 빌드(build-android.yml)는 그대로 돈다.
+def releaseStore = System.getenv("ANDROID_KEYSTORE_PATH")
+def releaseSigned = releaseStore && System.getenv("ANDROID_KEYSTORE_PASSWORD") && System.getenv("ANDROID_KEY_ALIAS") && System.getenv("ANDROID_KEY_PASSWORD")
+// versionCode 는 워크플로 실행 번호(-PversionCode, 기본 1), versionName 은 app/package.json 의 version(-PversionName, 기본 1.0.0)
+def appVersionCode = (project.findProperty("versionCode") ?: "1").toInteger()
+def appVersionName = project.findProperty("versionName") ?: "1.0.0"
+
 android {
     namespace = "kr.yeongyangje.app"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -7,8 +15,8 @@ android {
         applicationId "kr.yeongyangje.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode appVersionCode
+        versionName appVersionName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -16,10 +24,21 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        release {
+            if (releaseSigned) {
+                storeFile file(releaseStore)
+                storePassword System.getenv("ANDROID_KEYSTORE_PASSWORD")
+                keyAlias System.getenv("ANDROID_KEY_ALIAS")
+                keyPassword System.getenv("ANDROID_KEY_PASSWORD")
+            }
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            if (releaseSigned) signingConfig signingConfigs.release
         }
     }
 }

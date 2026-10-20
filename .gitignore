@@ -6,3 +6,7 @@ node_modules/
 .DS_Store
 *.tmp
 .superpowers/
+# 안드로이드 업로드 키스토어와 base64 사본 — 절대 커밋 금지 (GitHub Secrets 에만, docs/app-release.md)
+*.jks
+*.keystore
+*.b64
