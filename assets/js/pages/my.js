@@ -54,7 +54,7 @@
   }
   function initAppReminders() {
     if (!isApp() || !window.Reminders) return;
-    window.addEventListener("yj:notification-action", function (e) { onNotificationAction(e.detail); });
+    window.addEventListener("yj:notification-action", function (e) { e.preventDefault(); onNotificationAction(e.detail); });   // preventDefault = "받았음" (app.js 가 보관하지 않게)
     var pending = null;
     try { pending = JSON.parse(sessionStorage.getItem("yj.pendingAction") || "null"); sessionStorage.removeItem("yj.pendingAction"); } catch (e) { /* 무시 */ }
     if (pending) onNotificationAction(pending);

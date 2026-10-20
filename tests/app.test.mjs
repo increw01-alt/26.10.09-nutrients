@@ -10,3 +10,24 @@ test("detect: Capacitor 객체가 있어도 웹이면 null", () => assert.equal(
 test("detect: localhost + appDev=1 이면 dev", () => assert.equal(A.detect(win({ location: { hostname: "localhost" }, localStorage: { getItem: (k) => (k === "appDev" ? "1" : null) } })), "dev"));
 test("detect: 운영 도메인에서는 appDev 를 무시", () => assert.equal(A.detect(win({ localStorage: { getItem: () => "1" } })), null));
 test("detect: 저장소가 throw 해도 null", () => assert.equal(A.detect(win({ location: { hostname: "localhost" }, localStorage: { getItem() { throw new Error("x"); } } })), null));
+
+// ---- 최종 검토 반영: 알림 동작 라우팅(순수)·런타임 버전 고정 ----
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
+const here = dirname(fileURLToPath(import.meta.url));
+
+function env(page, consumed) { const log = []; return { log, env: { page, dispatch: () => { log.push("dispatch"); return consumed; }, store: (d) => log.push("store:" + d.actionId), navigate: () => log.push("navigate") } }; }
+test("routeAction: 내 영양제 페이지에서 리스너가 받으면 저장·이동 없음", () => {
+  const { log, env: e } = env("my", true); A.routeAction({ actionId: "done" }, e); assert.deepEqual(log, ["dispatch"]);
+});
+test("routeAction: 내 영양제 페이지인데 리스너가 아직 없으면(콜드 스타트) 저장만 한다", () => {
+  const { log, env: e } = env("my", false); A.routeAction({ actionId: "done" }, e); assert.deepEqual(log, ["dispatch", "store:done"]);
+});
+test("routeAction: 다른 페이지면 저장하고 내 영양제로 이동", () => {
+  const { log, env: e } = env("ingredients", false); A.routeAction({ actionId: "snooze" }, e); assert.deepEqual(log, ["dispatch", "store:snooze", "navigate"]);
+});
+test("VENDOR_VERSION 은 app/package.json 의 @capacitor/core 버전과 같다(런타임 캐시 무효화 키)", () => {
+  const pkg = JSON.parse(readFileSync(join(here, "..", "app", "package.json"), "utf8"));
+  assert.equal(A.VENDOR_VERSION, pkg.dependencies["@capacitor/core"]);
+});

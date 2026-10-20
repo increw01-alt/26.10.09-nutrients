@@ -7,7 +7,7 @@
     "icons": "node scripts/build_icons.mjs",
     "assets": "npm run css && npm run icons",
     "vendor:qr": "node -e \"require('fs').copyFileSync('node_modules/qrcode-generator/qrcode.js','assets/js/vendor/qrcode.js')\"",
-    "vendor:cap": "node -e \"const f=require('fs');f.mkdirSync('assets/js/vendor/capacitor',{recursive:true});[['core/dist/capacitor.js','capacitor.js'],['local-notifications/dist/plugin.js','local-notifications.js'],['preferences/dist/plugin.js','preferences.js']].forEach(([s,d])=>f.copyFileSync('app/node_modules/@capacitor/'+s,'assets/js/vendor/capacitor/'+d))\""
+    "vendor:cap": "node -e \"const f=require('fs');f.mkdirSync('assets/js/vendor/capacitor',{recursive:true});[['core/dist/capacitor.js','capacitor.js'],['local-notifications/dist/plugin.js','local-notifications.js'],['preferences/dist/plugin.js','preferences.js']].forEach(([s,d])=>f.copyFileSync('app/node_modules/@capacitor/'+s,'assets/js/vendor/capacitor/'+d));const v=JSON.parse(f.readFileSync('app/package.json','utf8')).dependencies['@capacitor/core'];const p='assets/js/app.js';f.writeFileSync(p,f.readFileSync(p,'utf8').replace(/var VENDOR_VERSION = \\\"[^\\\"]*\\\"/,'var VENDOR_VERSION = \\\"'+v+'\\\"'));console.log('vendor:cap',v)\""
   },
   "devDependencies": {
     "lucide": "0.460.0",

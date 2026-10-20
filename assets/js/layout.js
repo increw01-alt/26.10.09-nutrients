@@ -306,6 +306,7 @@
       var b = e.target.closest("[data-my-add]"); if (!b || b.classList.contains("is-added") || e.target.closest("a")) return;
       var r = St.addItems(St.load(), myAddIds(b));
       St.save(r.state); markMyAdded(b);
+      if (window.AppBridge && window.AppBridge.isNative()) window.AppBridge.requestSync();   // 앱이면 알림 재예약·복제본 갱신
     });
   }
 

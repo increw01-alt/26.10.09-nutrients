@@ -222,6 +222,7 @@
         var b = e.target.closest("#save-my"); if (!b || !window.Store) return;
         var r = window.Store.addItems(window.Store.load(), selected);
         window.Store.save(r.state);
+        if (window.AppBridge && window.AppBridge.isNative()) window.AppBridge.requestSync();   // 앱이면 알림 재예약·복제본 갱신
         showToast(r.added.length ? "내 영양제에 " + r.added.length + "개 저장했어요" : "이미 내 영양제에 있어요");
         b.outerHTML = '<a href="my.html" class="btn-primary btn-sm"><i data-lucide="pill"></i>내 영양제 보기</a>';
         D.icons(document.getElementById("summary"));

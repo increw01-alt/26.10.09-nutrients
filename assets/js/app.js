@@ -5,6 +5,7 @@
 (function () {
   "use strict";
   var VENDOR = ["capacitor.js", "local-notifications.js", "preferences.js"];
+  var VENDOR_VERSION = "8.5.3";   // app/package.json 의 @capacitor/core 버전 — `npm run vendor:cap` 이 함께 갱신. ?v= 로 실어 1년 캐시(_headers)·서비스워커를 무효화한다
   var state = { mode: null, ready: null };
 
   function isLocalHost(h) { return h === "localhost" || h === "127.0.0.1"; }
@@ -42,29 +43,60 @@
     var root = document.documentElement.getAttribute("data-root") || "./";
     if (state.mode !== "native") { state.ready = Promise.resolve(); return; }
     state.ready = VENDOR.reduce(function (p, f) {
-      return p.then(function () { return loadScript(root + "assets/js/vendor/capacitor/" + f); });
+      return p.then(function () { return loadScript(root + "assets/js/vendor/capacitor/" + f + "?v=" + VENDOR_VERSION); });
     }, Promise.resolve()).catch(function (e) { if (window.console) console.warn("[app] 런타임 로드 실패:", e.message); });
     state.ready.then(function () { listenNotifications(root); });
   }
 
-  /* 알림 버튼·본문을 누른 이벤트는 어느 페이지에 있든 받아서, 내 영양제 페이지면 DOM 이벤트(yj:notification-action)로 넘기고
-     다른 페이지면 sessionStorage 에 담아 내 영양제 페이지로 이동한다(앱이 꺼져 있다가 열린 경우도 Capacitor 가 이벤트를 보존해 전달). */
+  /* 알림 동작을 어디로 보낼지 — 순수 함수(tests/app.test.mjs). env.dispatch(detail) 가 true(내 영양제 페이지의 리스너가 받음)면 끝.
+     아니면 env.store(detail) 로 보관하고(리스너가 아직 안 붙은 콜드 스타트도 여기), 내 영양제 페이지가 아니면 env.navigate() */
+  function routeAction(detail, env) {
+    if (env.dispatch(detail)) return;
+    env.store(detail);
+    if (env.page !== "my") env.navigate();
+  }
+
+  /* 알림 버튼·본문을 누른 이벤트는 어느 페이지에 있든 받는다(앱이 꺼져 있다가 열린 경우도 Capacitor 가 이벤트를 보존해 전달).
+     내 영양제 페이지의 리스너(my.js)가 preventDefault 로 받았다고 알리면 끝, 아니면 sessionStorage 에 담아 둔다(my.js 가 열릴 때 처리) */
   function listenNotifications(root) {
     var LN = AppBridge.plugin("LocalNotifications");
     if (!LN || typeof LN.addListener !== "function") return;
     try {
       LN.addListener("localNotificationActionPerformed", function (ev) {
         var detail = { actionId: ev && ev.actionId, notification: ev && ev.notification, at: Date.now() };
-        var page = document.body && document.body.getAttribute("data-page");
-        if (page === "my") { window.dispatchEvent(new CustomEvent("yj:notification-action", { detail: detail })); return; }
-        try { sessionStorage.setItem("yj.pendingAction", JSON.stringify(detail)); } catch (e) { /* 무시 */ }
-        window.location.href = root + "my.html";
+        routeAction(detail, {
+          page: document.body && document.body.getAttribute("data-page"),
+          dispatch: function (d) { var e = new CustomEvent("yj:notification-action", { detail: d, cancelable: true }); window.dispatchEvent(e); return e.defaultPrevented; },
+          store: function (d) { try { sessionStorage.setItem("yj.pendingAction", JSON.stringify(d)); } catch (e) { /* 무시 */ } },
+          navigate: function () { window.location.href = root + "my.html"; }
+        });
       });
     } catch (e) { /* 무시 */ }
   }
 
+  /* 내 영양제 페이지 밖(성분 상세·가이드·궁합 체크)에서 목록이 바뀌었을 때 알림을 다시 예약하고 복제본을 갱신한다. 앱 모드가 아니면 아무것도 안 함 */
+  function requestSync() {
+    if (!AppBridge.isNative() || !window.Store || !window.Data) return Promise.resolve();
+    var root = document.documentElement.getAttribute("data-root") || "./";
+    var need = [];
+    if (!window.Schedule) need.push("assets/js/schedule.js");
+    if (!window.Reminders) need.push("assets/js/reminders.js");
+    return AppBridge.ready().then(function () {
+      return need.reduce(function (p, f) { return p.then(function () { return loadScript(root + f); }); }, Promise.resolve());
+    }).then(function () {
+      var st = window.Store.load();
+      AppBridge.mirror(JSON.stringify(st));
+      var LN = AppBridge.plugin("LocalNotifications");
+      if (!LN || !st.settings.remindersOn || !window.Reminders || !window.Schedule) return;
+      return window.Data.core().then(function (core) {
+        var sched = window.Schedule.build(st.items.map(function (i) { return i.id; }), core, window.Store.overrides(st));
+        return window.Reminders.sync(LN, st, sched, { shortName: window.Data.shortName });
+      });
+    }).catch(function (e) { if (window.console) console.warn("[app] 알림 재예약 실패:", e && e.message); });
+  }
+
   var AppBridge = {
-    detect: detect,
+    detect: detect, routeAction: routeAction, requestSync: requestSync, VENDOR_VERSION: VENDOR_VERSION,
     mode: function () { return state.mode; },
     isNative: function () { return state.mode === "native" || state.mode === "dev"; },
     isReal: function () { return state.mode === "native"; },
