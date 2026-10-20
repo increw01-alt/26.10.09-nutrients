@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -32,4 +32,9 @@
     <!-- Permissions -->
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- 복용 알림은 모두 비정확 예약(reminders.js isExactNotification:false → AlarmManager.setAndAllowWhileIdle)이라 정확 알람 권한이 필요 없다.
+         @capacitor/local-notifications 가 넣는 SCHEDULE_EXACT_ALARM(과 USE_EXACT_ALARM)을 병합 매니페스트에서 빼 플레이의 제한 권한 심사를 피한다.
+         release-android.yml 의 '번들 검사' 단계가 EXACT_ALARM 이 번들에 없는지 확인한다 -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" tools:node="remove" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" tools:node="remove" />
 </manifest>
