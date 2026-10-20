@@ -104,6 +104,87 @@ body { background: var(--bg); color: var(--ink); font-family: "Pretendard Variab
 .pwa-banner button.pwa-install { background: #246d4b; color: #fff; }
 @media (min-width: 768px) { .pwa-banner { left: auto; right: 24px; bottom: 24px; width: 380px; } }
 body.has-pwa-banner #top-btn { display: none !important; }   /* 배너와 같은 자리의 '맨 위로' 버튼은 배너가 떠 있는 동안 숨김 */
+
+/* 내 영양제 페이지 (pages/my.js) — 섹션 카드, 항목 행, 시간대 선택, 토글, 기록 달력, 옮기기 패널 */
+.my-section { margin-top: 1.5rem; border: 1px solid #e3ebdc; border-radius: 1.25rem; background: #fff; padding: 1.25rem; box-shadow: 0 4px 18px rgba(27, 42, 34, .05); }
+.my-section > h2 { display: flex; align-items: center; gap: .5rem; font-size: 1.05rem; font-weight: 800; color: #15291d; }
+.my-section > h2 svg { width: 20px; height: 20px; color: #246d4b; }
+.my-section > h2 .my-count { font-size: .8rem; font-weight: 600; color: #6b7a71; }
+.my-sub { margin-top: .25rem; font-size: .8rem; color: #6b7a71; line-height: 1.5; }
+.my-notice { margin-top: 1.5rem; border-radius: 1rem; padding: .75rem 1rem; font-size: .85rem; line-height: 1.5; background: #fbf7ee; color: #6b4f16; border: 1px solid #f3e4c0; }
+.my-empty { margin-top: 1rem; border-radius: 1rem; background: #f6f8f6; padding: 1.25rem; text-align: center; font-size: .9rem; color: #4c5b52; line-height: 1.6; }
+.my-item { display: flex; align-items: center; gap: .75rem; padding: .7rem 0; border-top: 1px solid #f0f3f1; }
+.my-item:first-child { border-top: 0; }
+.my-item .thumb { flex-shrink: 0; }
+.my-item-main { flex: 1; min-width: 0; }
+.my-item-main a { font-weight: 800; color: #15291d; }
+.my-item-main a:hover { color: #246d4b; }
+.my-item-main small { display: block; font-size: .75rem; color: #6b7a71; margin-top: .1rem; }
+.my-slot { font: inherit; font-size: .8rem; font-weight: 700; color: #1f5a3c; background: #eef2ef; border: 1px solid #d3e0ca; border-radius: .6rem; padding: .35rem .5rem; max-width: 9.5rem; }
+.my-icon-btn { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 9999px; border: 0; background: transparent; color: #8a9684; cursor: pointer; }
+.my-icon-btn:hover { background: #f0f3f1; color: #b23a3a; }
+.my-icon-btn svg { width: 18px; height: 18px; }
+.my-search { position: relative; margin-top: 1rem; }
+.my-search input { width: 100%; font: inherit; font-size: .95rem; padding: .7rem 1rem .7rem 2.6rem; border-radius: 9999px; border: 1.5px solid #d3e0ca; background: #fff; }
+.my-search input:focus { outline: none; border-color: #246d4b; box-shadow: 0 0 0 3px #dfedd7; }
+.my-search > svg { position: absolute; left: .95rem; top: 50%; width: 18px; height: 18px; transform: translateY(-50%); color: #8a9684; }
+.my-search-list { position: absolute; left: 0; right: 0; top: calc(100% + 6px); z-index: 30; background: #fff; border: 1px solid #d3e0ca; border-radius: 1rem; box-shadow: 0 12px 32px rgba(27, 42, 34, .14); overflow: hidden; }
+.my-search-list button { display: flex; align-items: center; gap: .6rem; width: 100%; text-align: left; padding: .55rem .8rem; border: 0; background: #fff; font: inherit; font-size: .9rem; cursor: pointer; }
+.my-search-list button:hover, .my-search-list button.is-active { background: #eff5ec; }
+.my-search-list button small { color: #6b7a71; font-size: .75rem; margin-left: auto; white-space: nowrap; }
+.my-search-list .is-added { opacity: .55; }
+.my-sched { margin-top: .75rem; display: grid; gap: .6rem; }
+.my-sched-slot { border-radius: 1rem; background: #f6f8f6; padding: .75rem .9rem; }
+.my-sched-slot .t { display: flex; justify-content: space-between; align-items: baseline; font-size: .85rem; font-weight: 800; color: #1f5a3c; }
+.my-sched-slot .t time { font-variant-numeric: tabular-nums; color: #15291d; }
+.my-sched-slot ul { margin-top: .35rem; display: grid; gap: .25rem; }
+.my-sched-slot li { font-size: .88rem; color: #27322a; }
+.my-sched-slot li small { color: #6b7a71; font-size: .75rem; }
+.my-row { display: flex; align-items: center; gap: .75rem; padding: .6rem 0; border-top: 1px solid #f0f3f1; }
+.my-row:first-of-type { border-top: 0; }
+.my-row-main { flex: 1; min-width: 0; }
+.my-row-main b { display: block; font-size: .9rem; color: #15291d; }
+.my-row-main small { display: block; font-size: .75rem; color: #6b7a71; }
+.my-time { font: inherit; font-size: .9rem; font-weight: 800; color: #15291d; background: #eef2ef; border: 1px solid #d3e0ca; border-radius: .6rem; padding: .3rem .5rem; }
+.my-time:disabled { opacity: .5; }
+.my-toggle { position: relative; width: 42px; height: 24px; flex-shrink: 0; appearance: none; -webkit-appearance: none; border-radius: 9999px; background: #cfd6d1; cursor: pointer; transition: background .15s; border: 0; margin: 0; }
+.my-toggle::after { content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; transition: transform .15s; box-shadow: 0 1px 2px rgba(0,0,0,.2); }
+.my-toggle:checked { background: #246d4b; }
+.my-toggle:checked::after { transform: translateX(18px); }
+.my-toggle:disabled { opacity: .45; cursor: not-allowed; }
+.my-toggle:focus-visible { outline: 2px solid #246d4b; outline-offset: 2px; }
+.my-card { margin-top: 1.5rem; border-radius: 1.25rem; padding: 1.1rem 1.25rem; border: 1px solid #c9dfd0; background: #eef5ef; }
+.my-card h3 { font-size: 1rem; font-weight: 800; color: #15291d; }
+.my-card p { margin-top: .35rem; font-size: .88rem; color: #33433a; line-height: 1.55; }
+.my-card .my-actions { margin-top: .85rem; display: flex; flex-wrap: wrap; gap: .5rem; }
+.my-actions { margin-top: 1rem; display: flex; flex-wrap: wrap; gap: .5rem; }
+.my-stat { margin-top: .75rem; font-size: .95rem; font-weight: 800; color: #15291d; }
+.my-stat span { font-weight: 600; color: #6b7a71; }
+.my-checks { margin-top: .6rem; display: grid; gap: .5rem; }
+.my-check { display: flex; align-items: center; gap: .7rem; width: 100%; text-align: left; padding: .65rem .85rem; border-radius: .9rem; border: 1.5px solid #d3e0ca; background: #fff; font: inherit; cursor: pointer; }
+.my-check .tick { width: 24px; height: 24px; border-radius: 9999px; border: 2px solid #c9d4cc; display: grid; place-items: center; flex-shrink: 0; color: transparent; }
+.my-check .tick svg { width: 14px; height: 14px; }
+.my-check b { display: block; font-size: .9rem; color: #15291d; }
+.my-check small { display: block; font-size: .75rem; color: #6b7a71; }
+.my-check.is-done { background: #eef5ef; border-color: #9cc49c; }
+.my-check.is-done .tick { background: #246d4b; border-color: #246d4b; color: #fff; }
+.my-days { margin-top: 1rem; display: grid; grid-template-columns: repeat(7, 1fr); gap: .35rem; }
+.my-day { border: 0; background: #f6f8f6; border-radius: .7rem; padding: .45rem 0 .35rem; font: inherit; font-size: .75rem; color: #4c5b52; cursor: pointer; display: grid; justify-items: center; gap: .25rem; }
+.my-day .dot { width: 9px; height: 9px; border-radius: 50%; background: #d9e0db; }
+.my-day.is-complete .dot { background: #246d4b; }
+.my-day.is-partial .dot { background: #f0b429; }
+.my-day.is-today { outline: 2px solid #246d4b; outline-offset: -2px; }
+.my-day.is-selected { background: #e2ede4; }
+.my-day-detail { margin-top: .75rem; border-radius: .9rem; background: #f6f8f6; padding: .75rem .9rem; font-size: .85rem; color: #27322a; line-height: 1.6; }
+.my-field { margin-top: .75rem; }
+.my-field label { display: block; font-size: .78rem; font-weight: 700; color: #4c5b52; margin-bottom: .3rem; }
+.my-field .my-copy { display: flex; gap: .5rem; }
+.my-field input, .my-field textarea { flex: 1; width: 100%; font: inherit; font-size: .85rem; padding: .55rem .75rem; border-radius: .75rem; border: 1.5px solid #d3e0ca; background: #fafcf9; color: #27322a; }
+.my-field textarea { min-height: 5.5rem; resize: vertical; font-family: ui-monospace, Menlo, Consolas, monospace; word-break: break-all; }
+.my-qr { margin-top: .75rem; display: grid; place-items: center; }
+.my-qr svg { width: min(220px, 70vw); height: auto; }
+.my-error { margin-top: .5rem; font-size: .85rem; color: #b23a3a; }
+.my-muted { font-size: .8rem; color: #6b7a71; }
 body.has-tabbar { padding-bottom: 64px; }
 @media (min-width: 768px) { body.has-tabbar { padding-bottom: 0; } }
 
