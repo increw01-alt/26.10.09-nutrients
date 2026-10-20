@@ -11,12 +11,14 @@
     bedtime: { label: "취침 전", sub: "잠들기 30~60분 전", icon: "bed" }
   };
 
-  function build(ids, core) {
+  /* ids: 성분 id 목록, overrides: { id: 시간대 } — 사용자가 직접 바꾼 시간대는 그대로 두고(자동 이동 안 함) 다른 항목만 옮긴다. 충돌이 남으면 메모로 안내 */
+  function build(ids, core, overrides) {
+    overrides = overrides || {};
     var assign = {};
     var notes = [];
     ids.forEach(function (id) {
       var it = core.byId[id];
-      if (it) assign[id] = (it.timing && it.timing.slot) || "morning_after";
+      if (it) assign[id] = overrides[id] || (it.timing && it.timing.slot) || "morning_after";
     });
 
     function conflicts(id) {
@@ -31,6 +33,7 @@
     for (var round = 0; round < 3; round++) {
       var moved = false;
       ids.forEach(function (id) {
+        if (overrides[id]) return;   // 사용자가 정한 시간대는 옮기지 않는다
         var cf = conflicts(id);
         if (!cf.length) return;
         var it = core.byId[id];
