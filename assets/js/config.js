@@ -13,7 +13,8 @@ window.SITE = {
   // 검색엔진 소유 확인 메타태그 값 (없으면 빈 문자열 유지)
   naverSiteVerification: "ea7f0a747323533a9bc41af6ff79b0e82413bfd6",                     // 네이버 서치어드바이저 HTML 태그의 content 값 → python scripts/build_site.py 실행 시 index.html 에 삽입
   googleSiteVerification: "",                    // 구글 서치콘솔 HTML 태그의 content 값 (DNS 방식으로 확인했다면 비워 둬도 됨)
-  gaMeasurementId: "G-ZYTWT7L92T"                // Google Analytics 4 측정 ID (2026-10-19 속성 영양제.kr, 웹 스트림). 비우면 분석 스크립트를 싣지 않음. layout.js 가 로컬·pages.dev 미리보기에서는 제외
+  gaMeasurementId: "G-ZYTWT7L92T",                // Google Analytics 4 측정 ID (2026-10-19 속성 영양제.kr, 웹 스트림). 비우면 분석 스크립트를 싣지 않음. layout.js 가 로컬·pages.dev 미리보기에서는 제외
+  appShopping: false                             // 앱(Capacitor) 안에서 쇼핑 버튼·제휴 고지를 보일지. 쿠팡 파트너스 최종승인 뒤 앱을 채널로 등록하고 true 로 (app.js 가 html.app-noshop 으로 반영)                // Google Analytics 4 측정 ID (2026-10-19 속성 영양제.kr, 웹 스트림). 비우면 분석 스크립트를 싣지 않음. layout.js 가 로컬·pages.dev 미리보기에서는 제외
 };
 
 /* ---------------------------------------------------------

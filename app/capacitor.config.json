@@ -5,7 +5,8 @@
   "server": {
     "url": "https://xn--og5b1hx9c.kr/my",
     "androidScheme": "https",
-    "cleartext": false
+    "cleartext": false,
+    "errorPath": "index.html"
   },
   "android": {
     "allowMixedContent": false

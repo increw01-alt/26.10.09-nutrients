@@ -104,6 +104,7 @@ body { background: var(--bg); color: var(--ink); font-family: "Pretendard Variab
 .pwa-banner button.pwa-install { background: #246d4b; color: #fff; }
 @media (min-width: 768px) { .pwa-banner { left: auto; right: 24px; bottom: 24px; width: 380px; } }
 body.has-pwa-banner #top-btn { display: none !important; }   /* 배너와 같은 자리의 '맨 위로' 버튼은 배너가 떠 있는 동안 숨김 */
+html.app-noshop .app-hide, html.app-noshop #sec-shop, html.app-noshop #shop { display: none !important; }   /* 앱(쇼핑 숨김 상태, app.js)에서는 쇼핑 섹션·안내문·제휴 고지를 통째로 숨김 */
 
 /* 내 영양제 페이지 (pages/my.js) — 섹션 카드, 항목 행, 시간대 선택, 토글, 기록 달력, 옮기기 패널 */
 .my-section { margin-top: 1.5rem; border: 1px solid #e3ebdc; border-radius: 1.25rem; background: #fff; padding: 1.25rem; box-shadow: 0 4px 18px rgba(27, 42, 34, .05); }

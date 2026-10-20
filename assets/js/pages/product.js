@@ -63,7 +63,7 @@
       (ings.length ? '<div class="mt-4 flex flex-wrap items-center gap-2"><span class="text-xs font-bold text-ink-400">함유 성분</span>' + ings.map(function (i) { return '<a class="chip" href="' + D.ingredientUrl(i.id) + '">' + esc(i.name) + '</a>'; }).join("") + '</div>'
         : '<p class="mt-4 text-sm text-ink-500">성분 사전과 연결된 성분이 없는 제품입니다. 아래 원재료명을 참고하세요.</p>') +
       '<div class="mt-6 flex flex-wrap items-center gap-3">' + (ids.length ? '<a href="' + compatHref + '" class="btn-primary"><i data-lucide="heart-handshake"></i>이 제품 성분으로 궁합·시간표 보기 <i data-lucide="arrow-right"></i></a>' : "") +
-      '<a href="#sec-shop" class="btn-outline"><i data-lucide="shopping-cart" class="text-brand-600"></i>구매처 보기</a></div>' +
+      '<a href="#sec-shop" class="btn-outline app-hide"><i data-lucide="shopping-cart" class="text-brand-600"></i>구매처 보기</a></div>' +
       '</div>';
 
     var main = document.getElementById("product-main");

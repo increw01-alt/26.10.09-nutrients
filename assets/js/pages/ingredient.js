@@ -103,7 +103,7 @@
             (it.whoFor && it.whoFor.length ? '<dt>이런 분께</dt><dd>' + esc(it.whoFor.slice(0, 2).join(" · ")) + '</dd>' : "") +
           '</dl>' +
           '<div class="mt-5 flex flex-wrap gap-3">' +
-            '<a href="#shop" class="btn-primary"><i data-lucide="shopping-bag"></i>제품 찾아보기 <i data-lucide="arrow-right"></i></a>' +
+            '<a href="#shop" class="btn-primary app-hide"><i data-lucide="shopping-bag"></i>제품 찾아보기 <i data-lucide="arrow-right"></i></a>' +
             '<a href="' + D.compatUrl([it.id]) + '" class="btn-outline"><i data-lucide="heart-handshake" class="text-brand-600"></i>다른 영양제와 궁합 보기</a>' +
             (window.Store ? (function () {   // '내 영양제에 추가' (기기 내 저장, 클릭은 layout.js 의 [data-my-add] 공통 처리)
               var inMy = window.Store.load().items.some(function (i) { return i.id === it.id; });
@@ -133,7 +133,7 @@
       section("이런 분께 추천해요", "user", list(it.whoFor, "list-dot")) +
       section("섭취 시 주의사항", "triangle-alert", list(it.cautions, "list-warn") + (it.drugCautions && it.drugCautions.length ? '<h3 class="mt-5 text-sm font-bold text-rose-700">약과 함께 먹을 때</h3>' + list(it.drugCautions, "list-warn") : "") + '<p class="mt-4 text-xs text-ink-400">질환이 있거나 약을 복용 중이라면 섭취 전 의사·약사와 상담하세요.</p>', "ring-1 ring-amber-100") +
       section(it.name + " 궁합 한눈에", "heart-handshake", compatBlock(core, it), "", "sec-compat") +
-      '<section id="shop" class="scroll-mt-36 rounded-2xl border border-ink-100 bg-white p-6 shadow-card"><h2 class="flex items-center gap-2 text-lg font-extrabold text-ink-900"><i data-lucide="shopping-cart" class="h-5 w-5 text-brand-600"></i>' + esc(it.name) + ' 제품 찾기</h2><p class="mt-2 text-sm text-ink-500">쇼핑몰에서 "' + esc(it.shopQuery) + '" 검색 결과로 바로 이동합니다. 함량·형태·보장균수 등은 제품 라벨을 꼭 확인하세요.</p><div class="mt-4">' + window.Affiliate.buttonsHtml(it.shopQuery) + '</div><div id="ingredient-products" class="mt-6"><div class="skeleton h-24"></div></div><p class="mt-4 text-[11px] text-ink-400">' + esc(window.Affiliate.disclosure()) + '</p></section>' +
+      '<section id="shop" class="app-hide scroll-mt-36 rounded-2xl border border-ink-100 bg-white p-6 shadow-card"><h2 class="flex items-center gap-2 text-lg font-extrabold text-ink-900"><i data-lucide="shopping-cart" class="h-5 w-5 text-brand-600"></i>' + esc(it.name) + ' 제품 찾기</h2><p class="mt-2 text-sm text-ink-500">쇼핑몰에서 "' + esc(it.shopQuery) + '" 검색 결과로 바로 이동합니다. 함량·형태·보장균수 등은 제품 라벨을 꼭 확인하세요.</p><div class="mt-4">' + window.Affiliate.buttonsHtml(it.shopQuery) + '</div><div id="ingredient-products" class="mt-6"><div class="skeleton h-24"></div></div><p class="mt-4 text-[11px] text-ink-400">' + esc(window.Affiliate.disclosure()) + '</p></section>' +
       (it.faq && it.faq.length ? section("자주 묻는 질문", "circle-help", it.faq.map(function (f) { return '<details class="group border-b border-ink-100 py-3 last:border-0"><summary class="flex cursor-pointer list-none items-center justify-between gap-3 font-bold text-ink-900"><span>Q. ' + esc(f.q) + '</span><i data-lucide="chevron-down" class="h-4 w-4 shrink-0 text-ink-400 transition group-open:rotate-180"></i></summary><p class="mt-2 text-sm leading-relaxed text-ink-600">' + esc(f.a) + '</p></details>'; }).join(""), "", "sec-faq") : "");
 
     // 탭 활성화: 섹션이 화면 상단에 오면 해당 탭 표시

@@ -37,12 +37,30 @@
     state.mode = detect(window);
     if (!state.mode) { state.ready = Promise.resolve(); return; }
     document.documentElement.classList.add("is-app");
+    if (!(window.SITE && window.SITE.appShopping)) document.documentElement.classList.add("app-noshop");   // 쇼핑 버튼·안내·고지 숨김(.app-hide), config.js 의 appShopping 으로 켬
     document.addEventListener("DOMContentLoaded", function () { document.body.classList.add("is-app"); });
-    if (state.mode !== "native") { state.ready = Promise.resolve(); return; }
     var root = document.documentElement.getAttribute("data-root") || "./";
+    if (state.mode !== "native") { state.ready = Promise.resolve(); return; }
     state.ready = VENDOR.reduce(function (p, f) {
       return p.then(function () { return loadScript(root + "assets/js/vendor/capacitor/" + f); });
     }, Promise.resolve()).catch(function (e) { if (window.console) console.warn("[app] 런타임 로드 실패:", e.message); });
+    state.ready.then(function () { listenNotifications(root); });
+  }
+
+  /* 알림 버튼·본문을 누른 이벤트는 어느 페이지에 있든 받아서, 내 영양제 페이지면 DOM 이벤트(yj:notification-action)로 넘기고
+     다른 페이지면 sessionStorage 에 담아 내 영양제 페이지로 이동한다(앱이 꺼져 있다가 열린 경우도 Capacitor 가 이벤트를 보존해 전달). */
+  function listenNotifications(root) {
+    var LN = AppBridge.plugin("LocalNotifications");
+    if (!LN || typeof LN.addListener !== "function") return;
+    try {
+      LN.addListener("localNotificationActionPerformed", function (ev) {
+        var detail = { actionId: ev && ev.actionId, notification: ev && ev.notification, at: Date.now() };
+        var page = document.body && document.body.getAttribute("data-page");
+        if (page === "my") { window.dispatchEvent(new CustomEvent("yj:notification-action", { detail: detail })); return; }
+        try { sessionStorage.setItem("yj.pendingAction", JSON.stringify(detail)); } catch (e) { /* 무시 */ }
+        window.location.href = root + "my.html";
+      });
+    } catch (e) { /* 무시 */ }
   }
 
   var AppBridge = {
@@ -50,11 +68,13 @@
     mode: function () { return state.mode; },
     isNative: function () { return state.mode === "native" || state.mode === "dev"; },
     isReal: function () { return state.mode === "native"; },
+    /* 앱 안에서 쇼핑 버튼·제휴 고지를 숨기는가 (config.js 의 SITE.appShopping 이 true 면 보임) */
+    hideShopping: function () { return AppBridge.isNative() && !(window.SITE && window.SITE.appShopping); },
     ready: function () { return state.ready || Promise.resolve(); },
-    /* 브라우저 검증용 가짜(window.__devPlugins)가 있으면 그것을, 아니면 Capacitor 플러그인 프록시 */
+    /* dev 모드에서는 브라우저 검증용 가짜(window.__devPlugins)를, 아니면 Capacitor 플러그인 프록시 */
     plugin: function (name) {
       try {
-        if (window.__devPlugins && window.__devPlugins[name]) return window.__devPlugins[name];
+        if (state.mode === "dev" && window.__devPlugins && window.__devPlugins[name]) return window.__devPlugins[name];
         if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins[name]) return window.Capacitor.Plugins[name];
       } catch (e) { /* 무시 */ }
       return null;

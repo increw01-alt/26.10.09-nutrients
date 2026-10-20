@@ -8,13 +8,14 @@ const sn = (it) => it.name.replace(/\s*\(.*$/, "");
 const core = { byId: { magnesium: { id: "magnesium", name: "마그네슘" }, "vitamin-d": { id: "vitamin-d", name: "비타민 D" } } };
 const sched = { slots: [{ key: "morning_after", items: [core.byId["vitamin-d"]] }, { key: "bedtime", items: [core.byId.magnesium] }] };
 function on() { return S.setSetting(S.addItems(S.empty(), ["vitamin-d", "magnesium"]).state, "remindersOn", true); }
+function onLog() { return S.setSetting(on(), "logEnabled", true); }
 
 test("plan: 꺼져 있으면 없음", () => assert.deepEqual(R.plan(S.empty(), sched, { shortName: sn }), []));
 test("plan: 매일 반복 — 시간대마다 1건, 시각·이름·id", () => {
   const p = R.plan(on(), sched, { shortName: sn });
   assert.deepEqual(p.map(n => n.id), [1010, 1050]);
   assert.deepEqual(p[0].schedule.on, { hour: 8, minute: 0 }); assert.equal(p[0].title, "아침 식후 영양제 시간이에요"); assert.equal(p[0].body, "비타민 D");
-  assert.equal(p[1].schedule.on.hour, 22); assert.equal(p[1].schedule.on.minute, 30); assert.equal(p[1].actionTypeId, "DOSE"); assert.equal(p[1].extra.slot, "bedtime");
+  assert.equal(p[1].schedule.on.hour, 22); assert.equal(p[1].schedule.on.minute, 30); assert.equal(p[1].actionTypeId, "DOSE_SNOOZE");   // on() 은 기록이 꺼진 상태 assert.equal(p[1].extra.slot, "bedtime");
   assert.equal(p[0].isExactNotification, false); assert.equal(p[0].schedule.allowWhileIdle, true);
 });
 test("plan: 주말 끄면 월~금 5건씩, 토·일 없음", () => {
@@ -33,7 +34,7 @@ test("snoozeNotification: 30분 뒤 1회", () => {
   assert.equal(n.id, 9005); assert.equal(n.schedule.at.getTime(), 30 * 60000); assert.equal(n.title, "취침 전 영양제, 30분 뒤예요");
 });
 test("applyAction: done 은 오늘 due 를 먼저 기록하고 체크", () => {
-  const r = R.applyAction(on(), { actionId: "done", notification: { extra: { slot: "bedtime" } } }, ["morning_after", "bedtime"], "2026-10-20");
+  const r = R.applyAction(onLog(), { actionId: "done", notification: { extra: { slot: "bedtime" } } }, ["morning_after", "bedtime"], "2026-10-20");
   assert.deepEqual(S.dayStats(r.state, "2026-10-20"), { due: 2, done: 1, complete: false }); assert.equal(r.open, false); assert.equal(r.snooze, null);
 });
 test("applyAction: snooze·tap·모르는 동작", () => {
@@ -47,4 +48,26 @@ test("sync: 우리 id 만 취소하고 계획을 예약한다", async () => {
   const r = await R.sync(LN, on(), sched, { shortName: sn });
   assert.deepEqual(calls, [["cancel", [1010]], ["schedule", [1010, 1050]]]); assert.deepEqual(r, { cancelled: 1, scheduled: 2 });
   calls.length = 0; await R.sync(LN, S.empty(), sched, { shortName: sn }); assert.deepEqual(calls, [["cancel", [1010]]]);
+});
+
+// ---- 중간 검토 반영 ----
+test("plan: 기록이 켜져 있으면 DOSE(먹었어요+30분 뒤), 아니면 DOSE_SNOOZE(30분 뒤만)", () => {
+  assert.equal(R.plan(on(), sched, { shortName: sn })[0].actionTypeId, "DOSE_SNOOZE");
+  assert.equal(R.plan(onLog(), sched, { shortName: sn })[0].actionTypeId, "DOSE");
+  assert.deepEqual(R.actionTypes().types.map(t => t.id + ":" + t.actions.map(a => a.id).join("+")), ["DOSE:done+snooze", "DOSE_SNOOZE:snooze"]);
+  assert.equal(R.snoozeNotification("bedtime", 0, { shortName: sn }, "x", false).actionTypeId, "DOSE_SNOOZE");
+  assert.equal(R.snoozeNotification("bedtime", 0, { shortName: sn }, "x", true).actionTypeId, "DOSE");
+});
+test("applyAction: 기록이 꺼져 있으면 done 은 아무것도 남기지 않는다", () => {
+  const s = on();
+  const r = R.applyAction(s, { actionId: "done", notification: { extra: { slot: "bedtime" } } }, ["bedtime"], "2026-10-20");
+  assert.equal(r.state, s); assert.deepEqual(r.state.log, {});
+});
+test("sync: 30분 뒤 예약(9000대)은 알림이 켜져 있으면 남기고, 끄면 함께 취소한다", async () => {
+  const calls = [];
+  const LN = { getPending: async () => ({ notifications: [{ id: 1010 }, { id: 9003 }, { id: 42 }] }), cancel: async (o) => calls.push(["cancel", o.notifications.map(n => n.id)]), schedule: async (o) => calls.push(["schedule", o.notifications.map(n => n.id)]) };
+  await R.sync(LN, on(), sched, { shortName: sn });
+  assert.deepEqual(calls[0], ["cancel", [1010]]);
+  calls.length = 0; await R.sync(LN, S.empty(), sched, { shortName: sn });
+  assert.deepEqual(calls, [["cancel", [1010, 9003]]]);
 });

@@ -33,7 +33,7 @@
     },
     /* 버튼 묶음 HTML */
     buttonsHtml: function (query, opts) {
-      if (window.AppBridge && window.AppBridge.isNative()) return "";   // 앱 1차 출시는 쇼핑 버튼을 숨김(쿠팡 파트너스 최종승인 뒤 앱 채널 등록하고 켬)
+      if (window.AppBridge && window.AppBridge.hideShopping()) return "";   // 앱 1차 출시는 쇼핑 버튼을 숨김(config.js 의 SITE.appShopping 으로 켬)
       opts = opts || {};
       var esc = window.Data.esc;
       var size = opts.size === "sm" ? "px-2.5 py-1.5 text-xs" : "px-3.5 py-2 text-sm";
@@ -46,7 +46,7 @@
         }).join("") +
         '</div>';
     },
-    disclosure: function () { return (window.AppBridge && window.AppBridge.isNative()) ? "" : ((window.AFFILIATE && window.AFFILIATE.disclosure) || ""); }
+    disclosure: function () { return (window.AppBridge && window.AppBridge.hideShopping()) ? "" : ((window.AFFILIATE && window.AFFILIATE.disclosure) || ""); }
   };
   window.Affiliate = Affiliate;
 })();

@@ -38,23 +38,28 @@
       else { ui.notice = "알림 권한이 꺼져 있어요. 휴대폰 설정 → 앱 → 영양제.kr → 알림에서 켜 주세요."; commit(S.setSetting(state, "remindersOn", false)); }
     }).catch(function () { ui.notice = "알림을 켜지 못했어요. 잠시 뒤 다시 시도해 주세요."; commit(S.setSetting(state, "remindersOn", false)); });
   }
-  /* 알림의 버튼(먹었어요·30분 뒤 다시)이나 본체를 눌렀을 때 — 앱이 꺼져 있다가 열린 경우에도 리스너가 붙은 뒤 전달된다 */
+  /* 알림의 버튼(먹었어요·30분 뒤 다시)이나 본체를 눌렀을 때. app.js 가 모든 페이지에서 받아 이 페이지면 DOM 이벤트로, 다른 페이지면
+     sessionStorage 에 담아 넘어온다. 날짜는 누른 시각(at) 기준이라 자정을 넘겨 처리돼도 그날 기록으로 남는다 */
   function onNotificationAction(ev) {
-    var r = window.Reminders.applyAction(state, ev, dueSlots(schedule()), today());
+    var when = ev && ev.at ? S.dateKey(new Date(ev.at)) : today();
+    var r = window.Reminders.applyAction(state, ev, dueSlots(schedule()), when);
     if (r.snooze) {
       var slot = r.snooze, s = schedule().slots.filter(function (x) { return x.key === slot; })[0];
       var body = s ? s.items.map(function (it) { return D.shortName(it); }).join(" · ") : "";
-      var ln = LN(); if (ln) ln.schedule({ notifications: [window.Reminders.snoozeNotification(slot, Date.now(), { shortName: D.shortName }, body)] }).catch(function () { /* 무시 */ });
+      var ln = LN();
+      if (ln) Promise.resolve(ln.schedule({ notifications: [window.Reminders.snoozeNotification(slot, Date.now(), { shortName: D.shortName }, body, state.settings.logEnabled === true)] })).catch(function () { /* 무시 */ });
     }
     if (r.state !== state) commit(r.state); else render();
     if (r.open) window.scrollTo(0, 0);
   }
   function initAppReminders() {
-    var ln = LN(); if (!ln || !window.Reminders) return;
-    try {
-      if (ln.registerActionTypes) ln.registerActionTypes(window.Reminders.actionTypes());
-      if (ln.addListener) ln.addListener("localNotificationActionPerformed", onNotificationAction);
-    } catch (e) { /* 무시 */ }
+    if (!isApp() || !window.Reminders) return;
+    window.addEventListener("yj:notification-action", function (e) { onNotificationAction(e.detail); });
+    var pending = null;
+    try { pending = JSON.parse(sessionStorage.getItem("yj.pendingAction") || "null"); sessionStorage.removeItem("yj.pendingAction"); } catch (e) { /* 무시 */ }
+    if (pending) onNotificationAction(pending);
+    var ln = LN(); if (!ln) return;
+    if (ln.registerActionTypes) Promise.resolve(ln.registerActionTypes(window.Reminders.actionTypes())).catch(function () { /* 무시 */ });
     if (state.settings.remindersOn) scheduleSync();   // 시간표가 바뀌어 있을 수 있으니 열 때 한 번 맞춘다
   }
   function toast(msg) {
