@@ -101,7 +101,7 @@
             '<p><strong class="text-ink-700">제휴 고지:</strong> ' + esc(A.disclosure || "") + '</p>' +
           '</div>' +
           '<div class="mt-6 flex flex-col items-start justify-between gap-3 text-xs text-ink-400 sm:flex-row sm:items-end">' +
-            '<div class="space-y-1"><p>© ' + new Date().getFullYear() + ' ' + esc(S.name) + '. All rights reserved. · <a class="underline hover:text-brand-700" href="' + D.url("terms.html") + '">이용약관 · 데이터 이용 정책</a></p>' +
+            '<div class="space-y-1"><p>© ' + new Date().getFullYear() + ' ' + esc(S.name) + '. All rights reserved. · <a class="underline hover:text-brand-700" href="' + D.url("terms.html") + '">이용약관 · 데이터 이용 정책</a> · <a class="underline hover:text-brand-700" href="' + D.url("privacy.html") + '">개인정보처리방침</a></p>' +
             '<p>콘텐츠와 데이터베이스는 저작권법으로 보호됩니다. 무단 복제·크롤링·재배포를 금합니다.</p></div>' +
             '<p>제품·가격 정보는 각 쇼핑몰 기준이며 변동될 수 있습니다.</p>' +
           '</div>' +
