@@ -22,7 +22,7 @@ keytool -genkeypair -v -keystore "$HOME/yeongyangje-upload.jks" -alias upload -k
 
 워크플로가 읽는 이름은 정확히 `ANDROID_KEYSTORE_BASE64`·`ANDROID_KEYSTORE_PASSWORD`·`ANDROID_KEY_ALIAS`·`ANDROID_KEY_PASSWORD` 다(`tests/test_store_listing.py` 가 워크플로와 이 문서의 이름을 대조한다). 저장소 폴더에서 한 블록씩 실행한다(PowerShell·Git Bash 공통, `gh` 는 이미 로그인돼 있음).
 
-키스토어 파일을 base64 텍스트로 바꿔 Secret 으로 올린다(임시 파일 없이 한 번에).
+키스토어 파일을 base64 텍스트로 바꿔 Secret 으로 올린다(임시 파일 없이 한 번에 — `gh secret set ANDROID_KEYSTORE_BASE64` 에 base64 텍스트를 넘기는 것과 같다).
 
 ```bash
 python -c "import base64,pathlib,subprocess;subprocess.run(['gh','secret','set','ANDROID_KEYSTORE_BASE64'],input=base64.b64encode((pathlib.Path.home()/'yeongyangje-upload.jks').read_bytes()),check=True)"
