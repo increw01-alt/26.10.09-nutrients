@@ -1,0 +1,19 @@
+{
+  "name": "yeongyangje-app",
+  "private": true,
+  "description": "영양제.kr 안드로이드 앱 — Capacitor 로 라이브 사이트(https://xn--og5b1hx9c.kr/my)를 열고 복용 알림만 네이티브로 처리. 빌드는 .github/workflows/build-android.yml",
+  "scripts": {
+    "sync": "cap sync android",
+    "assets": "capacitor-assets generate --android --iconBackgroundColor \"#3a7d44\" --iconBackgroundColorDark \"#3a7d44\" --splashBackgroundColor \"#3a7d44\" --splashBackgroundColorDark \"#3a7d44\""
+  },
+  "dependencies": {
+    "@capacitor/android": "8.5.3",
+    "@capacitor/core": "8.5.3",
+    "@capacitor/local-notifications": "8.3.1",
+    "@capacitor/preferences": "^8.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "8.5.3"
+  }
+}

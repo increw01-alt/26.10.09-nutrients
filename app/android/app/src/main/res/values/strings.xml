@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">영양제.kr</string>
+    <string name="title_activity_main">영양제.kr</string>
+    <string name="package_name">kr.yeongyangje.app</string>
+    <string name="custom_url_scheme">kr.yeongyangje.app</string>
+</resources>

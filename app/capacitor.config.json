@@ -1,0 +1,19 @@
+{
+  "appId": "kr.yeongyangje.app",
+  "appName": "영양제.kr",
+  "webDir": "www",
+  "server": {
+    "url": "https://xn--og5b1hx9c.kr/my",
+    "androidScheme": "https",
+    "cleartext": false
+  },
+  "android": {
+    "allowMixedContent": false
+  },
+  "plugins": {
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_leaf",
+      "iconColor": "#246d4b"
+    }
+  }
+}

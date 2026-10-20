@@ -30,6 +30,17 @@ class AppIconTests(unittest.TestCase):
         for xy in ((2, 2), (509, 509), (51, 51), (460, 51)):   # 모서리와 안전 영역 밖 10% 지점은 배경색
             self.assertEqual(im.getpixel(xy), (58, 125, 68))
 
+    def test_app_sources_sizes_and_transparency(self):
+        with tempfile.TemporaryDirectory() as d:
+            files = {p.name: p for p in B.build_app_sources(Path(d))}
+            from PIL import Image
+            self.assertEqual(Image.open(files["icon-foreground.png"]).size, (1024, 1024))
+            self.assertEqual(Image.open(files["icon-foreground.png"]).getpixel((2, 2))[3], 0)      # 투명 배경
+            self.assertEqual(Image.open(files["icon-background.png"]).getpixel((10, 10))[:3], (58, 125, 68))
+            self.assertEqual(Image.open(files["splash.png"]).size, (2732, 2732))
+            self.assertEqual(Image.open(files["ic_stat_leaf-xxxhdpi.png"]).size, (96, 96))
+            self.assertEqual(Image.open(files["ic_stat_leaf-xxxhdpi.png"]).getpixel((48, 40))[:3], (255, 255, 255))   # 잎 중앙은 흰색
+
     def test_apple_touch_icon_is_opaque_square(self):
         im = B.draw_icon(180, rounded=False, opaque=True)
         self.assertEqual(im.mode, "RGB")
