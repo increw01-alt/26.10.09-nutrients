@@ -59,8 +59,9 @@
 
   /* 모바일 하단 탭 바 */
   function renderTabbar() {
+    var inApp = !!(window.AppBridge && window.AppBridge.isNative());
     var TABS = [
-      { key: "home", label: "홈", href: "index.html", icon: "house" },
+      inApp ? { key: "my", label: "내 영양제", href: "my.html", icon: "pill" } : { key: "home", label: "홈", href: "index.html", icon: "house" },   // 앱에서는 첫 탭이 내 영양제
       { key: "ingredients", label: "성분", href: "ingredients.html", icon: "book-open" },
       { key: "compat", label: "궁합", href: "compatibility.html", icon: "heart-handshake" },
       { key: "guides", label: "가이드", href: "guides.html", icon: "compass" },
@@ -99,7 +100,8 @@
           '</div>' +
           '<div class="mt-10 space-y-3 rounded-2xl bg-white p-5 text-xs leading-relaxed text-ink-500">' +
             '<p><strong class="text-ink-700">의학적 면책:</strong> 이 사이트의 정보는 일반적인 건강 정보 제공을 목적으로 하며 의학적 진단·처방을 대신하지 않습니다. 질환이 있거나 약을 복용 중이라면 영양제 섭취 전 의사·약사와 상담하세요. 건강기능식품은 질병의 예방·치료를 위한 의약품이 아닙니다.</p>' +
-            '<p><strong class="text-ink-700">제휴 고지:</strong> ' + esc(A.disclosure || "") + '</p>' +
+            (window.AppBridge && window.AppBridge.isNative() ? "" : '<p><strong class="text-ink-700">제휴 고지:</strong> ' + esc(A.disclosure || "") + '</p>') +   // 앱에서는 쇼핑 버튼이 없어 고지도 생략
+
           '</div>' +
           '<div class="mt-6 flex flex-col items-start justify-between gap-3 text-xs text-ink-400 sm:flex-row sm:items-end">' +
             '<div class="space-y-1"><p>© ' + new Date().getFullYear() + ' ' + esc(S.name) + '. All rights reserved. · <a class="underline hover:text-brand-700" href="' + D.url("terms.html") + '">이용약관 · 데이터 이용 정책</a> · <a class="underline hover:text-brand-700" href="' + D.url("privacy.html") + '">개인정보처리방침</a></p>' +
@@ -255,6 +257,7 @@
   }
   /* Chrome 계열은 beforeinstallprompt 를 받았을 때 '설치' 버튼으로, iOS Safari 는 공유 → '홈 화면에 추가' 안내로. 세션당 1회, 닫으면 30일 동안 다시 띄우지 않음 */
   function initInstallBanner() {
+    if (window.AppBridge && window.AppBridge.isNative()) return;   // 앱 안에서는 설치 배너가 뜨지 않는다
     var standalone = false, dismissedAt = null, shown = false;
     try { standalone = (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true; } catch (e) { /* 무시 */ }
     try { dismissedAt = parseInt(localStorage.getItem("pwaBannerDismissedAt"), 10) || null; } catch (e) { /* 저장소 차단 시 무시 */ }
@@ -322,6 +325,7 @@
     window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
     window.gtag("js", new Date());
     window.gtag("config", id, { anonymize_ip: true });
+    if (window.AppBridge && window.AppBridge.isNative()) window.gtag("set", "user_properties", { platform: "app" });   // 앱 방문 구분(GA4 사용자 속성)
     var sc = document.createElement("script"); sc.async = true; sc.src = "https://www.googletagmanager.com/gtag/js?id=" + encodeURIComponent(id);
     document.head.appendChild(sc);
   })();

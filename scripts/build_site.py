@@ -436,6 +436,7 @@ def render_page(it: dict, core: dict, cfg: dict) -> str:
   <link rel="stylesheet" href="../assets/css/tailwind.css">
   <script src="../assets/js/icons.js" defer></script>
   <script src="../assets/js/config.js" defer></script>
+  <script src="../assets/js/app.js" defer></script>
   <script src="../assets/js/data.js" defer></script>
   <script src="../assets/js/affiliate.js" defer></script>
   <script src="../assets/js/layout.js" defer></script>
@@ -495,6 +496,7 @@ def head_html(cfg: dict, *, title: str, desc: str, path: str, root: str, keyword
   <link rel="stylesheet" href="{root}assets/css/tailwind.css">
   <script src="{root}assets/js/icons.js" defer></script>
   <script src="{root}assets/js/config.js" defer></script>
+  <script src="{root}assets/js/app.js" defer></script>
   <script src="{root}assets/js/data.js" defer></script>
   <script src="{root}assets/js/affiliate.js" defer></script>
   <script src="{root}assets/js/layout.js" defer></script>
