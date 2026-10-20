@@ -1,4 +1,5 @@
-# Cloudflare Pages 캐시 설정 — JS/CSS 는 빌드가 ?v=해시 를 붙이므로 길게 캐시해도 안전
+# Cloudflare Pages 캐시 설정 — JS/CSS 는 빌드가 ?v=해시 를 붙이므로 길게 캐시해도 안전.
+# sw.js(서비스워커)는 매번 새 버전을 확인해야 하므로 캐시하지 않고, 매니페스트는 짧게 캐시한다. 규칙 사이에는 주석을 두지 않는다(Cloudflare 가 다음 규칙을 무시한 사례).
 /assets/js/*
   Cache-Control: public, max-age=31536000, immutable
 /assets/css/*
@@ -7,8 +8,7 @@
   Cache-Control: public, max-age=604800
 /data/*
   Cache-Control: public, max-age=300
-# 서비스워커는 매번 새 버전을 확인해야 하고, 매니페스트는 짧게
 /sw.js
-  Cache-Control: no-cache
+  Cache-Control: public, max-age=0, must-revalidate
 /manifest.webmanifest
   Cache-Control: public, max-age=3600
