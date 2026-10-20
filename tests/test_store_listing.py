@@ -44,3 +44,9 @@ class ListingTests(unittest.TestCase):
         self.assertIn("https://xn--og5b1hx9c.kr/privacy", doc)
         self.assertIn("release-android", doc)
         self.assertIn("build_store_assets.py --screens", doc)
+
+    def test_doc_key_password_equals_keystore_password(self):
+        # JDK 9+ keytool 의 기본 형식 PKCS12 는 키 비밀번호를 따로 두지 못한다(키스토어 비밀번호와 같음). 다른 값을 넣으면 Gradle 서명이 실패하므로 문서가 같은 값을 쓰라고 안내해야 한다
+        doc = DOC.read_text(encoding="utf-8")
+        self.assertIn("`ANDROID_KEY_PASSWORD` 에는 `ANDROID_KEYSTORE_PASSWORD` 와 같은 값", doc)
+        self.assertNotIn("둘을 같게 두어도 된다", doc)
