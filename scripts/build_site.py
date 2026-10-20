@@ -79,7 +79,8 @@ PRECACHE_EXTRA = ["offline.html", "my.html", "assets/images/favicon.svg", "asset
 
 def precache_urls() -> list[str]:
     """서비스워커가 설치 때 미리 받을 절대 경로 목록(정렬). CSS·JS 는 stamp_assets 와 같은 ?v= 해시를 붙이고, 페이지가 싣지 않는 *.src.css 는 뺀다."""
-    files = [p for p in (ROOT / "assets/css").glob("*.css") if not p.name.endswith(".src.css")] + list((ROOT / "assets/js").rglob("*.js"))
+    files = [p for p in (ROOT / "assets/css").glob("*.css") if not p.name.endswith(".src.css")] + \
+        [p for p in (ROOT / "assets/js").rglob("*.js") if "vendor/capacitor" not in p.as_posix()]   # 앱 전용 런타임은 앱이 필요할 때만 받는다
     urls = [f"/{p.relative_to(ROOT).as_posix()}?v={asset_digest(p)}" for p in files]
     urls += [f"/{p}" for p in PRECACHE_EXTRA if (ROOT / p).exists()]
     return sorted(urls)

@@ -36,6 +36,7 @@ class ServiceWorkerBuildTests(unittest.TestCase):
         self.assertTrue(any(u.startswith("/assets/js/data.js?v=") and len(u.split("?v=")[1]) == 8 for u in urls))
         self.assertTrue(all(u.startswith("/") for u in urls))
         self.assertEqual(urls, sorted(urls))
+        self.assertFalse(any("vendor/capacitor" in u for u in urls))   # 앱 전용 런타임은 웹 방문자에게 미리 받게 하지 않는다
 
     def test_sw_version_changes_when_precache_changes(self):
         t = "var x;"

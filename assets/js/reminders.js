@@ -1,0 +1,80 @@
+/* 복용 알림 — 내 영양제의 알림 설정(시간대별 시각·켜기·이름 표시·주말)과 오늘 시간표로 휴대폰 로컬 알림을 계획하고 동기화한다.
+ * 계획(plan)·동작 처리(applyAction)는 순수 함수라 Node 에서 테스트한다(tests/reminders.test.mjs). 실제 예약은 앱(Capacitor Local Notifications)에서만.
+ * 알림 id 규칙: 시간대 순서 i(0~5) 기준 매일 반복 1000+i*10, 평일만(주말 끄기) 1000+i*10+weekday(2~6, 일요일=1), 30분 뒤 다시 9000+i.
+ * 우리 범위(1000~1059, 9000~9005)만 취소·재예약하므로 다른 알림은 건드리지 않는다. 정확 알람 권한은 쓰지 않는다(isExactNotification: false). */
+(function () {
+  "use strict";
+  var S = (typeof window !== "undefined" && window.Store) || (typeof require === "function" ? require("./store.js") : null);
+  var ID_BASE = 1000, ID_SNOOZE = 9000, ACTION_TYPE = "DOSE";
+  var WEEKDAYS = [2, 3, 4, 5, 6];   // 월~금 (Capacitor Weekday: 일요일=1)
+
+  function slotIndex(slot) { return S.SLOT_ORDER.indexOf(slot); }
+  function names(items, opts) { return items.map(function (it) { return opts && opts.shortName ? opts.shortName(it) : it.name; }).join(" · "); }
+  function parseTime(hhmm) { var m = /^(\d\d):(\d\d)$/.exec(String(hhmm || "")); return m ? { hour: +m[1], minute: +m[2] } : null; }
+
+  /* 상태 + 오늘 시간표 → 예약할 알림 목록 (id 오름차순). remindersOn 이 꺼져 있으면 빈 배열 */
+  function plan(state, sched, opts) {
+    var st = state.settings;
+    if (!st.remindersOn) return [];
+    var out = [];
+    (sched.slots || []).forEach(function (s) {
+      var i = slotIndex(s.key);
+      if (i < 0 || !st.slotOn[s.key] || !s.items.length) return;
+      var t = parseTime(st.times[s.key]) || parseTime(S.DEFAULT_TIMES[s.key]);
+      var title = S.SLOT_LABEL[s.key] + " 영양제 시간이에요";
+      var body = st.showNames ? names(s.items, opts) : "지금 챙겨 드세요";
+      var make = function (id, on) {
+        return { id: id, title: title, body: body, schedule: { on: on, allowWhileIdle: true }, actionTypeId: ACTION_TYPE, extra: { slot: s.key }, isExactNotification: false };
+      };
+      if (st.weekends) out.push(make(ID_BASE + i * 10, { hour: t.hour, minute: t.minute }));
+      else WEEKDAYS.forEach(function (wd) { out.push(make(ID_BASE + i * 10 + wd, { weekday: wd, hour: t.hour, minute: t.minute })); });
+    });
+    return out.sort(function (a, b) { return a.id - b.id; });
+  }
+
+  function ourIds(pending) {
+    return (pending || []).map(function (n) { return n.id; }).filter(function (id) {
+      return (id >= ID_BASE && id < ID_BASE + 60) || (id >= ID_SNOOZE && id < ID_SNOOZE + 6);
+    });
+  }
+
+  /* '30분 뒤 다시' — 그 시간대의 1회성 알림 */
+  function snoozeNotification(slot, nowMs, opts, bodyText) {
+    return { id: ID_SNOOZE + slotIndex(slot), title: S.SLOT_LABEL[slot] + " 영양제, 30분 뒤예요", body: bodyText || "지금 챙겨 드세요",
+      schedule: { at: new Date(nowMs + 30 * 60000), allowWhileIdle: true }, actionTypeId: ACTION_TYPE, extra: { slot: slot }, isExactNotification: false };
+  }
+
+  /* 알림 동작 → 새 상태. done: 오늘 due 를 먼저 기록하고 체크 / snooze: 시간대만 알려줌 / tap: 열기 */
+  function applyAction(state, action, dueSlots, todayKey) {
+    var slot = action && action.notification && action.notification.extra && action.notification.extra.slot;
+    var id = action && action.actionId;
+    if (id === "done" && slot) {
+      var fresh = S.markDue(state, todayKey, dueSlots);
+      return { state: S.toggleDone(fresh, todayKey, slot, true), snooze: null, open: false };
+    }
+    if (id === "snooze" && slot) return { state: state, snooze: slot, open: false };
+    if (id === "tap") return { state: state, snooze: null, open: true };
+    return { state: state, snooze: null, open: false };
+  }
+
+  function actionTypes() {
+    return { types: [{ id: ACTION_TYPE, actions: [{ id: "done", title: "먹었어요" }, { id: "snooze", title: "30분 뒤 다시" }] }] };
+  }
+
+  /* 우리 범위의 예약을 모두 취소하고 계획대로 다시 예약한다 (설정이 바뀔 때마다 호출해도 안전) */
+  function sync(LN, state, sched, opts) {
+    return LN.getPending().then(function (res) {
+      var ids = ourIds(res && res.notifications);
+      var cancel = ids.length ? LN.cancel({ notifications: ids.map(function (id) { return { id: id }; }) }) : Promise.resolve();
+      return cancel.then(function () {
+        var list = plan(state, sched, opts);
+        if (!list.length) return { cancelled: ids.length, scheduled: 0 };
+        return LN.schedule({ notifications: list }).then(function () { return { cancelled: ids.length, scheduled: list.length }; });
+      });
+    });
+  }
+
+  var Reminders = { ID_BASE: ID_BASE, ID_SNOOZE: ID_SNOOZE, ACTION_TYPE: ACTION_TYPE, plan: plan, ourIds: ourIds, snoozeNotification: snoozeNotification, applyAction: applyAction, actionTypes: actionTypes, sync: sync };
+  if (typeof window !== "undefined") window.Reminders = Reminders;
+  if (typeof module !== "undefined") module.exports = Reminders;
+})();
