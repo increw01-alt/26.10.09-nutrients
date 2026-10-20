@@ -79,3 +79,34 @@ test("streak: 오늘 미완료면 어제부터 센다", () => {
   assert.equal(S.streak(S.empty(), "2026-10-20"), 0);
 });
 test("clearLog", () => assert.deepEqual(S.clearLog(S.markDue(S.empty(), "2026-10-20", ["bedtime"])).log, {}));
+
+// ---- Task 3: 내보내기·가져오기 ----
+test("exportCode ↔ importCode 왕복, 기본 시각은 생략", () => {
+  let s = S.addItems(S.empty(), ["zinc", "magnesium"]).state;
+  s = S.setSlot(s, "magnesium", "morning_after"); s = S.setTime(s, "bedtime", "23:00"); s = S.setSetting(s, "weekends", false);
+  const code = S.exportCode(s);
+  assert.match(code, /^YJ1-[A-Za-z0-9_-]+$/);
+  const p = S.importCode(code);
+  assert.deepEqual(p.items, [{ id: "zinc", slot: null }, { id: "magnesium", slot: "morning_after" }]);
+  assert.deepEqual(p.times, { bedtime: "23:00" }); assert.deepEqual(p.opts, { names: true, weekends: false });
+});
+test("importCode: URL 이나 import= 가 섞여도 코드만 뽑는다", () => {
+  const code = S.exportCode(S.addItems(S.empty(), ["zinc"]).state);
+  assert.equal(S.importCode("https://xn--og5b1hx9c.kr/my.html?import=" + encodeURIComponent(code) + "#x").items[0].id, "zinc");
+  assert.equal(S.importCode("  " + code + "\n").items[0].id, "zinc");
+});
+test("importCode: 깨진 입력은 null", () => {
+  for (const bad of ["", "garbage", "YJ1-!!!", "YJ1-" + btoa("{nope"), "YJ1-" + btoa(JSON.stringify({ v: 2, items: [] })), "YJ1-" + btoa(JSON.stringify({ v: 1, items: "x" }))]) assert.equal(S.importCode(bad), null, bad);
+});
+test("merge: 모르는 id 는 skipped 로, merge 는 기존 유지, replace 는 교체", () => {
+  const byId = { zinc: {}, magnesium: {}, iron: {} };
+  const base = S.setSlot(S.addItems(S.empty(), ["zinc"]).state, "zinc", "bedtime");
+  const payload = { items: [{ id: "magnesium", slot: "morning_after" }, { id: "zinc", slot: null }, { id: "ghost", slot: null }], times: { bedtime: "23:00" }, opts: { names: false, weekends: true } };
+  const m = S.merge(base, payload, "merge", byId);
+  assert.deepEqual(m.added, ["magnesium"]); assert.deepEqual(m.skipped, ["ghost"]);
+  assert.deepEqual(m.state.items.map(i => i.id), ["zinc", "magnesium"]); assert.deepEqual(S.overrides(m.state), { zinc: "bedtime", magnesium: "morning_after" });
+  assert.equal(m.state.settings.times.bedtime, "23:00"); assert.equal(m.state.settings.showNames, false);
+  const r = S.merge(base, payload, "replace", byId);
+  assert.deepEqual(r.state.items.map(i => i.id), ["magnesium", "zinc"]); assert.deepEqual(S.overrides(r.state), { magnesium: "morning_after" });
+});
+test("exportUrl", () => assert.equal(S.exportUrl("YJ1-abc", "./"), "./my.html?import=YJ1-abc"));

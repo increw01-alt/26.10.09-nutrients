@@ -5,10 +5,12 @@
   "scripts": {
     "css": "tailwindcss -c tailwind.config.cjs -i assets/css/tailwind.src.css -o assets/css/tailwind.css --minify",
     "icons": "node scripts/build_icons.mjs",
-    "assets": "npm run css && npm run icons"
+    "assets": "npm run css && npm run icons",
+    "vendor:qr": "node -e \"require('fs').copyFileSync('node_modules/qrcode-generator/qrcode.js','assets/js/vendor/qrcode.js')\""
   },
   "devDependencies": {
     "lucide": "0.460.0",
+    "qrcode-generator": "^1.4.4",
     "tailwindcss": "3.4.17"
   }
 }

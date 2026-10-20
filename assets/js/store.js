@@ -163,12 +163,77 @@
 
   function clearLog(state) { var out = clone(state); out.log = {}; return out; }
 
+  /* ---- 내보내기·가져오기: "YJ1-" + base64url(JSON). 기록(log)은 넣지 않는다 ---- */
+  var CODE_PREFIX = "YJ1-";
+  function b64urlEncode(str) { return btoa(unescape(encodeURIComponent(str))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); }
+  function b64urlDecode(s) {
+    var b = s.replace(/-/g, "+").replace(/_/g, "/");
+    while (b.length % 4) b += "=";
+    return decodeURIComponent(escape(atob(b)));
+  }
+
+  function exportCode(state) {
+    var times = {};
+    SLOT_ORDER.forEach(function (k) { if (state.settings.times[k] !== DEFAULT_TIMES[k]) times[k] = state.settings.times[k]; });
+    var payload = {
+      v: 1,
+      items: state.items.map(function (it) { return [it.id, isSlot(it.slot) ? it.slot : 0]; }),
+      times: times,
+      opts: { names: !!state.settings.showNames, weekends: !!state.settings.weekends }
+    };
+    return CODE_PREFIX + b64urlEncode(JSON.stringify(payload));
+  }
+
+  /* 코드·링크·주소에 섞인 코드를 읽는다. 조금이라도 이상하면 null */
+  function importCode(text) {
+    var s = String(text || "").trim();
+    var m = /[?&]import=([^&#]+)/.exec(s);
+    if (m) { try { s = decodeURIComponent(m[1]); } catch (e) { return null; } }
+    if (s.indexOf(CODE_PREFIX) !== 0) return null;
+    var body = s.slice(CODE_PREFIX.length);
+    if (!/^[A-Za-z0-9_-]+$/.test(body)) return null;
+    var data;
+    try { data = JSON.parse(b64urlDecode(body)); } catch (e) { return null; }
+    if (!data || data.v !== 1 || !Array.isArray(data.items)) return null;
+    var items = [];
+    data.items.forEach(function (row) {
+      if (!Array.isArray(row) || typeof row[0] !== "string" || !row[0]) return;
+      items.push({ id: row[0], slot: isSlot(row[1]) ? row[1] : null });
+    });
+    var times = {};
+    if (data.times && typeof data.times === "object") SLOT_ORDER.forEach(function (k) { if (TIME_RE.test(String(data.times[k] || ""))) times[k] = data.times[k]; });
+    var o = data.opts || {};
+    return { items: items, times: times, opts: { names: o.names !== false, weekends: o.weekends !== false } };
+  }
+
+  /* merge: 기존 유지 + 새 항목만 추가(가져온 시간대는 새 항목에만) / replace: 가져온 목록으로 교체. 설정은 둘 다 반영, 기록은 그대로 */
+  function merge(state, payload, mode, byId) {
+    var out = clone(state), added = [], skipped = [];
+    var known = payload.items.filter(function (it) { if (byId && byId[it.id]) return true; skipped.push(it.id); return false; });
+    if (mode === "replace") out.items = [];
+    var have = {};
+    out.items.forEach(function (it) { have[it.id] = true; });
+    known.forEach(function (it) {
+      if (have[it.id]) return;
+      have[it.id] = true; added.push(it.id);
+      var row = { id: it.id, addedAt: new Date().toISOString() };
+      if (it.slot) row.slot = it.slot;
+      out.items.push(row);
+    });
+    Object.keys(payload.times || {}).forEach(function (k) { if (isSlot(k) && TIME_RE.test(payload.times[k])) out.settings.times[k] = payload.times[k]; });
+    if (payload.opts) { out.settings.showNames = payload.opts.names !== false; out.settings.weekends = payload.opts.weekends !== false; }
+    return { state: out, added: added, skipped: skipped };
+  }
+
+  function exportUrl(code, base) { return (base || "") + "my.html?import=" + encodeURIComponent(code); }
+
   var Store = {
     KEY: KEY, SLOT_ORDER: SLOT_ORDER, SLOT_LABEL: SLOT_LABEL, DEFAULT_TIMES: DEFAULT_TIMES,
     empty: empty, load: load, save: save,
     addItems: addItems, removeItem: removeItem, setSlot: setSlot, overrides: overrides,
     setTime: setTime, setSetting: setSetting, setSlotOn: setSlotOn, pruneUnknown: pruneUnknown,
-    dateKey: dateKey, addDays: addDays, lastDays: lastDays, markDue: markDue, toggleDone: toggleDone, dayStats: dayStats, streak: streak, clearLog: clearLog
+    dateKey: dateKey, addDays: addDays, lastDays: lastDays, markDue: markDue, toggleDone: toggleDone, dayStats: dayStats, streak: streak, clearLog: clearLog,
+    exportCode: exportCode, importCode: importCode, merge: merge, exportUrl: exportUrl
   };
   if (typeof window !== "undefined") window.Store = Store;
   if (typeof module !== "undefined") module.exports = Store;
