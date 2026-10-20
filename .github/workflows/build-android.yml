@@ -1,0 +1,53 @@
+# 안드로이드 디버그 APK 빌드 — app/ 의 Capacitor 프로젝트를 ubuntu 러너에서 빌드해 아티팩트로 올린다.
+# 수동 실행(Actions 탭 → Run workflow) 또는 app/** 변경 push 때. 서명·Play 제출은 계획 4(별도 워크플로).
+name: build-android
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "app/**"
+      - ".github/workflows/build-android.yml"
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Android SDK 36 (러너에 없으면 설치)
+        continue-on-error: true
+        run: |
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null 2>&1 || true
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "build-tools;36.0.0" >/dev/null
+
+      - name: Capacitor 동기화
+        working-directory: app
+        run: |
+          npm ci
+          npx cap sync android
+
+      - name: Gradle 빌드 (debug)
+        working-directory: app/android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon --stacktrace
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: app-debug-apk
+          path: app/android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 14
+          if-no-files-found: error
