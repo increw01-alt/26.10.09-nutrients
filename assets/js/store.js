@@ -175,19 +175,22 @@
   function exportCode(state) {
     var times = {};
     SLOT_ORDER.forEach(function (k) { if (state.settings.times[k] !== DEFAULT_TIMES[k]) times[k] = state.settings.times[k]; });
+    var on = {};
+    SLOT_ORDER.forEach(function (k) { if (state.settings.slotOn[k] === false) on[k] = false; });
     var payload = {
       v: 1,
       items: state.items.map(function (it) { return [it.id, isSlot(it.slot) ? it.slot : 0]; }),
       times: times,
+      on: on,
       opts: { names: !!state.settings.showNames, weekends: !!state.settings.weekends }
     };
     return CODE_PREFIX + b64urlEncode(JSON.stringify(payload));
   }
 
-  /* 코드·링크·주소에 섞인 코드를 읽는다. 조금이라도 이상하면 null */
+  /* 코드·링크·주소에 섞인 코드를 읽는다(#import= 가 기본, 옛 ?import= 도 허용). 조금이라도 이상하면 null */
   function importCode(text) {
     var s = String(text || "").trim();
-    var m = /[?&]import=([^&#]+)/.exec(s);
+    var m = /[?&#]import=([^&#]+)/.exec(s);
     if (m) { try { s = decodeURIComponent(m[1]); } catch (e) { return null; } }
     if (s.indexOf(CODE_PREFIX) !== 0) return null;
     var body = s.slice(CODE_PREFIX.length);
@@ -202,8 +205,10 @@
     });
     var times = {};
     if (data.times && typeof data.times === "object") SLOT_ORDER.forEach(function (k) { if (TIME_RE.test(String(data.times[k] || ""))) times[k] = data.times[k]; });
+    var slotOn = {};
+    if (data.on && typeof data.on === "object") SLOT_ORDER.forEach(function (k) { if (typeof data.on[k] === "boolean") slotOn[k] = data.on[k]; });
     var o = data.opts || {};
-    return { items: items, times: times, opts: { names: o.names !== false, weekends: o.weekends !== false } };
+    return { items: items, times: times, slotOn: slotOn, opts: { names: o.names !== false, weekends: o.weekends !== false } };
   }
 
   /* merge: 기존 유지 + 새 항목만 추가(가져온 시간대는 새 항목에만) / replace: 가져온 목록으로 교체. 설정은 둘 다 반영, 기록은 그대로 */
@@ -221,11 +226,13 @@
       out.items.push(row);
     });
     Object.keys(payload.times || {}).forEach(function (k) { if (isSlot(k) && TIME_RE.test(payload.times[k])) out.settings.times[k] = payload.times[k]; });
+    Object.keys(payload.slotOn || {}).forEach(function (k) { if (isSlot(k) && typeof payload.slotOn[k] === "boolean") out.settings.slotOn[k] = payload.slotOn[k]; });
     if (payload.opts) { out.settings.showNames = payload.opts.names !== false; out.settings.weekends = payload.opts.weekends !== false; }
     return { state: out, added: added, skipped: skipped };
   }
 
-  function exportUrl(code, base) { return (base || "") + "my.html?import=" + encodeURIComponent(code); }
+  /* 가져오기 링크는 해시 조각(#import=)에 싣는다 — 조각은 서버·분석 도구·서비스워커 캐시 키 어디에도 전송되지 않는다 */
+  function exportUrl(code, base) { return (base || "") + "my.html#import=" + encodeURIComponent(code); }
 
   var Store = {
     KEY: KEY, SLOT_ORDER: SLOT_ORDER, SLOT_LABEL: SLOT_LABEL, DEFAULT_TIMES: DEFAULT_TIMES,

@@ -25,11 +25,12 @@
   }
 
   /* ---- 목록 + 검색 추가 ---- */
-  function sectionList() {
+  function sectionList(sched) {
     var rows = state.items.map(function (row) {
-      var it = byId(row.id), d = defaultSlot(it);
-      var opts = S.SLOT_ORDER.map(function (k) {
-        return '<option value="' + k + '"' + ((row.slot || d) === k ? " selected" : "") + ">" + esc(label(k)) + (k === d ? " (기본)" : "") + "</option>";
+      var it = byId(row.id), d = defaultSlot(it), actual = (sched.assign && sched.assign[row.id]) || d;
+      /* 값 "" = 자동(권장 시간대 + 간격 규칙으로 배정, 현재 배정을 함께 표시). 사용자가 고른 시간대는 기본값과 같아도 그대로 저장해 자동 이동하지 않게 한다 */
+      var opts = '<option value=""' + (row.slot ? "" : " selected") + '>자동 · ' + esc(label(actual)) + "</option>" + S.SLOT_ORDER.map(function (k) {
+        return '<option value="' + k + '"' + (row.slot === k ? " selected" : "") + ">" + esc(label(k)) + (k === d ? " (권장)" : "") + "</option>";
       }).join("");
       return '<div class="my-item">' + thumb(it) +
         '<div class="my-item-main"><a href="' + D.ingredientUrl(it.id) + '">' + esc(it.name) + '</a><small>' + esc((it.timing && it.timing.label) || label(d)) + '</small></div>' +
@@ -38,7 +39,7 @@
     }).join("");
     var empty = '<div class="my-empty">아직 저장한 영양제가 없어요.<br>아래 검색창에서 성분을 추가하거나, <a class="font-semibold text-brand-700" href="compatibility.html">궁합 체크</a>에서 고른 성분을 한 번에 저장할 수 있어요.</div>';
     return '<section class="my-section" id="my-list"><h2><i data-lucide="pill"></i>먹고 있는 영양제 <span class="my-count">' + state.items.length + '개</span></h2>' +
-      '<p class="my-sub">시간대는 성분의 일반적인 권장 시간이 기본이고, 직접 바꿀 수 있어요.</p>' +
+      '<p class="my-sub">시간대는 성분의 권장 시간과 궁합 간격 규칙으로 자동 배정돼요. 직접 고르면 그 시간대로 고정됩니다.</p>' +
       (rows || empty) +
       '<div class="my-search"><i data-lucide="search"></i><input id="my-search" type="text" autocomplete="off" role="combobox" aria-expanded="' + (ui.open ? "true" : "false") + '" aria-controls="my-search-list" placeholder="성분 이름으로 추가 (예: 마그네슘)" value="' + esc(ui.q) + '"><div id="my-search-list" role="listbox" aria-label="추가할 성분"></div></div>' +
       "</section>";
@@ -71,7 +72,7 @@
   function sectionSchedule(sched) {
     if (!state.items.length) return "";
     var slots = sched.slots.map(function (s) {
-      return '<div class="my-sched-slot"><div class="t"><span>' + esc(label(s.key)) + '</span><time>' + esc(state.settings.times[s.key] || "") + '</time></div><ul>' +
+      return '<div class="my-sched-slot"><div class="t"><span>' + esc(label(s.key)) + '</span><time data-slot="' + s.key + '">' + esc(state.settings.times[s.key] || "") + '</time></div><ul>' +
         s.items.map(function (it) { return '<li><a class="font-bold hover:text-brand-700" href="' + D.ingredientUrl(it.id) + '">' + esc(it.name) + '</a> <small>' + esc((it.timing && (it.timing.note || it.timing.label)) || "") + '</small></li>'; }).join("") + "</ul></div>";
     }).join("");
     var notes = sched.notes.length ? '<div class="mt-3 rounded-2xl border border-amber-200 bg-amber-50 p-4"><p class="text-sm font-bold text-amber-800">시간표 메모</p><ul class="list-warn mt-1 text-sm text-amber-900">' + sched.notes.map(function (n) { return "<li>" + esc(n) + "</li>"; }).join("") + "</ul></div>" : "";
@@ -118,7 +119,7 @@
     var t = today(), st = S.dayStats(state, t), streak = S.streak(state, t);
     var checks = sched.slots.map(function (s) {
       var done = !!(state.log[t] && state.log[t].done[s.key]);
-      return '<button type="button" class="my-check' + (done ? " is-done" : "") + '" data-check="' + s.key + '" aria-pressed="' + (done ? "true" : "false") + '"><span class="tick"><i data-lucide="check"></i></span><span><b>' + esc(label(s.key)) + ' <span class="my-muted">' + esc(state.settings.times[s.key]) + '</span></b><small>' + esc(s.items.map(function (it) { return D.shortName(it); }).join(" · ")) + '</small></span></button>';
+      return '<button type="button" class="my-check' + (done ? " is-done" : "") + '" data-check="' + s.key + '" aria-pressed="' + (done ? "true" : "false") + '"><span class="tick"><i data-lucide="check"></i></span><span><b>' + esc(label(s.key)) + ' <span class="my-muted" data-time-slot="' + s.key + '">' + esc(state.settings.times[s.key]) + '</span></b><small>' + esc(s.items.map(function (it) { return D.shortName(it); }).join(" · ")) + '</small></span></button>';
     }).join("");
     var week = S.lastDays(t, 7).map(function (k) { return '<button type="button" class="' + dayClass(k, t) + '" data-day="' + k + '" aria-label="' + k + '"><span>' + (k === t ? "오늘" : k.slice(5).replace("-", "/")) + '</span><span class="dot"></span></button>'; }).join("");
     var month = S.lastDays(t, 30).map(function (k) { return '<button type="button" class="' + dayClass(k, t) + '" data-day="' + k + '" aria-label="' + k + '"><span>' + parseInt(k.slice(8), 10) + '</span><span class="dot"></span></button>'; }).join("");
@@ -164,7 +165,7 @@
   }
   function applyImport(payload, mode, source) {
     var r = S.merge(state, payload, mode, core.byId);
-    if (source === "url") { ui.importPayload = null; try { history.replaceState(null, "", location.pathname); } catch (e) { /* 무시 */ } }
+    if (source === "url") ui.importPayload = null;
     else { ui.importPreview = null; ui.importText = ""; }
     commit(r.state);
     toast((mode === "replace" ? "목록을 바꿨어요" : r.added.length + "개 추가했어요") + (r.skipped.length ? " · " + r.skipped.length + "개 건너뜀" : ""));
@@ -177,18 +178,31 @@
     else { el.select(); try { document.execCommand("copy"); done(); } catch (e) { toast("길게 눌러 복사하세요"); } }
   }
 
+  /* 다시 그린 뒤에도 키보드 포커스를 잃지 않도록, 포커스된 요소를 id 또는 data-* 조합으로 기억했다가 되찾는다 */
+  var FOCUS_ATTRS = ["data-id", "data-slot", "data-slot-on", "data-setting", "data-check", "data-day", "data-remove", "data-add", "data-log-enable", "data-import-apply", "data-copy"];
+  function focusKey(el) {
+    if (!el || el === document.body) return null;
+    if (el.id) return "#" + el.id;
+    for (var i = 0; i < FOCUS_ATTRS.length; i++) if (el.hasAttribute(FOCUS_ATTRS[i])) return "[" + FOCUS_ATTRS[i] + '="' + el.getAttribute(FOCUS_ATTRS[i]) + '"]';
+    return null;
+  }
+  function dueSlots(sched) { return sched.slots.map(function (s) { return s.key; }); }
   function render() {
     var app = document.getElementById("my-app");
     var sched = schedule();
+    var tk = today();
     if (state.settings.logEnabled === true) {   // 오늘 챙겨야 할 시간대를 기록해 두어야 체크·통계가 시간표를 따라간다
-      var marked = S.markDue(state, today(), sched.slots.map(function (s) { return s.key; }));
+      var marked = S.markDue(state, tk, dueSlots(sched));
       if (JSON.stringify(marked.log) !== JSON.stringify(state.log)) { state = marked; S.save(state); }
     }
+    var keep = focusKey(document.activeElement);
     app.innerHTML = (ui.notice ? '<div class="my-notice">' + esc(ui.notice) + "</div>" : "") +
-      sectionImport() + sectionAskLog() + sectionList() + sectionSchedule(sched) + sectionLog(sched) + sectionReminders(sched) + sectionTransfer();
+      sectionImport() + sectionAskLog() + sectionList(sched) + sectionSchedule(sched) + sectionLog(sched) + sectionReminders(sched) + sectionTransfer();
+    ui.renderedDay = tk;
     D.icons(app);
     renderSearchList();
     if (ui.focusSearch) { var inp = document.getElementById("my-search"); if (inp) { inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); } ui.focusSearch = false; }
+    else if (keep) { var again = app.querySelector(keep); if (again) again.focus(); }
   }
 
   function bind(app) {
@@ -204,21 +218,30 @@
       }
       if (t.hasAttribute("data-import-apply")) { var src = t.getAttribute("data-import-source"); applyImport(src === "url" ? ui.importPayload : ui.importPreview, t.getAttribute("data-import-apply"), src); return; }
       if (t.hasAttribute("data-import-cancel")) {
-        if (t.getAttribute("data-import-cancel") === "url") { ui.importPayload = null; try { history.replaceState(null, "", location.pathname); } catch (e2) { /* 무시 */ } }
+        if (t.getAttribute("data-import-cancel") === "url") ui.importPayload = null;
         else { ui.importPreview = null; ui.importError = ""; }
         render(); return;
       }
       if (t.hasAttribute("data-add")) add(t.getAttribute("data-add"));
       else if (t.hasAttribute("data-remove")) { var id = t.getAttribute("data-remove"); commit(S.removeItem(state, id)); toast("삭제했어요"); }
       else if (t.hasAttribute("data-log-enable")) commit(S.setSetting(state, "logEnabled", t.getAttribute("data-log-enable") === "true"));
-      else if (t.hasAttribute("data-check")) { var k = t.getAttribute("data-check"), tk = today(); commit(S.toggleDone(state, tk, k, !(state.log[tk] && state.log[tk].done[k]))); }
+      else if (t.hasAttribute("data-check")) {   // 자정을 넘긴 채 열려 있던 화면에서도 체크가 사라지지 않게, 오늘 due 를 먼저 기록한다
+        var k = t.getAttribute("data-check"), tk = today();
+        var fresh = S.markDue(state, tk, dueSlots(schedule()));
+        commit(S.toggleDone(fresh, tk, k, !(fresh.log[tk] && fresh.log[tk].done[k])));
+      }
       else if (t.hasAttribute("data-day")) { var d = t.getAttribute("data-day"); ui.selectedDay = ui.selectedDay === d ? null : d; render(); }
       else if (t.hasAttribute("data-log-clear")) { if (window.confirm("복용 기록을 모두 지울까요?")) { ui.selectedDay = null; commit(S.clearLog(state)); toast("기록을 지웠어요"); } }
     });
     app.addEventListener("change", function (e) {
       var t = e.target;
-      if (t.matches("select.my-slot")) { var it = byId(t.getAttribute("data-id")); commit(S.setSlot(state, it.id, t.value === defaultSlot(it) ? null : t.value)); }
-      else if (t.matches("input.my-time")) { var next = S.setTime(state, t.getAttribute("data-slot"), t.value); if (next === state) { t.value = state.settings.times[t.getAttribute("data-slot")]; return; } commit(next); }
+      if (t.matches("select.my-slot")) commit(S.setSlot(state, t.getAttribute("data-id"), t.value || null));   // "" = 자동
+      else if (t.matches("input.my-time")) {   // 시각은 입력 중 끊기지 않도록 다시 그리지 않고 저장만 하고, 시간표의 시각 표시만 바꾼다
+        var slot = t.getAttribute("data-slot"), next = S.setTime(state, slot, t.value);
+        if (next === state) { t.value = state.settings.times[slot]; return; }
+        state = next; S.save(state);
+        document.querySelectorAll('#my-schedule time[data-slot="' + slot + '"], #my-log [data-time-slot="' + slot + '"]').forEach(function (el) { el.textContent = t.value; });
+      }
       else if (t.matches("input[data-slot-on]")) commit(S.setSlotOn(state, t.getAttribute("data-slot-on"), t.checked));
       else if (t.matches("input[data-setting]")) commit(S.setSetting(state, t.getAttribute("data-setting"), t.checked));
     });
@@ -246,10 +269,15 @@
       state = S.load();
       var pr = S.pruneUnknown(state, core.byId);
       if (pr.removed.length) { state = pr.state; S.save(state); ui.notice = "성분 사전에서 사라진 항목 " + pr.removed.length + "개를 목록에서 뺐어요."; }
+      /* 가져오기 링크(#import=, 옛 ?import=)는 읽자마자 주소에서 지운다 — 목록이 주소에 남아 공유·기록되지 않게 */
       var imp = null;
-      try { imp = new URLSearchParams(location.search).get("import"); } catch (e) { /* 무시 */ }
-      if (imp) { ui.importPayload = S.importCode(imp); if (!ui.importPayload) ui.notice = "가져오기 링크의 코드를 읽을 수 없어요."; }
+      try { imp = /[?&#]import=/.test(location.hash + location.search) ? S.importCode(location.href) : null; } catch (e) { /* 무시 */ }
+      if (/[?&#]import=/.test(location.hash + location.search)) {
+        try { history.replaceState(null, "", location.pathname); } catch (e) { /* 무시 */ }
+        if (imp) ui.importPayload = imp; else ui.notice = "가져오기 링크의 코드를 읽을 수 없어요.";
+      }
       app.addEventListener("input", function (e) { if (e.target.id === "my-import-text") ui.importText = e.target.value; });
+      document.addEventListener("visibilitychange", function () { if (!document.hidden && ui.renderedDay && ui.renderedDay !== today()) render(); });   // 자정을 넘겨 다시 열면 오늘 기준으로
       bind(app);
       render();
     }).catch(function () { app.innerHTML = '<p class="text-sm text-ink-500">데이터를 불러오지 못했어요. 잠시 뒤 다시 시도해 주세요.</p>'; });

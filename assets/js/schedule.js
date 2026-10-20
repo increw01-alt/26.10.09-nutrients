@@ -66,7 +66,8 @@
       return { key: s, meta: SLOT_META[s], items: ids.filter(function (id) { return assign[id] === s; }).map(function (id) { return core.byId[id]; }) };
     }).filter(function (s) { return s.items.length; });
 
-    return { slots: slots, notes: notes.filter(function (n, i, a) { return a.indexOf(n) === i; }) };
+    return { slots: slots, assign: assign, notes: notes.filter(function (n, i, a) { return a.indexOf(n) === i; }) };   // assign: id → 실제 배정 시간대
+
   }
 
   window.Schedule = { build: build, SLOT_META: SLOT_META, SLOT_ORDER: SLOT_ORDER };

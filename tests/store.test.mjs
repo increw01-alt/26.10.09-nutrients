@@ -92,7 +92,7 @@ test("exportCode ↔ importCode 왕복, 기본 시각은 생략", () => {
 });
 test("importCode: URL 이나 import= 가 섞여도 코드만 뽑는다", () => {
   const code = S.exportCode(S.addItems(S.empty(), ["zinc"]).state);
-  assert.equal(S.importCode("https://xn--og5b1hx9c.kr/my.html?import=" + encodeURIComponent(code) + "#x").items[0].id, "zinc");
+  assert.equal(S.importCode("https://xn--og5b1hx9c.kr/my.html?x=1#import=" + encodeURIComponent(code)).items[0].id, "zinc");
   assert.equal(S.importCode("  " + code + "\n").items[0].id, "zinc");
 });
 test("importCode: 깨진 입력은 null", () => {
@@ -109,4 +109,16 @@ test("merge: 모르는 id 는 skipped 로, merge 는 기존 유지, replace 는 
   const r = S.merge(base, payload, "replace", byId);
   assert.deepEqual(r.state.items.map(i => i.id), ["magnesium", "zinc"]); assert.deepEqual(S.overrides(r.state), { magnesium: "morning_after" });
 });
-test("exportUrl", () => assert.equal(S.exportUrl("YJ1-abc", "./"), "./my.html?import=YJ1-abc"));
+test("exportUrl 은 해시 조각(#import=)을 쓴다 — 서버·분석 도구·SW 캐시 키에 실리지 않게", () => assert.equal(S.exportUrl("YJ1-abc", "./"), "./my.html#import=YJ1-abc"));
+test("importCode: #import= 링크와 옛 ?import= 링크 둘 다 읽는다", () => {
+  const code = S.exportCode(S.addItems(S.empty(), ["zinc"]).state);
+  assert.equal(S.importCode("https://xn--og5b1hx9c.kr/my.html#import=" + encodeURIComponent(code)).items[0].id, "zinc");
+  assert.equal(S.importCode("https://xn--og5b1hx9c.kr/my.html?import=" + encodeURIComponent(code)).items[0].id, "zinc");
+});
+test("exportCode ↔ importCode: 시간대별 알림 토글(slotOn)도 옮긴다", () => {
+  const s = S.setSlotOn(S.addItems(S.empty(), ["zinc"]).state, "bedtime", false);
+  const p = S.importCode(S.exportCode(s));
+  assert.deepEqual(p.slotOn, { bedtime: false });
+  const m = S.merge(S.empty(), p, "merge", { zinc: {} });
+  assert.equal(m.state.settings.slotOn.bedtime, false); assert.equal(m.state.settings.slotOn.morning_after, true);
+});
