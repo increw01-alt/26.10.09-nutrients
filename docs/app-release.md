@@ -8,7 +8,7 @@
 
 플레이는 Play App Signing 을 쓴다. 여기서 만드는 키는 '업로드 키'이고, 앱에 실제 서명하는 '앱 서명 키'는 구글이 만들어 보관한다. 업로드 키를 잃어버려도 콘솔에서 재설정을 요청할 수 있다(10절).
 
-Git Bash(또는 이 앱의 터미널)에서 아래를 실행한다. 먼저 `keytool -version` 이 답하는지 본다(이 PC 에는 JDK 21 이 있다). keytool 은 키스토어 비밀번호만 묻는다(두 번 입력). 요즘 JDK 의 기본 형식(PKCS12)은 키 비밀번호를 따로 두지 못해 키 비밀번호는 자동으로 같은 값이 된다. 비밀번호는 비밀번호 관리자에 보관한다.
+이 앱의 터미널(PowerShell)이나 Git Bash 어디서든 같은 명령이다. 먼저 `keytool -version` 이 답하는지 본다(이 PC 에는 JDK 21 이 있다). keytool 은 키스토어 비밀번호만 묻는다(두 번 입력). 요즘 JDK 의 기본 형식(PKCS12)은 키 비밀번호를 따로 두지 못해 키 비밀번호는 자동으로 같은 값이 된다. 비밀번호는 비밀번호 관리자에 보관한다.
 
 ```bash
 keytool -genkeypair -v -keystore "$HOME/yeongyangje-upload.jks" -alias upload -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=yeongyangje.kr, O=yeongyangje.kr, C=KR"
@@ -20,18 +20,12 @@ keytool -genkeypair -v -keystore "$HOME/yeongyangje-upload.jks" -alias upload -k
 
 ## 2. GitHub Secrets 4개 등록 (사용자)
 
-워크플로가 읽는 이름은 정확히 `ANDROID_KEYSTORE_BASE64`·`ANDROID_KEYSTORE_PASSWORD`·`ANDROID_KEY_ALIAS`·`ANDROID_KEY_PASSWORD` 다(`tests/test_store_listing.py` 가 워크플로와 이 문서의 이름을 대조한다). 저장소 폴더에서 한 블록씩 실행한다.
+워크플로가 읽는 이름은 정확히 `ANDROID_KEYSTORE_BASE64`·`ANDROID_KEYSTORE_PASSWORD`·`ANDROID_KEY_ALIAS`·`ANDROID_KEY_PASSWORD` 다(`tests/test_store_listing.py` 가 워크플로와 이 문서의 이름을 대조한다). 저장소 폴더에서 한 블록씩 실행한다(PowerShell·Git Bash 공통, `gh` 는 이미 로그인돼 있음).
 
-키스토어를 base64 텍스트로 바꾼다.
-
-```bash
-base64 -w0 "$HOME/yeongyangje-upload.jks" > "$HOME/yeongyangje-upload.jks.b64"
-```
-
-그 텍스트를 Secret 으로 올린다.
+키스토어 파일을 base64 텍스트로 바꿔 Secret 으로 올린다(임시 파일 없이 한 번에).
 
 ```bash
-gh secret set ANDROID_KEYSTORE_BASE64 < "$HOME/yeongyangje-upload.jks.b64"
+python -c "import base64,pathlib,subprocess;subprocess.run(['gh','secret','set','ANDROID_KEYSTORE_BASE64'],input=base64.b64encode((pathlib.Path.home()/'yeongyangje-upload.jks').read_bytes()),check=True)"
 ```
 
 키스토어 비밀번호(명령이 값을 물으면 붙여 넣고 Enter).
@@ -52,17 +46,13 @@ gh secret set ANDROID_KEY_ALIAS --body upload
 gh secret set ANDROID_KEY_PASSWORD
 ```
 
-확인과 뒷정리.
+확인.
 
 ```bash
 gh secret list
 ```
 
-```bash
-rm "$HOME/yeongyangje-upload.jks.b64"
-```
-
-`gh secret list` 에 `ANDROID_` 로 시작하는 이름 4개가 보이면 된다.
+`ANDROID_` 로 시작하는 이름 4개가 보이면 된다. 값을 잘못 넣었으면 같은 명령을 다시 실행하면 덮어쓴다.
 
 ## 3. AAB 만들기
 
