@@ -103,6 +103,7 @@ body { background: var(--bg); color: var(--ink); font-family: "Pretendard Variab
 .pwa-banner button { font: inherit; font-size: 12.5px; font-weight: 800; border-radius: 999px; padding: 7px 14px; cursor: pointer; border: 1.5px solid #246d4b; background: #fff; color: #246d4b; }
 .pwa-banner button.pwa-install { background: #246d4b; color: #fff; }
 @media (min-width: 768px) { .pwa-banner { left: auto; right: 24px; bottom: 24px; width: 380px; } }
+body.has-pwa-banner #top-btn { display: none !important; }   /* 배너와 같은 자리의 '맨 위로' 버튼은 배너가 떠 있는 동안 숨김 */
 body.has-tabbar { padding-bottom: 64px; }
 @media (min-width: 768px) { body.has-tabbar { padding-bottom: 0; } }
 

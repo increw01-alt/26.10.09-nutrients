@@ -229,33 +229,47 @@
   function topButton() {
     var b = document.createElement("button");
     b.type = "button"; b.className = "no-print fixed bottom-20 right-4 z-30 hidden h-11 w-11 items-center justify-center rounded-full bg-ink-900/85 text-white shadow-lg transition hover:bg-brand-700 md:bottom-5 md:right-5";
-    b.setAttribute("aria-label", "맨 위로"); b.innerHTML = '<i data-lucide="arrow-up" class="h-5 w-5"></i>';
+    b.id = "top-btn"; b.setAttribute("aria-label", "맨 위로"); b.innerHTML = '<i data-lucide="arrow-up" class="h-5 w-5"></i>';
     b.addEventListener("click", function () { window.scrollTo({ top: 0, behavior: "smooth" }); });
     document.body.appendChild(b);
     window.addEventListener("scroll", function () { b.classList.toggle("hidden", window.scrollY < 500); b.classList.toggle("flex", window.scrollY >= 500); }, { passive: true });
     D.icons(b);
   }
 
-  /* 홈 화면 설치 배너 — 보여 줄지 판단하는 순수 함수(standalone 이면 안 보이고, 닫은 지 30일 안이면 안 보임). 브라우저 검증용으로 Layout 에 노출 */
-  function shouldShowInstallBanner(standalone, dismissedAt, now) {
+  /* 홈 화면 설치 배너 — 보여 줄지 판단하는 순수 함수. standalone(이미 설치)·궁합 체크 페이지('궁합 결과 보기' 플로팅 버튼과 겹침)·
+     이번 세션에 이미 보여 줌·닫은 지 30일 안이면 안 보임. 브라우저 검증용으로 Layout 에 노출 */
+  function shouldShowInstallBanner(standalone, dismissedAt, now, page, shownThisSession) {
     if (standalone) return false;
+    if (page === "compat") return false;
+    if (shownThisSession) return false;
     if (dismissedAt && now - dismissedAt < 30 * 86400000) return false;
     return true;
   }
-  /* Chrome 계열은 beforeinstallprompt 를 받았을 때 '설치' 버튼으로, iOS 는 Safari 공유 → '홈 화면에 추가' 안내로. 닫으면 30일 동안 다시 띄우지 않음 */
+  /* "Safari 공유 버튼 → 홈 화면에 추가" 안내가 맞는 환경(iOS·iPadOS 의 Safari 자체)만 true. iOS Chrome·네이버·카카오톡 같은 인앱 브라우저에서는 그 안내가 틀려 false (순수 함수) */
+  function isIosSafari(ua, platform, touchPoints) {
+    var ios = /iPhone|iPad|iPod/.test(ua) || (platform === "MacIntel" && touchPoints > 1);
+    if (!ios) return false;
+    if (/CriOS|FxiOS|EdgiOS|OPiOS|NAVER|KAKAOTALK|Instagram|FBAN|FBAV|Line\/|Whale|DaumApps|SamsungBrowser|Electron/i.test(ua)) return false;
+    return /Safari\//.test(ua);
+  }
+  /* Chrome 계열은 beforeinstallprompt 를 받았을 때 '설치' 버튼으로, iOS Safari 는 공유 → '홈 화면에 추가' 안내로. 세션당 1회, 닫으면 30일 동안 다시 띄우지 않음 */
   function initInstallBanner() {
-    var standalone = false, dismissedAt = null;
+    var standalone = false, dismissedAt = null, shown = false;
     try { standalone = (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true; } catch (e) { /* 무시 */ }
     try { dismissedAt = parseInt(localStorage.getItem("pwaBannerDismissedAt"), 10) || null; } catch (e) { /* 저장소 차단 시 무시 */ }
-    if (!shouldShowInstallBanner(standalone, dismissedAt, Date.now())) return;
-    var isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    try { shown = sessionStorage.getItem("pwaBannerShown") === "1"; } catch (e) { /* 무시 */ }
+    if (!shouldShowInstallBanner(standalone, dismissedAt, Date.now(), page, shown)) return;
+    var isIOS = isIosSafari(navigator.userAgent, navigator.platform, navigator.maxTouchPoints);
     var deferred = null, el = null;
     function dismiss() {
       try { localStorage.setItem("pwaBannerDismissedAt", String(Date.now())); } catch (e) { /* 무시 */ }
+      document.body.classList.remove("has-pwa-banner");
       if (el) { el.remove(); el = null; }
     }
     function show(mode) {
       if (el) return;
+      try { sessionStorage.setItem("pwaBannerShown", "1"); } catch (e) { /* 무시 */ }
+      document.body.classList.add("has-pwa-banner");   // 겹치는 '맨 위로' 버튼은 배너가 떠 있는 동안 숨김(style.css)
       el = document.createElement("div");
       el.className = "pwa-banner no-print"; el.setAttribute("role", "dialog"); el.setAttribute("aria-label", "홈 화면에 설치");
       el.innerHTML = '<img src="' + D.url("assets/images/app/icon-192.png") + '" alt="" width="40" height="40">' +
@@ -320,5 +334,5 @@
     page = document.body.getAttribute("data-page") || "";
     renderHeader(); renderFooter(); renderTabbar(); fixMeta(); fillContact(); topButton(); initInstallBanner(); D.icons();
   });
-  window.Layout = { openSearch: openSearch, closeSearch: closeSearch, shouldShowInstallBanner: shouldShowInstallBanner, shouldRegisterSw: shouldRegisterSw };
+  window.Layout = { openSearch: openSearch, closeSearch: closeSearch, shouldShowInstallBanner: shouldShowInstallBanner, isIosSafari: isIosSafari, shouldRegisterSw: shouldRegisterSw };
 })();
