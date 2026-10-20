@@ -92,6 +92,17 @@ body { background: var(--bg); color: var(--ink); font-family: "Pretendard Variab
 .tabbar a.active { color: #246d4b; }
 .tabbar a svg { width: 22px; height: 22px; }
 @media (min-width: 768px) { .tabbar { display: none; } }
+
+/* 홈 화면 설치 배너 (layout.js initInstallBanner) — 모바일은 탭 바(약 64px) 위, 데스크톱은 우하단 카드 */
+.pwa-banner { position: fixed; left: 12px; right: 12px; bottom: calc(64px + 12px + env(safe-area-inset-bottom)); z-index: 60; display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: #fff; border: 1px solid #e3ebdc; border-radius: 16px; box-shadow: 0 12px 32px rgba(27, 42, 34, .18); font-size: 13px; color: #1b2a22; }
+.pwa-banner img { width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0; }
+.pwa-banner-text { flex: 1; min-width: 0; line-height: 1.4; }
+.pwa-banner-text strong { display: block; font-weight: 800; }
+.pwa-banner-text span { display: block; margin-top: 2px; font-size: 12px; color: #6b7a71; }
+.pwa-banner-actions { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
+.pwa-banner button { font: inherit; font-size: 12.5px; font-weight: 800; border-radius: 999px; padding: 7px 14px; cursor: pointer; border: 1.5px solid #246d4b; background: #fff; color: #246d4b; }
+.pwa-banner button.pwa-install { background: #246d4b; color: #fff; }
+@media (min-width: 768px) { .pwa-banner { left: auto; right: 24px; bottom: 24px; width: 380px; } }
 body.has-tabbar { padding-bottom: 64px; }
 @media (min-width: 768px) { body.has-tabbar { padding-bottom: 0; } }
 

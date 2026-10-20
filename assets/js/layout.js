@@ -236,6 +236,46 @@
     D.icons(b);
   }
 
+  /* 홈 화면 설치 배너 — 보여 줄지 판단하는 순수 함수(standalone 이면 안 보이고, 닫은 지 30일 안이면 안 보임). 브라우저 검증용으로 Layout 에 노출 */
+  function shouldShowInstallBanner(standalone, dismissedAt, now) {
+    if (standalone) return false;
+    if (dismissedAt && now - dismissedAt < 30 * 86400000) return false;
+    return true;
+  }
+  /* Chrome 계열은 beforeinstallprompt 를 받았을 때 '설치' 버튼으로, iOS 는 Safari 공유 → '홈 화면에 추가' 안내로. 닫으면 30일 동안 다시 띄우지 않음 */
+  function initInstallBanner() {
+    var standalone = false, dismissedAt = null;
+    try { standalone = (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true; } catch (e) { /* 무시 */ }
+    try { dismissedAt = parseInt(localStorage.getItem("pwaBannerDismissedAt"), 10) || null; } catch (e) { /* 저장소 차단 시 무시 */ }
+    if (!shouldShowInstallBanner(standalone, dismissedAt, Date.now())) return;
+    var isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    var deferred = null, el = null;
+    function dismiss() {
+      try { localStorage.setItem("pwaBannerDismissedAt", String(Date.now())); } catch (e) { /* 무시 */ }
+      if (el) { el.remove(); el = null; }
+    }
+    function show(mode) {
+      if (el) return;
+      el = document.createElement("div");
+      el.className = "pwa-banner no-print"; el.setAttribute("role", "dialog"); el.setAttribute("aria-label", "홈 화면에 설치");
+      el.innerHTML = '<img src="' + D.url("assets/images/app/icon-192.png") + '" alt="" width="40" height="40">' +
+        '<div class="pwa-banner-text"><strong>영양제.kr 을 홈 화면에 설치하면 앱처럼 바로 열려요</strong>' +
+        (mode === "ios" ? "<span>Safari 공유 버튼 → '홈 화면에 추가'</span>" : "") + "</div>" +
+        '<div class="pwa-banner-actions">' + (mode === "prompt" ? '<button type="button" class="pwa-install">설치</button>' : "") + '<button type="button" class="pwa-dismiss">닫기</button></div>';
+      el.querySelector(".pwa-dismiss").addEventListener("click", dismiss);
+      var ib = el.querySelector(".pwa-install");
+      if (ib) ib.addEventListener("click", function () {
+        if (!deferred) return;
+        deferred.prompt();
+        deferred.userChoice.then(function () { deferred = null; dismiss(); }).catch(dismiss);
+      });
+      document.body.appendChild(el);
+    }
+    window.addEventListener("beforeinstallprompt", function (e) { e.preventDefault(); deferred = e; show("prompt"); });
+    window.addEventListener("appinstalled", function () { if (window.gtag) window.gtag("event", "pwa_install"); dismiss(); });
+    if (isIOS) show("ios");
+  }
+
   /* 임시 주소(*.pages.dev)로 접속하면 정식 도메인으로 보냅니다 (중복 색인 방지) */
   try {
     var canon = (S.url || "").replace(/\/+$/, "");
@@ -263,7 +303,7 @@
 
   document.addEventListener("DOMContentLoaded", function () {
     page = document.body.getAttribute("data-page") || "";
-    renderHeader(); renderFooter(); renderTabbar(); fixMeta(); fillContact(); topButton(); D.icons();
+    renderHeader(); renderFooter(); renderTabbar(); fixMeta(); fillContact(); topButton(); initInstallBanner(); D.icons();
   });
-  window.Layout = { openSearch: openSearch, closeSearch: closeSearch };
+  window.Layout = { openSearch: openSearch, closeSearch: closeSearch, shouldShowInstallBanner: shouldShowInstallBanner };
 })();
