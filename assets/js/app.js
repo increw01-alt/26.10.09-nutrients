@@ -58,6 +58,17 @@
         if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins[name]) return window.Capacitor.Plugins[name];
       } catch (e) { /* 무시 */ }
       return null;
+    },
+    /* 내 영양제 상태를 앱 저장소(Preferences)에 복제 — 휴대폰 백업(Google·iCloud)에 실리고, 웹뷰 저장소가 비면 restore 로 되살린다 */
+    mirror: function (json) {
+      var P = AppBridge.plugin("Preferences");
+      if (!P || typeof P.set !== "function") return Promise.resolve();
+      return Promise.resolve(P.set({ key: "yj.my.v1", value: json })).catch(function () { /* 무시 */ });
+    },
+    restore: function () {
+      var P = AppBridge.plugin("Preferences");
+      if (!P || typeof P.get !== "function") return Promise.resolve(null);
+      return Promise.resolve(P.get({ key: "yj.my.v1" })).then(function (r) { return r && r.value ? r.value : null; }).catch(function () { return null; });
     }
   };
   init();

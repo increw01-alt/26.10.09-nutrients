@@ -14,7 +14,49 @@
   function byId(id) { return core.byId[id]; }
   function defaultSlot(it) { return (it.timing && it.timing.slot) || "morning_after"; }
   function label(slot) { return S.SLOT_LABEL[slot] || slot; }
-  function commit(next) { state = next; S.save(state); render(); }
+  /* ---- 앱(Capacitor) 연동: 알림 예약은 앱에서만. 웹에서는 AppBridge 가 없거나 isNative() 가 false ---- */
+  function isApp() { return !!(window.AppBridge && window.AppBridge.isNative()); }
+  function LN() { return isApp() ? window.AppBridge.plugin("LocalNotifications") : null; }
+  var syncTimer = null;
+  function scheduleSync() {   // 설정·목록이 바뀔 때마다 300ms 뒤 한 번만 재예약 (끄면 취소만)
+    var ln = LN(); if (!ln || !window.Reminders) return;
+    clearTimeout(syncTimer);
+    syncTimer = setTimeout(function () {
+      window.Reminders.sync(ln, state, schedule(), { shortName: D.shortName }).catch(function (e) { if (window.console) console.warn("[reminders] 동기화 실패:", e && e.message); });
+    }, 300);
+  }
+  function commit(next) {
+    state = next; S.save(state); render();
+    if (isApp()) { window.AppBridge.mirror(JSON.stringify(state)); scheduleSync(); }
+  }
+  /* 토글을 켤 때: 권한을 먼저 받고, 거부면 토글을 되돌리며 안내 */
+  function enableReminders(input) {
+    var ln = LN();
+    if (!ln) { input.checked = false; ui.notice = "휴대폰 알림은 앱에서만 받을 수 있어요."; render(); return; }
+    Promise.resolve(ln.requestPermissions()).then(function (r) {
+      if (r && r.display === "granted") { ui.notice = ""; commit(S.setSetting(state, "remindersOn", true)); }
+      else { ui.notice = "알림 권한이 꺼져 있어요. 휴대폰 설정 → 앱 → 영양제.kr → 알림에서 켜 주세요."; commit(S.setSetting(state, "remindersOn", false)); }
+    }).catch(function () { ui.notice = "알림을 켜지 못했어요. 잠시 뒤 다시 시도해 주세요."; commit(S.setSetting(state, "remindersOn", false)); });
+  }
+  /* 알림의 버튼(먹었어요·30분 뒤 다시)이나 본체를 눌렀을 때 — 앱이 꺼져 있다가 열린 경우에도 리스너가 붙은 뒤 전달된다 */
+  function onNotificationAction(ev) {
+    var r = window.Reminders.applyAction(state, ev, dueSlots(schedule()), today());
+    if (r.snooze) {
+      var slot = r.snooze, s = schedule().slots.filter(function (x) { return x.key === slot; })[0];
+      var body = s ? s.items.map(function (it) { return D.shortName(it); }).join(" · ") : "";
+      var ln = LN(); if (ln) ln.schedule({ notifications: [window.Reminders.snoozeNotification(slot, Date.now(), { shortName: D.shortName }, body)] }).catch(function () { /* 무시 */ });
+    }
+    if (r.state !== state) commit(r.state); else render();
+    if (r.open) window.scrollTo(0, 0);
+  }
+  function initAppReminders() {
+    var ln = LN(); if (!ln || !window.Reminders) return;
+    try {
+      if (ln.registerActionTypes) ln.registerActionTypes(window.Reminders.actionTypes());
+      if (ln.addListener) ln.addListener("localNotificationActionPerformed", onNotificationAction);
+    } catch (e) { /* 무시 */ }
+    if (state.settings.remindersOn) scheduleSync();   // 시간표가 바뀌어 있을 수 있으니 열 때 한 번 맞춘다
+  }
   function toast(msg) {
     var t = document.createElement("div");
     t.className = "fixed bottom-36 left-1/2 z-50 -translate-x-1/2 rounded-full bg-ink-900 px-4 py-2 text-sm font-semibold text-white shadow-lg md:bottom-20";
@@ -93,7 +135,9 @@
         toggle("data-slot-on", s.key, state.settings.slotOn[s.key], false, label(s.key) + " 알림") + "</div>";
     }).join("");
     return '<section class="my-section" id="my-reminders"><h2><i data-lucide="bell"></i>복용 알림</h2>' +
-      '<div class="my-row"><div class="my-row-main"><b>휴대폰 알림 받기</b><small>휴대폰 알림은 앱에서 받을 수 있어요 (앱 출시 준비 중). 시각을 미리 정해 두면 앱에서 그대로 쓰여요.</small></div>' + toggle("data-setting", "remindersOn", false, true, "휴대폰 알림 받기") + "</div>" +
+      (isApp()
+        ? '<div class="my-row"><div class="my-row-main"><b>휴대폰 알림 받기</b><small>알림은 이 휴대폰에서 울려요. 시각을 바꾸면 바로 다시 예약돼요.</small></div>' + toggle("data-setting", "remindersOn", state.settings.remindersOn, false, "휴대폰 알림 받기") + "</div>"
+        : '<div class="my-row"><div class="my-row-main"><b>휴대폰 알림 받기</b><small>휴대폰 알림은 앱에서 받을 수 있어요 (앱 출시 준비 중). 시각을 미리 정해 두면 앱에서 그대로 쓰여요.</small></div>' + toggle("data-setting", "remindersOn", false, true, "휴대폰 알림 받기") + "</div>") +
       '<p class="my-sub" style="margin-top:.75rem">시간대별 알림 시각</p>' + rows +
       '<div class="my-row"><div class="my-row-main"><b>알림에 성분 이름 표시</b><small>끄면 "영양제 시간이에요"만 표시</small></div>' + toggle("data-setting", "showNames", state.settings.showNames, false, "알림에 성분 이름 표시") + "</div>" +
       '<div class="my-row"><div class="my-row-main"><b>주말에도 알림</b></div>' + toggle("data-setting", "weekends", state.settings.weekends, false, "주말에도 알림") + "</div>" +
@@ -241,8 +285,10 @@
         if (next === state) { t.value = state.settings.times[slot]; return; }
         state = next; S.save(state);
         document.querySelectorAll('#my-schedule time[data-slot="' + slot + '"], #my-log [data-time-slot="' + slot + '"]').forEach(function (el) { el.textContent = t.value; });
+        if (isApp()) { window.AppBridge.mirror(JSON.stringify(state)); scheduleSync(); }   // 시각이 바뀌면 알림도 다시 예약
       }
       else if (t.matches("input[data-slot-on]")) commit(S.setSlotOn(state, t.getAttribute("data-slot-on"), t.checked));
+      else if (t.matches('input[data-setting="remindersOn"]')) { if (t.checked) enableReminders(t); else { ui.notice = ""; commit(S.setSetting(state, "remindersOn", false)); } }
       else if (t.matches("input[data-setting]")) commit(S.setSetting(state, t.getAttribute("data-setting"), t.checked));
     });
     app.addEventListener("input", function (e) {
@@ -265,8 +311,17 @@
     var app = document.getElementById("my-app");
     if (!app || !S) return;
     D.core().then(function (c) {
+      return (window.AppBridge ? window.AppBridge.ready() : Promise.resolve()).then(function () { return c; });   // 앱이면 런타임 로드를 기다린다
+    }).then(function (c) {
       core = c;
       state = S.load();
+      var hasLocal = false;
+      try { hasLocal = !!localStorage.getItem(S.KEY); } catch (e) { /* 무시 */ }
+      if (isApp() && !hasLocal) {   // 웹뷰 저장소가 비어 있으면(재설치·백업 복원) 앱 저장소 복제본에서 되살린다
+        return window.AppBridge.restore().then(function (json) { if (json) { state = S.load({ getItem: function () { return json; } }); S.save(state); } return c; });
+      }
+      return c;
+    }).then(function (c) {
       var pr = S.pruneUnknown(state, core.byId);
       if (pr.removed.length) { state = pr.state; S.save(state); ui.notice = "성분 사전에서 사라진 항목 " + pr.removed.length + "개를 목록에서 뺐어요."; }
       /* 가져오기 링크(#import=, 옛 ?import=)는 읽자마자 주소에서 지운다 — 목록이 주소에 남아 공유·기록되지 않게.
@@ -285,6 +340,7 @@
       document.addEventListener("visibilitychange", function () { if (!document.hidden && ui.renderedDay && ui.renderedDay !== today()) render(); });   // 자정을 넘겨 다시 열면 오늘 기준으로
       bind(app);
       render();
+      initAppReminders();
     }).catch(function () { app.innerHTML = '<p class="text-sm text-ink-500">데이터를 불러오지 못했어요. 잠시 뒤 다시 시도해 주세요.</p>'; });
   });
 })();
