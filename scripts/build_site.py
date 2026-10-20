@@ -283,7 +283,8 @@ def ensure_pwa_tags(html_src: str, root: str) -> str:
     a, b = html_src.find(PWA_START), html_src.find(PWA_END)
     if a >= 0 and b > a:
         line_start = html_src.rfind("\n", 0, a) + 1
-        return html_src[:line_start] + pwa_block(root, html_src[line_start:a]) + html_src[b + len(PWA_END):]
+        indent = html_src[line_start : a]   # 띄어쓰기 유지: 붙여 쓰면 Tailwind 가 임의값 클래스로 읽어 쓰레기 규칙을 만든다
+        return html_src[:line_start] + pwa_block(root, indent) + html_src[b + len(PWA_END):]
     m = re.search(r'^([ \t]*)<link rel="icon"[^>]*>[ \t]*$', html_src, re.M)
     if not m:
         return html_src
@@ -438,6 +439,7 @@ def render_page(it: dict, core: dict, cfg: dict) -> str:
   <script src="../assets/js/data.js" defer></script>
   <script src="../assets/js/affiliate.js" defer></script>
   <script src="../assets/js/layout.js" defer></script>
+  <script src="../assets/js/store.js" defer></script>
   <script>window.__INGREDIENT_ID = {json.dumps(it["id"])};</script>
   <script src="../assets/js/illus.js" defer></script>
   <script src="../assets/js/pages/ingredient.js" defer></script>
@@ -496,6 +498,7 @@ def head_html(cfg: dict, *, title: str, desc: str, path: str, root: str, keyword
   <script src="{root}assets/js/data.js" defer></script>
   <script src="{root}assets/js/affiliate.js" defer></script>
   <script src="{root}assets/js/layout.js" defer></script>
+  <script src="{root}assets/js/store.js" defer></script>
   {extra_scripts}
   {('<script type="application/ld+json">' + json.dumps(ld, ensure_ascii=False) + '</script>') if ld else ''}
 </head>"""
@@ -591,6 +594,7 @@ def render_guide(gd: dict, guides: dict, core: dict, cfg: dict) -> str:
     </div></section>
     <div class="mx-auto max-w-5xl space-y-8 px-4 py-10 sm:px-6">
       <section id="ingredients" class="scroll-mt-24"><h2 class="text-2xl font-extrabold tracking-tight text-ink-900">핵심 성분</h2><p class="mt-1 text-sm text-ink-500">각 성분을 누르면 효능·권장량·주의사항과 함유 제품을 볼 수 있습니다.</p><div class="mt-4 grid gap-4 md:grid-cols-2">{ing_html}</div>
+        <button type="button" class="btn-outline mt-4" data-my-add="{all_ids}"><i data-lucide="plus"></i>이 성분들을 내 영양제에 추가</button>
         <a href="../compatibility.html?items={all_ids}" class="btn-primary mt-4"><i data-lucide="heart-handshake"></i>이 성분들로 궁합·복용 시간표 만들기 <i data-lucide="arrow-right"></i></a></section>
       {('<section id="combos" class="scroll-mt-24"><h2 class="text-2xl font-extrabold tracking-tight text-ink-900">함께 먹으면 좋은 조합</h2><div class="mt-4 grid gap-4 md:grid-cols-2">' + combo_html + '</div></section>') if combo_html else ''}
       {sections_html}

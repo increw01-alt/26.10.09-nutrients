@@ -7,6 +7,7 @@
     { key: "home", label: "홈", href: "index.html", desktop: false },
     { key: "ingredients", label: "성분 사전", href: "ingredients.html" },
     { key: "compat", label: "궁합 체크", href: "compatibility.html" },
+    { key: "my", label: "내 영양제", href: "my.html" },
     { key: "guides", label: "가이드", href: "guides.html" },
     { key: "products", label: "제품 찾기", href: "products.html" },
     { key: "news", label: "뉴스", href: "news.html" },
@@ -290,6 +291,21 @@
     if (isIOS) show("ios");
   }
 
+  /* "내 영양제에 추가" 버튼([data-my-add="성분id"] 또는 쉼표로 이은 여러 id) — store.js 가 실린 페이지(성분 상세·가이드)에서만 동작. 모두 이미 있으면 처음부터 '있어요' 표시 */
+  function markMyAdded(b) { b.innerHTML = '<i data-lucide="check"></i>내 영양제에 있어요 · <a href="' + D.url("my.html") + '">보기</a>'; b.classList.add("is-added"); D.icons(b); }
+  function myAddIds(b) { return b.getAttribute("data-my-add").split(",").map(function (s) { return s.trim(); }).filter(Boolean); }
+  function initMyAddButtons() {
+    var St = window.Store; if (!St) return;
+    var have = {};
+    St.load().items.forEach(function (i) { have[i.id] = true; });
+    document.querySelectorAll("[data-my-add]").forEach(function (b) { if (myAddIds(b).every(function (id) { return have[id]; })) markMyAdded(b); });
+    document.addEventListener("click", function (e) {
+      var b = e.target.closest("[data-my-add]"); if (!b || b.classList.contains("is-added") || e.target.closest("a")) return;
+      var r = St.addItems(St.load(), myAddIds(b));
+      St.save(r.state); markMyAdded(b);
+    });
+  }
+
   /* 임시 주소(*.pages.dev)로 접속하면 정식 도메인으로 보냅니다 (중복 색인 방지) */
   try {
     var canon = (S.url || "").replace(/\/+$/, "");
@@ -332,7 +348,7 @@
 
   document.addEventListener("DOMContentLoaded", function () {
     page = document.body.getAttribute("data-page") || "";
-    renderHeader(); renderFooter(); renderTabbar(); fixMeta(); fillContact(); topButton(); initInstallBanner(); D.icons();
+    renderHeader(); renderFooter(); renderTabbar(); fixMeta(); fillContact(); topButton(); initInstallBanner(); initMyAddButtons(); D.icons();
   });
   window.Layout = { openSearch: openSearch, closeSearch: closeSearch, shouldShowInstallBanner: shouldShowInstallBanner, isIosSafari: isIosSafari, shouldRegisterSw: shouldRegisterSw };
 })();

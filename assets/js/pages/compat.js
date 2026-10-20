@@ -202,6 +202,7 @@
       '<div class="flex -space-x-2" aria-hidden="true">' + selected.map(function (id) { return '<span class="thumb thumb-sm">' + bottleArt(core.byId[id]) + "</span>"; }).join("") + "</div>" +
       '<div class="min-w-0 flex-1"><p class="text-xs font-bold uppercase tracking-wide text-white/80">' + selected.length + '개 성분 · ' + res.length + '개 조합 분석</p><h3 class="mt-1 text-xl font-extrabold sm:text-2xl">' + esc(verdict) + '</h3>' +
       '<div class="mt-3 flex flex-wrap gap-2 text-xs font-bold">' + [["synergy", "좋은 궁합"], ["caution", "주의"], ["avoid", "피하기"], ["neutral", "무난"], ["unknown", "정보 없음"]].map(function (x) { return cnt[x[0]] ? '<span class="rounded-full bg-white/20 px-2.5 py-1">' + x[1] + " " + cnt[x[0]] + "</span>" : ""; }).join("") + "</div></div></div></div>";
+    if (window.Store) summary.insertAdjacentHTML("beforeend", '<div class="mt-3"><button type="button" id="save-my" class="btn-outline btn-sm"><i data-lucide="pill"></i>내 영양제로 저장</button></div>');   // 선택한 성분을 기기 내 '내 영양제'에 저장 (my.html)
     list.innerHTML = res.map(resultCard).join("");
     renderMatrix(); renderSchedule(); renderTabs();
     var shopEl = document.getElementById("shop-list");
@@ -217,6 +218,14 @@
   document.addEventListener("DOMContentLoaded", function () {
     D.core().then(function (c) {
       core = c; buildPickerGrid();
+      document.getElementById("summary").addEventListener("click", function (e) {   // '내 영양제로 저장' (store.js, 기기 내 저장)
+        var b = e.target.closest("#save-my"); if (!b || !window.Store) return;
+        var r = window.Store.addItems(window.Store.load(), selected);
+        window.Store.save(r.state);
+        showToast(r.added.length ? "내 영양제에 " + r.added.length + "개 저장했어요" : "이미 내 영양제에 있어요");
+        b.outerHTML = '<a href="my.html" class="btn-primary btn-sm"><i data-lucide="pill"></i>내 영양제 보기</a>';
+        D.icons(document.getElementById("summary"));
+      });
       selected = parseInitial().filter(function (id) { return !!core.byId[id]; }).slice(0, MAX);
       document.getElementById("selected-chips").addEventListener("click", function (e) { var b = e.target.closest("[data-remove]"); if (b) remove(b.getAttribute("data-remove")); });
       document.getElementById("clear-all").addEventListener("click", function () { selected = []; update(); });
