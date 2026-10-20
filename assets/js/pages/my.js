@@ -134,8 +134,48 @@
       '<p class="my-sub" style="margin-top:1rem">최근 30일</p><div class="my-days">' + month + "</div>" + detail +
       '<div class="my-actions"><button type="button" class="btn-outline btn-sm" data-log-enable="false">기록 끄기</button><button type="button" class="btn-outline btn-sm" data-log-clear>기록 지우기</button></div></section>';
   }
-  function sectionTransfer() { return ""; }
-  function sectionImport() { return ""; }
+  /* ---- 다른 기기로 옮기기: 링크·QR·텍스트 코드 내보내기, 가져오기(합치기/바꾸기). 기록은 포함하지 않는다 ---- */
+  function baseUrl() { return location.origin + location.pathname.replace(/[^/]*$/, ""); }
+  function qrSvg(text) {
+    try { var q = window.qrcode(0, "M"); q.addData(text); q.make(); return q.createSvgTag({ cellSize: 4, margin: 2, scalable: true }); } catch (e) { return ""; }
+  }
+  function previewCard(payload, source) {
+    var known = payload.items.filter(function (it) { return byId(it.id); }), unknown = payload.items.length - known.length;
+    return '<section class="my-card" id="' + (source === "url" ? "my-import" : "my-import-preview") + '"><h3>' + (source === "url" ? "링크로 받은 내 영양제 목록" : "가져올 목록") + '</h3>' +
+      '<p>' + (known.length ? esc(known.map(function (it) { return byId(it.id).name; }).join(", ")) + " (" + known.length + "개)" : "가져올 수 있는 성분이 없어요") + (unknown ? ' · 모르는 항목 ' + unknown + '개는 건너뜁니다' : "") + "</p>" +
+      '<p class="my-muted">합치기는 지금 목록을 유지하고 새 성분만 더하고, 바꾸기는 가져온 목록으로 교체해요. 복용 기록은 그대로 둡니다.</p>' +
+      '<div class="my-actions"><button type="button" class="btn-primary btn-sm" data-import-apply="merge" data-import-source="' + source + '"' + (known.length ? "" : " disabled") + '>합치기</button><button type="button" class="btn-outline btn-sm" data-import-apply="replace" data-import-source="' + source + '"' + (known.length ? "" : " disabled") + '>바꾸기</button><button type="button" class="btn-outline btn-sm" data-import-cancel="' + source + '">취소</button></div></section>';
+  }
+  function sectionImport() { return ui.importPayload ? previewCard(ui.importPayload, "url") : ""; }
+  function sectionTransfer() {
+    var exportPanel = "";
+    if (ui.exportOpen && state.items.length) {
+      var code = S.exportCode(state), url = S.exportUrl(code, baseUrl());
+      exportPanel = '<div class="my-field"><label for="my-export-url">링크 (열면 바로 가져오기)</label><div class="my-copy"><input id="my-export-url" type="text" readonly value="' + esc(url) + '"><button type="button" class="btn-outline btn-sm" data-copy="my-export-url">복사</button></div></div>' +
+        '<div class="my-qr" aria-label="가져오기 링크 QR 코드">' + qrSvg(url) + "</div>" +
+        '<div class="my-field"><label for="my-export-code">텍스트 코드 (앱의 가져오기 칸에 붙여넣기)</label><div class="my-copy"><textarea id="my-export-code" readonly>' + esc(code) + '</textarea><button type="button" class="btn-outline btn-sm" data-copy="my-export-code">복사</button></div></div>';
+    }
+    return '<section class="my-section" id="my-transfer"><h2><i data-lucide="arrow-right"></i>다른 기기로 옮기기</h2>' +
+      '<p class="my-sub">내 영양제 목록과 알림 설정을 링크·QR·텍스트 코드로 옮길 수 있어요. 복용 기록은 포함되지 않습니다.</p>' +
+      '<div class="my-actions"><button type="button" class="btn-primary btn-sm" data-export-open' + (state.items.length ? "" : " disabled") + '>' + (ui.exportOpen ? "내보내기 닫기" : "내보내기") + "</button></div>" + exportPanel +
+      '<div class="my-field"><label for="my-import-text">가져오기 — 링크나 텍스트 코드를 붙여넣기</label><div class="my-copy"><textarea id="my-import-text" placeholder="YJ1-… 또는 my.html?import=… 링크">' + esc(ui.importText) + '</textarea><button type="button" class="btn-outline btn-sm" data-import-parse>불러오기</button></div>' +
+      (ui.importError ? '<p class="my-error">' + esc(ui.importError) + "</p>" : "") + "</div>" +
+      (ui.importPreview ? previewCard(ui.importPreview, "text") : "") + "</section>";
+  }
+  function applyImport(payload, mode, source) {
+    var r = S.merge(state, payload, mode, core.byId);
+    if (source === "url") { ui.importPayload = null; try { history.replaceState(null, "", location.pathname); } catch (e) { /* 무시 */ } }
+    else { ui.importPreview = null; ui.importText = ""; }
+    commit(r.state);
+    toast((mode === "replace" ? "목록을 바꿨어요" : r.added.length + "개 추가했어요") + (r.skipped.length ? " · " + r.skipped.length + "개 건너뜀" : ""));
+  }
+  function copyFrom(id) {
+    var el = document.getElementById(id); if (!el) return;
+    var text = el.value;
+    var done = function () { toast("복사했어요"); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done).catch(function () { el.select(); toast("길게 눌러 복사하세요"); });
+    else { el.select(); try { document.execCommand("copy"); done(); } catch (e) { toast("길게 눌러 복사하세요"); } }
+  }
 
   function render() {
     var app = document.getElementById("my-app");
@@ -153,8 +193,21 @@
 
   function bind(app) {
     app.addEventListener("click", function (e) {
-      var t = e.target.closest("[data-add],[data-remove],[data-log-enable],[data-check],[data-day],[data-log-clear]");
+      var t = e.target.closest("[data-add],[data-remove],[data-log-enable],[data-check],[data-day],[data-log-clear],[data-export-open],[data-copy],[data-import-parse],[data-import-apply],[data-import-cancel]");
       if (!t) return;
+      if (t.hasAttribute("data-export-open")) { ui.exportOpen = !ui.exportOpen; render(); return; }
+      if (t.hasAttribute("data-copy")) { copyFrom(t.getAttribute("data-copy")); return; }
+      if (t.hasAttribute("data-import-parse")) {
+        var ta = document.getElementById("my-import-text"); ui.importText = ta ? ta.value : "";
+        var p = S.importCode(ui.importText);
+        ui.importError = p ? "" : "코드를 읽을 수 없어요. 링크 전체나 YJ1- 로 시작하는 코드를 붙여넣어 주세요."; ui.importPreview = p; render(); return;
+      }
+      if (t.hasAttribute("data-import-apply")) { var src = t.getAttribute("data-import-source"); applyImport(src === "url" ? ui.importPayload : ui.importPreview, t.getAttribute("data-import-apply"), src); return; }
+      if (t.hasAttribute("data-import-cancel")) {
+        if (t.getAttribute("data-import-cancel") === "url") { ui.importPayload = null; try { history.replaceState(null, "", location.pathname); } catch (e2) { /* 무시 */ } }
+        else { ui.importPreview = null; ui.importError = ""; }
+        render(); return;
+      }
       if (t.hasAttribute("data-add")) add(t.getAttribute("data-add"));
       else if (t.hasAttribute("data-remove")) { var id = t.getAttribute("data-remove"); commit(S.removeItem(state, id)); toast("삭제했어요"); }
       else if (t.hasAttribute("data-log-enable")) commit(S.setSetting(state, "logEnabled", t.getAttribute("data-log-enable") === "true"));
@@ -193,6 +246,10 @@
       state = S.load();
       var pr = S.pruneUnknown(state, core.byId);
       if (pr.removed.length) { state = pr.state; S.save(state); ui.notice = "성분 사전에서 사라진 항목 " + pr.removed.length + "개를 목록에서 뺐어요."; }
+      var imp = null;
+      try { imp = new URLSearchParams(location.search).get("import"); } catch (e) { /* 무시 */ }
+      if (imp) { ui.importPayload = S.importCode(imp); if (!ui.importPayload) ui.notice = "가져오기 링크의 코드를 읽을 수 없어요."; }
+      app.addEventListener("input", function (e) { if (e.target.id === "my-import-text") ui.importText = e.target.value; });
       bind(app);
       render();
     }).catch(function () { app.innerHTML = '<p class="text-sm text-ink-500">데이터를 불러오지 못했어요. 잠시 뒤 다시 시도해 주세요.</p>'; });
