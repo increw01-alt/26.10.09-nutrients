@@ -256,6 +256,11 @@
     document.head.appendChild(sc);
   })();
 
+  /* PWA 서비스워커 등록 — 자산 캐시·오프라인 안내 (sw.js 는 scripts/sw_template.js 에서 빌드가 생성) */
+  if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
+    window.addEventListener("load", function () { navigator.serviceWorker.register(D.url("sw.js")).catch(function () { /* 미지원·차단 시 무시 */ }); });
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
     page = document.body.getAttribute("data-page") || "";
     renderHeader(); renderFooter(); renderTabbar(); fixMeta(); fillContact(); topButton(); D.icons();

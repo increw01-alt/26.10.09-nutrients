@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#246d4b">
+  <title>오프라인 — 영양제.kr</title>
+  <!-- 서비스워커가 오프라인일 때 보여 주는 페이지. 외부 CSS·JS·폰트 없이 혼자 그려져야 한다. -->
+  <style>
+    html, body { margin: 0; min-height: 100%; background: #f8faf5; color: #1b2a22; font-family: Pretendard, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif; }
+    main { max-width: 420px; margin: 0 auto; padding: 18vh 24px 48px; text-align: center; }
+    .leaf { width: 64px; height: 64px; border-radius: 18px; background: #3a7d44; margin: 0 auto 24px; display: block; }
+    h1 { font-size: 22px; line-height: 1.35; margin: 0 0 12px; }
+    p { font-size: 15px; line-height: 1.6; color: #4c5b52; margin: 0 0 28px; }
+    button, a.home { display: inline-block; font: inherit; font-weight: 700; font-size: 15px; border-radius: 999px; padding: 12px 22px; cursor: pointer; text-decoration: none; }
+    button { background: #246d4b; color: #fff; border: 0; }
+    a.home { color: #246d4b; border: 1.5px solid #246d4b; margin-left: 8px; }
+  </style>
+</head>
+<body>
+  <main>
+    <svg class="leaf" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="16" fill="#3a7d44"/><path d="M14 40 C 20 20, 40 12, 52 16 C 50 36, 34 50, 14 40 Z" fill="#ffffff"/><path d="M18 38 C 28 30, 38 24, 48 20" stroke="#9cc6a4" stroke-width="3" fill="none" stroke-linecap="round"/></svg>
+    <h1>지금은 인터넷에 연결되어 있지 않아요</h1>
+    <p>연결되면 자동으로 다시 열립니다. 이미 열어 본 페이지는 오프라인에서도 볼 수 있어요.</p>
+    <button type="button" onclick="location.reload()">다시 시도</button>
+    <a class="home" href="/">홈으로</a>
+  </main>
+</body>
+</html>

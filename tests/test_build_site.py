@@ -28,5 +28,27 @@ class PwaTagTests(unittest.TestCase):
         self.assertEqual(B.ensure_pwa_tags("<head></head>", "./"), "<head></head>")
 
 
+class ServiceWorkerBuildTests(unittest.TestCase):
+    def test_precache_urls_are_absolute_and_hashed(self):
+        urls = B.precache_urls()
+        self.assertIn("/offline.html", urls)
+        self.assertIn("/manifest.webmanifest", urls)
+        self.assertTrue(any(u.startswith("/assets/js/data.js?v=") and len(u.split("?v=")[1]) == 8 for u in urls))
+        self.assertTrue(all(u.startswith("/") for u in urls))
+        self.assertEqual(urls, sorted(urls))
+
+    def test_sw_version_changes_when_precache_changes(self):
+        t = "var x;"
+        self.assertNotEqual(B.sw_version(t, ["/a?v=1"]), B.sw_version(t, ["/a?v=2"]))
+        self.assertEqual(len(B.sw_version(t, ["/a"])), 8)
+
+    def test_build_sw_fills_placeholders(self):
+        B.build_sw()
+        sw = (B.ROOT / "sw.js").read_text(encoding="utf-8")
+        self.assertNotIn("__VERSION__", sw)
+        self.assertNotIn("/*__PRECACHE__*/", sw)
+        self.assertIn('"/offline.html"', sw)
+
+
 if __name__ == "__main__":
     unittest.main()

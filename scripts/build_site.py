@@ -59,19 +59,52 @@ VERIFY_START, VERIFY_END = "<!-- site-verification:start", "<!-- site-verificati
 ASSET_LINK_RE = re.compile(r'(?P<pre>(?:src|href)=")(?P<path>/?(?:\.\./|\./)*assets/(?:js|css)/[A-Za-z0-9_./-]+\.(?:js|css))(?:\?v=[0-9a-f]+)?(?P<post>")')
 
 
+_DIGEST_CACHE: dict[str, str] = {}
+
+
+def asset_digest(path: Path) -> str:
+    """자산 파일 내용 해시 앞 8자 (?v= 스탬프와 서비스워커 precache 가 같은 값을 쓴다). 없는 파일은 "0".
+    줄끝을 LF 로 맞춘 뒤 해시: Windows 의 core.autocrlf 로 CRLF 가 된 체크아웃에서도 CI(Linux) 와 같은 값이 나오게."""
+    import hashlib
+    key = str(path)
+    if key not in _DIGEST_CACHE:
+        _DIGEST_CACHE[key] = hashlib.sha1(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()[:8] if path.exists() else "0"
+    return _DIGEST_CACHE[key]
+
+
+SW_TEMPLATE = ROOT / "scripts/sw_template.js"
+PRECACHE_EXTRA = ["offline.html", "manifest.webmanifest", "assets/images/favicon.svg", "assets/images/home/leaf.webp",
+                  "assets/images/app/icon-192.png", "assets/images/app/icon-512.png"]
+
+
+def precache_urls() -> list[str]:
+    """서비스워커가 설치 때 미리 받을 절대 경로 목록(정렬). CSS·JS 는 stamp_assets 와 같은 ?v= 해시를 붙이고, 페이지가 싣지 않는 *.src.css 는 뺀다."""
+    files = [p for p in (ROOT / "assets/css").glob("*.css") if not p.name.endswith(".src.css")] + list((ROOT / "assets/js").rglob("*.js"))
+    urls = [f"/{p.relative_to(ROOT).as_posix()}?v={asset_digest(p)}" for p in files]
+    urls += [f"/{p}" for p in PRECACHE_EXTRA if (ROOT / p).exists()]
+    return sorted(urls)
+
+
+def sw_version(template: str, urls: list[str]) -> str:
+    """템플릿 본문 + precache 목록의 해시 앞 8자 — 자산이 하나라도 바뀌면 바뀌어 옛 캐시를 버리게 한다."""
+    import hashlib
+    return hashlib.sha1((template.replace("\r\n", "\n") + "\n".join(urls)).encode("utf-8")).hexdigest()[:8]
+
+
+def build_sw() -> None:
+    """scripts/sw_template.js 에 버전과 precache 목록을 채워 루트 sw.js 를 생성한다 (sw.js 는 생성 파일)."""
+    template = SW_TEMPLATE.read_text(encoding="utf-8")
+    urls = precache_urls()
+    ver = sw_version(template, urls)
+    out = template.replace('"__VERSION__"', json.dumps(ver)).replace("/*__PRECACHE__*/[]", json.dumps(urls, ensure_ascii=False))
+    with open(ROOT / "sw.js", "w", encoding="utf-8", newline="\n") as f:
+        f.write(out)
+    log.info("sw.js 생성: precache %d개, 버전 %s", len(urls), ver)
+
+
 def stamp_assets() -> None:
     """모든 HTML 의 assets/js·css 링크에 내용 해시(?v=…)를 붙여, 배포 후 브라우저가 예전 캐시 대신 새 파일을 받게 합니다.
     (Cloudflare Pages + 휴대폰 브라우저에서 새 HTML 과 옛 JS/CSS 가 섞여 동작이 깨지는 문제 방지)"""
-    import hashlib
-    cache: dict[str, str] = {}
-
-    def digest(path: Path) -> str:
-        key = str(path)
-        if key not in cache:
-            # 줄끝을 LF 로 맞춘 뒤 해시: Windows 의 core.autocrlf 로 CRLF 가 된 체크아웃에서도 CI(Linux) 와 같은 값이 나오게
-            cache[key] = hashlib.sha1(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()[:8] if path.exists() else "0"
-        return cache[key]
-
     files = sorted(ROOT.glob("*.html")) + sorted(OUT_DIR.glob("*.html")) + sorted((ROOT / "guide").glob("*.html"))
     changed = 0
     for html_path in files:
@@ -80,7 +113,7 @@ def stamp_assets() -> None:
         def repl(m: re.Match) -> str:
             rel = m.group("path")
             target = (ROOT / rel.lstrip("/")).resolve() if rel.startswith("/") else (html_path.parent / rel).resolve()
-            return f'{m.group("pre")}{m.group("path")}?v={digest(target)}{m.group("post")}'
+            return f'{m.group("pre")}{m.group("path")}?v={asset_digest(target)}{m.group("post")}'
 
         out = ASSET_LINK_RE.sub(repl, src)
         if out != src:
@@ -390,6 +423,7 @@ def render_page(it: dict, core: dict, cfg: dict) -> str:
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="../assets/images/favicon.svg" type="image/svg+xml">
+{pwa_block("../")}
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <link rel="stylesheet" href="../assets/css/style.css">
@@ -688,6 +722,7 @@ def main() -> int:
     validate_drug_pairings(set(core["by_id"].keys()))
     ensure_drug_index()
     check_icons()
+    build_sw()
     stamp_assets()
     products = read_json(DATA_DIR / "products.json", {"_meta": {}, "items": []})
     news = read_json(DATA_DIR / "news.json", {"_meta": {}, "items": []})
