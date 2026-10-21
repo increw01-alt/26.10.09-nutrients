@@ -19,7 +19,7 @@
       '<ul class="mt-3 list-disc space-y-1.5 pl-5 text-sm leading-relaxed text-ink-600">' +
       '<li><strong class="text-ink-800">제품명은 일부만 입력해도</strong> 관련 제품이 나옵니다. 라벨에 적힌 정식 이름(예: ‘락토핏 골드’)까지 입력하면 더 정확해요. 초성(ㄹㅌㅍ)만 쳐도 됩니다.</li>' +
       '<li><strong class="text-ink-800">성분명</strong>(마그네슘, 비타민D, 오메가3 …)으로 검색하면 성분 설명과 함유 제품, 궁합을 함께 볼 수 있어요.</li>' +
-      '<li>건강기능식품은 <strong class="text-ink-800">식약처 품목신고 제품</strong>, 의약품은 <strong class="text-ink-800">식약처 e약은요(일반의약품 중심)</strong>에 등록된 제품만 검색됩니다. 해외 직구 제품이나 일반 식품은 나오지 않을 수 있어요.' + (drugsReady ? "" : ' <span class="text-ink-500">(의약품 검색은 데이터 준비 중입니다.)</span>') + '</li>' +
+      '<li>건강기능식품은 <strong class="text-ink-800">식약처 품목신고 제품</strong>, 의약품은 <strong class="text-ink-800">식약처 e약은요(일반의약품)와 처방약 분류별 허가정보 수집분</strong>만 검색됩니다. 해외 직구 제품이나 일반 식품은 나오지 않을 수 있어요.' + (drugsReady ? "" : ' <span class="text-ink-500">(의약품 검색은 데이터 준비 중입니다.)</span>') + '</li>' +
       '</ul><div class="mt-4 flex flex-wrap gap-2"><a class="btn-outline btn-sm" href="' + D.url("ingredients.html") + '">성분 사전</a><a class="btn-outline btn-sm" href="' + D.url("products.html") + '">제품 찾기</a><a class="btn-outline btn-sm" href="' + D.url("compatibility.html") + '">궁합 체크</a></div></section>';
   }
   function show() { $("search-loading").classList.add("hidden"); $("search-results").classList.remove("hidden"); D.icons(); }
@@ -65,7 +65,7 @@
           (ids.length ? '<div class="mt-1.5 flex flex-wrap gap-1">' + ingChips(core, ids) + '</div>' : '<p class="mt-1 text-xs text-ink-400">성분 사전과 연결된 성분 없음</p>') + '</li>';
       }).join("") + '</ul>' + (ph.total > ph.idx.length ? '<p class="mt-3 text-xs text-ink-500">상위 ' + ph.idx.length + '건만 표시했어요. 제품명을 더 정확히 입력하면 좁혀집니다.</p>' : ""));
     if (dh.total) html += section("sec-drugs", "의약품", "pill-bottle", dh.total.toLocaleString() + "건",
-      '<p class="mt-1 text-xs text-ink-400">식약처 e약은요 등록 의약품 · 약국에서 구입</p><ul class="mt-3 divide-y divide-ink-100">' + dh.idx.map(function (i) {
+      '<p class="mt-1 text-xs text-ink-400">식약처 e약은요·허가정보 수집 의약품 · 약국에서 구입(전문의약품은 처방 필요)</p><ul class="mt-3 divide-y divide-ink-100">' + dh.idx.map(function (i) {
         var pp = drugs.p[i]; var ids = pp[2].map(function (k) { return drugs.i[k]; }).filter(function (k) { return !!core.byId[k]; });
         var dmaker = (drugs.c || [])[pp[5]] || "";
         return '<li class="py-3"><div class="flex flex-wrap items-center gap-x-3 gap-y-1"><a class="min-w-0 text-[15px] font-bold text-ink-900 hover:text-brand-700" href="' + D.drugUrl(pp[0]) + '">' + D.markMatch(pp[1], q) + '</a>' + (dmaker ? '<span class="text-xs font-semibold text-ink-500">' + esc(dmaker) + '</span>' : "") + (pp[4] === 2 ? '<span class="badge badge-neutral">전문의약품</span>' : pp[4] === 1 ? '<span class="badge badge-neutral">일반의약품</span>' : "") + '</div>' +

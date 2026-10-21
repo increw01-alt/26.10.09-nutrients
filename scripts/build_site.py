@@ -2068,10 +2068,10 @@ def render_drug_guide(entry: dict, core: dict, cfg: dict, guides_types: dict, up
     if top:
         first_ko = ingr_ko[0] if ingr_ko else dg["short"]
         drug_rows = "".join(f'<li class="flex flex-col gap-1 py-3 sm:flex-row sm:items-center sm:justify-between"><div class="min-w-0"><a class="font-bold text-ink-900 hover:text-brand-700" href="../drug.html?id={esc(d["id"])}">{esc(d["name"])}</a><span class="ml-2 text-xs font-semibold text-ink-500">{esc(d["company"])}</span></div><span class="badge badge-neutral">{esc(d["otc"] or "의약품")}</span></li>' for d in top)
-        drugs_html = (drugs_list + f'<h3 class="mt-6 text-base font-extrabold text-ink-900">식약처 허가 의약품 {n_drugs:,}건 중 대표 제품</h3><p class="mt-1 text-xs text-ink-500">이 사이트의 의약품 검색(식약처 e약은요·허가정보, 일반의약품 중심)에서 주성분·분류가 이 규칙에 해당하는 제품입니다. 알려진 브랜드 순으로 {len(top)}건을 보여 주며, 의약품은 구매 링크를 제공하지 않습니다.</p>'
+        drugs_html = (drugs_list + f'<h3 class="mt-6 text-base font-extrabold text-ink-900">식약처 허가 의약품 {n_drugs:,}건 중 대표 제품</h3><p class="mt-1 text-xs text-ink-500">식약처 허가 의약품(일반의약품은 e약은요 등록분, 전문의약품은 분류별 허가 목록 수집분) 가운데 주성분·분류가 이 규칙에 해당하는 제품입니다. 알려진 브랜드 순으로 {len(top)}건을 보여 주며, 의약품은 구매 링크를 제공하지 않습니다. 전문의약품 상세는 허가정보(주성분·분류·허가일)와 의약품안전나라 링크만 표시합니다.</p>'
                       f'<ul class="mt-2 divide-y divide-ink-100">{drug_rows}</ul><p class="mt-3 text-sm"><a class="font-bold text-brand-700 underline" href="../search.html?q={esc(first_ko)}">‘{esc(first_ko)}’ 의약품 더 찾기 →</a></p>')
     else:
-        drugs_html = drugs_list + '<p class="mt-4 rounded-xl border border-dashed border-ink-200 bg-white p-4 text-sm leading-relaxed text-ink-600">이 분류는 전문의약품(처방) 중심이라 이 사이트의 의약품 검색(식약처 e약은요, 일반의약품 중심)에 제품이 없어 목록을 싣지 않습니다. 복용 중인 약은 처방전·약봉투의 성분명으로 확인하세요.</p>'
+        drugs_html = drugs_list + '<p class="mt-4 rounded-xl border border-dashed border-ink-200 bg-white p-4 text-sm leading-relaxed text-ink-600">이 분류에 해당하는 식약처 허가 제품이 아직 수집되지 않았습니다. 전문의약품 목록은 허가정보에서 분류별 주성분으로 매일 새벽 수집해 채워지며, 복용 중인 약은 처방전·약봉투의 성분명으로 확인하세요.</p>'
     faq_html, _ = faq_block([(f["q"], f["a"]) for f in dg["faq"]], render=lambda s: term_html(core, s, st))
     rel = entry["guides"]
     guides_html = (f'<section id="guides" class="scroll-mt-24"><h2 class="text-2xl font-extrabold tracking-tight text-ink-900">관련 가이드</h2><p class="mt-1 text-sm text-ink-500">약 복용자 상황별로 어떤 성분을 어떻게 조합할지는 가이드에서 자세히 설명합니다.</p><div class="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">{"".join(guide_card(g, guides_types, "../") for g in rel)}</div></section>') if rel else ""
@@ -2126,7 +2126,7 @@ def render_drug_guides_hub(model: dict, data: dict, core: dict, cfg: dict) -> st
     faq_items = [
         ("약을 먹는 동안 영양제를 아예 끊어야 하나요?", "대부분은 아닙니다. 흡수를 방해하는 조합은 시간을 띄우면 되고, 작용이 겹치는 조합만 용량을 조정하거나 피합니다. 다만 와파린·갑상선약·메토트렉세이트처럼 민감한 약은 새 영양제를 시작하기 전에 반드시 의사·약사와 상의하세요."),
         ("'간격'은 어떻게 지키나요?", "약을 먼저 먹고 적힌 시간(대개 2~4시간) 뒤에 영양제를 먹는 것이 기본입니다. 아침 공복 약(갑상선약·골다공증약)이라면 미네랄 영양제를 점심·저녁 식후로 옮기면 자연히 간격이 생깁니다. 내 영양제 시간표 기능으로 시간대를 나눠 두면 편합니다."),
-        ("처방약은 왜 제품 목록이 없나요?", "이 사이트의 의약품 검색은 식약처 e약은요(일반의약품 중심) 자료를 쓰기 때문에 전문의약품은 목록에 없습니다. 처방약 분류 페이지에는 대표 성분명과 제품 예시를 적어 두었으니 처방전·약봉투의 성분명으로 확인하세요."),
+        ("처방약 제품 목록은 어디서 오나요?", "일반의약품은 식약처 e약은요 등록분을, 전문의약품(처방약)은 식약처 의약품 제품 허가정보에서 분류별 주성분으로 수집한 허가 목록을 씁니다. 처방약은 e약은요 설명이 없어 의약품 페이지에 허가정보(주성분·분류·허가일)와 의약품안전나라 링크만 보여 주며, 아직 수집 전이거나 분류에 제품이 없으면 대표 성분·제품 예시를 보고 처방전·약봉투의 성분명으로 확인하세요."),
     ]
     faq_html, faq_ld = faq_block(faq_items)
     ld = {"@context": "https://schema.org", "@graph": [
@@ -2151,7 +2151,7 @@ def render_drug_guides_hub(model: dict, data: dict, core: dict, cfg: dict) -> st
 
     def group(gid: str, label: str, lead: str, es: list[dict]) -> str:
         return f'<section id="{gid}" class="scroll-mt-24"><h2 class="text-2xl font-extrabold tracking-tight text-ink-900">{esc(label)} <span class="text-base font-bold text-ink-400">{len(es)}종</span></h2><p class="mt-1 text-ink-500">{esc(lead)}</p><div class="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{"".join(card(e) for e in es)}</div></section>'
-    secs = group("otc", "약국에서 사는 일반의약품", "진통제·감기약·위장약처럼 처방 없이 사는 약입니다. 분류별로 식약처 허가 제품 목록까지 함께 보여 줍니다.", otc) + group("rx", "처방약(전문의약품)", "스타틴·갑상선약·항응고제·당뇨약처럼 처방전이 필요한 약입니다. 간격·검사·상담이 필요한 조합을 정리했습니다.", rx)
+    secs = group("otc", "약국에서 사는 일반의약품", "진통제·감기약·위장약처럼 처방 없이 사는 약입니다. 분류별로 식약처 허가 제품 목록까지 함께 보여 줍니다.", otc) + group("rx", "처방약(전문의약품)", "스타틴·갑상선약·항응고제·당뇨약처럼 처방전이 필요한 약입니다. 간격·검사·상담이 필요한 조합을 정리했고, 제품 목록은 식약처 허가정보(전문의약품)에서 분류별로 수집합니다.", rx)
     gap_rows = sorted(((x.get("hours") or 0, e["dg"]["short"], e["dg"]["id"], x["name"], x["id"], x["why"]) for e in items for x in e["good"] + e["caution"] if x.get("hours")), key=lambda t: (-t[0], t[1], t[3]))
     gap_html = (f'<section id="gaps" class="scroll-mt-24"><h2 class="text-2xl font-extrabold tracking-tight text-ink-900">복용 간격 한눈에</h2><p class="mt-1 text-ink-500">약과 영양제를 같은 시간에 먹으면 흡수가 줄어 시간을 띄워야 하는 조합입니다. 약을 먼저 먹고 적힌 시간 뒤에 영양제를 드세요.</p>'
                 f'<div class="timing-table-wrap mt-4"><table class="timing-table dg-table"><caption class="sr-only">약과 영양제 복용 간격</caption><thead><tr><th scope="col">약</th><th scope="col">영양 성분</th><th scope="col">간격</th><th scope="col">이유</th></tr></thead><tbody>'

@@ -463,6 +463,23 @@ class DrugGuideTests(unittest.TestCase):
         with self.assertRaises(SystemExit):
             B.validate_drug_guides(bad, self.rules, set(self.core["by_id"]), self.slugs)
 
+    def test_rx_guide_lists_permit_only_drugs(self):
+        """fetch_drugs.py 가 더하는 허가정보 전용 레코드(source mfds-permit, 본문 없음)가 처방약 가이드의 '이 분류의 약' 목록에 실린다."""
+        fake = [{"id": "rx1", "name": "리피토정10밀리그램", "company": "비아트리스코리아", "otc": "전문의약품", "cls": "동맥경화용제", "ingr": ["아토르바스타틴칼슘삼수화물"], "ingrEn": ["Atorvastatin Calcium Trihydrate"], "ingredients": [], "usage": "", "source": "mfds-permit"},
+                {"id": "rx2", "name": "아토르바정20밀리그램", "company": "유한양행", "otc": "전문의약품", "cls": "동맥경화용제", "ingr": ["아토르바스타틴칼슘삼수화물"], "ingrEn": ["Atorvastatin Calcium Trihydrate"], "ingredients": [], "usage": "", "source": "mfds-permit"}]
+        model = B.drug_guide_model(self.data, self.rules, self.core, self.drugs + fake, self.guides["items"], weight=lambda n, c: 3 if "리피토" in n else 0)
+        e = next(x for x in model["items"] if x["dg"]["id"] == "statin")
+        self.assertGreaterEqual(e["drugs"]["total"], 2)
+        self.assertEqual(e["drugs"]["top"][0]["id"], "rx1")
+        self.assertIn("rx2", [d["id"] for d in e["drugs"]["top"]])
+        html = B.render_drug_guide(e, self.core, self.cfg, self.guides["_meta"]["types"], "2026-10-23")
+        self.assertIn('href="../drug.html?id=rx1"', html)
+        self.assertIn("대표 제품", html)
+        self.assertIn("전문의약품</span>", html)
+        self.assertNotIn("아직 수집되지 않았습니다", html)
+        hub = B.render_drug_guides_hub(model, self.data, self.core, self.cfg)
+        self.assertIn("허가정보", hub)
+
     def test_external_regex_matches_data_js(self):
         js = (B.ROOT / "assets/js/data.js").read_text(encoding="utf-8")
         m = re.search(r"var external = /(.+?)/\.test\(name\)", js)

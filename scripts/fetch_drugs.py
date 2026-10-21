@@ -4,6 +4,8 @@
 
   1) e약은요(의약품개요정보) — 일반의약품 중심 약 4,700건의 효능·사용법·주의사항·상호작용·부작용·보관법
   2) 의약품 제품 허가정보(목록) — 주성분명·전문/일반 구분·분류 (품목기준코드로 1)과 연결)
+  3) 전문의약품(처방약) 허가 목록 — data/drug-pairings.json 의 처방약 규칙(스타틴·갑상선약·와파린…)의 주성분(영문 INN)으로 허가 목록을 검색해
+     분류별 제품 목록을 만든다 (e약은요 설명은 없음 → 의약품 페이지는 허가정보만 표시, 캐시 data/drugs/rx.json)
 
 사용법:
   DATA_GO_KR_KEY=발급키 python scripts/fetch_drugs.py
@@ -17,6 +19,8 @@ API 키 발급: https://www.data.go.kr 회원가입 → 아래 두 API 를 '활�
   DRUG_API_BUDGET       선택. 한 번 실행에서 허용할 API 호출 수 (기본 900 — 공공데이터포털 개발계정 일일 1,000건 기준)
   DRUG_TIME_BUDGET      선택. 한 번 실행에서 허용할 시간(초, 기본 780). 넘으면 허가정보 연결을 멈추고 받은 것까지 저장
   DRUG_MAX_ROWS         선택. e약은요 수집 상한 (기본 0 = 전체)
+  DRUG_RX_BUDGET        선택. 전문의약품 허가 목록 수집에 쓸 호출 수 (기본 300, 0 이면 끔). 규칙별로 진행 위치를 캐시해 다음 실행에서 이어 가고, 완료된 규칙은 30일마다 다시 받음
+  DRUG_RX_PER_RULE      선택. 처방약 규칙(분류)마다 저장할 제품 수 상한 (기본 200 — 브랜드 가중치 → 브랜드 키워드 → 허가일 최신 순)
   DRUG_API_BASE / DRUG_EASY_SERVICE / DRUG_PERMIT_SERVICE   선택. 주소·서비스 경로가 바뀌었을 때 덮어쓰기
 
 동작 방식:
@@ -25,6 +29,8 @@ API 키 발급: https://www.data.go.kr 회원가입 → 아래 두 API 를 '활�
     그 뒤로는 캐시에 없는 신규 품목만 개별 조회합니다. 호출 예산을 넘기면 나머지는 다음 실행으로 미룹니다.
   - 의약품 주성분 중 성분 사전(data/ingredients.json)에 있는 영양소(비타민·미네랄·유산균 등)를 찾아 연결합니다.
     약물 염(아토르바스타틴칼슘 등)·제산제(수산화마그네슘)·외용제(연고·크림의 산화아연)는 영양 성분으로 보지 않습니다.
+  - 전문의약품은 e약은요에 거의 없으므로, 처방약 규칙의 주성분으로 허가 목록을 검색(item_ingr_name 영문 → item_name 한글 후보, 필터가 안 먹는 응답은 버림)해
+    규칙당 상한까지 모으고 e약은요에 없는 품목만 색인·상세 조각에 더합니다. --rebuild 도 같은 캐시(rx.json)로 다시 만듭니다.
 """
 from __future__ import annotations
 
@@ -390,11 +396,17 @@ def permit_entry(row: dict) -> dict:
         "cancel": pick("CANCEL_NAME"),
         "img": pick("BIG_PRDT_IMG_URL"),
         "name": pick("ITEM_NAME"),
+        "company": pick("ENTP_NAME"),
     }
+
+
+_PERMIT_RESOLVED: dict[str, str | None] = {}   # 실행 안에서 확인한 허가정보 경로 (허가정보 연결과 전문의약품 수집이 같이 쓴다)
 
 
 def resolve_permit_service(client: Client, preferred: str) -> str | None:
     """허가정보 API 경로를 확인한다: 지정 경로 → 후보 순서로 1회씩 호출해 품목 필드가 오는 첫 경로. 실패 사유는 모두 로그에 남긴다."""
+    if preferred in _PERMIT_RESOLVED:
+        return _PERMIT_RESOLVED[preferred]
     cands = [c for c in [preferred] + PERMIT_CANDIDATES if c]
     seen: set[str] = set()
     for svc in cands:
@@ -410,9 +422,11 @@ def resolve_permit_service(client: Client, preferred: str) -> str | None:
             continue
         if items and any(k in items[0] for k in ("ITEM_SEQ", "ITEM_NAME")):
             log.info("허가정보 경로 확인: %s (전체 %s건, 필드 예: %s)", svc, f"{total:,}", ", ".join(list(items[0].keys())[:14]))
+            _PERMIT_RESOLVED[preferred] = svc
             return svc
         log.warning("허가정보 경로 후보 %s → 품목 필드 없음 (%s)", svc, ", ".join(list(items[0].keys())[:8]) if items else "빈 응답")
     log.warning("허가정보 API 경로를 찾지 못해 주성분 연결을 건너뜁니다. 위 로그의 응답을 보고 저장소 Variables 의 DRUG_PERMIT_SERVICE 를 맞춰 주세요.")
+    _PERMIT_RESOLVED[preferred] = None
     return None
 
 
@@ -484,6 +498,186 @@ def fill_permits(client: Client, service: str, cache: dict[str, dict], needed: l
         time.sleep(PAUSE_BETWEEN_CALLS)
     if single:
         log.info("허가정보 개별 조회 %s건", f"{single:,}")
+
+
+# ---------------------------------------------------------------- 전문의약품(처방약) 허가 목록 수집
+RX_CACHE = "rx.json"               # data/drugs/rx.json — 처방약 규칙별 수집 진행·허가 행 캐시 (permit.json 처럼 커밋; 지우면 처음부터)
+DEFAULT_RX_BUDGET = 300            # 실행당 전문의약품 수집에 쓸 API 호출 수 (DRUG_RX_BUDGET, 0 이면 끔)
+DEFAULT_RX_PER_RULE = 200          # 규칙(처방약 분류)마다 저장하는 제품 상한 (DRUG_RX_PER_RULE; 브랜드 가중치 → 브랜드 키워드 → 허가일 최신 순)
+RX_REFRESH_DAYS = 30               # 완료된 규칙을 다시 받는 주기(일)
+RX_MAX_PAGES = 30                  # 검색어 하나당 최대 페이지(100건씩)
+RX_SPCLTY = "전문의약품"
+
+
+def load_rx_rules() -> list[dict]:
+    """수집 대상: data/drug-pairings.json 규칙 가운데 data/drug-guides.json 이 처방약(rx)으로 표시하고 주성분(영문 INN) 검색어가 있는 것."""
+    rules = (read_json(DATA_DIR / "drug-pairings.json", {}) or {}).get("rules") or []
+    guides = (read_json(DATA_DIR / "drug-guides.json", {}) or {}).get("items") or []
+    rx_ids = {g.get("id") for g in guides if g.get("rx")}
+    return [r for r in rules if r.get("id") in rx_ids and r.get("ingr")]
+
+
+def rx_queries(term: str) -> list[tuple[str, str]]:
+    """검색어 하나의 조회 후보 (파라미터, 값): 주성분 영문(머리글자 대문자 → 원문) → 제품명 한글(사전 번역, 한글일 때만). 앞 후보가 0건이거나 필터가 안 먹으면 다음 후보."""
+    out: list[tuple[str, str]] = []
+    for p, v in (("item_ingr_name", term.title()), ("item_ingr_name", term), ("item_name", to_korean(term))):
+        v = (v or "").strip()
+        if v and (p, v) not in out and (p != "item_name" or re.search(r"[가-힣]", v)):
+            out.append((p, v))
+    return out
+
+
+def _days_since(iso: str) -> float:
+    try:
+        return (time.time() - time.mktime(time.strptime(str(iso)[:19], "%Y-%m-%dT%H:%M:%S"))) / 86400
+    except Exception:  # noqa: BLE001
+        return float("inf")
+
+
+def fetch_rx(client: Client, service: str, rules: list[dict], cache: dict[str, dict], budget: int) -> dict:
+    """처방약 규칙마다 주성분 검색어로 전문의약품 허가 목록을 받아 캐시에 둔다.
+    cache[규칙 id] = {"done": 완료 여부, "at": 완료 시각, "term": 다음 검색어 번호, "cand": 다음 후보 번호, "page": 다음 페이지, "rows": {품목기준코드: 허가 항목}, "bad": [안 먹는 파라미터]}.
+    호출 예산(budget)을 넘기면 진행 위치를 남기고 다음 실행에서 이어 간다. 완료된 규칙은 RX_REFRESH_DAYS 가 지나야 다시 받고, 그동안 이전 행(prev)을 보존한다.
+    필터가 안 먹는 응답(전체 전문의약품 건수와 같음)이나 첫 페이지부터 거부되는 파라미터는 그 규칙에서 다시 쓰지 않는다."""
+    stats = {"calls": 0, "rules": 0, "rows": 0}
+    if budget <= 0 or not rules:
+        return stats
+    due = [r for r in rules if not ((cache.get(r["id"]) or {}).get("done") and _days_since((cache.get(r["id"]) or {}).get("at") or "") < RX_REFRESH_DAYS)]
+    if not due:
+        log.info("전문의약품 허가 목록: 규칙 %d개 모두 %d일 안에 수집됨 — 건너뜀", len(rules), RX_REFRESH_DAYS)
+        return stats
+    svc = resolve_permit_service(client, service) or ""
+    if not svc:
+        return stats
+    try:
+        _, total_rx = client.get(svc, numOfRows=1, spclty_pblc=RX_SPCLTY)
+    except QuotaExceeded:
+        raise
+    except Exception as e:  # noqa: BLE001
+        log.warning("전문의약품 전체 건수 확인 실패: %s", str(e)[:200])
+        total_rx = 0
+    start = client.calls
+    due.sort(key=lambda r: (bool((cache.get(r["id"]) or {}).get("done")), (cache.get(r["id"]) or {}).get("at") or ""))   # 미완료 → 오래된 순
+    for r in due:
+        if client.calls - start >= budget:
+            log.warning("전문의약품 수집 호출 예산(%d회) 소진 — 남은 규칙은 다음 실행에서 이어집니다.", budget)
+            break
+        st = cache.get(r["id"]) or {}
+        if st.get("done"):   # 재수집 시작: 이전 행은 완료될 때까지 prev 로 보존
+            st = {"prev": st.get("rows") or {}, "at": st.get("at", "")}
+        st = {"term": 0, "cand": 0, "page": 1, "rows": {}, "bad": [], "done": False} | st
+        terms = list(dict.fromkeys(str(t) for t in r["ingr"]))
+        ok = True
+        while st["term"] < len(terms):
+            if client.calls - start >= budget:
+                ok = False
+                break
+            cands = rx_queries(terms[st["term"]])
+            ci = int(st.get("cand") or 0)
+            if ci >= len(cands):          # 후보를 다 써서(0건·불가) 다음 검색어
+                st["term"] += 1; st["cand"] = 0; st["page"] = 1
+                continue
+            p, v = cands[ci]
+            if p in st["bad"]:
+                st["cand"] = ci + 1
+                continue
+            try:
+                items, total = client.get(svc, pageNo=st["page"], spclty_pblc=RX_SPCLTY, **{p: v})
+            except QuotaExceeded:
+                raise
+            except Exception as e:  # noqa: BLE001
+                log.warning("전문의약품 조회 실패 %s=%s %d페이지: %s", p, v, st["page"], str(e)[:200])
+                if st["page"] == 1:       # 첫 페이지부터 거부되면 파라미터 문제로 보고 다음 후보
+                    st["cand"] = ci + 1
+                    time.sleep(PAUSE_BETWEEN_CALLS)
+                    continue
+                ok = False
+                break
+            if st["page"] == 1 and (not items or total == 0 or (total_rx and total >= total_rx)):
+                if items and total_rx and total >= total_rx:
+                    st["bad"].append(p)
+                    log.warning("허가정보 %s 필터가 적용되지 않아(%s건 = 전체 전문의약품) 이 규칙에서는 쓰지 않습니다", p, f"{total:,}")
+                st["cand"] = ci + 1
+                time.sleep(PAUSE_BETWEEN_CALLS)
+                continue
+            for row in items:
+                seq = str(row.get("ITEM_SEQ") or row.get("itemSeq") or "").strip()
+                if seq:
+                    st["rows"][seq] = permit_entry(row)
+            stats["rows"] += len(items)
+            if len(items) < PAGE or st["page"] >= RX_MAX_PAGES or st["page"] * PAGE >= total:
+                st["term"] += 1; st["cand"] = 0; st["page"] = 1
+            else:
+                st["page"] += 1
+            time.sleep(PAUSE_BETWEEN_CALLS)
+        if ok and st["term"] >= len(terms):
+            st["done"] = True
+            st["at"] = now_iso()
+            st.pop("prev", None)
+            stats["rules"] += 1
+            log.info("전문의약품 수집 완료: %s — %s건 (API 누적 %d회)", r["id"], f"{len(st['rows']):,}", client.calls - start)
+        else:
+            log.info("전문의약품 수집 진행 중: %s — 검색어 %d/%d, %s건 (다음 실행에서 이어짐)", r["id"], st["term"], len(terms), f"{len(st['rows']):,}")
+        cache[r["id"]] = st
+    stats["calls"] = client.calls - start
+    return stats
+
+
+def normalize_rx(seq: str, e: dict, valid: set[str]) -> dict | None:
+    """허가 목록 항목(전문의약품) → 상세 레코드. e약은요 설명이 없어 본문 항목은 비우고 source 를 mfds-permit 으로 둔다 (pages/drug.js 가 의약품안전나라 링크로 안내)."""
+    name = re.sub(r"\s+", " ", str(e.get("name") or "")).strip()
+    if not seq or not name:
+        return None
+    tokens = ingr_tokens(e.get("ingr", ""))
+    display = [to_korean(t) for t in tokens]
+    if len(tokens) == 1 and display[0] == tokens[0]:
+        m = re.search(r"\(([가-힣][가-힣A-Za-z0-9·\-\s]*)\)\s*$", name)
+        if m:
+            display = [m.group(1).strip()]
+    otc = str(e.get("otc") or "")
+    otc = "일반의약품" if "일반" in otc else "전문의약품" if "전문" in otc else otc
+    rec = {
+        "id": seq,
+        "name": name,
+        "company": re.sub(r"\s+", " ", str(e.get("company") or "")).strip(),
+        "otc": otc,
+        "cls": e.get("cls", ""),
+        "ingr": display,
+        "ingrEn": tokens if display != tokens else [],
+        "ingredients": match_ids(name, tokens, valid, external=bool(EXTERNAL_RE.search(name))),
+        "efficacy": "", "usage": "", "warn": "", "caution": "", "interaction": "", "sideEffects": "", "storage": "",
+        "image": str(e.get("img") or "").strip(),
+        "openDe": "",
+        "updateDe": "",
+        "permitDate": e.get("date", ""),
+        "source": "mfds-permit",
+    }
+    if e.get("cancel") and e["cancel"] != "정상":
+        rec["cancel"] = e["cancel"]
+    return rec
+
+
+def rx_records(cache: dict[str, dict], valid: set[str], per_rule: int, weight=None, kw_weight=None) -> list[dict]:
+    """캐시의 규칙별 허가 행 → 레코드 목록. 허가 취하·취소는 빼고, 규칙마다 브랜드 가중치 → 브랜드 키워드 → 허가일 최신 → 이름 순으로 per_rule 건까지. 여러 규칙에 겹치는 품목은 한 번."""
+    out: dict[str, dict] = {}
+    for st in cache.values():
+        if not isinstance(st, dict):
+            continue
+        rows = dict(st.get("rows") or {})
+        if not st.get("done") and st.get("prev"):
+            rows = {**st["prev"], **rows}
+        recs = [x for x in (normalize_rx(seq, e, valid) for seq, e in rows.items() if isinstance(e, dict)) if x and not x.get("cancel")]
+        recs.sort(key=lambda x: x["name"])
+        recs.sort(key=lambda x: x.get("permitDate") or "", reverse=True)
+        recs.sort(key=lambda x: (-(int(weight(x["name"], x["company"])) if weight else 0), -(int(kw_weight(x["name"])) if kw_weight else 0)))
+        for x in recs[:max(0, per_rule)]:
+            out.setdefault(x["id"], x)
+    return sorted(out.values(), key=lambda x: x["name"])
+
+
+def rebuild_rows(full_prev: dict[str, dict]) -> list[dict]:
+    """--rebuild 용 e약은요 행. 허가정보만 있는 전문의약품 레코드(source mfds-permit)는 rx.json 캐시에서 다시 만들므로 뺀다."""
+    return [record_to_row(p) for p in full_prev.values() if p.get("source") != "mfds-permit"]
 
 
 # ---------------------------------------------------------------- 정규화·저장
@@ -603,6 +797,12 @@ def main() -> int:
     permit_path = DATA_DIR / DIR_NAME / "permit.json"
     permit_cache: dict[str, dict] = read_json(permit_path, {}) or {}
     permit_cache.pop("_meta", None)
+    rx_path = DATA_DIR / DIR_NAME / RX_CACHE
+    rx_rules = load_rx_rules()
+    rx_cache: dict[str, dict] = {k: v for k, v in (read_json(rx_path, {}) or {}).items() if k in {r["id"] for r in rx_rules}}   # 사라진 규칙의 캐시는 버린다
+    rx_stats: dict = {}
+    rx_budget = int(env("DRUG_RX_BUDGET", str(DEFAULT_RX_BUDGET)) or 0)
+    rx_per_rule = int(env("DRUG_RX_PER_RULE", str(DEFAULT_RX_PER_RULE)) or DEFAULT_RX_PER_RULE)
     valid = {it["id"] for it in load_ingredients()}
     full_prev = load_full_records(DATA_DIR)
 
@@ -613,7 +813,7 @@ def main() -> int:
         if not full_prev:
             log.warning("재구성할 저장 데이터가 없습니다.")
             return 0
-        rows = [record_to_row(p) for p in full_prev.values()]
+        rows = rebuild_rows(full_prev)   # 허가정보만 있는 전문의약품(mfds-permit)은 rx.json 캐시에서 다시 만든다
         total = existing_meta.get("apiTotal") or len(rows)
         log.info("저장된 레코드 %s건으로 재구성 (API 호출 없음)", f"{len(rows):,}")
     else:
@@ -637,6 +837,16 @@ def main() -> int:
         finally:
             if permit_cache:
                 write_json(permit_path, {"_meta": {"updatedAt": now_iso(), "total": len(permit_cache)}} | permit_cache, compact=True)
+        try:
+            rx_stats = fetch_rx(client, permit_service, rx_rules, rx_cache, rx_budget)
+        except QuotaExceeded as e:
+            log.warning("%s — 전문의약품 허가 목록 수집은 다음 실행에서 이어집니다.", e)
+        except Exception as e:  # noqa: BLE001
+            log.warning("전문의약품 허가 목록 수집 실패: %s — 캐시된 분량만 씁니다.", e)
+        finally:
+            if rx_cache:
+                write_json(rx_path, {"_meta": {"updatedAt": now_iso(), "rules": len(rx_cache), "done": sum(1 for s in rx_cache.values() if isinstance(s, dict) and s.get("done")),
+                                             "note": "처방약 규칙별 전문의약품 허가 목록 캐시 — scripts/fetch_drugs.py 가 관리(진행 위치·행), 지우면 처음부터 다시 받음"}} | rx_cache, compact=True)
 
     items: dict[str, dict] = {}
     for row in rows:
@@ -648,25 +858,33 @@ def main() -> int:
         rec = normalize(row, permit, valid)
         if rec:
             items[rec["id"]] = rec
+    bp = load_brand_priority()
+    rx_items = rx_records(rx_cache, valid, rx_per_rule, bp.weight, bp.keyword_weight)
+    rx_added = 0
+    for x in rx_items:               # e약은요 레코드가 우선, 허가정보만 있는 전문의약품을 더한다
+        if x["id"] not in items:
+            items[x["id"]] = x
+            rx_added += 1
     new_items = sorted(items.values(), key=lambda x: x["name"])
     added = sum(1 for i in items if i not in full_prev)
     removed = sum(1 for i in full_prev if i not in items)
     with_permit = sum(1 for i in items if (permit_cache.get(i) or {}).get("ingr"))
     meta = {
         "source": "mfds-drug",
-        "sourceLabel": "식품의약품안전처 의약품개요정보(e약은요) · 의약품 제품 허가정보 (공공데이터포털)",
+        "sourceLabel": "식품의약품안전처 의약품개요정보(e약은요) · 의약품 제품 허가정보(주성분 연결 + 처방약 분류별 전문의약품 목록) (공공데이터포털)",
         "updatedAt": now_iso() if not args.rebuild else (existing_meta.get("updatedAt") or now_iso()),
         "rebuiltAt": now_iso() if args.rebuild else None,
         "total": len(new_items),
         "apiTotal": total,
         "withPermit": with_permit,
         "withNutrients": sum(1 for it in new_items if it["ingredients"]),
+        "rx": {"total": rx_added, "rules": len(rx_cache), "rulesDone": sum(1 for s in rx_cache.values() if isinstance(s, dict) and s.get("done")), "perRule": rx_per_rule, "calls": rx_stats.get("calls", 0)},
         "matcherVersion": MATCHER_VERSION,
         "apiCalls": client.calls if client else 0,
-        "files": {"names": f"data/{DIR_NAME}/names.json", "detail": f"data/{DIR_NAME}/detail/<shard>.json", "shards": DETAIL_SHARDS, "permit": f"data/{DIR_NAME}/permit.json"},
+        "files": {"names": f"data/{DIR_NAME}/names.json", "detail": f"data/{DIR_NAME}/detail/<shard>.json", "shards": DETAIL_SHARDS, "permit": f"data/{DIR_NAME}/permit.json", "rx": f"data/{DIR_NAME}/{RX_CACHE}"},
     }
     write_outputs(DATA_DIR, new_items, meta, sorted(valid))
-    log.info("완료: 의약품 %s건 (신규 %d · 삭제 %d · 주성분 연결 %s건 · API 호출 %d회)", f"{len(new_items):,}", added, removed, f"{with_permit:,}", meta["apiCalls"])
+    log.info("완료: 의약품 %s건 (신규 %d · 삭제 %d · 주성분 연결 %s건 · 전문의약품 허가 목록 %s건 · API 호출 %d회)", f"{len(new_items):,}", added, removed, f"{with_permit:,}", f"{rx_added:,}", meta["apiCalls"])
     return 0
 
 

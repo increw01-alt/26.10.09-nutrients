@@ -71,6 +71,7 @@ jobs:
           DRUG_API_BUDGET: ${{ vars.DRUG_API_BUDGET }}
           DRUG_EASY_SERVICE: ${{ vars.DRUG_EASY_SERVICE }}       # API 경로가 바뀌면 Variables 로 덮어쓰기 (기본 DrbEasyDrugInfoService/getDrbEasyDrugList)
           DRUG_PERMIT_SERVICE: ${{ vars.DRUG_PERMIT_SERVICE }}   # 기본 DrugPrdtPrmsnInfoService06/getDrugPrdtPrmsnInq06
+          DRUG_RX_BUDGET: ${{ vars.DRUG_RX_BUDGET }}             # 전문의약품(처방약) 허가 목록 수집에 쓸 호출 수 (기본 300, 0 이면 끔)
         run: python scripts/fetch_drugs.py
 
       - name: Build Coupang deeplinks

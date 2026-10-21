@@ -1,4 +1,5 @@
-/* 의약품 상세 페이지 — 식약처 e약은요·허가정보: 주성분, 성분 사전과 연결된 영양 성분, 함께 먹으면 좋은 성분·주의할 조합, 효능·사용법·상호작용·주의사항 */
+/* 의약품 상세 페이지 — 식약처 e약은요·허가정보: 주성분, 성분 사전과 연결된 영양 성분, 함께 먹으면 좋은 성분·주의할 조합, 효능·사용법·상호작용·주의사항.
+ * 허가정보만 있는 전문의약품(source "mfds-permit", fetch_drugs.py 의 처방약 수집)은 e약은요 항목 대신 안내와 의약품안전나라(허가 상세) 링크 한 섹션을 보여 준다. */
 (function () {
   "use strict";
   var D = window.Data, esc = D.esc;
@@ -85,6 +86,7 @@
     var ings = ids.map(function (x) { return core.byId[x]; });
     var ingr = p.ingr || [];
     var otc = p.otc || "의약품";
+    var permitOnly = p.source === "mfds-permit";   // e약은요 설명 없이 허가정보만 있는 전문의약품
     document.title = p.name + " 성분·상호작용 | " + (S.name || "영양제.kr");
     var md = document.querySelector('meta[name="description"]'); if (md) md.content = p.name + " — " + (ingr.length ? "주성분: " + ingr.slice(0, 4).join(", ") + ". " : "") + "효능·사용법·상호작용·주의사항(식약처 e약은요)과 함께 먹으면 좋은 영양 성분·주의할 조합을 확인하세요.";
     var ogt = document.querySelector('meta[property="og:title"]'); if (ogt) ogt.content = document.title;
@@ -109,6 +111,10 @@
       '</div>';
 
     var main = document.getElementById("drug-main");
+    var nedrugUrl = "https://nedrug.mfds.go.kr/pbp/CCBBB01/getItemDetailCache?itemSeq=" + encodeURIComponent(p.id);
+    var permitHtml = '<p class="mt-3 text-sm leading-relaxed text-ink-700">전문의약품은 식약처 e약은요(일반의약품 복약 안내)에 등록되지 않아 이 페이지에는 허가정보(주성분·분류·허가일)만 표시합니다. 효능·효과, 용법·용량, 상호작용·주의사항은 식약처 의약품안전나라의 허가 상세에서 확인하고, 복용 중인 영양제는 약사·의사에게 알리세요.</p>' +
+      '<div class="mt-4 flex flex-wrap gap-2"><a class="btn-primary" href="' + esc(nedrugUrl) + '" target="_blank" rel="noopener noreferrer"><i data-lucide="external-link"></i>의약품안전나라에서 허가 상세 보기</a>' +
+      ((pairing.good.length || pairing.caution.length) ? '<a class="btn-outline" href="#sec-pairing"><i data-lucide="sparkles"></i>함께 챙기면 좋은 영양제</a>' : "") + '</div>';
     var nutrientsHtml = ings.length
       ? '<p class="mt-2 text-sm text-ink-500">이 약의 주성분 가운데 성분 사전(영양소)에 있는 것입니다. 함량은 의약품 설명서를 확인하세요.</p><div class="mt-4 grid gap-4 sm:grid-cols-2">' + ings.map(function (i) { return ingCard(core, i); }).join("") + '</div>'
       : '<p class="mt-2 text-sm leading-relaxed text-ink-600">' + (ingr.length ? '주성분(' + esc(ingr.join(", ")) + ')은 성분 사전의 영양소와 겹치지 않습니다. 이 약은 영양제가 아닌 의약품이므로, ' + ((pairing.good.length || pairing.caution.length) ? '아래 <a class="font-bold text-brand-700 hover:underline" href="#sec-pairing">함께 챙기면 좋은 영양제</a>와 ' : '') + '<a class="font-bold text-brand-700 hover:underline" href="#sec-interaction">상호작용</a> 항목을 읽고 약사·의사와 확인하세요.' : '주성분 정보가 아직 연결되지 않았습니다. 식약처 허가정보는 매일 새벽 갱신됩니다.') + '</p>';
@@ -130,6 +136,7 @@
       section("sec-nutrients", "이 약에 들어 있는 영양 성분", "badge-check", nutrientsHtml) +
       pairingHtml(core, p, pairing, withIds) +
       (ids.length ? section("sec-good", "함께 먹으면 더 좋은 성분", "heart-handshake", goodHtml) + section("sec-warn", "시간을 띄우거나 주의할 조합", "clock-alert", warnHtml) : "") +
+      (permitOnly ? section("sec-interaction", "효능·용법·주의사항 — 의약품안전나라에서 보기", "triangle-alert", permitHtml) :
       section("sec-efficacy", "효능·효과", "heart-pulse", para(p.efficacy)) +
       section("sec-usage", "사용법", "clock", para(p.usage)) +
       section("sec-interaction", "상호작용 — 함께 먹으면 안 되는 약·음식", "triangle-alert",
@@ -138,10 +145,10 @@
       section("sec-caution", "주의사항", "octagon-alert",
         (p.warn ? '<div class="mt-3 rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm leading-relaxed text-rose-900"><p class="font-bold">경고</p><div class="mt-1 whitespace-pre-line">' + esc(p.warn) + '</div></div>' : "") + para(p.caution)) +
       section("sec-side", "부작용", "stethoscope", para(p.sideEffects) + '<p class="mt-3 text-xs text-ink-500">이상반응이 나타나면 복용을 중단하고 의사·약사와 상의하세요.</p>') +
-      section("sec-storage", "보관법", "shield", para(p.storage)) +
+      section("sec-storage", "보관법", "shield", para(p.storage))) +
       section("sec-info", "허가·공개 정보", "database",
         '<dl class="kv-table mt-3">' + kv("업체", p.company) + kv("구분", p.otc) + kv("분류", p.cls) + kv("주성분", ingr.join(", ")) + kv("주성분(영문)", (p.ingrEn || []).join(", ")) + kv("품목기준코드", p.id) + kv("허가일", p.permitDate ? D.fmtDate(p.permitDate) : "") + kv("정보 공개일", p.openDe ? D.fmtDate(p.openDe) : "") + kv("정보 수정일", p.updateDe ? D.fmtDate(p.updateDe) : "") + '</dl>' +
-        '<p class="mt-3 text-xs text-ink-400">출처: 식품의약품안전처 의약품개요정보(e약은요)·의약품 제품 허가정보(공공데이터포털). 허가 사항은 변경될 수 있으며 실제 제품 설명서가 우선합니다.</p>') +
+        '<p class="mt-3 text-xs text-ink-400">출처: 식품의약품안전처 ' + (permitOnly ? "의약품 제품 허가정보(공공데이터포털, 전문의약품 허가 목록)" : "의약품개요정보(e약은요)·의약품 제품 허가정보(공공데이터포털)") + '. 허가 사항은 변경될 수 있으며 실제 제품 설명서가 우선합니다.</p>') +
       '<p class="text-xs text-ink-400">이 정보는 식약처 공개 자료를 옮긴 일반 정보이며 진단·처방·복약지도를 대신하지 않습니다. 의약품은 약사·의사의 안내에 따라 복용하세요.</p>';
 
     var side = document.getElementById("drug-side");
