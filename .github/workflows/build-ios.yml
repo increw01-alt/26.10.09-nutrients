@@ -1,0 +1,53 @@
+# iOS 컴파일 검증 — macOS 러너에서 서명 없이 아카이브를 만들어 Capacitor iOS 프로젝트(app/ios, SPM)가 빌드되는지,
+# 번들에 Info.plist 값(번들 ID·표시 이름·수출 규정·버전)과 PrivacyInfo.xcprivacy 가 실리는지 본다. 아티팩트는 없다(서명 없는 아카이브는 설치 불가).
+# 서명·TestFlight 업로드는 release-ios.yml. Capacitor 8 은 Xcode 26 이상이 필요해 macos-latest(macOS 26)를 쓴다.
+name: build-ios
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "app/ios/**"
+      - "app/capacitor.config.json"
+      - "app/package.json"
+      - ".github/workflows/build-ios.yml"
+
+jobs:
+  ios:
+    runs-on: macos-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: Capacitor 동기화
+        working-directory: app
+        run: |
+          npm ci
+          npx cap sync ios
+          xcodebuild -version
+
+      - name: 아카이브 (서명 없음)
+        working-directory: app/ios/App
+        run: |
+          VERSION_NAME=$(node -p "require('../../package.json').version")
+          set -o pipefail
+          xcodebuild archive -project App.xcodeproj -scheme App -configuration Release -destination "generic/platform=iOS" \
+            -archivePath "$RUNNER_TEMP/App.xcarchive" -skipMacroValidation \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            MARKETING_VERSION="$VERSION_NAME" CURRENT_PROJECT_VERSION=${{ github.run_number }} | tail -40
+
+      - name: 번들 검사
+        run: |
+          APP="$RUNNER_TEMP/App.xcarchive/Products/Applications/App.app"
+          test -f "$APP/PrivacyInfo.xcprivacy"
+          plutil -extract CFBundleIdentifier raw "$APP/Info.plist" | grep -qx "kr.yeongyangje.app"
+          echo "표시 이름: $(plutil -extract CFBundleDisplayName raw "$APP/Info.plist")"
+          plutil -extract ITSAppUsesNonExemptEncryption raw "$APP/Info.plist" | grep -qx "false"
+          echo "버전: $(plutil -extract CFBundleShortVersionString raw "$APP/Info.plist") 빌드: $(plutil -extract CFBundleVersion raw "$APP/Info.plist")"
+          plutil -extract CFBundleVersion raw "$APP/Info.plist" | grep -qx "${{ github.run_number }}"
