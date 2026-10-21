@@ -16,7 +16,7 @@ class StoreAssetTests(unittest.TestCase):
         im = S.feature_graphic()
         self.assertEqual((im.size, im.mode), ((1024, 500), "RGB"))
         self.assertEqual(im.getpixel((5, 5)), B.BG)
-        self.assertEqual(im.getpixel((512, 250)), (255, 255, 255))   # 가운데는 흰 잎
+        self.assertEqual(im.getpixel((480, 316)), (252, 247, 235))   # 가운데 아이콘의 아래 캡슐은 크림색
 
     def test_play_icon_is_full_square_opaque(self):
         im = S.play_icon()

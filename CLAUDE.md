@@ -18,7 +18,7 @@ npm run assets                         # Tailwind CSS 재생성 + 아이콘 번�
 python scripts/fetch_products.py --rebuild   # 매칭 규칙 변경 후 API 호출 없이 제품 파일 재생성
 python scripts/fetch_drugs.py --rebuild      # 의약품 성분 규칙 변경 후 API 호출 없이 재생성 (수집은 DATA_GO_KR_KEY 필요)
 python scripts/fetch_news.py / fetch_materials.py / fetch_products.py / fetch_drugs.py   # API 키(.env) 있을 때 수집
-python scripts/build_app_icons.py      # PWA 아이콘 5종(assets/images/app/) + Capacitor 원본(app/assets/)·안드로이드 상태바 아이콘 재생성 (favicon 잎 도형을 Pillow 로 그림)
+python scripts/build_app_icons.py      # PWA 아이콘 5종(assets/images/app/) + Capacitor 원본(app/assets/)·안드로이드 상태바 아이콘 재생성 (assets/images/favicon.svg 의 캡슐·잎 도형을 읽어 Pillow 로 그림; 원본 패키지 assets/images/brand/). 아이콘을 바꾸면 이어서 cd app && npm run assets, python scripts/build_store_assets.py
 python -m unittest discover -s tests   # 빌드 스크립트·아이콘·안드로이드 매니페스트/Gradle·스토어 그래픽·등록 문구 테스트
 node --test tests/sw.test.mjs tests/store.test.mjs tests/app.test.mjs tests/reminders.test.mjs tests/finder.test.mjs   # 서비스워커·내 영양제 저장·앱 모드·복용 알림·셀프체크 테스트
 npm run vendor:cap                     # app/node_modules 의 Capacitor 런타임·플러그인을 assets/js/vendor/capacitor/ 로 복사하고 app.js 의 VENDOR_VERSION(캐시 무효화 키)을 맞춤 (플러그인 버전을 올렸을 때)

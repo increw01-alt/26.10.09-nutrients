@@ -5,7 +5,7 @@
   "description": "영양제.kr 안드로이드·iOS 앱 — Capacitor 로 라이브 사이트(https://xn--og5b1hx9c.kr/my)를 열고 복용 알림만 네이티브로 처리. 빌드는 .github/workflows/build-android.yml·build-ios.yml, 스토어용은 release-android.yml·release-ios.yml",
   "scripts": {
     "sync": "cap sync",
-    "assets": "capacitor-assets generate --android --ios --iconBackgroundColor \"#3a7d44\" --iconBackgroundColorDark \"#3a7d44\" --splashBackgroundColor \"#3a7d44\" --splashBackgroundColorDark \"#3a7d44\""
+    "assets": "capacitor-assets generate --android --ios --iconBackgroundColor \"#055933\" --iconBackgroundColorDark \"#055933\" --splashBackgroundColor \"#055933\" --splashBackgroundColorDark \"#055933\""
   },
   "dependencies": {
     "@capacitor/android": "8.5.3",

@@ -242,9 +242,9 @@ body.has-tabbar { padding-bottom: 64px; }
 @media (min-width: 768px) { :root { --header-h: 84px; } }
 .wordmark { display: inline-flex; align-items: center; gap: 8px; font-size: 26px; font-weight: 850; letter-spacing: -1.5px; white-space: nowrap; line-height: 1; color: #19241f; flex: none; }
 .wordmark small { font-size: 20px; font-weight: 850; color: #426e45; letter-spacing: -.8px; }
-.brand-leaf { width: 27px; height: 34px; object-fit: contain; transform: rotate(26deg); filter: saturate(.77); }
-@media (min-width: 768px) { .wordmark { font-size: 29px; gap: 9px; } .wordmark small { font-size: 22px; } .brand-leaf { width: 30px; height: 38px; } }
-.wordmark-sm, .wordmark-sm.wordmark { font-size: 23px; letter-spacing: -1.2px; } .wordmark-sm small { font-size: 18px; } .wordmark-sm .brand-leaf { width: 24px; height: 30px; }
+.brand-mark { width: 29px; height: 29px; border-radius: 7px; flex: none; }   /* 캡슐과 잎 아이콘(favicon.svg) — 둥근 모서리는 SVG 안에 있고, 라운드는 안전망 */
+@media (min-width: 768px) { .wordmark { font-size: 29px; gap: 9px; } .wordmark small { font-size: 22px; } .brand-mark { width: 32px; height: 32px; border-radius: 8px; } }
+.wordmark-sm, .wordmark-sm.wordmark { font-size: 23px; letter-spacing: -1.2px; } .wordmark-sm small { font-size: 18px; } .wordmark-sm .brand-mark { width: 26px; height: 26px; border-radius: 6px; }
 .brand-description { font-size: 11px; line-height: 1.55; color: #667465; white-space: nowrap; }
 .main-nav a { font-size: 13px; font-weight: 650; color: #19241f; padding: .5rem .65rem; border-radius: .5rem; white-space: nowrap; transition: color .15s, background .15s; }
 .main-nav a:hover { color: #246d4b; } .main-nav a.active { color: #246d4b; background: #eff5ec; }
