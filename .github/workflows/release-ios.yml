@@ -55,23 +55,20 @@ jobs:
           echo "$KEY_B64" | base64 -d > "$HOME/.appstoreconnect/private_keys/AuthKey_$KEY_ID.p8"
           chmod 600 "$HOME/.appstoreconnect/private_keys/AuthKey_$KEY_ID.p8"
 
-      - name: 아카이브 (자동 서명)
+      - name: 아카이브 (서명 없음 — 서명은 내보내기 단계에서)
         working-directory: app/ios/App
         env:
-          KEY_ID: ${{ secrets.ASC_KEY_ID }}
-          ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
           TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
+          # 자동 서명으로 아카이브하면 Xcode 가 '개발용' 프로파일을 만들려 하고, 그러려면 팀에 등록된 기기가 필요하다(Mac·등록 기기 없음 → 실패).
+          # 배포용 ID 를 직접 지정하는 것도 자동 서명과 충돌한다. 그래서 build-ios.yml 과 같은 서명 없는 아카이브를 만들고,
+          # 다음 단계의 -exportArchive(자동 서명, App Store 프로파일은 기기 불필요)가 API 키로 배포 인증서·프로파일을 만들어 서명한다.
           VERSION_NAME=$(node -p "require('../../package.json').version")
           set -o pipefail
           xcodebuild archive -project App.xcodeproj -scheme App -configuration Release -destination "generic/platform=iOS" \
-            -archivePath "$RUNNER_TEMP/App.xcarchive" -skipMacroValidation -allowProvisioningUpdates \
-            -authenticationKeyPath "$HOME/.appstoreconnect/private_keys/AuthKey_$KEY_ID.p8" \
-            -authenticationKeyID "$KEY_ID" -authenticationKeyIssuerID "$ISSUER_ID" \
-            DEVELOPMENT_TEAM="$TEAM_ID" CODE_SIGN_STYLE=Automatic CODE_SIGN_IDENTITY="Apple Distribution" \
+            -archivePath "$RUNNER_TEMP/App.xcarchive" -skipMacroValidation \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" DEVELOPMENT_TEAM="$TEAM_ID" \
             MARKETING_VERSION="$VERSION_NAME" CURRENT_PROJECT_VERSION=${{ github.run_number }} 2>&1 | tee "$RUNNER_TEMP/archive.log" | tail -40
-          # CODE_SIGN_IDENTITY="Apple Distribution": 자동 서명은 기본으로 '개발용' 프로파일을 만들려 하는데 그러려면 팀에 등록된 기기가 필요하다(첫 실행 실패 원인).
-          # 배포용 ID 를 지정하면 App Store 프로파일(기기 불필요)을 만든다. 배포 인증서는 API 키(Admin)로 클라우드 관리 인증서가 생성된다.
 
       - name: IPA 내보내기
         env:
