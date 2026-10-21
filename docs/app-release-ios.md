@@ -14,7 +14,7 @@
 
 ## 2. App Store Connect API 키 발급 (사용자)
 
-[appstoreconnect.apple.com](https://appstoreconnect.apple.com) → 사용자 및 액세스 → 통합(Integrations) → App Store Connect API → **팀 키** 탭 → +(생성).
+[appstoreconnect.apple.com](https://appstoreconnect.apple.com) → 사용자 및 액세스 → 통합(Integrations) → App Store Connect API → **팀 키** 탭 → +(생성). 처음 들어가면 + 대신 **'액세스 요청'** 버튼과 약관 동의만 보이는데, 계정 소유자가 동의하면 바로 + 가 나타난다.
 
 - 이름 `github-actions`, 액세스 **Admin**. App Manager 로 만들면 서명 단계가 "Cloud signing permission error" 로 실패한다(클라우드 관리 배포 인증서를 만들 권한이 Admin 에만 있다).
 - 생성 뒤 화면의 **Issuer ID**(긴 UUID)와 키의 **Key ID**(10자)를 메모한다.
