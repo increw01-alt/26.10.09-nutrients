@@ -426,7 +426,7 @@ def render_page(it: dict, core: dict, cfg: dict) -> str:
 <html lang="ko" data-root="../">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>{esc(title)}</title>
   <meta name="description" content="{esc(desc)}">
   <meta name="keywords" content="{esc(", ".join([it["name"]] + it.get("aliases", [])[:4] + it.get("tags", [])[:4] + [it["name"] + " 효능", it["name"] + " 궁합", it["name"] + " 복용법"]))}">
@@ -486,7 +486,7 @@ def head_html(cfg: dict, *, title: str, desc: str, path: str, root: str, keyword
 <html lang="ko" data-root="{root}">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>{esc(title)}</title>
   <meta name="description" content="{esc(desc)}">
   {('<meta name="keywords" content="' + esc(keywords) + '">') if keywords else ''}

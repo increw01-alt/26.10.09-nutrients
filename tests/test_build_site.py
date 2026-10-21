@@ -404,3 +404,22 @@ class DrugGuideTests(unittest.TestCase):
             self.assertIn(f'href="drug-guide/{e["dg"]["id"]}.html"', hub)
         self.assertIn('id="gaps"', hub)
         self.assertIn("drug-guides.html", B.STATIC_PAGES)
+
+
+class AppSafeAreaTests(unittest.TestCase):
+    """앱(iOS 웹뷰)은 상태바 아래까지 그리므로 헤더 위에 안전 영역 여백이 필요하고, env() 가 0 이 아니려면 viewport-fit=cover 가 있어야 한다"""
+
+    def test_every_viewport_meta_has_viewport_fit_cover(self):
+        src = (B.ROOT / "scripts/build_site.py").read_text(encoding="utf-8")
+        metas = [line for line in src.splitlines() if 'name="viewport"' in line]
+        self.assertTrue(metas)
+        for line in metas:
+            self.assertIn("viewport-fit=cover", line)
+        for page in ("index.html", "my.html"):
+            self.assertIn("viewport-fit=cover", (B.ROOT / page).read_text(encoding="utf-8"))
+
+    def test_app_mode_pads_header_by_safe_area(self):
+        css = (B.ROOT / "assets/css/style.css").read_text(encoding="utf-8")
+        self.assertIn("html.is-app #site-header", css)
+        self.assertIn("env(safe-area-inset-top", css)
+        self.assertIn("html.is-app { --header-h: calc(68px + env(safe-area-inset-top", css)

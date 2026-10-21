@@ -240,6 +240,11 @@ body.has-tabbar { padding-bottom: 64px; }
 /* 헤더·푸터 워드마크 (실사형 메인 리뉴얼과 통일) */
 :root { --header-h: 68px; }
 @media (min-width: 768px) { :root { --header-h: 84px; } }
+/* 앱 모드: iOS 웹뷰(와 edge-to-edge 안드로이드)는 상태바·다이내믹 아일랜드 아래까지 그리므로 헤더 위에 안전 영역만큼 여백을 둔다(헤더 배경이 상태바 뒤까지 채워짐).
+   env() 는 viewport-fit=cover 가 있어야 0 이 아니다. 고정 탭(.detail-tabs 등)의 기준 높이도 함께 올린다. 탭 바는 이미 safe-area-inset-bottom 을 쓴다 */
+html.is-app { --header-h: calc(68px + env(safe-area-inset-top, 0px)); }
+html.is-app #site-header > div { padding-top: env(safe-area-inset-top, 0px); }
+@media (min-width: 768px) { html.is-app { --header-h: calc(84px + env(safe-area-inset-top, 0px)); } }
 .wordmark { display: inline-flex; align-items: center; gap: 8px; font-size: 26px; font-weight: 850; letter-spacing: -1.5px; white-space: nowrap; line-height: 1; color: #19241f; flex: none; }
 .wordmark small { font-size: 20px; font-weight: 850; color: #426e45; letter-spacing: -.8px; }
 .brand-mark { width: 29px; height: 29px; border-radius: 7px; flex: none; }   /* 캡슐과 잎 아이콘(favicon.svg) — 둥근 모서리는 SVG 안에 있고, 라운드는 안전망 */
