@@ -1,0 +1,118 @@
+{
+  "_meta": {
+    "updatedAt": "2026-10-21",
+    "note": "셀프체크(finder.html)의 질문과 규칙. 규칙은 답을 가이드(guides.json slug)로 잇고, 추천 성분은 그 가이드들의 핵심 성분(guides-index.json)에서 가중 합산한다. restrictTo 는 추천 성분을 그 가이드들의 성분 범위로 제한(어린이·청소년·임신·수유). flags 는 결과의 주의 상자. 빌드(scripts/build_site.py validate_finder)가 질문·옵션 id, 가이드 slug, 성분 id 를 검증하고 finder.html 의 정적 폼을 만든다.",
+    "top": 5
+  },
+  "questions": [
+    {
+      "id": "age", "type": "single", "required": true, "title": "연령대", "hint": "연령대별 가이드의 우선순위를 반영합니다",
+      "options": [
+        { "id": "kids", "label": "어린이 (12세 이하)" }, { "id": "teens", "label": "10대" }, { "id": "20s", "label": "20대" }, { "id": "30s", "label": "30대" },
+        { "id": "40s", "label": "40대" }, { "id": "50s", "label": "50~60대" }, { "id": "70s", "label": "70대 이상" }
+      ]
+    },
+    {
+      "id": "sex", "type": "single", "title": "성별", "hint": "성별에 따라 다른 가이드가 있을 때만 씁니다",
+      "options": [{ "id": "f", "label": "여성" }, { "id": "m", "label": "남성" }, { "id": "na", "label": "답하지 않음" }]
+    },
+    {
+      "id": "concern", "type": "multi", "max": 3, "title": "요즘 가장 신경 쓰이는 고민", "hint": "최대 3개까지 고를 수 있어요",
+      "options": [
+        { "id": "fatigue", "label": "피로·활력" }, { "id": "eye", "label": "눈 피로·눈 건강" }, { "id": "liver", "label": "간 건강·음주" }, { "id": "joint", "label": "관절·뼈" },
+        { "id": "sleep", "label": "수면" }, { "id": "immunity", "label": "면역·잔병치레" }, { "id": "skin", "label": "피부" }, { "id": "gut", "label": "장 건강·배변" },
+        { "id": "diet", "label": "체중·다이어트" }, { "id": "blood-sugar", "label": "혈당" }, { "id": "cholesterol", "label": "콜레스테롤" }, { "id": "stress", "label": "스트레스·긴장" },
+        { "id": "hair", "label": "탈모·모발" }, { "id": "circulation", "label": "혈행·손발 저림" }, { "id": "menopause", "label": "갱년기" }, { "id": "anemia", "label": "빈혈·어지러움" },
+        { "id": "exercise", "label": "운동·근육" }, { "id": "dental", "label": "치아·잇몸" }, { "id": "pms", "label": "생리 전 불편" }, { "id": "prostate", "label": "전립선" },
+        { "id": "none", "label": "특별히 없음", "exclusive": true }
+      ]
+    },
+    {
+      "id": "life", "type": "multi", "title": "해당하는 생활 상황", "hint": "모두 고르세요",
+      "options": [
+        { "id": "office", "label": "하루 종일 앉아서 일해요" }, { "id": "shift", "label": "야근·교대 근무" }, { "id": "student", "label": "수험생·장시간 공부" }, { "id": "vegan", "label": "채식 위주" },
+        { "id": "smoker", "label": "흡연" }, { "id": "athlete", "label": "운동을 많이 해요" }, { "id": "travel", "label": "출장·여행이 잦아요" },
+        { "id": "pregnant", "label": "임신 중·임신 준비" }, { "id": "breastfeeding", "label": "수유 중" }, { "id": "postpartum", "label": "출산 후 회복 중" },
+        { "id": "none", "label": "해당 없음", "exclusive": true }
+      ]
+    },
+    {
+      "id": "meds", "type": "multi", "title": "복용 중인 약", "hint": "약과 함께 챙기면 좋은 성분과 주의할 성분을 가이드로 안내합니다",
+      "options": [
+        { "id": "none", "label": "없음", "exclusive": true }, { "id": "hypertension", "label": "고혈압약" }, { "id": "diabetes", "label": "당뇨약" }, { "id": "thyroid", "label": "갑상선약" },
+        { "id": "nsaid", "label": "진통소염제(자주)" }, { "id": "ppi", "label": "위산억제제·위장약" }, { "id": "contraceptive", "label": "피임약" }, { "id": "antibiotics", "label": "항생제" },
+        { "id": "antidepressant", "label": "항우울제" }, { "id": "osteoporosis", "label": "골다공증약" }, { "id": "gout", "label": "통풍약" }, { "id": "antihistamine", "label": "항히스타민제" },
+        { "id": "hair-loss", "label": "탈모약" }, { "id": "weight-loss", "label": "비만 치료제" }, { "id": "cancer", "label": "항암 치료 중" }, { "id": "kidney", "label": "신장질환·투석" },
+        { "id": "liver-disease", "label": "간질환" }, { "id": "surgery", "label": "수술 예정" }
+      ]
+    },
+    {
+      "id": "have", "type": "ingredients", "title": "이미 먹고 있는 영양제", "hint": "추천 성분과의 궁합과 하루 시간표에 함께 넣습니다. 없으면 건너뛰세요",
+      "popular": ["multivitamin", "vitamin-d", "omega-3", "probiotics", "magnesium", "vitamin-c", "calcium", "iron", "lutein", "milk-thistle", "vitamin-b-complex", "zinc", "collagen", "coq10", "red-ginseng"]
+    }
+  ],
+  "rules": [
+    { "if": { "age": ["kids"] }, "guides": ["kids", "kids-by-age"], "weight": 3, "flags": ["kids"], "restrictTo": ["kids", "kids-by-age"] },
+    { "if": { "age": ["teens"] }, "guides": ["teens", "students"], "weight": 3, "flags": ["teens"], "restrictTo": ["teens", "students"] },
+    { "if": { "age": ["20s"] }, "guides": ["20s"], "weight": 2 },
+    { "if": { "age": ["30s"], "sex": ["m"] }, "guides": ["30s-men"], "weight": 3 },
+    { "if": { "age": ["30s"], "sex": ["f", "na"] }, "guides": ["20s"], "weight": 1 },
+    { "if": { "age": ["40s"], "sex": ["f"] }, "guides": ["40s-women"], "weight": 3 },
+    { "if": { "age": ["40s"], "sex": ["m", "na"] }, "guides": ["30s-men"], "weight": 1 },
+    { "if": { "age": ["50s"] }, "guides": ["50s-plus"], "weight": 3 },
+    { "if": { "age": ["50s"], "sex": ["f"] }, "guides": ["menopause"], "weight": 1 },
+    { "if": { "age": ["70s"] }, "guides": ["seniors-70"], "weight": 3 },
+    { "if": { "age": ["70s"] }, "guides": ["sarcopenia"], "weight": 1 },
+
+    { "if": { "concern": ["fatigue"] }, "guides": ["fatigue"], "weight": 3 },
+    { "if": { "concern": ["eye"] }, "guides": ["eye-health"], "weight": 3 },
+    { "if": { "concern": ["liver"] }, "guides": ["liver-health"], "weight": 3 },
+    { "if": { "concern": ["joint"] }, "guides": ["joint-health"], "weight": 3 },
+    { "if": { "concern": ["sleep"] }, "guides": ["sleep"], "weight": 3 },
+    { "if": { "concern": ["immunity"] }, "guides": ["immunity"], "weight": 3 },
+    { "if": { "concern": ["skin"] }, "guides": ["skin-health"], "weight": 3 },
+    { "if": { "concern": ["gut"] }, "guides": ["gut-health"], "weight": 3 },
+    { "if": { "concern": ["diet"] }, "guides": ["diet"], "weight": 3 },
+    { "if": { "concern": ["blood-sugar"] }, "guides": ["blood-sugar"], "weight": 3 },
+    { "if": { "concern": ["cholesterol"] }, "guides": ["cholesterol"], "weight": 3 },
+    { "if": { "concern": ["stress"] }, "guides": ["stress"], "weight": 3 },
+    { "if": { "concern": ["hair"] }, "guides": ["hair-health"], "weight": 3 },
+    { "if": { "concern": ["circulation"] }, "guides": ["blood-circulation"], "weight": 3 },
+    { "if": { "concern": ["circulation"] }, "guides": ["numbness"], "weight": 1 },
+    { "if": { "concern": ["menopause"] }, "guides": ["menopause"], "weight": 3 },
+    { "if": { "concern": ["anemia"] }, "guides": ["anemia"], "weight": 3 },
+    { "if": { "concern": ["exercise"] }, "guides": ["exercise"], "weight": 3 },
+    { "if": { "concern": ["dental"] }, "guides": ["dental"], "weight": 3 },
+    { "if": { "concern": ["pms"] }, "guides": ["pms"], "weight": 3 },
+    { "if": { "concern": ["prostate"] }, "guides": ["prostate"], "weight": 3 },
+
+    { "if": { "life": ["office"] }, "guides": ["office-workers"], "weight": 2 },
+    { "if": { "life": ["shift"] }, "guides": ["shift-workers"], "weight": 2 },
+    { "if": { "life": ["student"] }, "guides": ["students"], "weight": 2 },
+    { "if": { "life": ["vegan"] }, "guides": ["vegan"], "weight": 2 },
+    { "if": { "life": ["smoker"] }, "guides": ["smokers"], "weight": 2 },
+    { "if": { "life": ["athlete"] }, "guides": ["athletes"], "weight": 2 },
+    { "if": { "life": ["travel"] }, "guides": ["travel-jetlag"], "weight": 2 },
+    { "if": { "life": ["pregnant"] }, "guides": ["pregnancy", "pregnancy-symptoms"], "weight": 4, "flags": ["pregnancy"], "restrictTo": ["pregnancy", "pregnancy-symptoms"] },
+    { "if": { "life": ["breastfeeding"] }, "guides": ["breastfeeding"], "weight": 4, "flags": ["pregnancy"], "restrictTo": ["breastfeeding"] },
+    { "if": { "life": ["postpartum"] }, "guides": ["postpartum"], "weight": 3, "flags": ["pregnancy"] },
+
+    { "if": { "meds": ["hypertension"] }, "guides": ["hypertension"], "weight": 2, "flags": ["meds"] },
+    { "if": { "meds": ["diabetes"] }, "guides": ["diabetes-meds"], "weight": 2, "flags": ["meds"] },
+    { "if": { "meds": ["thyroid"] }, "guides": ["thyroid"], "weight": 2, "flags": ["meds"] },
+    { "if": { "meds": ["nsaid"] }, "guides": ["nsaid-users"], "weight": 2, "flags": ["meds"] },
+    { "if": { "meds": ["ppi"] }, "guides": ["ppi-users"], "weight": 2, "flags": ["meds"] },
+    { "if": { "meds": ["contraceptive"] }, "guides": ["contraceptive-users"], "weight": 2, "flags": ["meds"] },
+    { "if": { "meds": ["antibiotics"] }, "guides": ["antibiotics"], "weight": 2, "flags": ["meds"] },
+    { "if": { "meds": ["antidepressant"] }, "guides": ["antidepressant-users"], "weight": 2, "flags": ["meds"] },
+    { "if": { "meds": ["osteoporosis"] }, "guides": ["osteoporosis-meds"], "weight": 2, "flags": ["meds"] },
+    { "if": { "meds": ["gout"] }, "guides": ["gout-meds"], "weight": 2, "flags": ["meds"] },
+    { "if": { "meds": ["antihistamine"] }, "guides": ["antihistamine-users"], "weight": 2, "flags": ["meds"] },
+    { "if": { "meds": ["hair-loss"] }, "guides": ["hair-loss-meds"], "weight": 2, "flags": ["meds"] },
+    { "if": { "meds": ["weight-loss"] }, "guides": ["weight-loss-drugs"], "weight": 2, "flags": ["meds"] },
+    { "if": { "meds": ["cancer"] }, "guides": ["cancer-treatment"], "weight": 3, "flags": ["meds", "cancer"] },
+    { "if": { "meds": ["kidney"] }, "guides": ["kidney", "dialysis"], "weight": 3, "flags": ["meds", "kidney"] },
+    { "if": { "meds": ["liver-disease"] }, "guides": ["liver-disease"], "weight": 3, "flags": ["meds"] },
+    { "if": { "meds": ["surgery"] }, "guides": ["surgery"], "weight": 3, "flags": ["meds", "surgery"] }
+  ]
+}

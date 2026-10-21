@@ -141,3 +141,44 @@ class ChartModelTests(unittest.TestCase):
         self.assertIn('rel="canonical" href="https://example.test/compatibility-chart"', chart)
         self.assertIn('rel="canonical" href="https://example.test/timing-chart"', timing)
         self.assertNotIn("inferred", chart)   # 규칙 판정은 파이썬에 복제하지 않는다
+
+
+class FinderBuildTests(unittest.TestCase):
+    """셀프체크(finder.html) — data/finder.json 검증과 정적 폼 생성."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.data = B.read_json(B.DATA_DIR / "finder.json")
+        ingredients = B.read_json(B.DATA_DIR / "ingredients.json")
+        guides = B.read_json(B.DATA_DIR / "guides.json")
+        cls.core = {"categories": ingredients["_meta"]["categories"], "by_id": {i["id"]: i for i in ingredients["items"]}, "guides": guides["items"], "pairs": [], "types": {}}
+        cls.slugs = {g["slug"] for g in guides["items"]}
+        cls.cfg = {"name": "테스트", "url": "https://example.test"}
+
+    def test_validate_real_data(self):
+        B.validate_finder(self.data, set(self.core["by_id"]), self.slugs)   # 예외 없이 통과
+
+    def test_validate_rejects_unknown_guide_option_and_ingredient(self):
+        import copy
+        bad = copy.deepcopy(self.data); bad["rules"].append({"if": {"age": ["20s"]}, "guides": ["no-such-guide"]})
+        with self.assertRaises(SystemExit):
+            B.validate_finder(bad, set(self.core["by_id"]), self.slugs)
+        bad = copy.deepcopy(self.data); bad["rules"].append({"if": {"age": ["no-such-option"]}, "guides": ["20s"]})
+        with self.assertRaises(SystemExit):
+            B.validate_finder(bad, set(self.core["by_id"]), self.slugs)
+        bad = copy.deepcopy(self.data); [q for q in bad["questions"] if q["id"] == "have"][0]["popular"].append("no-such-ingredient")
+        with self.assertRaises(SystemExit):
+            B.validate_finder(bad, set(self.core["by_id"]), self.slugs)
+
+    def test_render_has_every_question_and_option_statically(self):
+        html = B.render_finder(self.data, self.core, self.cfg)
+        self.assertIn('id="finder-form"', html)
+        self.assertIn('rel="canonical" href="https://example.test/finder"', html)
+        for q in self.data["questions"]:
+            self.assertIn(f'data-q="{q["id"]}"', html)
+            for o in q.get("options", []):
+                self.assertIn(f'name="{q["id"]}" value="{o["id"]}"', html)
+            for pid in q.get("popular", []):
+                self.assertIn(f'name="have" value="{pid}"', html)
+        self.assertEqual(html.count('data-exclusive="1"'), sum(1 for q in self.data["questions"] for o in q.get("options", []) if o.get("exclusive")))
+        self.assertIn("finder.html", B.STATIC_PAGES)

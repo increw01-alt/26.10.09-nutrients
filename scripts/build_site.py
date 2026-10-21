@@ -24,7 +24,7 @@ from common import DATA_DIR, KST, ROOT, env, log, now_iso, read_json, write_json
 
 OUT_DIR = ROOT / "i"
 GUIDE_DIR = ROOT / "guide"
-STATIC_PAGES = ["index.html", "ingredients.html", "compatibility.html", "compatibility-chart.html", "timing-chart.html", "guides.html", "products.html", "news.html", "materials.html", "about.html", "terms.html", "privacy.html"]   # compatibility-chart·timing-chart 는 build_charts() 가 생성
+STATIC_PAGES = ["index.html", "ingredients.html", "compatibility.html", "compatibility-chart.html", "timing-chart.html", "finder.html", "guides.html", "products.html", "news.html", "materials.html", "about.html", "terms.html", "privacy.html"]   # compatibility-chart·timing-chart 는 build_charts() 가 생성
 
 
 def esc(s) -> str:
@@ -642,6 +642,7 @@ def render_guides_hub(guides: dict, cfg: dict) -> str:
       <p class="eyebrow-kicker mt-4"><i data-lucide="leaf"></i> 영양제 추천 가이드</p>
       <h1 class="page-title mt-3">고민과 상황에서 출발하는 영양제 가이드</h1>
       <p class="page-lead mt-4 max-w-2xl">특정 제품이 아니라 <strong>성분과 조합</strong>을 추천합니다. 각 가이드는 식약처 인정 기능성 표현을 기준으로 핵심 성분, 함께 먹으면 좋은 조합, 섭취 시간, 주의할 점을 정리하고 성분 사전·궁합 체크·제품 찾기로 연결됩니다.</p>
+      <p class="mt-5"><a href="finder.html" class="btn-primary"><i data-lucide="sparkles"></i>나에게 맞는 영양제 찾기 — 1분 셀프체크 <i data-lucide="arrow-right"></i></a></p>
       <div class="mt-5 flex flex-wrap gap-2">{''.join(f'<a href="#{k}" class="chip">{esc(t["short"])}</a>' for k, t in types.items())}</div>
       <form class="relative mt-6 w-full lg:w-96" role="search" onsubmit="return false;"><label for="guide-search" class="sr-only">가이드 검색</label><i data-lucide="search" class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400"></i><input id="guide-search" type="search" placeholder="가이드 검색 (예: 혈압약, 철분, 수면)" autocomplete="off" class="w-full rounded-full border border-ink-200 bg-white py-3 pl-11 pr-4 text-sm shadow-card outline-none focus:border-brand-400 focus:ring-4 focus:ring-brand-100"></form>
       <p id="guide-count" class="mt-3 text-sm text-ink-600" aria-live="polite">가이드 {len(guides["items"])}편</p>
@@ -951,6 +952,130 @@ def render_timing_chart(core: dict, cfg: dict) -> str:
     return head + body
 
 
+# ---------------------------------------------------------------- 셀프체크 (finder.html — data/finder.json 의 질문으로 정적 폼 생성, 결과는 assets/js/pages/finder.js)
+FINDER_PATH = "finder.html"
+
+
+def validate_finder(data: dict, valid_ids: set[str], guide_slugs: set[str]) -> None:
+    """data/finder.json 무결성: 질문·옵션 id 중복, 규칙이 가리키는 질문·옵션·가이드 slug, restrictTo, 인기 성분 id. 어긋나면 빌드 실패."""
+    qs: dict[str, dict] = {}
+    for q in data.get("questions", []):
+        if q["id"] in qs:
+            raise SystemExit(f"finder.json: 질문 id 중복 {q['id']}")
+        qs[q["id"]] = q
+        ids = [o["id"] for o in q.get("options", [])]
+        if len(ids) != len(set(ids)):
+            raise SystemExit(f"finder.json: 질문 {q['id']} 의 옵션 id 중복")
+        for pid in q.get("popular", []):
+            if pid not in valid_ids:
+                raise SystemExit(f"finder.json: 질문 {q['id']} 의 popular 에 없는 성분 id {pid}")
+    for n, r in enumerate(data.get("rules", [])):
+        for qid, vals in (r.get("if") or {}).items():
+            if qid not in qs:
+                raise SystemExit(f"finder.json: 규칙 {n} 이 모르는 질문 {qid} 을 참조")
+            ok = {o["id"] for o in qs[qid].get("options", [])}
+            for v in vals:
+                if v not in ok:
+                    raise SystemExit(f"finder.json: 규칙 {n} 의 {qid} 에 없는 옵션 {v}")
+        for s in list(r.get("guides", [])) + list(r.get("restrictTo", [])):
+            if s not in guide_slugs:
+                raise SystemExit(f"finder.json: 규칙 {n} 이 없는 가이드 slug {s} 를 참조")
+        if not r.get("guides") and not r.get("flags"):
+            raise SystemExit(f"finder.json: 규칙 {n} 에 guides 또는 flags 가 필요")
+    log.info("셀프체크 규칙 검증 통과: 질문 %d개 · 규칙 %d개", len(qs), len(data.get("rules", [])))
+
+
+def render_finder(data: dict, core: dict, cfg: dict) -> str:
+    """나에게 맞는 영양제 찾기 — 질문 폼은 정적 HTML(검색엔진·JS 없는 환경), 결과는 pages/finder.js 가 그린다."""
+    by_id = core["by_id"]
+    questions = data.get("questions", [])
+    title = f"나에게 맞는 영양제 추천 — 1분 셀프체크로 성분·궁합·복용 시간표까지 | {cfg['name']}"
+    desc = ("연령·성별·고민·생활 습관·복용 중인 약·이미 먹는 영양제를 고르면 가이드 87편의 핵심 성분에서 나에게 맞는 영양제 성분을 추천하고, "
+            "추천 조합의 궁합과 하루 복용 시간표까지 한 번에 보여줍니다. 답변은 저장되지 않으며 결과는 링크로 공유할 수 있습니다.")
+    faq_items = [
+        ("셀프체크는 어떤 기준으로 영양제를 추천하나요?", "답변을 고민별·대상별 가이드에 연결하고, 그 가이드들이 식약처 인정 기능성을 기준으로 꼽은 핵심 성분을 가중 합산해 상위 성분을 보여줍니다. 특정 제품이나 브랜드를 추천하지 않으며, 결과는 일반 건강 정보이고 의학적 진단·처방이 아닙니다."),
+        ("임신 중이거나 약을 먹고 있어도 써도 되나요?", "임신·수유·어린이는 해당 가이드의 성분 범위 안에서만 추천하고, 약을 복용 중이면 약 복용자 가이드와 주의 안내를 함께 보여줍니다. 어떤 경우든 새 영양제를 시작하기 전에 의사·약사와 상의하세요."),
+        ("답변이 저장되나요?", "아니요. 답변은 서버로 보내지 않고 결과 화면의 주소(링크)에만 담깁니다. 결과를 내 영양제에 추가하면 그 성분 목록만 이 기기의 브라우저에 저장됩니다."),
+    ]
+    faq_html, faq_ld = faq_block(faq_items)
+    ld = {"@context": "https://schema.org", "@graph": [
+        {"@type": "BreadcrumbList", "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "홈", "item": f"{cfg['url']}/"},
+            {"@type": "ListItem", "position": 2, "name": "영양제 추천 가이드", "item": page_url(cfg, "guides.html")},
+            {"@type": "ListItem", "position": 3, "name": "나에게 맞는 영양제 찾기", "item": page_url(cfg, FINDER_PATH)}]},
+        {"@type": "WebApplication", "name": "나에게 맞는 영양제 찾기 (셀프체크)", "applicationCategory": "HealthApplication", "operatingSystem": "Web", "url": page_url(cfg, FINDER_PATH),
+         "description": "질문 6개로 추천 성분·궁합·복용 시간표를 보여주는 영양제 셀프체크", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "KRW"}},
+        faq_ld,
+    ]}
+    head = head_html(cfg, title=title, desc=desc, path=FINDER_PATH, root="./", keywords="영양제 추천, 나에게 맞는 영양제, 영양제 셀프체크, 영양제 테스트, 영양제 조합 추천, 영양제 궁합",
+                     og_type="website", extra_scripts='<script src="assets/js/illus.js" defer></script><script src="assets/js/schedule.js" defer></script><script src="assets/js/finder.js" defer></script><script src="assets/js/pages/finder.js" defer></script>', ld=ld)
+
+    def option(q: dict, o: dict) -> str:
+        kind = "radio" if q.get("type") == "single" else "checkbox"
+        ex = ' data-exclusive="1"' if o.get("exclusive") else ""
+        return f'<label class="finder-opt"><input type="{kind}" name="{esc(q["id"])}" value="{esc(o["id"])}"{ex}><span>{esc(o["label"])}</span></label>'
+
+    fields = ""
+    for n, q in enumerate(questions, 1):
+        hint = f'<p class="finder-hint">{esc(q["hint"])}</p>' if q.get("hint") else ""
+        if q.get("type") == "ingredients":
+            chips = "".join(f'<label class="finder-opt"><input type="checkbox" name="{esc(q["id"])}" value="{esc(i)}"><span>{esc(by_id[i]["name"])}</span></label>' for i in q.get("popular", []) if i in by_id)
+            body = (f'<div class="finder-opts" id="have-opts">{chips}</div>'
+                    f'<div class="finder-search mt-3"><label for="have-search" class="sr-only">다른 성분 검색</label><i data-lucide="search" class="finder-search-icon"></i>'
+                    f'<input id="have-search" type="search" placeholder="다른 성분 검색해 추가 (예: 비오틴, 아르기닌)" autocomplete="off"><ul id="have-list" class="finder-search-list" role="listbox" hidden></ul></div>')
+        else:
+            body = f'<div class="finder-opts">{"".join(option(q, o) for o in q.get("options", []))}</div>'
+        fields += (f'<fieldset class="finder-q" data-q="{esc(q["id"])}"{" data-max=" + chr(34) + str(q["max"]) + chr(34) if q.get("max") else ""}>'
+                   f'<legend><span class="finder-num">{n}</span>{esc(q["title"])}{" <span class=" + chr(34) + "finder-req" + chr(34) + ">필수</span>" if q.get("required") else ""}</legend>{hint}{body}</fieldset>')
+
+    body = f"""
+<body data-page="guides" data-path="{FINDER_PATH}" class="min-h-screen antialiased">
+  {SKIP_LINK}
+  <main id="main">
+    <section class="page-hero"><div class="mx-auto max-w-7xl px-4 pb-10 pt-8 sm:px-6 sm:pt-10">
+      <nav class="text-xs text-ink-500" aria-label="경로"><a class="hover:text-brand-700" href="index.html">홈</a> › <a class="hover:text-brand-700" href="guides.html">영양제 추천 가이드</a> › <span class="text-ink-800">나에게 맞는 영양제 찾기</span></nav>
+      <p class="eyebrow-kicker mt-4"><i data-lucide="sparkles"></i> 영양제 셀프체크</p>
+      <h1 class="page-title mt-3">나에게 맞는 영양제 추천, 1분 셀프체크</h1>
+      <p class="page-lead mt-4 max-w-3xl">연령·고민·생활 습관·복용 중인 약을 고르면 가이드 <strong>{len(core.get("guides", []))}편</strong>이 꼽은 핵심 성분 가운데 나에게 맞는 성분을 추천하고, 추천 조합의 <strong>궁합</strong>과 <strong>하루 복용 시간표</strong>까지 한 번에 보여줍니다. 제품이 아니라 성분을 추천하며, 답변은 저장하지 않습니다.</p>
+      <ul class="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm text-ink-500">
+        <li class="inline-flex items-center gap-1.5"><i data-lucide="list-checks" class="h-4 w-4 text-brand-600"></i>질문 {len(questions)}개, 약 1분</li>
+        <li class="inline-flex items-center gap-1.5"><i data-lucide="heart-handshake" class="h-4 w-4 text-brand-600"></i>추천 조합의 궁합·시간표 자동 생성</li>
+        <li class="inline-flex items-center gap-1.5"><i data-lucide="share-2" class="h-4 w-4 text-brand-600"></i>결과를 링크로 공유, 내 영양제에 저장</li>
+      </ul>
+    </div></section>
+    <div class="mx-auto max-w-7xl space-y-12 px-4 py-12 sm:px-6">
+      <form id="finder-form" method="get" action="{FINDER_PATH}" class="finder-form" novalidate>
+        <div class="finder-progress" aria-live="polite"><div class="finder-progress-bar"><span id="finder-bar" style="width:0%"></span></div><p id="finder-progress-text" class="text-xs text-ink-500">질문 {len(questions)}개 중 0개 답함</p></div>
+        {fields}
+        <div class="finder-actions"><button type="submit" class="btn-primary"><i data-lucide="sparkles"></i>결과 보기 <i data-lucide="arrow-right"></i></button><button type="button" class="btn-outline" id="finder-reset"><i data-lucide="rotate-ccw"></i>처음부터</button><p id="finder-error" class="text-sm font-semibold text-rose-700" hidden></p></div>
+      </form>
+      <section id="result" class="finder-result scroll-mt-24" hidden aria-live="polite"></section>
+      <section id="how" class="rounded-3xl bg-cream-200 p-6 sm:p-8"><h2 class="text-lg font-extrabold text-ink-900">어떻게 추천하나요</h2><ul class="list-dot mt-3 text-sm text-ink-700">
+        <li>답변을 고민별·대상별 <a class="font-bold text-brand-700 underline" href="guides.html">영양제 추천 가이드</a>에 연결하고, 각 가이드가 식약처 인정 기능성을 기준으로 꼽은 핵심 성분을 가중 합산해 상위 성분을 보여줍니다.</li>
+        <li>추천 성분과 이미 먹는 성분의 조합은 <a class="font-bold text-brand-700 underline" href="compatibility-chart.html">영양제 궁합표</a>와 같은 데이터로 판정하고, 하루 시간표는 <a class="font-bold text-brand-700 underline" href="timing-chart.html">영양제 복용 시간표</a>의 기본 시간대와 간격 규칙으로 만듭니다.</li>
+        <li>어린이·청소년·임신·수유는 해당 가이드의 성분 범위 안에서만 추천하고, 약을 복용 중이면 약 복용자 가이드와 주의 안내를 함께 보여줍니다.</li>
+        <li>건강기능식품은 질병의 예방·치료 목적이 아닙니다. 결과는 참고용 일반 정보이며, 새 영양제를 시작하기 전에 의사·약사와 상의하세요.</li>
+      </ul></section>
+      {faq_html}
+    </div>
+  </main>
+  <div id="site-footer"></div>
+</body>
+</html>
+"""
+    return head + body
+
+
+def build_finder(core: dict, cfg: dict, guides: dict) -> None:
+    data = read_json(DATA_DIR / "finder.json", None)
+    if not data:
+        log.warning("data/finder.json 이 없어 셀프체크 페이지를 만들지 않습니다")
+        return
+    validate_finder(data, set(core["by_id"].keys()), {g["slug"] for g in guides.get("items", [])})
+    (ROOT / FINDER_PATH).write_text(render_finder(data, core, cfg), encoding="utf-8")
+    log.info("셀프체크 페이지 생성 (%s)", FINDER_PATH)
+
+
 def build_charts(core: dict, cfg: dict) -> None:
     """영양제 궁합표·복용 시간표 정적 페이지 생성 (루트, sitemap 은 STATIC_PAGES 로)."""
     (ROOT / CHART_PATH).write_text(render_compat_chart(core, cfg), encoding="utf-8")
@@ -999,6 +1124,7 @@ def main() -> int:
 
     guides = build_guides(core, cfg)
     build_charts(core, cfg)
+    build_finder(core, cfg, guides)
     build_sitemap(ingredients["items"], cfg, data_date, guides)
     inject_verification(cfg)
     inject_pwa_tags()

@@ -21,6 +21,7 @@ project/
 ├─ compatibility.html         # 궁합 체크 (최대 8개 선택, 매트릭스, 복용 시간표, 공유 링크)
 ├─ compatibility-chart.html   # 영양제 궁합표 — 12종 행렬 + 성분별 좋은·주의·무난 목록 (scripts/build_site.py 가 생성)
 ├─ timing-chart.html          # 영양제 복용 시간표 — 시간대별·성분별 표 (scripts/build_site.py 가 생성)
+├─ finder.html                # 나에게 맞는 영양제 찾기(셀프체크) — data/finder.json 의 질문으로 폼 생성, 결과는 assets/js/pages/finder.js
 ├─ guides.html                # 영양제 가이드 허브 (scripts/build_site.py 가 생성)
 ├─ guide/<slug>.html          # 고민별·대상별·복용법 가이드 28개 (data/guides.json 에서 생성)
 ├─ products.html              # 제품 찾기 (식약처 신고 제품 + 쇼핑몰 링크 + 변경 이력)
@@ -176,6 +177,7 @@ python scripts/build_site.py
 
 ## 가이드 페이지 추가·수정
 - `data/guides.json` 의 `items` 에 항목을 추가하면 `python scripts/build_site.py` 가 `guide/<slug>.html` 과 `guides.html` 을 다시 생성합니다.
+- `data/finder.json`: 셀프체크의 질문과 규칙(답 → 가이드 slug·가중치·주의 플래그·성분 범위 제한). 새 가이드를 셀프체크 결과에 쓰려면 규칙에 slug 를 추가하고 빌드하세요. 빌드가 slug·옵션·성분 id 를 검증합니다.
 - 필수 키: id, type(concern|target|howto), slug, icon(lucide 아이콘명), title(SEO 제목), h1, keywords, description, intro, ingredients[{id, why}], combos[{ids, note}], tips, cautions, faq[{q, a}], related(가이드 id). 긴 본문은 sections[{h2, body}].
 - 성분 id 는 `data/ingredients.json` 과 일치해야 하며, 빌드 시 참조가 검증됩니다.
 - 표현은 식약처 인정 기능성 범위("~에 도움을 줄 수 있음")를 지키고 질병 치료·예방 표현을 쓰지 마세요.

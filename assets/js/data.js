@@ -112,7 +112,8 @@
         return Data.productsAll().then(function (d) { return (d.items || []).filter(function (p) { return (p.ingredients || []).indexOf(iid) >= 0; }); }).catch(function () { return []; });
       });
     },
-    guides: function () { return load("guides-index"); },   // 요약 색인(빌드 생성). 본문이 필요하면 guides.json 을 따로 읽는다
+    guides: function () { return load("guides-index"); },
+    finder: function () { return load("finder"); },          // 셀프체크 질문·규칙 (data/finder.json, 수동)   // 요약 색인(빌드 생성). 본문이 필요하면 guides.json 을 따로 읽는다
     guideUrl: function (slug) { return ROOT + "guide/" + encodeURIComponent(slug) + ".html"; },
 
     /* 식약처 기능성 원료 데이터: data/materials.json(전체), data/materials/<성분id>.json(성분별) */

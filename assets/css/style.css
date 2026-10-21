@@ -337,3 +337,46 @@ body.has-tabbar { padding-bottom: 64px; }
 .timing-table tr.timing-cat th { background: #fbfcf9; padding: .5rem .75rem; }
 .timing-table .timing-note { color: #4b5563; min-width: 16rem; }
 @media (max-width: 640px) { .chart-matrix { font-size: .72rem; } .chart-matrix td a { width: 1.75rem; height: 1.75rem; } .chart-row { padding: .85rem .9rem; } }
+
+/* ---------- 나에게 맞는 영양제 찾기 (finder.html, 빌드 생성 폼 + pages/finder.js 결과) ---------- */
+.finder-form { display: grid; gap: 1rem; }
+.finder-progress { position: sticky; top: calc(var(--header-h, 84px) + .5rem); z-index: 5; background: rgba(255,255,255,.92); backdrop-filter: blur(6px); border: 1px solid #e3e8df; border-radius: 9999px; padding: .55rem 1rem; display: flex; align-items: center; gap: .8rem; }
+.finder-progress-bar { flex: 1; height: .45rem; border-radius: 9999px; background: #edf1ea; overflow: hidden; }
+.finder-progress-bar span { display: block; height: 100%; background: linear-gradient(90deg, #367e55, #206742); transition: width .25s ease; }
+.finder-progress p { white-space: nowrap; }
+.finder-q { border: 1px solid #e3e8df; border-radius: 1.25rem; background: #fff; padding: 1.1rem 1.25rem 1.25rem; margin: 0; min-width: 0; }
+.finder-q.is-answered { border-color: #b9d4c2; box-shadow: 0 0 0 3px #eef6ef; }
+.finder-q legend { display: flex; align-items: center; gap: .55rem; font-size: 1.05rem; font-weight: 800; color: #1f2a23; padding: 0; }
+.finder-num { display: inline-grid; place-items: center; width: 1.6rem; height: 1.6rem; border-radius: 9999px; background: #206742; color: #fff; font-size: .8rem; font-weight: 800; }
+.finder-req { font-size: .7rem; font-weight: 700; color: #b45309; background: #fffbeb; border: 1px solid #fde68a; border-radius: 9999px; padding: .15rem .5rem; }
+.finder-hint { margin-top: .35rem; font-size: .8rem; color: #6b7a70; }
+.finder-opts { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .85rem; }
+.finder-opt { position: relative; display: inline-flex; }
+.finder-opt input { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+.finder-opt span { display: inline-flex; align-items: center; gap: .35rem; border-radius: 9999px; border: 1px solid #d3e0ca; background: #f7faf3; padding: .5rem .9rem; font-size: .88rem; font-weight: 600; color: #3a463c; cursor: pointer; transition: all .15s ease; user-select: none; }
+.finder-opt span:hover { border-color: #9cc49c; background: #eff5ec; color: #175136; }
+.finder-opt input:checked + span { background: linear-gradient(120deg, #367e55, #206742); border-color: #286c45; color: #fff; }
+.finder-opt input:focus-visible + span { outline: 3px solid #bfe3cc; outline-offset: 2px; }
+.finder-opt input:disabled + span { opacity: .45; cursor: not-allowed; }
+.finder-search { position: relative; max-width: 28rem; }
+.finder-search-icon { position: absolute; left: .9rem; top: 50%; width: 1rem; height: 1rem; transform: translateY(-50%); color: #9aa89f; pointer-events: none; }
+.finder-search input { width: 100%; border-radius: 9999px; border: 1px solid #d3e0ca; background: #fff; padding: .6rem 1rem .6rem 2.4rem; font-size: .9rem; outline: none; }
+.finder-search input:focus { border-color: #9cc49c; box-shadow: 0 0 0 4px #eef6ef; }
+.finder-search-list { position: absolute; left: 0; right: 0; top: calc(100% + .35rem); z-index: 20; margin: 0; padding: .35rem; list-style: none; border: 1px solid #e3e8df; border-radius: 1rem; background: #fff; box-shadow: 0 12px 30px rgba(31,42,35,.12); }
+.finder-search-list button { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: .5rem; border-radius: .6rem; padding: .5rem .75rem; text-align: left; font-size: .88rem; font-weight: 600; color: #1f2a23; }
+.finder-search-list button:hover { background: #eef6ef; color: #175136; }
+.finder-search-list small { font-size: .72rem; color: #8a978e; font-weight: 500; }
+.finder-search-empty { padding: .5rem .75rem; font-size: .85rem; color: #8a978e; }
+.finder-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; }
+.finder-result { border: 1px solid #e3e8df; border-radius: 1.5rem; background: #fff; padding: 1.5rem; box-shadow: 0 10px 30px rgba(31,42,35,.06); }
+.finder-flag { display: flex; gap: .75rem; border: 1px solid #fde68a; background: #fffbeb; border-radius: 1rem; padding: .9rem 1rem; }
+.finder-card { border: 1px solid #e3e8df; border-radius: 1.1rem; background: #fbfcf9; padding: 1rem; }
+.finder-thumb { display: block; flex-shrink: 0; width: 3.5rem; height: 3.5rem; border-radius: .9rem; overflow: hidden; background: #eef3e9; }
+.finder-thumb-xs { width: 2.1rem; height: 2.1rem; border-radius: .6rem; }
+.finder-pair { display: flex; gap: .75rem; align-items: flex-start; border: 1px solid #fde68a; background: #fffbeb; border-radius: .9rem; padding: .75rem .9rem; }
+.finder-pair-avoid { border-color: #fecdd3; background: #fff1f2; }
+.finder-pair .badge { flex-shrink: 0; margin-top: .1rem; }
+.finder-guide { display: block; border: 1px solid #e3e8df; border-radius: 1rem; background: #fff; padding: 1rem; transition: all .15s ease; }
+.finder-guide:hover { border-color: #9cc49c; box-shadow: 0 8px 22px rgba(31,42,35,.08); }
+.chip-sm { padding: .3rem .7rem; font-size: .8rem; }
+@media (max-width: 640px) { .finder-q { padding: .9rem .95rem 1rem; border-radius: 1rem; } .finder-result { padding: 1.1rem; border-radius: 1.1rem; } .finder-progress { padding: .45rem .8rem; } .finder-progress p { font-size: .7rem; } }
