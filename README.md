@@ -23,6 +23,7 @@ project/
 ├─ timing-chart.html          # 영양제 복용 시간표 — 시간대별·성분별 표 (scripts/build_site.py 가 생성)
 ├─ finder.html                # 나에게 맞는 영양제 찾기(셀프체크) — data/finder.json 의 질문으로 폼 생성, 결과는 assets/js/pages/finder.js
 ├─ functions.html · function/ # 기능성별 영양제 허브 + 기능성 페이지(식약처 인정 문구별 성분·원료·제품, data/functions.json 으로 생성)
+├─ compare.html · compare/    # 성분 비교 허브 + 'A vs B' 비교 글(data/compares.json 수동 본문 + 사전·집계 자동 비교표, 쇼핑 버튼)
 ├─ guides.html                # 영양제 가이드 허브 (scripts/build_site.py 가 생성)
 ├─ guide/<slug>.html          # 고민별·대상별·복용법 가이드 28개 (data/guides.json 에서 생성)
 ├─ products.html              # 제품 찾기 (식약처 신고 제품 + 쇼핑몰 링크 + 변경 이력)
@@ -178,6 +179,7 @@ python scripts/build_site.py
 
 ## 가이드 페이지 추가·수정
 - `data/guides.json` 의 `items` 에 항목을 추가하면 `python scripts/build_site.py` 가 `guide/<slug>.html` 과 `guides.html` 을 다시 생성합니다.
+- `data/compares.json`: 성분 비교 글의 수동 본문(핵심 차이·상황별 추천·수동 비교 행·같이 먹기·FAQ). 비교표의 나머지 행은 빌드가 성분 사전과 집계에서 채웁니다. 새 비교를 추가하면 `compare/<slug>.html` 이 생성되고 성분 페이지에 '비교 글' 칩이 붙습니다.
 - `data/functions.json`: 기능성별 허브의 정규화 표(식약처 인정 문구별 정규식·설명·관련 가이드). 기능성을 추가하거나 정규식을 고친 뒤 빌드하면 `function/<id>.html` 이 생성·정리되고 성분 페이지의 기능성 칩이 갱신됩니다.
 - `data/finder.json`: 셀프체크의 질문과 규칙(답 → 가이드 slug·가중치·주의 플래그·성분 범위 제한). 새 가이드를 셀프체크 결과에 쓰려면 규칙에 slug 를 추가하고 빌드하세요. 빌드가 slug·옵션·성분 id 를 검증합니다.
 - 필수 키: id, type(concern|target|howto), slug, icon(lucide 아이콘명), title(SEO 제목), h1, keywords, description, intro, ingredients[{id, why}], combos[{ids, note}], tips, cautions, faq[{q, a}], related(가이드 id). 긴 본문은 sections[{h2, body}].

@@ -254,3 +254,66 @@ class FunctionHubTests(unittest.TestCase):
         for e in self.model["items"]:
             self.assertIn(f'href="function/{e["fn"]["id"]}.html"', hub)
         self.assertIn("functions.html", B.STATIC_PAGES)
+
+
+class CompareTests(unittest.TestCase):
+    """성분 비교(compare.html · compare/<slug>.html) — 데이터 검증·모델·렌더."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.data = B.read_json(B.DATA_DIR / "compares.json")
+        ingredients = B.read_json(B.DATA_DIR / "ingredients.json")
+        interactions = B.read_json(B.DATA_DIR / "interactions.json")
+        guides = B.read_json(B.DATA_DIR / "guides.json")
+        cls.guides = guides
+        cls.core = {"categories": ingredients["_meta"]["categories"], "by_id": {i["id"]: i for i in ingredients["items"]}, "guides": guides["items"], "pairs": interactions["pairs"], "types": interactions["_meta"]["types"]}
+        cls.slugs = {g["slug"] for g in guides["items"]}
+        cls.model = B.compare_model(cls.data, cls.core, guides["items"])
+        cls.cfg = {"name": "테스트", "url": "https://example.test"}
+
+    def test_validate_real_data_and_rejects_bad(self):
+        B.validate_compares(self.data, set(self.core["by_id"]), self.slugs)
+        import copy
+        bad = copy.deepcopy(self.data); bad["items"][0]["ids"].append("no-such-ingredient")
+        with self.assertRaises(SystemExit):
+            B.validate_compares(bad, set(self.core["by_id"]), self.slugs)
+        bad = copy.deepcopy(self.data); bad["items"][0]["related"] = ["no-such-guide"]
+        with self.assertRaises(SystemExit):
+            B.validate_compares(bad, set(self.core["by_id"]), self.slugs)
+        bad = copy.deepcopy(self.data); bad["items"][0]["rows"] = [{"label": "x", "cells": {"zzz": "y"}}]
+        with self.assertRaises(SystemExit):
+            B.validate_compares(bad, set(self.core["by_id"]), self.slugs)
+        bad = copy.deepcopy(self.data); bad["items"].append(dict(bad["items"][0]))
+        with self.assertRaises(SystemExit):
+            B.validate_compares(bad, set(self.core["by_id"]), self.slugs)
+
+    def test_model_rows_cover_every_ingredient(self):
+        for e in self.model["items"]:
+            ids = [i["id"] for i in e["ingredients"]]
+            labels = [r["label"] for r in e["rows"]]
+            self.assertEqual(labels[0], "식약처 인정 기능성")
+            for lab in ("하루 권장 섭취량", "먹는 시간", "신고 제품 수 (수집 범위)", "기능성별 페이지"):
+                self.assertIn(lab, labels, e["cmp"]["slug"])
+            for r in e["rows"]:
+                for i in ids:
+                    self.assertIn(i, r["cells"], f'{e["cmp"]["slug"]} {r["label"]}')
+            self.assertEqual(len(e["pairs"]), len(ids) * (len(ids) - 1) // 2)
+        self.assertIn("red-ginseng-vs-ginseng", self.model["by_ingredient"]["red-ginseng"])
+        three = next(e for e in self.model["items"] if e["cmp"]["slug"] == "glucosamine-vs-chondroitin-vs-msm")
+        self.assertEqual(len(three["ingredients"]), 3)
+        self.assertEqual(len(three["pairs"]), 3)
+
+    def test_render_compare_and_hub(self):
+        entry = next(e for e in self.model["items"] if e["cmp"]["slug"] == "red-ginseng-vs-ginseng")
+        html = B.render_compare(entry, self.core, self.cfg, self.guides["_meta"]["types"], "2026-10-22")
+        self.assertIn('rel="canonical" href="https://example.test/compare/red-ginseng-vs-ginseng"', html)
+        for sec in ("table", "verdict", "picks", "together", "timing", "shop", "faq"):
+            self.assertIn(f'id="{sec}"', html)
+        self.assertEqual(html.count("data-query="), 2)
+        self.assertEqual(html.count('data-my-add="'), 2)
+        self.assertIn('href="../i/red-ginseng.html"', html)
+        self.assertIn("홍삼", html)
+        hub = B.render_compare_hub(self.model, self.data, self.core, self.cfg)
+        for e in self.model["items"]:
+            self.assertIn(f'href="compare/{e["cmp"]["slug"]}.html"', hub)
+        self.assertIn("compare.html", B.STATIC_PAGES)

@@ -114,7 +114,8 @@
     },
     guides: function () { return load("guides-index"); },
     finder: function () { return load("finder"); },          // 셀프체크 질문·규칙 (data/finder.json, 수동)
-    functions: function () { return load("functions-index"); },   // 기능성별 허브 요약 색인 (빌드 생성: id·label·claim·성분 id)   // 요약 색인(빌드 생성). 본문이 필요하면 guides.json 을 따로 읽는다
+    functions: function () { return load("functions-index"); },   // 기능성별 허브 요약 색인 (빌드 생성: id·label·claim·성분 id)
+    compares: function () { return load("compares-index"); },     // 성분 비교 요약 색인 (빌드 생성: slug·title·ids)   // 요약 색인(빌드 생성). 본문이 필요하면 guides.json 을 따로 읽는다
     guideUrl: function (slug) { return ROOT + "guide/" + encodeURIComponent(slug) + ".html"; },
 
     /* 식약처 기능성 원료 데이터: data/materials.json(전체), data/materials/<성분id>.json(성분별) */

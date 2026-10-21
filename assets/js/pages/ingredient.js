@@ -123,7 +123,7 @@
 
     var main = document.getElementById("ingredient-main");
     main.innerHTML =
-      section("식약처 인정 기능성", "badge-check", '<p class="rounded-xl bg-brand-50 p-4 text-[15px] font-semibold leading-relaxed text-brand-900">' + esc(it.mfdsFunction || "고시형 기능성 원료 아님") + '</p><p class="mt-2 text-xs text-ink-400">식품의약품안전처 건강기능식품 기능성 원료 고시·개별인정 내용을 요약한 것입니다. 제품별 인정 내용은 라벨을 확인하세요.</p><div id="ingredient-functions" class="mt-3 flex flex-wrap items-center gap-2"></div>', "", "sec-info") +
+      section("식약처 인정 기능성", "badge-check", '<p class="rounded-xl bg-brand-50 p-4 text-[15px] font-semibold leading-relaxed text-brand-900">' + esc(it.mfdsFunction || "고시형 기능성 원료 아님") + '</p><p class="mt-2 text-xs text-ink-400">식품의약품안전처 건강기능식품 기능성 원료 고시·개별인정 내용을 요약한 것입니다. 제품별 인정 내용은 라벨을 확인하세요.</p><div id="ingredient-functions" class="mt-3 flex flex-wrap items-center gap-2"></div><div id="ingredient-compares" class="mt-2 flex flex-wrap items-center gap-2"></div>', "", "sec-info") +
       '<section id="ingredient-materials" class="scroll-mt-36 rounded-2xl border border-ink-100 bg-white p-6 shadow-card"><div class="skeleton h-16"></div></section>' +
       section("이런 효과를 기대할 수 있어요", "sparkles", list(it.benefits, "list-check")) +
       section("권장 섭취량과 복용법", "flask-conical",
@@ -145,6 +145,15 @@
       box.innerHTML = '<span class="text-xs font-bold text-ink-500">기능성별 페이지:</span>' + mine.map(function (f) { return '<a class="chart-chip" href="' + D.url("function/" + encodeURIComponent(f.id) + ".html") + '"><i data-lucide="' + esc(f.icon) + '" class="h-3.5 w-3.5"></i>' + esc(f.label) + '</a>'; }).join("");
       D.icons(box);
     }).catch(function () {});
+
+    // 이 성분이 들어간 성분 비교 글 칩 (data/compares-index.json, 빌드 생성)
+    D.compares().then(function (cx) {
+      var box = document.getElementById("ingredient-compares"); if (!box) return;
+      var mine = ((cx && cx.items) || []).filter(function (c) { return (c.ids || []).indexOf(it.id) >= 0; });
+      if (!mine.length) { box.remove(); return; }
+      box.innerHTML = '<span class="text-xs font-bold text-ink-500">비교 글:</span>' + mine.map(function (c) { return '<a class="chart-chip" href="' + D.url("compare/" + encodeURIComponent(c.slug) + ".html") + '"><i data-lucide="scale" class="h-3.5 w-3.5"></i>' + esc(c.title) + '</a>'; }).join("");
+      D.icons(box);
+    }).catch(function () { var box = document.getElementById("ingredient-compares"); if (box) box.remove(); });
 
     // 탭 활성화: 섹션이 화면 상단에 오면 해당 탭 표시
     try {

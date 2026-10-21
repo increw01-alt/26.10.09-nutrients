@@ -386,3 +386,14 @@ body.has-tabbar { padding-bottom: 64px; }
 .fn-card { display: flex; gap: .85rem; align-items: flex-start; border: 1px solid #e3ebdc; border-radius: 1.1rem; background: #fff; padding: 1rem 1.1rem; box-shadow: 0 2px 10px rgba(31,42,35,.04); transition: all .15s ease; }
 .fn-card:hover { border-color: #9cc49c; box-shadow: 0 10px 26px rgba(31,42,35,.09); transform: translateY(-1px); }
 .fn-card-icon { display: grid; place-items: center; flex-shrink: 0; width: 2.75rem; height: 2.75rem; border-radius: .85rem; background: #eef6ef; color: #206742; }
+
+/* ---------- 성분 비교 (compare.html · compare/*.html, 빌드 생성) ---------- */
+.cmp-mini { display: flex; gap: .85rem; align-items: flex-start; border: 1px solid #e3ebdc; border-radius: 1.1rem; background: #fff; padding: .9rem 1rem; text-decoration: none; transition: all .15s ease; }
+.cmp-mini:hover { border-color: #9cc49c; box-shadow: 0 8px 22px rgba(31,42,35,.08); }
+.cmp-table thead th:first-child, .cmp-table tbody th { min-width: 7.5rem; }
+.cmp-table tbody td { min-width: 14rem; line-height: 1.55; }
+.cmp-table tbody tr:first-child td { font-weight: 600; color: #175136; }
+.cmp-card { display: block; border: 1px solid #e3ebdc; border-radius: 1.1rem; background: #fff; padding: 1.1rem 1.2rem; box-shadow: 0 2px 10px rgba(31,42,35,.04); transition: all .15s ease; text-decoration: none; }
+.cmp-card:hover { border-color: #9cc49c; box-shadow: 0 10px 26px rgba(31,42,35,.09); transform: translateY(-1px); }
+.cmp-card-names { display: block; font-size: .8rem; font-weight: 700; color: #2f7a52; }
+.cmp-card-names em { font-style: normal; color: #94a3b8; margin: 0 .25rem; }
