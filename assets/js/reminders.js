@@ -6,6 +6,8 @@
   "use strict";
   var S = (typeof window !== "undefined" && window.Store) || (typeof require === "function" ? require("./store.js") : null);
   var ID_BASE = 1000, ID_SNOOZE = 9000, ACTION_TYPE = "DOSE", ACTION_TYPE_SNOOZE = "DOSE_SNOOZE";   // DOSE: 먹었어요+30분 뒤(기록 켬) / DOSE_SNOOZE: 30분 뒤만(기록 끔)
+  /* iOS 플러그인은 sound 가 없으면 소리 없이 표시한다. 번들에 없는 이름이면 iOS 는 기본 알림음을 내고, 안드로이드는 해당 리소스가 없어 기본 채널(기본음)을 쓴다 */
+  var SOUND = "default";
   var WEEKDAYS = [2, 3, 4, 5, 6];   // 월~금 (Capacitor Weekday: 일요일=1)
   function logOn(state) { return !!(state && state.settings && state.settings.logEnabled === true); }
   function actionTypeFor(state) { return logOn(state) ? ACTION_TYPE : ACTION_TYPE_SNOOZE; }
@@ -26,7 +28,7 @@
       var title = S.SLOT_LABEL[s.key] + " 영양제 시간이에요";
       var body = st.showNames ? names(s.items, opts) : "지금 챙겨 드세요";
       var make = function (id, on) {
-        return { id: id, title: title, body: body, schedule: { on: on, allowWhileIdle: true }, actionTypeId: actionTypeFor(state), extra: { slot: s.key }, isExactNotification: false };
+        return { id: id, title: title, body: body, schedule: { on: on, allowWhileIdle: true }, actionTypeId: actionTypeFor(state), extra: { slot: s.key }, isExactNotification: false, sound: SOUND };
       };
       if (st.weekends) out.push(make(ID_BASE + i * 10, { hour: t.hour, minute: t.minute }));
       else WEEKDAYS.forEach(function (wd) { out.push(make(ID_BASE + i * 10 + wd, { weekday: wd, hour: t.hour, minute: t.minute })); });
@@ -47,7 +49,7 @@
   /* '30분 뒤 다시' — 그 시간대의 1회성 알림. logOn 이면 '먹었어요' 버튼도 붙는다 */
   function snoozeNotification(slot, nowMs, opts, bodyText, logEnabled) {
     return { id: ID_SNOOZE + slotIndex(slot), title: S.SLOT_LABEL[slot] + " 영양제, 30분 뒤예요", body: bodyText || "지금 챙겨 드세요",
-      schedule: { at: new Date(nowMs + 30 * 60000), allowWhileIdle: true }, actionTypeId: logEnabled ? ACTION_TYPE : ACTION_TYPE_SNOOZE, extra: { slot: slot }, isExactNotification: false };
+      schedule: { at: new Date(nowMs + 30 * 60000), allowWhileIdle: true }, actionTypeId: logEnabled ? ACTION_TYPE : ACTION_TYPE_SNOOZE, extra: { slot: slot }, isExactNotification: false, sound: SOUND };
   }
 
   /* 알림 동작 → 새 상태. done: (기록이 켜진 경우만) 그날 due 를 먼저 기록하고 체크 / snooze: 시간대만 알려줌 / tap: 열기 */
