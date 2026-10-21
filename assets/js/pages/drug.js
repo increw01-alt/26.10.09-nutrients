@@ -64,6 +64,7 @@
       return section("sec-pairing", "선택한 영양제와의 조합", "sparkles", body);
     }
     body += '<p class="mt-3 text-sm text-ink-500">이 약의 주성분·분류(' + esc(pr.labels.join(", ")) + ') 기준으로 정리한 참고 정보입니다. 의약품을 복용 중이라면 영양제를 추가하기 전에 약사·의사와 상담하세요.</p>';
+    if (pr.rules && pr.rules.length) body += '<div class="mt-3 flex flex-wrap items-center gap-2"><span class="text-xs font-bold text-ink-500">약별 영양제 가이드:</span>' + pr.rules.map(function (r) { return '<a class="chart-chip" href="' + D.url("drug-guide/" + encodeURIComponent(r.id) + ".html") + '"><i data-lucide="pill" class="h-3.5 w-3.5"></i>' + esc(r.label) + '</a>'; }).join("") + '</div>';   // 분류별 가이드(drug-guide/<규칙 id>.html, 빌드 생성)
     if (pr.good.length) body += '<div class="mt-4 grid gap-4 sm:grid-cols-2">' + pr.good.map(function (g) {
       var it = core.byId[g.id];
       return ingCard(core, it, '<p class="mt-1.5 text-sm leading-relaxed text-ink-700">' + esc(g.why) + '</p>');

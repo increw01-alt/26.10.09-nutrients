@@ -73,6 +73,11 @@ class BrandPriority:
                 break
         return best
 
+    def keyword_weight(self, name) -> int:
+        """제품(의약품) 이름의 브랜드 키워드만으로 매긴 가중치(제조사명은 보지 않음) — 같은 가중치 안에서 '브랜드명이 이름에 드러난' 제품을 먼저 고를 때 쓴다(약별 가이드의 대표 제품)."""
+        n = str(name or "").lower()
+        return max((w for w, _, kw, _ in self.rules if kw is not None and kw.search(n)), default=0)
+
     def __len__(self) -> int:
         return len(self.rules)
 

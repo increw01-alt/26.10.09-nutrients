@@ -182,6 +182,19 @@ KO: dict[str, str] = {
     "sennae fructus": "센나열매", "senna fruit": "센나열매", "tinnevelly senna fruit": "센나열매",
     # 한방 처방 (영문 음역)
     "bangpungtongsungsan": "방풍통성산", "socheongryongtang": "소청룡탕", "ssanghwatang": "쌍화탕", "hyangsosan": "향소산", "maegmundongtang": "맥문동탕",
+    # 처방약·위장약 성분 (약별 영양제 가이드 drug-pairings.json 규칙의 대표 성분 표기용 — e약은요 수집분에는 드문 전문의약품 포함)
+    "aluminium phosphate": "인산알루미늄", "lansoprazole": "란소프라졸", "rabeprazole": "라베프라졸", "tegoprazan": "테고프라잔", "fexuprazan": "펙수프라잔",
+    "sodium picosulfate": "피코설페이트나트륨", "picosulfate": "피코설페이트",
+    "atorvastatin": "아토르바스타틴", "rosuvastatin": "로수바스타틴", "simvastatin": "심바스타틴", "pravastatin": "프라바스타틴", "pitavastatin": "피타바스타틴",
+    "fluvastatin": "플루바스타틴", "lovastatin": "로바스타틴", "ezetimibe": "에제티미브",
+    "levothyroxine": "레보티록신", "liothyronine": "리오티로닌", "warfarin": "와파린",
+    "doxycycline": "독시사이클린", "minocycline": "미노사이클린", "tetracycline": "테트라사이클린", "ciprofloxacin": "시프로플록사신", "levofloxacin": "레보플록사신",
+    "ofloxacin": "오플록사신", "moxifloxacin": "목시플록사신",
+    "alendronate": "알렌드로네이트", "alendronic acid": "알렌드론산", "risedronate": "리세드로네이트", "ibandronate": "이반드로네이트",
+    "metformin": "메트포르민", "drospirenone": "드로스피레논",
+    "furosemide": "푸로세미드", "hydrochlorothiazide": "히드로클로로티아지드", "chlorthalidone": "클로르탈리돈", "torsemide": "토르세미드", "indapamide": "인다파미드",
+    "isotretinoin": "이소트레티노인", "tretinoin": "트레티노인", "acitretin": "아시트레틴", "alitretinoin": "알리트레티노인",
+    "methotrexate": "메토트렉세이트", "methylprednisolone": "메틸프레드니솔론", "deflazacort": "데플라자코트",
 }
 # 염·형태 접미사 (영문 끝말 → 한글 접미)
 SALT_KO: dict[str, str] = {

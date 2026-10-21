@@ -397,3 +397,11 @@ body.has-tabbar { padding-bottom: 64px; }
 .cmp-card:hover { border-color: #9cc49c; box-shadow: 0 10px 26px rgba(31,42,35,.09); transform: translateY(-1px); }
 .cmp-card-names { display: block; font-size: .8rem; font-weight: 700; color: #2f7a52; }
 .cmp-card-names em { font-style: normal; color: #94a3b8; margin: 0 .25rem; }
+
+/* ---------- 약별 영양제 가이드 (drug-guides.html · drug-guide/*.html, 빌드 생성) ---------- */
+.dg-card { display: block; border: 1px solid #e3ebdc; border-radius: 1.1rem; background: #fff; padding: 1.1rem 1.2rem; box-shadow: 0 2px 10px rgba(31,42,35,.04); transition: all .15s ease; text-decoration: none; }
+.dg-card:hover { border-color: #9cc49c; box-shadow: 0 10px 26px rgba(31,42,35,.09); transform: translateY(-1px); }
+.dg-card-kind { display: block; margin-bottom: .35rem; font-size: .72rem; font-weight: 700; color: #6b7a70; letter-spacing: .02em; }
+.dg-table tbody th { min-width: 7rem; }
+.dg-table tbody td { line-height: 1.5; }
+.dg-table td:last-child { min-width: 18rem; }

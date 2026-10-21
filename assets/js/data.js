@@ -115,7 +115,8 @@
     guides: function () { return load("guides-index"); },
     finder: function () { return load("finder"); },          // 셀프체크 질문·규칙 (data/finder.json, 수동)
     functions: function () { return load("functions-index"); },   // 기능성별 허브 요약 색인 (빌드 생성: id·label·claim·성분 id)
-    compares: function () { return load("compares-index"); },     // 성분 비교 요약 색인 (빌드 생성: slug·title·ids)   // 요약 색인(빌드 생성). 본문이 필요하면 guides.json 을 따로 읽는다
+    compares: function () { return load("compares-index"); },     // 성분 비교 요약 색인 (빌드 생성: slug·title·ids)
+    drugGuides: function () { return load("drug-guides-index"); },  // 약별 영양제 가이드 요약 색인 (빌드 생성: id·short·good/caution 성분 id)   // 요약 색인(빌드 생성). 본문이 필요하면 guides.json 을 따로 읽는다
     guideUrl: function (slug) { return ROOT + "guide/" + encodeURIComponent(slug) + ".html"; },
 
     /* 식약처 기능성 원료 데이터: data/materials.json(전체), data/materials/<성분id>.json(성분별) */
@@ -143,11 +144,11 @@
     /* 의약품별 '함께 챙기면 좋은/주의할 영양 성분' 규칙 (data/drug-pairings.json, 수동 관리) */
     drugPairings: function () { return load("drug-pairings").catch(function () { return { rules: [] }; }); },
     drugPairingFor: function (rules, drug, core) {   // → { good:[{id, why, hours, label}], caution:[…], notes:[…], labels:[…] }
-      var out = { good: [], caution: [], notes: [], labels: [] };
+      var out = { good: [], caution: [], notes: [], labels: [], rules: [] };   // rules: 맞은 규칙 {id, label} (약별 영양제 가이드 링크용)
       if (!rules || !rules.rules || !drug) return out;
       var tokens = ((drug.ingrEn && drug.ingrEn.length) ? drug.ingrEn : (drug.ingr || [])).map(function (t) { return String(t).toLowerCase(); });
       var cls = String(drug.cls || ""), name = String(drug.name || "");
-      var external = /연고|크림|로션|패취|패치|플라스타|카타플라스마|좌제|점안|점비|점이|외용|스프레이|가글|구강용|습포|테이프|밴드|소독|파스|샴푸|비누|세정제|관장|질정|주사|수액|겔(제|$|\(|\d)/.test(name);
+      var external = /연고|크림|로션|패취|패치|플라스타|카타플라스마|좌제|점안|점비|점이|외용|스프레이|가글|구강용|습포|테이프|밴드|소독|파스|샴푸|비누|세정제|관장|질정|주사|수액|좌약|두피|겔(제|$|\(|\d)/.test(name) || /바릅니다|바르십시오|도포/.test(String(drug.usage || ""));   // 외용제 판정 — scripts/build_site.py 의 DRUG_EXTERNAL_RE 와 같아야 함 (테스트가 대조)
       var own = {}; (drug.ingredients || []).forEach(function (i) { own[i] = true; });
       var seen = { good: {}, caution: {} };
       rules.rules.forEach(function (r) {
@@ -157,6 +158,7 @@
           || (r.names || []).some(function (n) { return name.indexOf(n) >= 0; });
         if (!hit) return;
         out.labels.push(r.label || r.id);
+        out.rules.push({ id: r.id, label: r.label || r.id });
         (r.good || []).forEach(function (g) { if (own[g.id] || seen.good[g.id] || (core && !core.byId[g.id])) return; seen.good[g.id] = true; out.good.push({ id: g.id, why: g.why, hours: g.hours, label: r.label }); });
         (r.caution || []).forEach(function (c) { if (seen.caution[c.id] || (core && !core.byId[c.id])) return; seen.caution[c.id] = true; out.caution.push({ id: c.id, why: c.why, hours: c.hours, label: r.label }); });
         if (r.note) out.notes.push(r.note);

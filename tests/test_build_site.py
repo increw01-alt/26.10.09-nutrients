@@ -317,3 +317,90 @@ class CompareTests(unittest.TestCase):
         for e in self.model["items"]:
             self.assertIn(f'href="compare/{e["cmp"]["slug"]}.html"', hub)
         self.assertIn("compare.html", B.STATIC_PAGES)
+
+
+class DrugGuideTests(unittest.TestCase):
+    """약별 영양제 가이드(drug-guides.html · drug-guide/<id>.html) — 데이터 검증·의약품 판정·모델·렌더."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.data = B.read_json(B.DATA_DIR / "drug-guides.json")
+        cls.rules = B.read_json(B.DATA_DIR / "drug-pairings.json")["rules"]
+        ingredients = B.read_json(B.DATA_DIR / "ingredients.json")
+        interactions = B.read_json(B.DATA_DIR / "interactions.json")
+        guides = B.read_json(B.DATA_DIR / "guides.json")
+        cls.guides = guides
+        cls.core = {"categories": ingredients["_meta"]["categories"], "by_id": {i["id"]: i for i in ingredients["items"]}, "guides": guides["items"], "pairs": interactions["pairs"], "types": interactions["_meta"]["types"]}
+        cls.slugs = {g["slug"] for g in guides["items"]}
+        cls.drugs = B.load_drugs_detail()
+        cls.model = B.drug_guide_model(cls.data, cls.rules, cls.core, cls.drugs, guides["items"])
+        cls.by_rule = {r["id"]: r for r in cls.rules}
+        cls.cfg = {"name": "테스트", "url": "https://example.test"}
+
+    def test_validate_real_data_and_rejects_bad(self):
+        import copy
+        B.validate_drug_guides(self.data, self.rules, set(self.core["by_id"]), self.slugs)
+        bad = copy.deepcopy(self.data); bad["items"][0]["id"] = "no-such-rule"
+        with self.assertRaises(SystemExit):
+            B.validate_drug_guides(bad, self.rules, set(self.core["by_id"]), self.slugs)
+        bad = copy.deepcopy(self.data); bad["items"].pop()   # 규칙에 본문이 없으면 실패
+        with self.assertRaises(SystemExit):
+            B.validate_drug_guides(bad, self.rules, set(self.core["by_id"]), self.slugs)
+        bad = copy.deepcopy(self.data); bad["items"][0]["related"] = ["no-such-guide"]
+        with self.assertRaises(SystemExit):
+            B.validate_drug_guides(bad, self.rules, set(self.core["by_id"]), self.slugs)
+
+    def test_external_regex_matches_data_js(self):
+        js = (B.ROOT / "assets/js/data.js").read_text(encoding="utf-8")
+        m = re.search(r"var external = /(.+?)/\.test\(name\)", js)
+        self.assertIsNotNone(m, "data.js drugPairingFor 의 external 정규식을 찾지 못함")
+        self.assertEqual(m.group(1), B.DRUG_EXTERNAL_RE.pattern)
+        self.assertIn("바릅니다", js)
+        self.assertTrue(B.drug_is_external("두피나액", ""))
+        self.assertTrue(B.drug_is_external("무슨정", "1일 2회 환부에 바릅니다"))
+        self.assertFalse(B.drug_is_external("타이레놀정", "1일 3회 복용"))
+
+    def test_rule_hits_like_data_js(self):
+        nsaid, steroid, antacid = self.by_rule["nsaid"], self.by_rule["steroid-oral"], self.by_rule["antacid"]
+        self.assertTrue(B.drug_rule_hits(nsaid, {"name": "스피딕400연질캡슐(이부프로펜)", "ingrEn": ["Ibuprofen"], "cls": "해열.진통.소염제"}))
+        self.assertFalse(B.drug_rule_hits(nsaid, {"name": "케토톱플라스타", "ingrEn": ["Ketoprofen"], "cls": ""}))   # oralOnly: 외용제 제외
+        self.assertFalse(B.drug_rule_hits(steroid, {"name": "두피나액", "ingrEn": ["Prednisolone Valeroacetate"], "usage": "환부에 바릅니다"}))
+        self.assertTrue(B.drug_rule_hits(antacid, {"name": "아무개정", "ingrEn": [], "cls": "제산제"}))   # 분류 일치
+        self.assertFalse(B.drug_rule_hits(antacid, {"name": "아무개정", "ingrEn": ["Acetaminophen"], "cls": "해열.진통.소염제"}))
+
+    def test_model_covers_every_rule(self):
+        self.assertEqual({e["dg"]["id"] for e in self.model["items"]}, {r["id"] for r in self.rules})
+        for e in self.model["items"]:
+            for x in e["good"] + e["caution"]:
+                self.assertTrue(x["name"] and x["why"], e["dg"]["id"])
+            self.assertLessEqual(len(e["drugs"]["top"]), B.DRUG_GUIDE_TOP)
+        self.assertIn("thyroid", [d["id"] for d in self.model["by_ingredient"]["calcium"]])
+        if self.drugs:   # 의약품 수집분이 있을 때만: 일반의약품 분류는 약이 잡히고 처방약 분류는 0건
+            nsaid = next(e for e in self.model["items"] if e["dg"]["id"] == "nsaid")
+            statin = next(e for e in self.model["items"] if e["dg"]["id"] == "statin")
+            self.assertGreater(nsaid["drugs"]["total"], 0)
+            self.assertEqual(statin["drugs"]["total"], 0)
+
+    def test_render_page_and_hub(self):
+        types = self.guides["_meta"]["types"]
+        udca = next(e for e in self.model["items"] if e["dg"]["id"] == "udca")
+        html = B.render_drug_guide(udca, self.core, self.cfg, types, "2026-10-22")
+        self.assertIn('rel="canonical" href="https://example.test/drug-guide/udca"', html)
+        for sec in ("summary", "good", "howto", "drugs", "faq"):
+            self.assertIn(f'id="{sec}"', html)
+        self.assertEqual(html.count('data-my-add="'), len(udca["good"]))
+        if udca["drugs"]["total"]:
+            self.assertIn("../drug.html?id=", html)
+        statin = next(e for e in self.model["items"] if e["dg"]["id"] == "statin")
+        html2 = B.render_drug_guide(statin, self.core, self.cfg, types, "2026-10-22")
+        self.assertNotIn("../drug.html?id=", html2)
+        self.assertIn("처방전·약봉투", html2)
+        self.assertIn('href="../i/red-yeast-rice.html"', html2)
+        acet = next(e for e in self.model["items"] if e["dg"]["id"] == "acetaminophen")
+        html3 = B.render_drug_guide(acet, self.core, self.cfg, types, "2026-10-22")
+        self.assertIn("정리된 것은 없습니다", html3)
+        hub = B.render_drug_guides_hub(self.model, self.data, self.core, self.cfg)
+        for e in self.model["items"]:
+            self.assertIn(f'href="drug-guide/{e["dg"]["id"]}.html"', hub)
+        self.assertIn('id="gaps"', hub)
+        self.assertIn("drug-guides.html", B.STATIC_PAGES)
