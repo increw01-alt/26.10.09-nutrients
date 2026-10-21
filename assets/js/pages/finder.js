@@ -132,7 +132,7 @@
       return '<article class="finder-card"><div class="flex items-start gap-3">' + thumb(it, "finder-thumb") + '<div class="min-w-0 flex-1"><p class="text-xs font-bold text-brand-700">' + (n + 1) + '순위 · ' + esc(cat.label || "") + '</p>' +
         '<h4 class="text-base font-extrabold text-ink-900"><a class="hover:text-brand-700" href="' + D.ingredientUrl(id) + '">' + esc(it.name) + '</a></h4>' +
         '<p class="mt-1 text-sm text-ink-600">' + esc(it.summary || "") + '</p>' +
-        (reasons.length ? '<p class="mt-2 text-xs text-ink-500"><span class="font-bold text-ink-700">근거:</span> ' + esc(reasons.join(", ")) + ' 가이드의 핵심 성분</p>' : "") +
+        (reasons.length ? '<p class="mt-2 text-xs text-ink-500"><span class="font-bold text-ink-700">근거:</span> ' + esc(reasons.join(" / ")) + ' 가이드의 핵심 성분</p>' : "") +
         '<p class="mt-2 text-xs text-ink-500"><i data-lucide="clock" class="inline h-3.5 w-3.5 text-brand-600"></i> ' + esc((it.timing && it.timing.label) || "") + '</p>' +
         '<div class="mt-3 flex flex-wrap gap-2"><a class="btn-outline btn-sm" href="' + D.ingredientUrl(id) + '">자세히</a><a class="btn-outline btn-sm app-hide" href="' + D.productsUrl(id) + '">제품 찾기</a></div></div></div></article>';
     }).join("") + "</div>" +
