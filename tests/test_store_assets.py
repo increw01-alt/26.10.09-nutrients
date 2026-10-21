@@ -54,9 +54,9 @@ class StoreAssetTests(unittest.TestCase):
             phone = S.build_screens(src, Path(d) / "iphone", S.IOS_PHONE_SIZE)
             pad = S.build_screens(src, Path(d) / "ipad", S.IOS_PAD_SIZE)
             self.assertEqual([p.name for p in phone], ["01.png", "02.png"])
-            self.assertEqual(Image.open(phone[0]).size, (1284, 2778))
+            self.assertEqual(Image.open(phone[0]).size, (1320, 2868))   # 아이폰 6.9형 규격
             self.assertEqual(Image.open(pad[1]).size, (2064, 2752))
-            self.assertEqual(Image.open(phone[0]).getpixel((642, 1389)), (255, 0, 0))
+            self.assertEqual(Image.open(phone[0]).getpixel((660, 1434)), (255, 0, 0))
 
     def test_build_keeps_android_output_names(self):
         with tempfile.TemporaryDirectory() as d:
@@ -65,3 +65,17 @@ class StoreAssetTests(unittest.TestCase):
             Image.new("RGB", (1080, 2400)).save(src / "a.png")
             files = [p.relative_to(d).as_posix() for p in S.build(Path(d), src)]
             self.assertIn("screenshots/01.png", files)
+
+    def test_fit_screenshot_applies_exif_orientation(self):
+        # 갤러리를 거친 캡처는 EXIF 회전 태그로 눕혀 저장되기도 한다 — 바로 세운 뒤 맞춘다
+        im = Image.new("RGB", (2400, 1080), (0, 255, 0))
+        exif = Image.Exif()
+        exif[274] = 6   # Orientation 6 = 시계 방향 90° 회전해서 봐야 함 → 1080×2400 세로
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "rot.png"
+            im.save(p, exif=exif)
+            with Image.open(p) as src:
+                out = S.fit_screenshot(src)
+        self.assertEqual(out.size, (1080, 1920))
+        self.assertEqual(out.getpixel((0, 0)), B.BG)            # 세로로 세워져 좌우 여백
+        self.assertEqual(out.getpixel((540, 200)), (0, 255, 0))  # 회전을 무시하면 가로 그림이 가운데 띠로 들어가 이 자리는 여백이 됨

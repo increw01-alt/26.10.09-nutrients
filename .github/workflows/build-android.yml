@@ -9,6 +9,9 @@ on:
       - "app/**"
       - ".github/workflows/build-android.yml"
 
+permissions:
+  contents: read
+
 jobs:
   android:
     runs-on: ubuntu-latest

@@ -12,6 +12,9 @@ on:
       - "app/package.json"
       - ".github/workflows/build-ios.yml"
 
+permissions:
+  contents: read
+
 jobs:
   ios:
     runs-on: macos-latest

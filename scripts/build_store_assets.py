@@ -4,13 +4,14 @@
 (요즘 폰 캡처 1080×2400) 거부하므로 1080×1920 캔버스에 비율을 유지해 넣고 남는 곳은 브랜드 배경색으로 채운다.
 글자는 넣지 않는다(폰트 의존이 없고, 플레이도 글자 적은 그래픽을 권장). 잎 도형은 scripts/build_app_icons.py 와 같다.
 
-App Store(iOS)는 기기 칸마다 크기가 정해져 있다: 아이폰 6.9형 칸은 1284×2778(6.5형, 허용)·아이패드 13형 칸은 2064×2752, 기기당 최대 10장.
-아이폰 6.1형 캡처(1170×2532)나 아이패드 12.9형 캡처(2048×2732)를 그대로 올리면 거부되므로 같은 방식으로 맞춘다.
+App Store(iOS)는 기기 칸마다 크기가 정해져 있다: 아이폰 6.9형 칸은 1320×2868·아이패드 13형 칸은 2064×2752, 기기당 최대 10장.
+아이폰 15 Pro Max 캡처(1290×2796)나 아이패드 12.9형 캡처(2048×2732)를 그대로 올리면 거부되므로 같은 방식으로 맞춘다.
+갤러리를 거친 캡처는 EXIF 회전 태그로 눕혀 저장되기도 하므로 먼저 바로 세운다(ImageOps.exif_transpose).
 
 실행: python scripts/build_store_assets.py [--screens 캡처폴더] [--ios-phone 캡처폴더] [--ios-pad 캡처폴더]
   → app/store/feature-graphic.png, app/store/play-icon-512.png,
      --screens   → app/store/screenshots/01.png, 02.png …      (플레이, 1080×1920)
-     --ios-phone → app/store/ios/iphone/01.png …                (App Store 아이폰, 1284×2778)
+     --ios-phone → app/store/ios/iphone/01.png …                (App Store 아이폰 6.9형, 1320×2868)
      --ios-pad   → app/store/ios/ipad/01.png …                  (App Store 아이패드, 2064×2752)
      캡처 폴더의 *.png/*.jpg/*.jpeg 를 파일 이름순으로 번호 매김 — 촬영 목록·순서는 docs/app-release.md 6절(iOS 는 docs/app-release-ios.md 7절).
 테스트: python -m unittest tests.test_store_assets -v
@@ -22,7 +23,7 @@ import shutil
 import sys
 from pathlib import Path
 
-from PIL import Image
+from PIL import Image, ImageOps
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import build_app_icons as B  # noqa: E402
@@ -32,7 +33,7 @@ OUT_DIR = ROOT / "app/store"
 FEATURE_SIZE = (1024, 500)
 FEATURE_ICON = 360            # 피처 그래픽 가운데 잎 아이콘 한 변
 SCREEN_SIZE = (1080, 1920)    # 플레이 휴대전화 스크린샷 9:16
-IOS_PHONE_SIZE = (1284, 2778) # App Store 아이폰 6.5형(6.9형 칸에 허용)
+IOS_PHONE_SIZE = (1320, 2868) # App Store 아이폰 6.9형(필수 칸; 작은 기기 칸은 애플이 자동 축소)
 IOS_PAD_SIZE = (2064, 2752)   # App Store 아이패드 13형
 SCREEN_EXTS = {".png", ".jpg", ".jpeg"}
 
@@ -51,7 +52,8 @@ def play_icon() -> Image.Image:
 
 
 def fit_screenshot(im: Image.Image, size: tuple[int, int] = SCREEN_SIZE) -> Image.Image:
-    """비율을 유지해 size 안에 맞추고(확대·축소 모두) 남는 곳은 배경색, 가운데 정렬. 항상 RGB."""
+    """비율을 유지해 size 안에 맞추고(확대·축소 모두) 남는 곳은 배경색, 가운데 정렬. 항상 RGB. EXIF 회전 태그가 있으면 먼저 바로 세운다."""
+    im = ImageOps.exif_transpose(im) or im
     W, H = size
     w, h = im.size
     k = min(W / w, H / h)

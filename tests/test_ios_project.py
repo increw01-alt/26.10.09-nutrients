@@ -48,3 +48,15 @@ class IosProjectTests(unittest.TestCase):
         self.assertEqual(info["WKAppBoundDomains"], ["xn--og5b1hx9c.kr", "localhost"])
         cfg = json.loads((ROOT / "app/capacitor.config.json").read_text(encoding="utf-8"))
         self.assertIs(cfg["ios"]["limitsNavigationsToAppBoundDomains"], True)
+
+    def test_privacy_manifest_declares_analytics_like_app_store_answers(self):
+        # App Store Connect '앱이 수집하는 개인정보' 답(제품 상호 작용·기기 ID, 분석 목적, 연결·추적 아님)과 같은 선언
+        with open(IOS / "App/PrivacyInfo.xcprivacy", "rb") as f:
+            pm = plistlib.load(f)
+        types = {t["NSPrivacyCollectedDataType"]: t for t in pm["NSPrivacyCollectedDataTypes"]}
+        self.assertEqual(set(types), {"NSPrivacyCollectedDataTypeProductInteraction", "NSPrivacyCollectedDataTypeDeviceID"})
+        for t in types.values():
+            self.assertIs(t["NSPrivacyCollectedDataTypeLinked"], False)
+            self.assertIs(t["NSPrivacyCollectedDataTypeTracking"], False)
+            self.assertEqual(t["NSPrivacyCollectedDataTypePurposes"], ["NSPrivacyCollectedDataTypePurposeAnalytics"])
+        self.assertIn("PrivacyInfo.xcprivacy in Resources", PBX.read_text(encoding="utf-8"))   # 리소스 빌드 단계에 들어가야 번들에 실림
