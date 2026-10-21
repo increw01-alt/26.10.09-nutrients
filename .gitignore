@@ -10,3 +10,5 @@ node_modules/
 *.jks
 *.keystore
 *.b64
+# App Store Connect API 키 — 절대 커밋 금지 (GitHub Secrets 에만, docs/app-release-ios.md)
+*.p8

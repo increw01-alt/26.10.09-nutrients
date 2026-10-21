@@ -33,7 +33,7 @@ class ListingTests(unittest.TestCase):
                 self.assertTrue(host.isascii(), "%s: %s" % (f.name, host))
 
     def test_secret_names_match_workflow(self):
-        names = set(re.findall(r"secrets\.(ANDROID_[A-Z_]+)", WORKFLOW.read_text(encoding="utf-8")))
+        names = set(re.findall(r"secrets\.(ANDROID_[A-Z0-9_]+)", WORKFLOW.read_text(encoding="utf-8")))
         self.assertEqual(len(names), 4)
         doc = DOC.read_text(encoding="utf-8")
         for n in names:
