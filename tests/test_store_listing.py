@@ -50,3 +50,8 @@ class ListingTests(unittest.TestCase):
         doc = DOC.read_text(encoding="utf-8")
         self.assertIn("`ANDROID_KEY_PASSWORD` 에는 `ANDROID_KEYSTORE_PASSWORD` 와 같은 값", doc)
         self.assertNotIn("둘을 같게 두어도 된다", doc)
+
+    def test_description_claims_only_reminders_as_app_only(self):
+        sec = sections(LISTING.read_text(encoding="utf-8"))
+        self.assertIn("■ 앱 전용: 복용 알림", sec["전체 설명"])
+        self.assertNotIn("앱에서만 되는 것: 내 영양제", sec["전체 설명"])

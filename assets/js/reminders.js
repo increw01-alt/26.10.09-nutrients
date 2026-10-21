@@ -64,10 +64,12 @@
     return { state: state, snooze: null, open: false };
   }
 
+  /* foreground: iOS 는 이 옵션이 없는 버튼을 앱을 띄우지 않고 백그라운드로 전달해, 종료 상태면 이벤트가 다음 실행 때 소비되어 '30분 뒤'·'먹었어요' 시각이 밀린다.
+     안드로이드는 버튼이 늘 앱을 열므로 옵션을 무시한다 */
   function actionTypes() {
     return { types: [
-      { id: ACTION_TYPE, actions: [{ id: "done", title: "먹었어요" }, { id: "snooze", title: "30분 뒤 다시" }] },
-      { id: ACTION_TYPE_SNOOZE, actions: [{ id: "snooze", title: "30분 뒤 다시" }] }
+      { id: ACTION_TYPE, actions: [{ id: "done", title: "먹었어요", foreground: true }, { id: "snooze", title: "30분 뒤 다시", foreground: true }] },
+      { id: ACTION_TYPE_SNOOZE, actions: [{ id: "snooze", title: "30분 뒤 다시", foreground: true }] }
     ] };
   }
 

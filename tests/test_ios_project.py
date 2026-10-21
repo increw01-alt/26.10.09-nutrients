@@ -40,3 +40,11 @@ class IosProjectTests(unittest.TestCase):
     def test_app_icon_source_exists(self):
         icons = list((IOS / "App/Assets.xcassets/AppIcon.appiconset").glob("*.png"))
         self.assertTrue(icons)
+
+    def test_app_bound_domains_enable_service_worker(self):
+        # WKWebView 는 App-Bound Domains 를 선언한 앱에서만 서비스워커를 허용한다(오프라인 '최근 본 페이지'·offline.html). localhost 는 errorPath(capacitor://localhost)용
+        with open(IOS / "App/Info.plist", "rb") as f:
+            info = plistlib.load(f)
+        self.assertEqual(info["WKAppBoundDomains"], ["xn--og5b1hx9c.kr", "localhost"])
+        cfg = json.loads((ROOT / "app/capacitor.config.json").read_text(encoding="utf-8"))
+        self.assertIs(cfg["ios"]["limitsNavigationsToAppBoundDomains"], True)

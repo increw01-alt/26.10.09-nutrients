@@ -71,3 +71,7 @@ test("sync: 30분 뒤 예약(9000대)은 알림이 켜져 있으면 남기고, �
   calls.length = 0; await R.sync(LN, S.empty(), sched, { shortName: sn });
   assert.deepEqual(calls, [["cancel", [1010, 9003]]]);
 });
+
+test("알림 버튼은 iOS 에서도 앱을 띄워 처리한다(foreground) — 백그라운드 전달이면 '30분 뒤'·'먹었어요' 시각이 다음 실행 때로 밀린다", () => {
+  for (const t of R.actionTypes().types) for (const a of t.actions) assert.equal(a.foreground, true, t.id + ":" + a.id);
+});

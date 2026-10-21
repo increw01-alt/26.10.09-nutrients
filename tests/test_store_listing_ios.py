@@ -44,3 +44,9 @@ class IosListingTests(unittest.TestCase):
         self.assertIn("Admin", doc)   # App Manager 키는 클라우드 서명 권한 오류
         self.assertIn("release-ios", doc)
         self.assertIn("build_store_assets.py --ios-phone", doc)
+
+    def test_description_claims_only_reminders_as_app_only(self):
+        # 내 영양제·시간표·기록은 웹에도 있다. 앱 전용은 복용 알림뿐 — 심사(지침 4.2·2.3)에서 과장으로 보이지 않게
+        sec = sections(LISTING.read_text(encoding="utf-8"))
+        self.assertIn("■ 앱 전용: 복용 알림", sec["설명"])
+        self.assertNotIn("앱에서만 되는 것: 내 영양제", sec["설명"])

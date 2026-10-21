@@ -69,7 +69,7 @@ jobs:
             -authenticationKeyPath "$HOME/.appstoreconnect/private_keys/AuthKey_$KEY_ID.p8" \
             -authenticationKeyID "$KEY_ID" -authenticationKeyIssuerID "$ISSUER_ID" \
             DEVELOPMENT_TEAM="$TEAM_ID" CODE_SIGN_STYLE=Automatic \
-            MARKETING_VERSION="$VERSION_NAME" CURRENT_PROJECT_VERSION=${{ github.run_number }} | tail -40
+            MARKETING_VERSION="$VERSION_NAME" CURRENT_PROJECT_VERSION=${{ github.run_number }} 2>&1 | tee "$RUNNER_TEMP/archive.log" | tail -40
 
       - name: IPA 내보내기
         env:
@@ -92,7 +92,7 @@ jobs:
           xcodebuild -exportArchive -archivePath "$RUNNER_TEMP/App.xcarchive" -exportPath "$RUNNER_TEMP/export" \
             -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" -allowProvisioningUpdates \
             -authenticationKeyPath "$HOME/.appstoreconnect/private_keys/AuthKey_$KEY_ID.p8" \
-            -authenticationKeyID "$KEY_ID" -authenticationKeyIssuerID "$ISSUER_ID" | tail -20
+            -authenticationKeyID "$KEY_ID" -authenticationKeyIssuerID "$ISSUER_ID" 2>&1 | tee "$RUNNER_TEMP/export.log" | tail -20
           ls -l "$RUNNER_TEMP/export"
           test -f "$RUNNER_TEMP/export/App.ipa"
 
@@ -105,6 +105,17 @@ jobs:
       - name: API 키 삭제
         if: always()
         run: rm -rf "$HOME/.appstoreconnect/private_keys"
+
+      - name: 실패 로그 보존 (xcodebuild 전체 출력 — 화면에는 끝 40줄만 보이므로)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-release-logs-${{ github.run_number }}
+          path: |
+            ${{ runner.temp }}/archive.log
+            ${{ runner.temp }}/export.log
+          if-no-files-found: ignore
+          retention-days: 14
 
       - uses: actions/upload-artifact@v4
         with:
