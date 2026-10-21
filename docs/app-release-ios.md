@@ -113,6 +113,7 @@ python scripts/build_store_assets.py --ios-phone "C:/Users/OK/Pictures/ios-phone
 ## 10. 문제 해결
 
 - **"Cloud signing permission error"**: API 키 역할이 Admin 이 아님 → 2절에서 Admin 키를 새로 만들고 3절 Secrets 세 개(`ASC_KEY_ID`·`ASC_ISSUER_ID`·`ASC_PRIVATE_KEY_BASE64`)를 다시 등록.
+- **"Your team has no devices from which to generate a provisioning profile" + "No profiles … iOS App Development"**(10-21 첫 실행에서 발생): 자동 서명이 개발용 프로파일을 만들려 한 것. 워크플로는 `CODE_SIGN_IDENTITY="Apple Distribution"` 으로 App Store 프로파일(기기 불필요)을 만들게 고쳐 두었다. 그래도 같은 오류면 developer.apple.com → Devices → + 로 아이폰을 등록한다(UDID 는 윈도우의 'Apple Devices' 앱에서 아이폰을 연결하고 기기 정보의 일련번호를 클릭하면 보인다).
 - **"No profiles for 'kr.yeongyangje.app' were found" / "doesn't include signing certificate"**: 4절의 App ID 등록 확인 뒤 다시 실행(자동 서명이 프로파일을 만든다).
 - **altool "no suitable application records were found"**: 4절 2번의 App Store Connect 앱 레코드가 없음.
 - **"ITMS-90xxx Missing Privacy Manifest"**: `build-ios` 의 번들 검사가 `PrivacyInfo.xcprivacy` 포함을 확인하므로 보통 나지 않음. 나면 `app/ios/App/App.xcodeproj/project.pbxproj` 의 참조를 확인.
