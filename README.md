@@ -23,7 +23,7 @@ project/
 ├─ timing-chart.html          # 영양제 복용 시간표 — 시간대별·성분별 표 (scripts/build_site.py 가 생성)
 ├─ finder.html                # 나에게 맞는 영양제 찾기(셀프체크) — data/finder.json 의 질문으로 폼 생성, 결과는 assets/js/pages/finder.js
 ├─ functions.html · function/ # 기능성별 영양제 허브 + 기능성 페이지(식약처 인정 문구별 성분·원료·제품, data/functions.json 으로 생성)
-├─ compare.html · compare/    # 성분 비교 허브 + 'A vs B' 비교 글(data/compares.json 수동 본문 + 사전·집계 자동 비교표, 쇼핑 버튼)
+├─ compare.html · compare/    # 성분 비교 허브 + 'A vs B' 비교 글(data/compares.json) + 제형·형태 비교(data/form-compares.json, 신고 제품을 표기로 걸러 형태별로 보여줌)
 ├─ drug-guides.html · drug-guide/ # 약별 영양제 가이드 허브 + 약 분류별 페이지(drug-pairings.json 규칙 + data/drug-guides.json 수동 본문 + 해당 의약품 목록)
 ├─ glossary.html · term/      # 영양제 용어 사전 허브 + 용어 페이지(data/glossary.json; 가이드·성분·비교·약별 본문의 첫 등장 용어를 자동 링크)
 ├─ guides.html                # 영양제 가이드 허브 (scripts/build_site.py 가 생성)
@@ -182,6 +182,7 @@ python scripts/build_site.py
 ## 가이드 페이지 추가·수정
 - `data/guides.json` 의 `items` 에 항목을 추가하면 `python scripts/build_site.py` 가 `guide/<slug>.html` 과 `guides.html` 을 다시 생성합니다.
 - `data/compares.json`: 성분 비교 글의 수동 본문(핵심 차이·상황별 추천·수동 비교 행·같이 먹기·FAQ). 비교표의 나머지 행은 빌드가 성분 사전과 집계에서 채웁니다. 새 비교를 추가하면 `compare/<slug>.html` 이 생성되고 성분 페이지에 '비교 글' 칩이 붙습니다.
+- `data/form-compares.json`: 제형·형태 비교(rTG 오메가3·리포좀 비타민C·헴철·마그네슘 염 등 11편)의 수동 본문. 형태마다 제품명+원재료명 정규식(`match`)을 두면 빌드가 식약처 신고 제품을 형태별로 걸러 제품 수와 대표 제품을 채우고, `rest: true` 형태는 나머지 제품을 받습니다. 흡수율 수치·가격·우열 표현은 쓰지 않습니다.
 - `data/drug-guides.json`: 약별 영양제 가이드의 수동 본문(소개·대표 성분·제품·복용 요령·FAQ). 좋은/주의 성분과 간격은 `data/drug-pairings.json` 규칙에서, 약 목록은 의약품 상세 조각에서 빌드가 채웁니다. 규칙을 추가하면 같은 id 의 본문도 함께 넣어야 빌드가 통과합니다.
 - `data/glossary.json`: 용어 사전(용어·영문·별칭·한 줄 뜻·설명·라벨에서 보는 법·관련 용어/성분/가이드). 별칭(`aliases`)은 본문 자동 링크에 쓰이므로 다른 용어·성분명과 겹치지 않는 분명한 표기만 넣습니다. 새 용어를 추가하면 `term/<slug>.html` 이 생성되고 본문의 첫 등장이 자동으로 연결됩니다.
 - `data/functions.json`: 기능성별 허브의 정규화 표(식약처 인정 문구별 정규식·설명·관련 가이드). 기능성을 추가하거나 정규식을 고친 뒤 빌드하면 `function/<id>.html` 이 생성·정리되고 성분 페이지의 기능성 칩이 갱신됩니다.

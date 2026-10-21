@@ -348,7 +348,7 @@ def render_page(it: dict, core: dict, cfg: dict) -> str:
     fn_meta = {e["fn"]["id"]: e["fn"] for e in fn_model.get("items", [])}
     fns = [f for f in (fn_model.get("by_ingredient") or {}).get(it["id"], []) if f in fn_meta]
     cmp_model = core.get("compares") or {}
-    cmp_meta = {e["cmp"]["slug"]: e["cmp"] for e in cmp_model.get("items", [])}
+    cmp_meta = {e["cmp"]["slug"]: e["cmp"] for e in cmp_model.get("items", [])} | {e["fc"]["slug"]: e["fc"] for e in cmp_model.get("forms", [])}   # 성분 대 성분 + 제형·형태 비교
     cmps = [s for s in (cmp_model.get("by_ingredient") or {}).get(it["id"], []) if s in cmp_meta]
     cmp_chips = ('<div class="mt-2 flex flex-wrap items-center gap-2"><span class="text-xs font-bold text-ink-500">비교 글:</span>' + "".join(f'<a class="chart-chip" href="../compare/{esc(s)}.html"><i data-lucide="scale" class="h-3.5 w-3.5"></i>{esc(_cmp_short_title(cmp_meta[s]))}</a>' for s in cmps) + '</div>') if cmps else ""
     dgs = ((core.get("drug_guides") or {}).get("by_ingredient") or {}).get(it["id"], [])
@@ -1359,6 +1359,7 @@ def prepare_functions(core: dict, guides_items: list[dict]) -> dict | None:
     validate_functions(data, {g["slug"] for g in guides_items})
     materials = (read_json(DATA_DIR / "materials.json", {}) or {}).get("items", [])
     products = load_products_detail()
+    core["products_detail"] = products   # 제형·형태 비교(prepare_form_compares)가 재사용
     try:
         weight = load_brand_priority().weight
     except Exception:  # noqa: BLE001
@@ -1591,23 +1592,32 @@ def render_compare(entry: dict, core: dict, cfg: dict, guides_types: dict, updat
 
 def render_compare_hub(model: dict, data: dict, core: dict, cfg: dict) -> str:
     items = model["items"]
-    n = len(items)
-    title = f"영양제 성분 비교 — 비슷한 성분, 무엇이 다를까 ({n}편) | {cfg['name']}"
-    desc = "홍삼과 인삼, 글루코사민·콘드로이친·MSM, 스피루리나와 클로렐라, 루테인과 아스타잔틴처럼 헷갈리는 성분을 식약처 인정 기능성·권장량·먹는 시간·주의사항 기준으로 나란히 비교하고 상황별로 무엇을 고를지 정리했습니다."
+    forms = model.get("forms") or []
+    n, nf = len(items), len(forms)
+    title = f"영양제 성분 비교 — 비슷한 성분, 무엇이 다를까 ({n + nf}편) | {cfg['name']}"
+    desc = "홍삼과 인삼, 글루코사민·콘드로이친·MSM, 스피루리나와 클로렐라, 루테인과 아스타잔틴처럼 헷갈리는 성분을 식약처 인정 기능성·권장량·먹는 시간·주의사항 기준으로 나란히 비교하고 상황별로 무엇을 고를지 정리했습니다. rTG 오메가3·리포좀 비타민C·헴철·마그네슘 염처럼 같은 성분의 다른 형태도 원료·표기·먹는 법 기준으로 비교합니다."
     faq_html, faq_ld = faq_block([
         ("비교표의 기준은 무엇인가요?", "식약처가 인정한 기능성 문구, 고시·개별인정 기준 섭취량, 성분 사전의 먹는 시간·주의사항·추천 대상, 그리고 식약처 품목신고 수집분의 제품 수입니다. 가격이나 효과의 우열은 비교하지 않습니다."),
         ("두 성분을 같이 먹어도 되나요?", "비교 글마다 '같이 먹어도 될까' 항목에 궁합 데이터의 판정과 안내를 적었습니다. 데이터에 없는 조합은 궁합 체크에서 규칙으로 판정합니다."),
+        ("같은 성분의 형태(rTG·리포좀·헴철 등) 차이도 비교하나요?", "제형·형태 비교 묶음에서 오메가3·비타민C·철분·마그네슘·칼슘·엽산·비타민D·글루코사민·비타민E·아연·콜라겐의 형태를 원료·제조·표기·먹는 법 기준으로 비교하고, 식약처 신고 제품을 제품명·원재료명 표기로 걸러 형태별 제품 수와 예시를 보여 줍니다. 흡수율 수치나 가격은 비교하지 않습니다."),
         ("비교하고 싶은 성분이 없어요.", "성분 사전에서 두 성분을 각각 보거나 궁합 체크에서 함께 골라 비교할 수 있습니다. 비교 글은 검색 요청이 많은 조합부터 추가합니다."),
     ])
     ld = {"@context": "https://schema.org", "@graph": [
         {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "홈", "item": f"{cfg['url']}/"}, {"@type": "ListItem", "position": 2, "name": "성분 비교", "item": page_url(cfg, COMPARES_HUB)}]},
-        {"@type": "CollectionPage", "name": "영양제 성분 비교", "url": page_url(cfg, COMPARES_HUB), "hasPart": [{"@type": "Article", "headline": e["cmp"]["h1"], "url": page_url(cfg, f"compare/{e['cmp']['slug']}.html")} for e in items]},
+        {"@type": "CollectionPage", "name": "영양제 성분 비교", "url": page_url(cfg, COMPARES_HUB), "hasPart": [{"@type": "Article", "headline": e["cmp"]["h1"], "url": page_url(cfg, f"compare/{e['cmp']['slug']}.html")} for e in items] + [{"@type": "Article", "headline": e["fc"]["h1"], "url": page_url(cfg, f"compare/{e['fc']['slug']}.html")} for e in forms]},
         faq_ld,
     ]}
-    head = head_html(cfg, title=title, desc=desc, path=COMPARES_HUB, root="./", keywords="영양제 성분 비교, 영양제 차이, 홍삼 인삼 차이, 글루코사민 MSM 차이, 스피루리나 클로렐라 차이, 영양제 추천", og_type="website", ld=ld)
+    head = head_html(cfg, title=title, desc=desc, path=COMPARES_HUB, root="./", keywords="영양제 성분 비교, 영양제 차이, 홍삼 인삼 차이, 글루코사민 MSM 차이, 스피루리나 클로렐라 차이, rTG 오메가3 차이, 리포좀 비타민C 차이, 헴철 비헴철 차이, 영양제 추천", og_type="website", ld=ld)
     cards = "".join(
         f'<a class="cmp-card" href="compare/{esc(e["cmp"]["slug"])}.html"><span class="cmp-card-names">{" <em>vs</em> ".join(esc(i["name"]) for i in e["ingredients"])}</span><span class="mt-2 block text-base font-extrabold text-ink-900">{esc(e["cmp"]["h1"])}</span><span class="mt-1 line-clamp-2 block text-sm text-ink-500">{esc(e["cmp"]["intro"])}</span></a>'
         for e in items)
+    forms_html = ""
+    if forms:
+        fcards = "".join(
+            f'<a class="cmp-card" href="compare/{esc(e["fc"]["slug"])}.html"><span class="cmp-card-names">{esc(e["ingredient"]["name"])} <em>·</em> 형태 {len(e["forms"])}가지</span><span class="mt-2 block text-base font-extrabold text-ink-900">{esc(e["fc"]["h1"])}</span><span class="mt-1 line-clamp-2 block text-sm text-ink-500">{esc(e["fc"]["intro"])}</span></a>'
+            for e in forms)
+        forms_html = (f'<section id="forms" class="scroll-mt-24"><h2 class="text-2xl font-extrabold tracking-tight text-ink-900">제형·형태 비교 {nf}편</h2><p class="mt-1 text-sm text-ink-500">같은 성분의 다른 형태(rTG·리포좀·헴철·마그네슘 염 등)를 원료·제조·표기·먹는 법 기준으로 비교하고, 식약처 신고 제품을 제품명·원재료명 표기로 걸러 형태별 제품 수와 예시를 보여 줍니다.</p>'
+                      f'<div class="mt-5 grid gap-4 md:grid-cols-2 lg:grid-cols-3">{fcards}</div></section>')
     body = f"""
 <body data-page="ingredients" data-path="{COMPARES_HUB}" class="min-h-screen antialiased">
   {SKIP_LINK}
@@ -1616,11 +1626,12 @@ def render_compare_hub(model: dict, data: dict, core: dict, cfg: dict) -> str:
       <nav class="text-xs text-ink-500" aria-label="경로"><a class="hover:text-brand-700" href="index.html">홈</a> › <span class="text-ink-800">성분 비교</span></nav>
       <p class="eyebrow-kicker mt-4"><i data-lucide="scale"></i> 성분 비교</p>
       <h1 class="page-title mt-3">영양제 성분 비교: 비슷한 성분, 무엇이 다를까</h1>
-      <p class="page-lead mt-4 max-w-3xl">이름이 비슷하거나 같은 고민에 함께 나오는 성분을 식약처 인정 기능성·권장량·먹는 시간·주의사항 기준으로 나란히 놓고, 어떤 상황에 무엇을 고를지와 같이 먹어도 되는지까지 정리했습니다. 가격이나 효과의 우열은 비교하지 않습니다.</p>
+      <p class="page-lead mt-4 max-w-3xl">이름이 비슷하거나 같은 고민에 함께 나오는 성분을 식약처 인정 기능성·권장량·먹는 시간·주의사항 기준으로 나란히 놓고, 어떤 상황에 무엇을 고를지와 같이 먹어도 되는지까지 정리했습니다. 가격이나 효과의 우열은 비교하지 않습니다. 같은 성분이라도 rTG·리포좀·헴철처럼 형태가 다른 제품은 아래 <a class="font-bold text-brand-700 underline" href="#forms">제형·형태 비교</a>에서 다룹니다.</p>
     </div></section>
     <div class="mx-auto max-w-7xl space-y-14 px-4 py-12 sm:px-6">
-      <section><h2 class="text-2xl font-extrabold tracking-tight text-ink-900">비교 글 {n}편</h2><div class="mt-5 grid gap-4 md:grid-cols-2 lg:grid-cols-3">{cards}</div></section>
-      <section class="rounded-3xl bg-cream-200 p-6 sm:p-8"><h2 class="text-lg font-extrabold text-ink-900">읽는 법</h2><ul class="list-dot mt-3 text-sm text-ink-700"><li>비교표의 기능성 문구는 식약처 인정 문구를 그대로 인용하며, 성분 사전과 같은 값입니다.</li><li>'이런 분은 이걸'은 인정 기능성과 주의사항 기준의 일반적인 선택 기준이지 진단이 아닙니다. 약을 복용 중이면 <a class="font-bold text-brand-700 underline" href="guide/with-medication.html">약과 영양제 가이드</a>를 먼저 보세요.</li><li>고민에서 출발하려면 <a class="font-bold text-brand-700 underline" href="finder.html">나에게 맞는 영양제 찾기</a>, 기능성 문구로 찾으려면 <a class="font-bold text-brand-700 underline" href="functions.html">기능성별 영양제</a>가 빠릅니다.</li></ul></section>
+      <section id="pairs" class="scroll-mt-24"><h2 class="text-2xl font-extrabold tracking-tight text-ink-900">성분 대 성분 비교 {n}편</h2><div class="mt-5 grid gap-4 md:grid-cols-2 lg:grid-cols-3">{cards}</div></section>
+      {forms_html}
+      <section class="rounded-3xl bg-cream-200 p-6 sm:p-8"><h2 class="text-lg font-extrabold text-ink-900">읽는 법</h2><ul class="list-dot mt-3 text-sm text-ink-700"><li>비교표의 기능성 문구는 식약처 인정 문구를 그대로 인용하며, 성분 사전과 같은 값입니다.</li><li>'이런 분은 이걸'은 인정 기능성과 주의사항 기준의 일반적인 선택 기준이지 진단이 아닙니다. 약을 복용 중이면 <a class="font-bold text-brand-700 underline" href="guide/with-medication.html">약과 영양제 가이드</a>를 먼저 보세요.</li><li>제형·형태 비교의 제품 수는 식약처 신고 제품의 제품명·원재료명 표기로 거른 값이라 표기가 없는 제품은 '기타·표기 없음' 묶음에 들어가고, 한 제품이 두 형태에 함께 셀 수 있습니다.</li><li>고민에서 출발하려면 <a class="font-bold text-brand-700 underline" href="finder.html">나에게 맞는 영양제 찾기</a>, 기능성 문구로 찾으려면 <a class="font-bold text-brand-700 underline" href="functions.html">기능성별 영양제</a>가 빠릅니다.</li></ul></section>
       {faq_html}
     </div>
   </main>
@@ -1657,17 +1668,235 @@ def write_compares(core: dict, cfg: dict, guides: dict) -> list[str]:
         p = COMPARE_DIR / f"{e['cmp']['slug']}.html"
         p.write_text(render_compare(e, core, cfg, types, updated), encoding="utf-8")
         wanted.add(p.name)
+    f_updated = ((model.get("forms_data") or {}).get("_meta") or {}).get("updatedAt") or updated
+    for e in model.get("forms") or []:
+        p = COMPARE_DIR / f"{e['fc']['slug']}.html"
+        p.write_text(render_form_compare(e, core, cfg, types, f_updated), encoding="utf-8")
+        wanted.add(p.name)
     for stale in COMPARE_DIR.glob("*.html"):
         if stale.name not in wanted:
             stale.unlink()
             log.info("삭제된 비교 페이지 정리: %s", stale.name)
     (ROOT / COMPARES_HUB).write_text(render_compare_hub(model, model["data"], core, cfg), encoding="utf-8")
     write_json(DATA_DIR / "compares-index.json", {
-        "_meta": {"updatedAt": now_iso(), "note": "compares.json 의 요약 색인 — scripts/build_site.py 가 생성, 직접 수정하지 않음 (성분 페이지의 '비교 글' 칩용)"},
-        "items": [{"slug": e["cmp"]["slug"], "title": _cmp_short_title(e["cmp"]), "ids": [i["id"] for i in e["ingredients"]]} for e in model["items"]],
+        "_meta": {"updatedAt": now_iso(), "note": "compares.json(성분 대 성분)·form-compares.json(kind: form, 제형·형태) 의 요약 색인 — scripts/build_site.py 가 생성, 직접 수정하지 않음 (성분 페이지의 '비교 글' 칩용)"},
+        "items": [{"slug": e["cmp"]["slug"], "title": _cmp_short_title(e["cmp"]), "ids": [i["id"] for i in e["ingredients"]]} for e in model["items"]]
+                 + [{"slug": e["fc"]["slug"], "title": _cmp_short_title(e["fc"]), "ids": [e["fc"]["id"]], "kind": "form"} for e in (model.get("forms") or [])],
     }, compact=True, quiet=True)
-    log.info("성분 비교 생성: %s + compare/ %d편", COMPARES_HUB, len(wanted))
-    return [e["cmp"]["slug"] for e in model["items"]]
+    log.info("성분 비교 생성: %s + compare/ %d편 (제형·형태 비교 %d편 포함)", COMPARES_HUB, len(wanted), len(model.get("forms") or []))
+    return [e["cmp"]["slug"] for e in model["items"]] + [e["fc"]["slug"] for e in (model.get("forms") or [])]
+
+
+# ---------- 제형·형태 비교 (compare/<slug>.html, 성분 비교 허브의 두 번째 묶음) ----------
+FORM_COMPARE_TOP = 8   # 형태별로 보여 주는 대표 제품 수 (브랜드 가중치 → 신고일 순, 같은 이름은 한 번)
+
+
+def validate_form_compares(data: dict, valid_ids: set[str], guide_slugs: set[str], term_slugs: set[str], taken_slugs: set[str]) -> None:
+    """data/form-compares.json 무결성: 필수 필드, slug 형식·중복(성분 비교 slug 와도 겹치지 않음), 기준 성분 id, forms(키가 다른 2개 이상·rest 최대 1·정규식 컴파일),
+    rows 의 cells 키 = forms 키, faq q/a, related 가이드 slug, terms 용어 slug."""
+    seen: set[str] = set()
+    for it in data.get("items", []):
+        tag = it.get("slug") or it.get("title")
+        for k in ("slug", "id", "title", "h1", "description", "intro", "forms", "rows", "verdict", "label", "faq"):
+            if not it.get(k):
+                raise SystemExit(f"form-compares.json: '{tag}' 에 {k} 가 없음")
+        slug = it["slug"]
+        if not re.fullmatch(r"[a-z0-9-]+", slug) or slug in seen or slug in taken_slugs:
+            raise SystemExit(f"form-compares.json: slug 형식 오류·중복 또는 성분 비교 slug 와 겹침 {slug}")
+        seen.add(slug)
+        if it["id"] not in valid_ids:
+            raise SystemExit(f"form-compares.json: '{slug}' 이 없는 성분 id {it['id']} 를 참조")
+        keys = [f.get("key") for f in it["forms"]]
+        if len(keys) < 2 or not all(keys) or len(set(keys)) != len(keys):
+            raise SystemExit(f"form-compares.json: '{slug}' 의 forms 는 key 가 서로 다른 2개 이상이어야 함")
+        if sum(1 for f in it["forms"] if f.get("rest")) > 1:
+            raise SystemExit(f"form-compares.json: '{slug}' 에 rest 형태가 둘 이상")
+        for f in it["forms"]:
+            for k in ("label", "short", "shopQuery", "line"):
+                if not f.get(k):
+                    raise SystemExit(f"form-compares.json: '{slug}' 형태 '{f.get('key')}' 에 {k} 가 없음")
+            if f.get("rest"):
+                continue
+            if not f.get("match"):
+                raise SystemExit(f"form-compares.json: '{slug}' 형태 '{f['key']}' 에 match 정규식이 없음 (rest 가 아니면 필수)")
+            try:
+                re.compile(f["match"], re.I)
+            except re.error as e:
+                raise SystemExit(f"form-compares.json: '{slug}' 형태 '{f['key']}' 의 정규식 오류: {e}") from None
+        for r in it["rows"]:
+            if not r.get("label") or set((r.get("cells") or {}).keys()) != set(keys):
+                raise SystemExit(f"form-compares.json: '{slug}' 의 rows '{r.get('label')}' 셀 키가 forms 키와 다름")
+        for f in it["faq"]:
+            if not f.get("q") or not f.get("a"):
+                raise SystemExit(f"form-compares.json: '{slug}' 의 faq 에 q/a 가 없음")
+        for s in it.get("related", []):
+            if s not in guide_slugs:
+                raise SystemExit(f"form-compares.json: '{slug}' 이 없는 가이드 slug {s} 를 참조")
+        for s in it.get("terms", []):
+            if s not in term_slugs:
+                raise SystemExit(f"form-compares.json: '{slug}' 이 없는 용어 slug {s} 를 참조")
+    log.info("제형·형태 비교 데이터 검증 통과: %d편", len(seen))
+
+
+def form_compare_model(data: dict, core: dict, products: list[dict], guides: list[dict], glossary: dict | None, weight=None) -> list[dict]:
+    """형태 비교마다 기준 성분의 신고 제품(상세 조각)을 제품명+원재료명 정규식으로 형태별로 나누고(rest = 어느 형태에도 안 걸린 나머지; 한 제품이 여러 형태에 들어갈 수 있음),
+    형태별 제품 수·대표 제품(브랜드 가중치 → 신고일 순, 같은 이름은 한 번)·관련 가이드·용어를 모은다. weight(name, company) 는 brand_priority 의 가중치."""
+    by_id = core["by_id"]
+    guide_by_slug = {g["slug"]: g for g in guides}
+    by_slug = (glossary or {}).get("by_slug") or {}
+    wcache: dict[str, int] = {}
+
+    def w(p: dict) -> int:
+        if p["id"] not in wcache:
+            wcache[p["id"]] = int(weight(p.get("name"), p.get("company"))) if weight else 0
+        return wcache[p["id"]]
+
+    out = []
+    for it in data.get("items", []):
+        iid = it["id"]
+        base = [p for p in products if iid in (p.get("ingredients") or [])]
+        matched: set[str] = set()
+        forms = []
+        for f in it["forms"]:
+            if f.get("rest"):
+                forms.append({"f": f, "hits": None})
+                continue
+            rx = re.compile(f["match"], re.I)
+            hits = [p for p in base if rx.search(f"{p.get('name') or ''} | {p.get('rawMaterials') or ''}")]
+            matched.update(p["id"] for p in hits)
+            forms.append({"f": f, "hits": hits})
+        for fm in forms:
+            hits = fm.pop("hits")
+            if hits is None:
+                hits = [p for p in base if p["id"] not in matched]
+            hits.sort(key=lambda p: (w(p), p.get("registeredAt") or ""), reverse=True)
+            top, names = [], set()
+            for p in hits:
+                nm = (p.get("name") or "").strip()
+                if not nm or nm in names:
+                    continue
+                names.add(nm)
+                top.append({"id": p["id"], "name": nm, "company": p.get("company") or "", "registeredAt": p.get("registeredAt") or ""})
+                if len(top) >= FORM_COMPARE_TOP:
+                    break
+            fm["total"] = len(hits)
+            fm["ids"] = {p["id"] for p in hits}
+            fm["top"] = top
+        rel = [guide_by_slug[s] for s in it.get("related", []) if s in guide_by_slug]
+        terms = [by_slug[s]["t"] for s in it.get("terms", []) if s in by_slug]
+        out.append({"fc": it, "ingredient": by_id[iid], "forms": forms, "base_total": len(base), "guides": rel, "terms": terms})
+    return out
+
+
+def render_form_compare(entry: dict, core: dict, cfg: dict, guides_types: dict, updated: str) -> str:
+    it, ing, forms, rel_guides, terms = entry["fc"], entry["ingredient"], entry["forms"], entry["guides"], entry["terms"]
+    cats = core["categories"]
+    cat = cats.get(ing["category"], {})
+    path = f"compare/{it['slug']}.html"
+    title = f"{it['title']} | {cfg['name']}"
+    short_title = _cmp_short_title(it)
+    _, faq_ld = faq_block([(f["q"], f["a"]) for f in it["faq"]])
+    st = {"used": set(), "exclude": set()}   # 용어 자동 링크 상태 (소개 → 핵심 차이 → 이런 분은 → 라벨에서 보는 법 → FAQ)
+    intro_html = term_html(core, it["intro"], st)
+    verdict_html = term_html(core, it["verdict"], st)
+    ld = {"@context": "https://schema.org", "@graph": [
+        {"@type": "BreadcrumbList", "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "홈", "item": f"{cfg['url']}/"},
+            {"@type": "ListItem", "position": 2, "name": "성분 비교", "item": page_url(cfg, COMPARES_HUB)},
+            {"@type": "ListItem", "position": 3, "name": short_title, "item": page_url(cfg, path)}]},
+        {"@type": "Article", "headline": it["h1"], "description": it["description"], "url": page_url(cfg, path), "dateModified": updated, "inLanguage": "ko",
+         "author": {"@type": "Organization", "name": cfg["name"]}, "about": [{"@type": "Thing", "name": ing["name"], "url": page_url(cfg, f"i/{ing['id']}.html")}]},
+        faq_ld,
+    ]}
+    head = head_html(cfg, title=title, desc=it["description"], path=path, root="../", keywords=", ".join(it.get("keywords", [])), og_type="article",
+                     extra_scripts='<script src="../assets/js/pages/compare.js" defer></script>', ld=ld)
+    keys = [fm["f"]["key"] for fm in forms]
+    mini = (f'<a class="cmp-mini" href="../i/{esc(ing["id"])}.html"><span class="finder-thumb">{photo_img(ing["category"])}</span><span class="min-w-0"><span class="badge {cat_class(cat.get("color", ""))}">{esc(cat.get("label", ""))}</span>'
+            f'<span class="mt-1 block text-base font-extrabold text-ink-900">{esc(ing["name"])} 성분 사전</span><span class="mt-0.5 block text-sm text-ink-600">효능·권장량·궁합·먹는 시간 — 형태와 관계없이 같은 기준 · 수집 제품 {entry["base_total"]:,}건</span></span></a>')
+    head_cells = "".join(f'<th scope="col">{esc(fm["f"]["label"])}</th>' for fm in forms)
+    body_rows = "".join(f'<tr><th scope="row">{esc(r["label"])}</th>' + "".join(f'<td>{esc((r.get("cells") or {}).get(k, "—"))}</td>' for k in keys) + "</tr>" for r in it["rows"])
+    body_rows += '<tr><th scope="row">수집 제품 수 (표기 기준)</th>' + "".join(f'<td>{fm["total"]:,}건</td>' for fm in forms) + "</tr>"
+    table_html = f'<div class="timing-table-wrap"><table class="timing-table cmp-table"><caption class="sr-only">{esc(ing["name"])} 형태 비교표</caption><thead><tr><th scope="col">항목</th>{head_cells}</tr></thead><tbody>{body_rows}</tbody></table></div>'
+
+    picks_html = "".join(
+        f'<article class="finder-card"><h3 class="text-base font-extrabold text-ink-900">{esc(fm["f"]["label"])}</h3><p class="mt-1 text-sm text-ink-600">{term_html(core, fm["f"]["line"], st)}</p>'
+        f'<ul class="list-check mt-2 text-sm text-ink-700">{"".join(f"<li>{term_html(core, p, st)}</li>" for p in fm["f"].get("pick", []))}</ul></article>'
+        for fm in forms)
+    label_html = term_html(core, it["label"], st)
+
+    def product_card(fm: dict) -> str:
+        f = fm["f"]
+        chips = "".join(f'<li><a class="hover:text-brand-700" href="../product.html?id={esc(p["id"])}">{esc(p["name"])}</a><span class="ml-1 text-xs text-ink-400">{esc(p["company"])}</span></li>' for p in fm["top"])
+        return (f'<div class="rounded-2xl border border-ink-100 bg-white p-5 shadow-card"><h3 class="font-extrabold text-ink-900">{esc(f["label"])}</h3><p class="mt-1 text-sm text-ink-600">{esc(f["short"])}</p>'
+                f'<p class="mt-2 text-xs text-ink-500">수집 제품 {fm["total"]:,}건 · 쇼핑몰 검색어: {esc(f["shopQuery"])}</p><div class="app-hide mt-3" data-query="{esc(f["shopQuery"])}"></div>'
+                + (f'<p class="mt-3 text-xs font-bold text-ink-500">표기로 걸러낸 신고 제품</p><ul class="list-dot mt-1 text-sm text-ink-700">{chips}</ul>' if chips else '<p class="mt-3 text-xs text-ink-400">수집분에서 이 표기가 적힌 제품이 없습니다.</p>')
+                + "</div>")
+    products_html = (f'<div class="grid gap-4 md:grid-cols-2">{"".join(product_card(fm) for fm in forms)}</div>'
+                     f'<p class="mt-3 text-sm text-ink-600">제품명과 원재료명의 표기로 나눈 것이라 표기가 없는 제품은 \'{esc(next((fm["f"]["label"] for fm in forms if fm["f"].get("rest")), "기타"))}\' 묶음에 들어가고, 한 제품이 두 형태에 함께 셀 수 있습니다. '
+                     f'<a class="font-bold text-brand-700 underline" href="../products.html?ingredient={esc(ing["id"])}">{esc(ing["name"])} 제품 전체 보기</a></p><p id="compare-disclosure" class="app-hide mt-3 text-[11px] text-ink-400"></p>')
+    terms_html = "".join(f'<a class="chart-chip" href="../term/{esc(t["slug"])}.html" title="{esc(t.get("short", ""))}"><i data-lucide="book-open" class="h-3.5 w-3.5"></i>{esc(t["term"])}</a>' for t in terms)
+    guides_html = f'<div class="grid gap-4 md:grid-cols-2">{"".join(guide_card(g, guides_types, "../") for g in rel_guides)}</div>' if rel_guides else ""
+    faq_html, _ = faq_block([(f["q"], f["a"]) for f in it["faq"]], render=lambda s: term_html(core, s, st))
+    chips = [("table", "비교표"), ("verdict", "핵심 차이"), ("picks", "이런 분은"), ("label", "라벨에서 보는 법"), ("products", "형태별 제품"), ("faq", "자주 묻는 질문")]
+    body = f"""
+<body data-page="ingredients" data-path="{path}" class="min-h-screen antialiased">
+  {SKIP_LINK}
+  <main id="main">
+    <section class="page-hero"><div class="mx-auto max-w-7xl px-4 pb-10 pt-8 sm:px-6 sm:pt-10">
+      <nav class="text-xs text-ink-500" aria-label="경로"><a class="hover:text-brand-700" href="../index.html">홈</a> › <a class="hover:text-brand-700" href="../{COMPARES_HUB}">성분 비교</a> › <span class="text-ink-800">{esc(short_title)}</span></nav>
+      <p class="eyebrow-kicker mt-4"><i data-lucide="scale"></i> 성분 비교 · 제형·형태</p>
+      <h1 class="page-title mt-3">{esc(it["h1"])}</h1>
+      <p class="page-lead mt-4 max-w-3xl">{intro_html}</p>
+      <div class="mt-6 grid gap-3 md:grid-cols-2">{mini}<div class="cmp-mini" style="cursor:default"><span class="min-w-0"><span class="text-xs font-bold text-ink-500">이 글의 형태 {len(forms)}가지</span><span class="mt-1 block text-sm leading-relaxed text-ink-800">{" · ".join(esc(fm["f"]["label"]) for fm in forms)}</span><span class="mt-1 block text-xs text-ink-500">식약처 신고 제품의 제품명·원재료명 표기로 걸러 형태별 제품 수와 예시를 보여 줍니다.</span></span></div></div>
+      <div class="mt-5 flex flex-wrap gap-2">{"".join(f'<a href="#{a}" class="chip">{b}</a>' for a, b in chips)}</div>
+      <p class="mt-4 text-xs text-ink-400">식약처 인정 기능성 표현을 기준으로 정리한 일반 건강 정보이며 의학적 조언이 아닙니다 · 최종 수정 {esc(updated)}</p>
+    </div></section>
+    <div class="mx-auto max-w-7xl space-y-14 px-4 py-12 sm:px-6">
+      <section id="table" class="scroll-mt-24"><h2 class="text-2xl font-extrabold tracking-tight text-ink-900">형태별 한눈에 비교</h2><p class="mt-1 text-sm text-ink-500">원료·제조·표기·먹는 법 같은 사실 관계만 비교합니다. 흡수율 수치·가격·효과의 우열은 적지 않으며, 기능성과 섭취량 기준은 형태와 관계없이 <a class="font-bold text-brand-700 underline" href="../i/{esc(ing["id"])}.html">{esc(ing["name"])} 성분 사전</a>과 같습니다.</p><div class="mt-4">{table_html}</div></section>
+      <section id="verdict" class="scroll-mt-24 rounded-3xl bg-cream-200 p-6 sm:p-8"><h2 class="text-2xl font-extrabold tracking-tight text-ink-900">핵심 차이</h2><p class="mt-3 text-[15px] leading-relaxed text-ink-800">{verdict_html}</p></section>
+      <section id="picks" class="scroll-mt-24"><h2 class="text-2xl font-extrabold tracking-tight text-ink-900">이런 분은 이 형태</h2><div class="mt-4 grid gap-4 md:grid-cols-2">{picks_html}</div></section>
+      <section id="label" class="scroll-mt-24 rounded-3xl border border-ink-100 bg-white p-6 shadow-card sm:p-8"><h2 class="text-2xl font-extrabold tracking-tight text-ink-900">라벨에서 보는 법</h2><p class="mt-3 text-[15px] leading-relaxed text-ink-800">{label_html}</p></section>
+      <section id="products" class="scroll-mt-24"><h2 class="text-2xl font-extrabold tracking-tight text-ink-900">형태별 제품 보기</h2><p class="mt-1 text-sm text-ink-500">식약처 품목신고 수집분(2021-04 이후)에서 제품명·원재료명 표기로 걸러낸 제품과 쇼핑몰 검색 결과입니다. 함량·형태·원료는 제품 라벨에서 꼭 확인하세요.</p><div class="mt-4">{products_html}</div></section>
+      {('<section id="terms" class="scroll-mt-24"><h2 class="text-2xl font-extrabold tracking-tight text-ink-900">관련 용어</h2><div class="mt-4 flex flex-wrap gap-2">' + terms_html + '</div></section>') if terms_html else ""}
+      {('<section id="guides" class="scroll-mt-24"><h2 class="text-2xl font-extrabold tracking-tight text-ink-900">관련 가이드</h2><div class="mt-4">' + guides_html + '</div></section>') if guides_html else ""}
+      {faq_html}
+      <section class="rounded-3xl bg-cream-200 p-6 sm:p-8"><h2 class="text-lg font-extrabold text-ink-900">함께 보면 좋은 페이지</h2><ul class="list-dot mt-3 text-sm text-ink-700"><li><a class="font-bold text-brand-700 underline" href="../{COMPARES_HUB}">성분 비교 전체 목록</a> — 성분 대 성분 비교와 다른 형태 비교</li><li><a class="font-bold text-brand-700 underline" href="../i/{esc(ing["id"])}.html">{esc(ing["name"])} 성분 사전</a> — 효능·권장량·궁합·먹는 시간</li><li><a class="font-bold text-brand-700 underline" href="../glossary.html">영양제 용어 사전</a> · <a class="font-bold text-brand-700 underline" href="../finder.html">나에게 맞는 영양제 찾기</a> · <a class="font-bold text-brand-700 underline" href="../timing-chart.html">영양제 복용 시간표</a></li></ul></section>
+    </div>
+  </main>
+  <div id="site-footer"></div>
+</body>
+</html>
+"""
+    return head + body
+
+
+def prepare_form_compares(core: dict, guides_items: list[dict]) -> list[dict] | None:
+    """data/form-compares.json 을 읽어 검증하고 모델을 만들어 성분 비교 모델(core["compares"])에 forms 로 더한다 (용어 사전·기능성 모델 뒤, 성분 페이지 앞)."""
+    data = read_json(DATA_DIR / "form-compares.json", None)
+    if not data:
+        log.warning("data/form-compares.json 이 없어 제형·형태 비교 페이지를 만들지 않습니다")
+        return None
+    cmp_model = core.get("compares")
+    if not cmp_model:
+        cmp_model = {"items": [], "by_ingredient": {}, "data": {"_meta": {}}}
+        core["compares"] = cmp_model
+    taken = {e["cmp"]["slug"] for e in cmp_model.get("items", [])}
+    glossary = core.get("glossary")
+    validate_form_compares(data, set(core["by_id"].keys()), {g["slug"] for g in guides_items}, set((glossary or {}).get("by_slug") or {}), taken)
+    products = core.get("products_detail")
+    if products is None:
+        products = load_products_detail()
+        core["products_detail"] = products
+    try:
+        weight = load_brand_priority().weight
+    except Exception:  # noqa: BLE001
+        weight = None
+    forms = form_compare_model(data, core, products, guides_items, glossary, weight)
+    cmp_model["forms"] = forms
+    cmp_model["forms_data"] = data
+    for e in forms:
+        cmp_model.setdefault("by_ingredient", {}).setdefault(e["fc"]["id"], []).append(e["fc"]["slug"])
+    return forms
 
 
 # ---------- 약별 영양제 가이드 (drug-guides.html · drug-guide/<id>.html) ----------
@@ -2333,6 +2562,7 @@ def main() -> int:
     prepare_compares(core, core["guides"])    # 성분 비교 모델 (성분 페이지의 비교 글 칩, 기능성 모델 뒤)
     prepare_drug_guides(core, core["guides"])  # 약별 영양제 가이드 모델 (성분 페이지의 '약과 함께' 칩)
     prepare_glossary(core, core["guides"])     # 용어 사전 모델 + 본문 자동 링크기 (가이드·성분·비교·약별·기능성 페이지가 쓴다)
+    prepare_form_compares(core, core["guides"])  # 제형·형태 비교 모델 — 성분 비교 모델에 forms 로 더함 (용어 사전 뒤, 성분 페이지 앞)
 
     OUT_DIR.mkdir(exist_ok=True)
     wanted = set()

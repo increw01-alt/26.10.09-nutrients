@@ -319,6 +319,119 @@ class CompareTests(unittest.TestCase):
         self.assertIn("compare.html", B.STATIC_PAGES)
 
 
+
+class FormCompareTests(unittest.TestCase):
+    """제형·형태 비교(compare/<slug>.html, 성분 비교 허브의 두 번째 묶음) — 데이터 검증·모델(정규식 집계·rest·대표 제품)·렌더·허브·색인."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.data = B.read_json(B.DATA_DIR / "form-compares.json")
+        cls.cmp_data = B.read_json(B.DATA_DIR / "compares.json")
+        ingredients = B.read_json(B.DATA_DIR / "ingredients.json")
+        interactions = B.read_json(B.DATA_DIR / "interactions.json")
+        guides = B.read_json(B.DATA_DIR / "guides.json")
+        glossary = B.read_json(B.DATA_DIR / "glossary.json")
+        cls.guides = guides
+        cls.core = {"categories": ingredients["_meta"]["categories"], "by_id": {i["id"]: i for i in ingredients["items"]}, "guides": guides["items"], "pairs": interactions["pairs"], "types": interactions["_meta"]["types"]}
+        cls.core["glossary"] = B.glossary_model(glossary, cls.core, guides["items"])
+        cls.core["term_linker"] = B.TermLinker(glossary["items"])
+        cls.slugs = {g["slug"] for g in guides["items"]}
+        cls.term_slugs = {t["slug"] for t in glossary["items"]}
+        cls.taken = {it["slug"] for it in cls.cmp_data["items"]}
+        # 가짜 제품 조각: 이름·원재료명 표기로 형태를 가르고, 같은 이름(p5·p6)은 대표 제품에 한 번만, 가중치가 높은 회사(D)가 먼저
+        cls.products = [
+            {"id": "p1", "name": "알티지 오메가3", "company": "A", "registeredAt": "2026-01-01", "rawMaterials": "정제어유", "ingredients": ["omega-3"]},
+            {"id": "p2", "name": "오메가3 1000", "company": "B", "registeredAt": "2025-01-01", "rawMaterials": "EPA 및 DHA 함유 유지(rTG)", "ingredients": ["omega-3"]},
+            {"id": "p3", "name": "식물성 오메가3", "company": "C", "registeredAt": "2024-01-01", "rawMaterials": "미세조류유", "ingredients": ["omega-3", "vitamin-e"]},
+            {"id": "p4", "name": "크릴오일 1000", "company": "D", "registeredAt": "2023-01-01", "rawMaterials": "크릴오일", "ingredients": ["omega-3"]},
+            {"id": "p5", "name": "순수 오메가3", "company": "E", "registeredAt": "2022-01-01", "rawMaterials": "정제어유", "ingredients": ["omega-3"]},
+            {"id": "p6", "name": "순수 오메가3", "company": "E", "registeredAt": "2021-01-01", "rawMaterials": "정제어유", "ingredients": ["omega-3"]},
+            {"id": "p7", "name": "비타민C 1000", "company": "F", "registeredAt": "2022-01-01", "rawMaterials": "비타민C", "ingredients": ["vitamin-c"]},
+        ]
+        cls.model = B.form_compare_model(cls.data, cls.core, cls.products, guides["items"], cls.core["glossary"], weight=lambda n, c: 3 if (c or "") == "D" else 0)
+        cls.cfg = {"name": "테스트", "url": "https://example.test"}
+
+    def test_validate_real_data_and_rejects_bad(self):
+        B.validate_form_compares(self.data, set(self.core["by_id"]), self.slugs, self.term_slugs, self.taken)
+        import copy
+        bad = copy.deepcopy(self.data); bad["items"][0]["forms"][0]["match"] = "("
+        with self.assertRaises(SystemExit):
+            B.validate_form_compares(bad, set(self.core["by_id"]), self.slugs, self.term_slugs, self.taken)
+        bad = copy.deepcopy(self.data); bad["items"][0]["terms"] = ["no-such-term"]
+        with self.assertRaises(SystemExit):
+            B.validate_form_compares(bad, set(self.core["by_id"]), self.slugs, self.term_slugs, self.taken)
+        bad = copy.deepcopy(self.data); bad["items"][0]["slug"] = next(iter(self.taken))   # 성분 비교 slug 와 겹침
+        with self.assertRaises(SystemExit):
+            B.validate_form_compares(bad, set(self.core["by_id"]), self.slugs, self.term_slugs, self.taken)
+        bad = copy.deepcopy(self.data); bad["items"][0]["rows"][0]["cells"].pop(bad["items"][0]["forms"][0]["key"])
+        with self.assertRaises(SystemExit):
+            B.validate_form_compares(bad, set(self.core["by_id"]), self.slugs, self.term_slugs, self.taken)
+        bad = copy.deepcopy(self.data); bad["items"][0]["forms"][1]["rest"] = True   # rest 둘
+        with self.assertRaises(SystemExit):
+            B.validate_form_compares(bad, set(self.core["by_id"]), self.slugs, self.term_slugs, self.taken)
+        bad = copy.deepcopy(self.data); bad["items"][0]["id"] = "no-such-ingredient"
+        with self.assertRaises(SystemExit):
+            B.validate_form_compares(bad, set(self.core["by_id"]), self.slugs, self.term_slugs, self.taken)
+
+    def test_model_splits_products_by_form_and_rest_is_disjoint(self):
+        e = next(x for x in self.model if x["fc"]["slug"] == "omega-3-forms")
+        self.assertEqual(e["ingredient"]["id"], "omega-3")
+        self.assertEqual(e["base_total"], 6)   # 비타민C 제품은 기준 성분이 아님
+        by_key = {fm["f"]["key"]: fm for fm in e["forms"]}
+        self.assertEqual(set(by_key), {"rtg", "algae", "krill", "rest"})
+        self.assertEqual(by_key["rtg"]["ids"], {"p1", "p2"})       # 이름 '알티지' + 원재료명 'rTG'
+        self.assertEqual(by_key["algae"]["ids"], {"p3"})
+        self.assertEqual(by_key["krill"]["ids"], {"p4"})
+        self.assertEqual(by_key["rest"]["ids"], {"p5", "p6"})      # 다른 형태에 걸린 제품은 rest 에 없음
+        matched = by_key["rtg"]["ids"] | by_key["algae"]["ids"] | by_key["krill"]["ids"]
+        self.assertFalse(matched & by_key["rest"]["ids"])
+        self.assertEqual(by_key["rest"]["total"], 2)
+        self.assertEqual([p["name"] for p in by_key["rest"]["top"]], ["순수 오메가3"])   # 같은 이름은 한 번
+        self.assertEqual(by_key["rtg"]["top"][0]["id"], "p1")      # 가중치 같으면 신고일 최신 순
+        self.assertEqual(len(e["terms"]), len(e["fc"]["terms"]))
+        self.assertTrue(all(g["slug"] in e["fc"]["related"] for g in e["guides"]))
+        for x in self.model:   # 모든 편: rest 는 최대 하나, 전체 형태 합집합 ⊆ 기준 제품
+            rests = [fm for fm in x["forms"] if fm["f"].get("rest")]
+            self.assertLessEqual(len(rests), 1, x["fc"]["slug"])
+
+    def test_top_products_prefer_brand_weight(self):
+        products = [dict(p, ingredients=["omega-3"], rawMaterials="크릴오일", name=f"크릴 {i}", company=("D" if i == 3 else "Z"), registeredAt=f"2025-0{i}-01") for i, p in enumerate(self.products[:5], start=1)]
+        model = B.form_compare_model(self.data, self.core, products, self.guides["items"], self.core["glossary"], weight=lambda n, c: 3 if c == "D" else 0)
+        krill = next(fm for fm in next(x for x in model if x["fc"]["slug"] == "omega-3-forms")["forms"] if fm["f"]["key"] == "krill")
+        self.assertEqual(krill["total"], 5)
+        self.assertEqual(krill["top"][0]["name"], "크릴 3")   # 가중치 3 인 회사가 먼저
+        self.assertEqual(krill["top"][1]["name"], "크릴 5")   # 그다음은 신고일 최신 순
+
+    def test_render_form_compare_and_hub_and_index(self):
+        e = next(x for x in self.model if x["fc"]["slug"] == "omega-3-forms")
+        html = B.render_form_compare(e, self.core, self.cfg, self.guides["_meta"]["types"], "2026-10-23")
+        self.assertIn('rel="canonical" href="https://example.test/compare/omega-3-forms"', html)
+        for sec in ("table", "verdict", "picks", "label", "products", "terms", "guides", "faq"):
+            self.assertIn(f'id="{sec}"', html)
+        self.assertEqual(html.count("data-query="), 4)                  # 형태마다 쇼핑 버튼 자리 하나
+        self.assertEqual(html.count('<th scope="col">'), 5)               # 항목 + 형태 4
+        self.assertIn("수집 제품 수 (표기 기준)", html)
+        self.assertIn('href="../product.html?id=p1"', html)
+        self.assertIn('href="../term/rtg.html"', html)
+        self.assertIn('href="../i/omega-3.html"', html)
+        self.assertIn('"@type": "FAQPage"', html)
+        import json as _json
+        self.assertIsNone(re.search(r"흡수율\s*\d|\d+\s*배 (더|높|좋)|가격대", _json.dumps(self.data["items"], ensure_ascii=False)))   # (_meta 제외) 흡수율 수치·배수·가격대 표현 금지의 간단한 방어선
+        # 허브: 성분 대 성분 묶음 + 제형·형태 묶음, 요약 색인·성분 페이지 칩은 write_compares/render_page 가 forms 를 읽음
+        cmp_model = B.compare_model(self.cmp_data, self.core, self.guides["items"])
+        cmp_model["forms"] = self.model
+        hub = B.render_compare_hub(cmp_model, self.cmp_data, self.core, self.cfg)
+        self.assertIn('href="compare/omega-3-forms.html"', hub)
+        self.assertIn(f"제형·형태 비교 {len(self.model)}편", hub)
+        self.assertIn(f"({len(cmp_model['items']) + len(self.model)}편)", hub)
+        self.assertEqual(hub.count('class="cmp-card"'), len(cmp_model["items"]) + len(self.model))
+        # 성분 페이지 칩: by_ingredient 에 형태 비교 slug 가 더해지면 '비교 글' 칩에 나온다
+        cmp_model.setdefault("by_ingredient", {}).setdefault("omega-3", []).append("omega-3-forms")
+        core = dict(self.core, compares=cmp_model)
+        page = B.render_page(self.core["by_id"]["omega-3"], core, self.cfg)
+        self.assertIn('href="../compare/omega-3-forms.html"', page)
+
+
 class DrugGuideTests(unittest.TestCase):
     """약별 영양제 가이드(drug-guides.html · drug-guide/<id>.html) — 데이터 검증·의약품 판정·모델·렌더."""
 
