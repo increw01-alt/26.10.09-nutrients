@@ -14,7 +14,7 @@ class PwaTagTests(unittest.TestCase):
     def test_ensure_pwa_tags_uses_root_prefix(self):
         out = B.ensure_pwa_tags(HEAD, "../")
         self.assertIn('<link rel="manifest" href="../manifest.webmanifest">', out)
-        self.assertIn('href="../assets/images/app/apple-touch-icon.png"', out)
+        self.assertIn('href="../assets/images/app/apple-touch-icon.png?v=%s"' % B.ICON_V, out)   # /assets/images/* 는 7일 캐시라 버전으로 캐시를 피함
         self.assertLess(out.index('rel="icon"'), out.index(B.PWA_START))
         self.assertLess(out.index(B.PWA_END), out.index('rel="stylesheet"'))
 

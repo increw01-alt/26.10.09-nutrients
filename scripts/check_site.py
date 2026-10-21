@@ -100,7 +100,7 @@ def check_html() -> None:
     else:
         try:
             for ic in json.loads(mf.read_text(encoding="utf-8")).get("icons", []):
-                if not (ROOT / str(ic.get("src", "")).lstrip("/")).exists():
+                if not (ROOT / str(ic.get("src", "")).split("?")[0].lstrip("/")).exists():   # ?v= 캐시 버전은 떼고 파일만 확인
                     fail(f"매니페스트 아이콘 파일 없음: {ic.get('src')} — python scripts/build_app_icons.py")
         except Exception as e:  # noqa: BLE001
             fail(f"manifest.webmanifest 파싱 오류: {str(e)[:60]}")

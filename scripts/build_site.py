@@ -261,13 +261,14 @@ def inject_verification(cfg: dict) -> None:
 
 PWA_START, PWA_END = "<!-- pwa:start -->", "<!-- pwa:end -->"
 PWA_THEME = "#246d4b"
+ICON_V = "2"   # 아이콘 파일 주소에 붙는 버전 — /assets/images/* 는 7일 캐시(_headers)라 아이콘을 바꾸면 올려서 엣지·브라우저 캐시를 피한다 (manifest.webmanifest·index.html·layout.js 의 ?v= 도 함께)
 
 
 def pwa_tags(root: str) -> str:
     """홈 화면 설치(PWA)용 head 태그 6줄 — 매니페스트·iOS 아이콘·테마색. root 는 페이지의 data-root('./'·'../'·'/')."""
     return "\n".join([
         f'<link rel="manifest" href="{root}manifest.webmanifest">',
-        f'<link rel="apple-touch-icon" href="{root}assets/images/app/apple-touch-icon.png">',
+        f'<link rel="apple-touch-icon" href="{root}assets/images/app/apple-touch-icon.png?v={ICON_V}">',
         f'<meta name="theme-color" content="{PWA_THEME}">',
         '<meta name="mobile-web-app-capable" content="yes">',
         '<meta name="apple-mobile-web-app-title" content="영양제.kr">',
@@ -440,7 +441,7 @@ def render_page(it: dict, core: dict, cfg: dict) -> str:
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="icon" href="../assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../assets/images/favicon.svg?v={ICON_V}" type="image/svg+xml">
 {pwa_block("../")}
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
@@ -500,7 +501,7 @@ def head_html(cfg: dict, *, title: str, desc: str, path: str, root: str, keyword
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="icon" href="{root}assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="{root}assets/images/favicon.svg?v={ICON_V}" type="image/svg+xml">
 {pwa_block(root)}
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">

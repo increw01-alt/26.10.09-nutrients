@@ -27,7 +27,7 @@
     el.innerHTML =
       '<div class="border-b border-[#edf0e9] bg-white/95 backdrop-blur">' +
         '<div class="mx-auto flex h-[68px] max-w-7xl items-center gap-3 px-4 sm:px-6 md:h-[84px] md:gap-6">' +
-          '<a href="' + D.url("index.html") + '" class="wordmark" aria-label="' + esc(S.name) + ' 홈"><img class="brand-mark" src="' + D.url("assets/images/favicon.svg") + '" alt="" width="32" height="32" decoding="async"><span>' + brandWord() + '</span></a>' +
+          '<a href="' + D.url("index.html") + '" class="wordmark" aria-label="' + esc(S.name) + ' 홈"><img class="brand-mark" src="' + D.url("assets/images/favicon.svg") + '?v=2" alt="" width="32" height="32" decoding="async"><span>' + brandWord() + '</span></a>' +
           '<span class="brand-description hidden xl:block">' + esc(S.tagline) + '</span>' +
           '<nav class="main-nav ml-auto hidden items-center gap-0.5 md:flex" aria-label="주요 메뉴">' +
             NAV.filter(function (n) { return n.desktop !== false; }).map(function (n) {
@@ -83,7 +83,7 @@
         '<div class="mx-auto max-w-7xl px-4 py-12 sm:px-6">' +
           '<div class="grid gap-10 md:grid-cols-12">' +
             '<div class="md:col-span-5">' +
-              '<a href="' + D.url("index.html") + '" class="wordmark wordmark-sm" aria-label="' + esc(S.name) + ' 홈"><img class="brand-mark" src="' + D.url("assets/images/favicon.svg") + '" alt="" width="26" height="26" loading="lazy" decoding="async"><span>' + brandWord() + '</span></a>' +
+              '<a href="' + D.url("index.html") + '" class="wordmark wordmark-sm" aria-label="' + esc(S.name) + ' 홈"><img class="brand-mark" src="' + D.url("assets/images/favicon.svg") + '?v=2" alt="" width="26" height="26" loading="lazy" decoding="async"><span>' + brandWord() + '</span></a>' +
               '<p class="mt-4 text-sm leading-relaxed text-ink-500">' + esc(S.description) + '</p>' +
               '<p class="mt-4 text-xs leading-relaxed text-ink-400" id="footer-updated"></p>' +
             '</div>' +
