@@ -380,3 +380,9 @@ body.has-tabbar { padding-bottom: 64px; }
 .finder-guide:hover { border-color: #9cc49c; box-shadow: 0 8px 22px rgba(31,42,35,.08); }
 .chip-sm { padding: .3rem .7rem; font-size: .8rem; }
 @media (max-width: 640px) { .finder-q { padding: .9rem .95rem 1rem; border-radius: 1rem; } .finder-result { padding: 1.1rem; border-radius: 1.1rem; } .finder-progress { padding: .45rem .8rem; } .finder-progress p { font-size: .7rem; } }
+
+/* ---------- 기능성별 허브 (functions.html · function/*.html, 빌드 생성) ---------- */
+.fn-claim { display: flex; align-items: flex-start; gap: .6rem; max-width: 48rem; border: 1px solid #b9d4c2; border-radius: 1rem; background: #fff; padding: .85rem 1rem; font-size: .95rem; color: #1f2a23; line-height: 1.55; }
+.fn-card { display: flex; gap: .85rem; align-items: flex-start; border: 1px solid #e3ebdc; border-radius: 1.1rem; background: #fff; padding: 1rem 1.1rem; box-shadow: 0 2px 10px rgba(31,42,35,.04); transition: all .15s ease; }
+.fn-card:hover { border-color: #9cc49c; box-shadow: 0 10px 26px rgba(31,42,35,.09); transform: translateY(-1px); }
+.fn-card-icon { display: grid; place-items: center; flex-shrink: 0; width: 2.75rem; height: 2.75rem; border-radius: .85rem; background: #eef6ef; color: #206742; }

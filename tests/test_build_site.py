@@ -182,3 +182,75 @@ class FinderBuildTests(unittest.TestCase):
                 self.assertIn(f'name="have" value="{pid}"', html)
         self.assertEqual(html.count('data-exclusive="1"'), sum(1 for q in self.data["questions"] for o in q.get("options", []) if o.get("exclusive")))
         self.assertIn("finder.html", B.STATIC_PAGES)
+
+
+class FunctionHubTests(unittest.TestCase):
+    """기능성별 허브(functions.html · function/<id>.html) — 정규화 표 검증·매칭·모델·렌더."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.data = B.read_json(B.DATA_DIR / "functions.json")
+        ingredients = B.read_json(B.DATA_DIR / "ingredients.json")
+        interactions = B.read_json(B.DATA_DIR / "interactions.json")
+        guides = B.read_json(B.DATA_DIR / "guides.json")
+        cls.guides = guides
+        cls.core = {"categories": ingredients["_meta"]["categories"], "by_id": {i["id"]: i for i in ingredients["items"]}, "guides": guides["items"], "pairs": interactions["pairs"], "types": interactions["_meta"]["types"]}
+        cls.materials = (B.read_json(B.DATA_DIR / "materials.json", {}) or {}).get("items", [])
+        cls.products = B.load_products_detail()
+        cls.model = B.function_model(cls.data, cls.core, cls.materials, cls.products, guides["items"])
+        cls.core["functions"] = cls.model
+        cls.core["functions_meta"] = cls.data["_meta"]
+        cls.cfg = {"name": "테스트", "url": "https://example.test"}
+
+    def test_validate_real_data_and_rejects_bad(self):
+        slugs = {g["slug"] for g in self.guides["items"]}
+        B.validate_functions(self.data, slugs)
+        import copy
+        bad = copy.deepcopy(self.data); bad["items"][0]["guides"] = ["no-such-guide"]
+        with self.assertRaises(SystemExit):
+            B.validate_functions(bad, slugs)
+        bad = copy.deepcopy(self.data); bad["items"][0]["match"] = ["("]
+        with self.assertRaises(SystemExit):
+            B.validate_functions(bad, slugs)
+        bad = copy.deepcopy(self.data); bad["items"].append(dict(bad["items"][0]))
+        with self.assertRaises(SystemExit):
+            B.validate_functions(bad, slugs)
+
+    def test_matcher_avoids_known_false_positives(self):
+        by = {it["id"]: it for it in self.data["items"]}
+        self.assertFalse(B.function_matcher(by["immunity"])("면역과민반응에 의한 피부상태 개선에 도움을 줄 수 있음"))
+        self.assertTrue(B.function_matcher(by["immunity"])("면역력 증진에 도움을 줄 수 있음"))
+        self.assertTrue(B.function_matcher(by["allergy"])("면역과민반응에 의한 피부상태 개선에 도움을 줄 수 있음"))
+        self.assertFalse(B.function_matcher(by["fatigue"])("눈의 피로도 개선에 도움을 줄 수 있음"))
+        self.assertTrue(B.function_matcher(by["eye"])("눈의 피로도 개선에 도움을 줄 수 있음"))
+        self.assertFalse(B.function_matcher(by["growth"])("상피세포의 성장과 발달에 필요"))
+        self.assertFalse(B.function_matcher(by["bone"])("관절 및 연골 건강에 도움을 줄 수 있음"))
+        self.assertTrue(B.function_matcher(by["bone"])("뼈의 형성과 유지에 필요"))
+
+    def test_model_every_function_has_content_and_expected_members(self):
+        got = {e["fn"]["id"]: e for e in self.model["items"]}
+        for fid, e in got.items():
+            self.assertTrue(e["ingredients"] or e["materials"] or e["products"]["total"], fid)
+            self.assertLessEqual(len(e["products"]["top"]), B.FUNCTION_TOP_PRODUCTS)
+        ids = lambda fid: {i["id"] for i in got[fid]["ingredients"]}
+        self.assertIn("garcinia", ids("body-fat"))
+        self.assertIn("probiotics", ids("gut"))
+        self.assertIn("vitamin-d", ids("bone"))
+        self.assertIn("red-ginseng", ids("immunity")); self.assertIn("red-ginseng", ids("fatigue"))
+        self.assertIn("milk-thistle", ids("liver"))
+        self.assertNotIn("glucosamine", ids("bone"))
+        self.assertIn("body-fat", self.model["by_ingredient"]["garcinia"])
+        self.assertTrue(all(g["slug"] for g in got["body-fat"]["guides"]) and got["body-fat"]["guides"][0]["slug"] == "diet")
+
+    def test_render_function_and_hub(self):
+        entry = next(e for e in self.model["items"] if e["fn"]["id"] == "body-fat")
+        html = B.render_function(entry, self.model, self.core, self.cfg, self.guides["_meta"]["types"])
+        self.assertIn('rel="canonical" href="https://example.test/function/body-fat"', html)
+        self.assertIn("체지방 감소에 도움을 줄 수 있음", html)
+        for sec in ("ingredients", "materials", "products", "faq"):
+            self.assertIn(f'id="{sec}"', html)
+        self.assertIn('href="../i/garcinia.html"', html)
+        hub = B.render_functions_hub(self.model, self.data, self.core, self.cfg)
+        for e in self.model["items"]:
+            self.assertIn(f'href="function/{e["fn"]["id"]}.html"', hub)
+        self.assertIn("functions.html", B.STATIC_PAGES)

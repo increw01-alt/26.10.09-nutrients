@@ -90,6 +90,7 @@
             '<div class="md:col-span-3"><h3 class="text-sm font-bold text-ink-900">바로가기</h3><ul class="mt-3 space-y-2 text-sm text-ink-600">' +
               NAV.slice(1).map(function (n) { return '<li><a class="hover:text-brand-700" href="' + D.url(n.href) + '">' + esc(n.label === "뉴스" ? "뉴스·자료" : n.label === "영양제 추천" ? "영양제 추천 가이드" : n.label) + '</a></li>'; }).join("") +
               '<li><a class="hover:text-brand-700" href="' + D.url("finder.html") + '">나에게 맞는 영양제 찾기</a></li>' +
+              '<li><a class="hover:text-brand-700" href="' + D.url("functions.html") + '">기능성별 영양제</a></li>' +
               '<li><a class="hover:text-brand-700" href="' + D.url("compatibility-chart.html") + '">영양제 궁합표</a></li>' +
               '<li><a class="hover:text-brand-700" href="' + D.url("timing-chart.html") + '">영양제 복용 시간표</a></li>' +
               '<li><a class="hover:text-brand-700" href="' + D.url("materials.html") + '">기능성 원료 인정현황</a></li>' +

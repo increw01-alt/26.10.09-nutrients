@@ -123,7 +123,7 @@
 
     var main = document.getElementById("ingredient-main");
     main.innerHTML =
-      section("식약처 인정 기능성", "badge-check", '<p class="rounded-xl bg-brand-50 p-4 text-[15px] font-semibold leading-relaxed text-brand-900">' + esc(it.mfdsFunction || "고시형 기능성 원료 아님") + '</p><p class="mt-2 text-xs text-ink-400">식품의약품안전처 건강기능식품 기능성 원료 고시·개별인정 내용을 요약한 것입니다. 제품별 인정 내용은 라벨을 확인하세요.</p>', "", "sec-info") +
+      section("식약처 인정 기능성", "badge-check", '<p class="rounded-xl bg-brand-50 p-4 text-[15px] font-semibold leading-relaxed text-brand-900">' + esc(it.mfdsFunction || "고시형 기능성 원료 아님") + '</p><p class="mt-2 text-xs text-ink-400">식품의약품안전처 건강기능식품 기능성 원료 고시·개별인정 내용을 요약한 것입니다. 제품별 인정 내용은 라벨을 확인하세요.</p><div id="ingredient-functions" class="mt-3 flex flex-wrap items-center gap-2"></div>', "", "sec-info") +
       '<section id="ingredient-materials" class="scroll-mt-36 rounded-2xl border border-ink-100 bg-white p-6 shadow-card"><div class="skeleton h-16"></div></section>' +
       section("이런 효과를 기대할 수 있어요", "sparkles", list(it.benefits, "list-check")) +
       section("권장 섭취량과 복용법", "flask-conical",
@@ -136,6 +136,15 @@
       section(it.name + " 궁합 한눈에", "heart-handshake", compatBlock(core, it) + '<p class="mt-4 text-xs"><a class="font-bold text-brand-700 hover:underline" href="' + D.url("compatibility-chart.html") + '#' + encodeURIComponent(it.id) + '">전체 영양제 궁합표에서 ' + esc(it.name) + ' 보기 <i data-lucide="arrow-right" class="inline h-3.5 w-3.5"></i></a></p>', "", "sec-compat") +
       '<section id="shop" class="app-hide scroll-mt-36 rounded-2xl border border-ink-100 bg-white p-6 shadow-card"><h2 class="flex items-center gap-2 text-lg font-extrabold text-ink-900"><i data-lucide="shopping-cart" class="h-5 w-5 text-brand-600"></i>' + esc(it.name) + ' 제품 찾기</h2><p class="mt-2 text-sm text-ink-500">쇼핑몰에서 "' + esc(it.shopQuery) + '" 검색 결과로 바로 이동합니다. 함량·형태·보장균수 등은 제품 라벨을 꼭 확인하세요.</p><div class="mt-4">' + window.Affiliate.buttonsHtml(it.shopQuery) + '</div><div id="ingredient-products" class="mt-6"><div class="skeleton h-24"></div></div><p class="mt-4 text-[11px] text-ink-400">' + esc(window.Affiliate.disclosure()) + '</p></section>' +
       (it.faq && it.faq.length ? section("자주 묻는 질문", "circle-help", it.faq.map(function (f) { return '<details class="group border-b border-ink-100 py-3 last:border-0"><summary class="flex cursor-pointer list-none items-center justify-between gap-3 font-bold text-ink-900"><span>Q. ' + esc(f.q) + '</span><i data-lucide="chevron-down" class="h-4 w-4 shrink-0 text-ink-400 transition group-open:rotate-180"></i></summary><p class="mt-2 text-sm leading-relaxed text-ink-600">' + esc(f.a) + '</p></details>'; }).join(""), "", "sec-faq") : "");
+
+    // 이 성분이 들어간 기능성별 허브 페이지 칩 (data/functions-index.json, 빌드 생성)
+    D.functions().then(function (fx) {
+      var box = document.getElementById("ingredient-functions"); if (!box) return;
+      var mine = ((fx && fx.items) || []).filter(function (f) { return (f.ingredients || []).indexOf(it.id) >= 0; });
+      if (!mine.length) { box.remove(); return; }
+      box.innerHTML = '<span class="text-xs font-bold text-ink-500">기능성별 페이지:</span>' + mine.map(function (f) { return '<a class="chart-chip" href="' + D.url("function/" + encodeURIComponent(f.id) + ".html") + '"><i data-lucide="' + esc(f.icon) + '" class="h-3.5 w-3.5"></i>' + esc(f.label) + '</a>'; }).join("");
+      D.icons(box);
+    }).catch(function () {});
 
     // 탭 활성화: 섹션이 화면 상단에 오면 해당 탭 표시
     try {
