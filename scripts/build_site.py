@@ -24,7 +24,7 @@ from common import DATA_DIR, KST, ROOT, env, log, now_iso, read_json, write_json
 
 OUT_DIR = ROOT / "i"
 GUIDE_DIR = ROOT / "guide"
-STATIC_PAGES = ["index.html", "ingredients.html", "compatibility.html", "guides.html", "products.html", "news.html", "materials.html", "about.html", "terms.html", "privacy.html"]
+STATIC_PAGES = ["index.html", "ingredients.html", "compatibility.html", "compatibility-chart.html", "timing-chart.html", "guides.html", "products.html", "news.html", "materials.html", "about.html", "terms.html", "privacy.html"]   # compatibility-chart·timing-chart 는 build_charts() 가 생성
 
 
 def esc(s) -> str:
@@ -341,7 +341,7 @@ def ul(items: list[str], cls: str) -> str:
 def render_page(it: dict, core: dict, cfg: dict) -> str:
     cats = core["categories"]
     cat = cats.get(it["category"], {})
-    title = f"{it['name']} 효능·권장량·궁합 | {cfg['name']}"
+    title = f"{it['name']} 효능·권장량·궁합·먹는 시간 | {cfg['name']}"
     desc = it["summary"][:150]
     url = page_url(cfg, f"i/{it['id']}.html")
     by_id = core["by_id"]
@@ -400,12 +400,12 @@ def render_page(it: dict, core: dict, cfg: dict) -> str:
       <h2 class="mt-8 text-lg font-extrabold">식약처 인정 기능성</h2><p class="mt-2 text-sm text-ink-700">{esc(it.get("mfdsFunction") or "고시형 기능성 원료 아님")}</p>
       <h2 class="mt-6 text-lg font-extrabold">기대 효과</h2>{ul(it.get("benefits", []), "list-check")}
       <h2 class="mt-6 text-lg font-extrabold">권장 섭취량</h2><p class="text-sm text-ink-700">하루 권장: {esc(it["dosage"].get("daily"))} · 상한: {esc(it["dosage"].get("upper"))}</p><p class="text-sm text-ink-600">{esc(it["dosage"].get("note", ""))}</p>
-      <h2 class="mt-6 text-lg font-extrabold">섭취 시간</h2><p class="text-sm text-ink-700">{esc(it["timing"].get("label"))} — {esc(it["timing"].get("note", ""))}</p>
+      <h2 class="mt-6 text-lg font-extrabold">{esc(it["name"])} 먹는 시간</h2><p class="text-sm text-ink-700">{esc(it["timing"].get("label"))} — {esc(it["timing"].get("note", ""))}</p><p class="mt-1 text-xs"><a class="font-bold text-brand-700 hover:underline" href="../timing-chart.html#{esc(it["id"])}">영양제 복용 시간표에서 다른 성분과 비교 →</a></p>
       <h2 class="mt-6 text-lg font-extrabold">이런 분께 추천</h2>{ul(it.get("whoFor", []), "list-dot")}
       <h2 class="mt-6 text-lg font-extrabold">주의사항</h2>{ul(it.get("cautions", []), "list-warn")}{('<h3 class="mt-3 text-sm font-bold text-rose-700">약과 함께 먹을 때</h3>' + ul(it.get("drugCautions", []), "list-warn")) if it.get("drugCautions") else ""}
       {mat_html}
       {guides_html}
-      <h2 class="mt-6 text-lg font-extrabold">{esc(it["name"])} 궁합</h2>{rel_html or '<p class="text-sm text-ink-400">등록된 궁합 정보가 없습니다.</p>'}
+      <h2 class="mt-6 text-lg font-extrabold">{esc(it["name"])} 궁합</h2><p class="mb-2 text-sm text-ink-500">같이 먹으면 좋은 영양제와 시간을 나눠야 할 조합입니다. 전체는 <a class="font-bold text-brand-700 hover:underline" href="../compatibility-chart.html#{esc(it["id"])}">영양제 궁합표</a>에서 볼 수 있습니다.</p>{rel_html or '<p class="text-sm text-ink-400">등록된 궁합 정보가 없습니다.</p>'}
       {('<h2 class="mt-6 text-lg font-extrabold">자주 묻는 질문</h2>' + faq_html) if faq_html else ""}
       <p class="mt-8 text-xs text-ink-400">이 정보는 일반적인 건강 정보이며 의학적 조언을 대신하지 않습니다.</p>
     </div>'''
@@ -602,6 +602,7 @@ def render_guide(gd: dict, guides: dict, core: dict, cfg: dict) -> str:
       {('<section id="combos" class="scroll-mt-24"><h2 class="text-2xl font-extrabold tracking-tight text-ink-900">함께 먹으면 좋은 조합</h2><div class="mt-4 grid gap-4 md:grid-cols-2">' + combo_html + '</div></section>') if combo_html else ''}
       {sections_html}
       <section id="tips" class="scroll-mt-24 grid gap-4 md:grid-cols-2"><div class="rounded-2xl border border-ink-100 bg-white p-6 shadow-card"><h2 class="flex items-center gap-2 text-lg font-extrabold text-ink-900"><i data-lucide="lightbulb" class="h-5 w-5 text-amber-500"></i>이렇게 드세요</h2><div class="mt-3">{tips_html}</div></div><div class="rounded-2xl border border-amber-100 bg-white p-6 shadow-card"><h2 class="flex items-center gap-2 text-lg font-extrabold text-ink-900"><i data-lucide="triangle-alert" class="h-5 w-5 text-amber-600"></i>주의할 점</h2><div class="mt-3">{caut_html}</div></div></section>
+      <section class="rounded-2xl border border-ink-100 bg-cream-200 p-5"><h2 class="text-base font-extrabold text-ink-900">바로 보는 표</h2><p class="mt-1 text-sm text-ink-700">선택 없이 전체를 훑어보려면 <a class="font-bold text-brand-700 underline" href="../compatibility-chart.html">영양제 궁합표</a>와 <a class="font-bold text-brand-700 underline" href="../timing-chart.html">영양제 복용 시간표</a>를 참고하세요.</p></section>
       <section id="faq" class="scroll-mt-24 rounded-2xl border border-ink-100 bg-white p-6 shadow-card"><h2 class="text-lg font-extrabold text-ink-900">자주 묻는 질문</h2><div class="mt-2">{faq_html}</div></section>
       {('<section class="app-hide rounded-2xl border border-ink-100 bg-ink-50 p-6"><h2 class="flex items-center gap-2 text-lg font-extrabold text-ink-900"><i data-lucide="shopping-cart" class="h-5 w-5 text-brand-600"></i>관련 제품 찾기</h2><p class="mt-1 text-sm text-ink-500">쇼핑몰 검색 결과로 이동합니다. 함량·형태는 제품 라벨을 확인하세요.</p><div class="mt-4 grid gap-3">' + shop_html + '</div><p class="mt-3 text-[11px] text-ink-400">이 사이트는 쿠팡 파트너스 및 링크프라이스 등 제휴 마케팅 활동의 일환으로, 구매 시 일정액의 수수료를 제공받을 수 있습니다.</p></section>') if shop_html else ''}
       {('<section><h2 class="text-2xl font-extrabold tracking-tight text-ink-900">함께 보면 좋은 가이드</h2><div class="mt-4 grid gap-4 md:grid-cols-3">' + related_html + '</div></section>') if related_html else ''}
@@ -648,7 +649,7 @@ def render_guides_hub(guides: dict, cfg: dict) -> str:
     <div class="mx-auto max-w-7xl space-y-14 px-4 py-12 sm:px-6">
       <p id="guide-empty" class="hidden rounded-2xl border border-dashed border-ink-200 bg-white p-6 text-sm text-ink-600">일치하는 가이드가 없습니다. 다른 말로 검색하거나 <a class="font-bold text-brand-700 underline" href="search.html">통합 검색</a>에서 성분·제품·의약품까지 찾아보세요.</p>
       {secs}
-      <section class="rounded-3xl bg-cream-200 p-6 sm:p-8"><h2 class="text-lg font-extrabold text-ink-900">가이드를 읽는 법</h2><ul class="list-dot mt-3 text-sm text-ink-700"><li>'추천 성분'은 식약처가 인정한 기능성과 결핍 가능성을 기준으로 고른 것이며 특정 제품·브랜드를 보증하지 않습니다.</li><li>건강기능식품은 질병의 예방·치료 목적이 아닙니다. 증상이 지속되면 진료가 먼저입니다.</li><li>약을 복용 중이라면 <a class="font-bold text-brand-700 underline" href="guide/with-medication.html">약과 영양제 가이드</a>를 먼저 읽고 약사·의사와 상의하세요.</li></ul></section>
+      <section class="rounded-3xl bg-cream-200 p-6 sm:p-8"><h2 class="text-lg font-extrabold text-ink-900">가이드를 읽는 법</h2><ul class="list-dot mt-3 text-sm text-ink-700"><li>'추천 성분'은 식약처가 인정한 기능성과 결핍 가능성을 기준으로 고른 것이며 특정 제품·브랜드를 보증하지 않습니다.</li><li>건강기능식품은 질병의 예방·치료 목적이 아닙니다. 증상이 지속되면 진료가 먼저입니다.</li><li>약을 복용 중이라면 <a class="font-bold text-brand-700 underline" href="guide/with-medication.html">약과 영양제 가이드</a>를 먼저 읽고 약사·의사와 상의하세요.</li><li>표로 한눈에 보려면 <a class="font-bold text-brand-700 underline" href="compatibility-chart.html">영양제 궁합표</a>와 <a class="font-bold text-brand-700 underline" href="timing-chart.html">영양제 복용 시간표</a>를 참고하세요.</li></ul></section>
     </div>
   </main>
   <div id="site-footer"></div>
@@ -685,6 +686,276 @@ def build_guides(core: dict, cfg: dict) -> dict:
     (ROOT / "guides.html").write_text(render_guides_hub(guides, cfg), encoding="utf-8")
     log.info("가이드 페이지 %d개 + guides.html 생성", len(wanted))
     return guides
+
+
+# ---------------------------------------------------------------- 영양제 궁합표 · 복용 시간표 (핵심 키워드 정적 페이지)
+SLOT_ORDER = ["morning_empty", "morning_after", "before_meal", "lunch_after", "evening_after", "bedtime"]   # assets/js/schedule.js 의 SLOT_ORDER 와 같아야 함 (tests/test_build_site.py 가 대조)
+SLOT_META = {   # assets/js/schedule.js 의 SLOT_META 와 같은 값
+    "morning_empty": {"label": "아침 공복", "sub": "기상 직후, 식사 30분 전", "icon": "sunrise"},
+    "morning_after": {"label": "아침 식후", "sub": "아침 식사 직후", "icon": "coffee"},
+    "before_meal": {"label": "식전", "sub": "점심·저녁 식사 30분 전", "icon": "timer"},
+    "lunch_after": {"label": "점심 식후", "sub": "점심 식사 직후", "icon": "utensils"},
+    "evening_after": {"label": "저녁 식후", "sub": "저녁 식사 직후", "icon": "sunset"},
+    "bedtime": {"label": "취침 전", "sub": "잠들기 30~60분 전", "icon": "bed"},
+}
+CHART_POPULAR = ["vitamin-d", "omega-3", "probiotics", "magnesium", "calcium", "iron", "zinc", "vitamin-c", "vitamin-b-complex", "lutein", "coq10", "milk-thistle"]   # 한눈에 보는 궁합표의 성분 (자주 찾는 순)
+CHART_TYPES = ["synergy", "caution", "avoid", "neutral"]
+CHART_SYMBOL = {"synergy": "●", "caution": "▲", "avoid": "✕", "neutral": "○"}
+CHART_PATH = "compatibility-chart.html"
+TIMING_PATH = "timing-chart.html"
+
+
+def short_name(name: str) -> str:
+    """'프로바이오틱스 (유산균)' → '프로바이오틱스' (행렬 머리글용)."""
+    return re.sub(r"\s*\(.*?\)\s*", " ", str(name or "")).strip()
+
+
+def chart_model(core: dict, popular: list[str] | None = None) -> dict:
+    """궁합표 자료: 성분별 상대 목록(좋은·주의·피함·무난, 강한 쌍부터)과 자주 찾는 성분 행렬.
+    데이터(interactions.json)에 있는 쌍만 쓴다 — 없는 쌍은 None 으로 두고 규칙 판정은 궁합 체크(data.js resolvePair)에 맡긴다."""
+    by_id = core["by_id"]
+    partners: dict[str, dict[str, list[dict]]] = {i: {t: [] for t in CHART_TYPES} for i in by_id}
+    lookup: dict[frozenset, dict] = {}
+    counts = {t: 0 for t in CHART_TYPES}
+    for p in core["pairs"]:
+        a, b = p["pair"]
+        if a not in by_id or b not in by_id or p.get("type") not in counts:
+            continue
+        lookup[frozenset((a, b))] = p
+        counts[p["type"]] += 1
+        for x, y in ((a, b), (b, a)):
+            partners[x][p["type"]].append({"id": y, "name": by_id[y]["name"], "level": p.get("level", 0), "hours": p.get("separateHours"), "title": p.get("title", "")})
+    for groups in partners.values():
+        for lst in groups.values():
+            lst.sort(key=lambda r: (-r["level"], r["name"]))
+    ids = [i for i in (popular or CHART_POPULAR) if i in by_id]
+    cells = {a: {b: ("self" if a == b else (lookup.get(frozenset((a, b)), {}).get("type"))) for b in ids} for a in ids}
+    return {"partners": partners, "matrix": {"ids": ids, "cells": cells}, "counts": counts, "total": len(lookup)}
+
+
+def timing_model(ingredients: list[dict], categories: dict | None = None) -> dict:
+    """복용 시간표 자료: 성분별 행(권장 시간·기본 시간대·대체 시간대·메모·지용성)과 시간대별 묶음, 지용성 목록."""
+    cat_order = list((categories or {}).keys())
+
+    def key(it: dict):
+        return (cat_order.index(it["category"]) if it["category"] in cat_order else 99, it["name"])
+
+    rows = []
+    for it in sorted(ingredients, key=key):
+        t = it.get("timing") or {}
+        slot = t.get("slot") if t.get("slot") in SLOT_META else "morning_after"
+        rows.append({"id": it["id"], "name": it["name"], "category": it["category"], "label": t.get("label") or SLOT_META[slot]["label"], "slot": slot,
+                     "alts": [s for s in (t.get("altSlots") or []) if s in SLOT_META and s != slot], "note": t.get("note", ""), "fat": bool(it.get("fatSoluble"))})
+    slots = [dict(key=s, **SLOT_META[s], items=[r for r in rows if r["slot"] == s]) for s in SLOT_ORDER]
+    return {"rows": rows, "slots": slots, "fat": [r for r in rows if r["fat"]]}
+
+
+def faq_block(items: list[tuple[str, str]], heading: str = "자주 묻는 질문") -> tuple[str, dict]:
+    """보이는 FAQ 섹션 HTML 과 같은 내용의 FAQPage JSON-LD (구글은 보이는 본문과 구조화 데이터가 같아야 한다)."""
+    html_ = f'<section id="faq" class="scroll-mt-24 rounded-2xl border border-ink-100 bg-white p-6 shadow-card"><h2 class="text-lg font-extrabold text-ink-900">{esc(heading)}</h2><div class="mt-2 divide-y divide-ink-100">' + \
+        "".join(f'<details class="group py-3"><summary class="cursor-pointer list-none font-bold text-ink-900">{esc(q)}</summary><p class="mt-2 text-sm leading-relaxed text-ink-700">{esc(a)}</p></details>' for q, a in items) + "</div></section>"
+    ld = {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in items]}
+    return html_, ld
+
+
+def render_compat_chart(core: dict, cfg: dict) -> str:
+    """영양제 궁합표 — 궁합 데이터 전체를 성분별로 펼친 정적 페이지 ('영양제 궁합표'·'같이 먹으면 안되는 영양제 표' 검색용)."""
+    m = chart_model(core)
+    by_id, cats, types = core["by_id"], core["categories"], core["types"]
+    n, total = m["counts"], m["total"]
+    tool = "compatibility.html"
+    title = f"영양제 궁합표 — 같이 먹으면 좋은 조합·시간을 나눠야 할 조합 한눈에 | {cfg['name']}"
+    desc = (f"성분 {len(by_id)}종 사이 조합 {total}쌍의 영양제 궁합표. 함께 먹으면 좋은 궁합 {n['synergy']}쌍, 시간을 띄우거나 용량에 주의할 궁합 {n['caution']}쌍을 "
+            f"한눈에 보는 표와 성분별 목록으로 정리했습니다. 칼슘과 철분, 비타민 D와 칼슘처럼 자주 묻는 조합을 바로 확인하고 궁합 체크로 이어집니다.")
+    faq_items = [
+        ("영양제 궁합표는 어떤 기준으로 만들었나요?", f"성분 사전 {len(by_id)}종 사이의 조합을 흡수 경쟁, 기능 보완, 중복 섭취 가능성을 기준으로 '함께 먹으면 좋아요', '시간을 띄우거나 용량 주의', '특별한 상호작용 없음'으로 나눴습니다. 현재 {total}쌍이 등록되어 있으며, 식약처 인정 기능성 범위의 일반 정보이고 의학적 조언이 아닙니다."),
+        ("'주의'로 표시된 영양제는 아예 같이 먹으면 안 되나요?", "대부분은 같은 시간에 먹으면 흡수가 줄어드는 조합이라, 표에 적힌 간격(보통 2시간)을 두거나 끼니를 나누면 됩니다. 궁합 체크에서 성분을 고르면 간격을 고려한 하루 복용 시간표를 자동으로 만들어 줍니다."),
+        ("표에 없는 조합은 어떻게 확인하나요?", "표의 '–'는 아직 데이터에 없는 조합입니다. 궁합 체크에서 두 성분을 고르면 식이섬유 계열의 간격, 종합비타민과의 중복, 지용성 성분의 식후 섭취 같은 규칙으로 판정해 보여줍니다."),
+    ]
+    faq_html, faq_ld = faq_block(faq_items)
+    ld = {"@context": "https://schema.org", "@graph": [
+        {"@type": "BreadcrumbList", "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "홈", "item": f"{cfg['url']}/"},
+            {"@type": "ListItem", "position": 2, "name": "영양제 궁합 체크", "item": page_url(cfg, tool)},
+            {"@type": "ListItem", "position": 3, "name": "영양제 궁합표", "item": page_url(cfg, CHART_PATH)}]},
+        faq_ld,
+    ]}
+    head = head_html(cfg, title=title, desc=desc, path=CHART_PATH, root="./", keywords="영양제 궁합표, 영양제 궁합, 같이 먹으면 안되는 영양제, 같이 먹으면 좋은 영양제, 영양제 조합표", og_type="website", ld=ld)
+
+    # 1) 자주 찾는 성분 행렬
+    ids = m["matrix"]["ids"]
+    cells = m["matrix"]["cells"]
+    head_row = "".join(f'<th scope="col"><a href="#{esc(b)}">{esc(short_name(by_id[b]["name"]))}</a></th>' for b in ids)
+    body_rows = ""
+    for a in ids:
+        tds = ""
+        for b in ids:
+            t = cells[a][b]
+            if t == "self":
+                tds += '<td class="chart-self" aria-hidden="true"></td>'
+            elif t:
+                label = types.get(t, {}).get("label", t)
+                tds += f'<td class="chart-cell chart-{esc(t)}"><a href="{tool}?items={esc(a)},{esc(b)}" title="{esc(short_name(by_id[a]["name"]))} + {esc(short_name(by_id[b]["name"]))}: {esc(label)}">{CHART_SYMBOL[t]}<span class="sr-only"> {esc(label)}</span></a></td>'
+            else:
+                tds += f'<td class="chart-cell chart-none"><a href="{tool}?items={esc(a)},{esc(b)}" title="데이터에 없는 조합 — 궁합 체크에서 규칙으로 판정">–<span class="sr-only"> 데이터 없음</span></a></td>'
+        body_rows += f'<tr><th scope="row"><a href="#{esc(a)}">{esc(short_name(by_id[a]["name"]))}</a></th>{tds}</tr>'
+    legend = "".join(f'<span class="chart-legend-item"><span class="chart-cell chart-{t}">{CHART_SYMBOL[t]}</span>{esc(types.get(t, {}).get("label", t))}</span>' for t in ("synergy", "caution", "neutral")) + \
+        '<span class="chart-legend-item"><span class="chart-cell chart-none">–</span>데이터 없음 (궁합 체크에서 규칙으로 판정)</span>'
+    matrix_html = (f'<section id="matrix" class="scroll-mt-24"><h2 class="text-2xl font-extrabold tracking-tight text-ink-900">한눈에 보는 영양제 궁합표 — 자주 찾는 성분 {len(ids)}종</h2>'
+                   f'<p class="mt-1 text-sm text-ink-500">칸을 누르면 그 조합의 이유와 복용 시간표를 궁합 체크에서 바로 볼 수 있습니다. 행·열 이름을 누르면 아래 성분별 목록으로 이동합니다.</p>'
+                   f'<div class="chart-matrix-wrap mt-4"><table class="chart-matrix"><caption class="sr-only">자주 찾는 영양제 성분 {len(ids)}종의 궁합 행렬</caption><thead><tr><th scope="col"><span class="sr-only">성분</span></th>{head_row}</tr></thead><tbody>{body_rows}</tbody></table></div>'
+                   f'<p class="chart-legend mt-3">{legend}</p></section>')
+
+    # 2) 분류별 성분 블록
+    def chip(pid: str, p: dict, t: str) -> str:
+        extra = f' · {p["hours"]}시간 간격' if t == "caution" and p.get("hours") else (" ★" if t == "synergy" and p.get("level", 0) >= 3 else "")
+        return f'<a class="chart-chip chart-chip-{t}" href="{tool}?items={esc(pid)},{esc(p["id"])}" title="{esc(p["title"])}">{esc(p["name"])}{esc(extra)}</a>'
+
+    blocks = ""
+    for ckey, cat in cats.items():
+        items = [it for it in by_id.values() if it["category"] == ckey]
+        if not items:
+            continue
+        arts = ""
+        for it in sorted(items, key=lambda x: x["name"]):
+            g = m["partners"][it["id"]]
+            groups = ""
+            for t, label in (("synergy", "함께 먹으면 좋아요"), ("caution", "시간을 띄우거나 용량 주의"), ("avoid", "같이 먹지 않는 게 좋아요")):
+                if g[t]:
+                    groups += f'<div class="chart-group"><span class="badge badge-{t}">{esc(label)} {len(g[t])}</span><span class="chart-chips">{"".join(chip(it["id"], p, t) for p in g[t])}</span></div>'
+            if g["neutral"]:
+                groups += f'<details class="chart-neutral"><summary>특별한 상호작용 없음 {len(g["neutral"])}가지 — 같은 시간에 먹어도 무방</summary><p>{esc(", ".join(p["name"] for p in g["neutral"]))}</p></details>'
+            if not groups:
+                groups = '<p class="text-sm text-ink-400">등록된 궁합 정보가 없습니다. 궁합 체크에서 규칙으로 판정합니다.</p>'
+            arts += (f'<article id="{esc(it["id"])}" class="chart-row scroll-mt-28"><h4 class="chart-row-title"><a href="i/{esc(it["id"])}.html">{esc(it["name"])}</a>'
+                     f'<a class="chart-tool" href="{tool}?items={esc(it["id"])}">궁합 체크 <i data-lucide="arrow-right" class="h-3.5 w-3.5"></i></a></h4>{groups}</article>')
+        blocks += f'<div id="cat-{esc(ckey)}" class="scroll-mt-24"><h3 class="mt-8 flex items-center gap-2 text-xl font-extrabold text-ink-900"><span class="badge {cat_class(cat.get("color", ""))}">{esc(cat.get("label", ckey))}</span><span class="text-sm font-semibold text-ink-400">{len(items)}종</span></h3><div class="mt-3 space-y-3">{arts}</div></div>'
+    cat_chips = "".join(f'<a href="#cat-{esc(k)}" class="chip">{esc(c.get("label", k))}</a>' for k, c in cats.items() if any(it["category"] == k for it in by_id.values()))
+
+    body = f"""
+<body data-page="compat" data-path="{CHART_PATH}" class="min-h-screen antialiased">
+  {SKIP_LINK}
+  <main id="main">
+    <section class="page-hero"><div class="mx-auto max-w-7xl px-4 pb-10 pt-8 sm:px-6 sm:pt-10">
+      <nav class="text-xs text-ink-500" aria-label="경로"><a class="hover:text-brand-700" href="index.html">홈</a> › <a class="hover:text-brand-700" href="{tool}">영양제 궁합 체크</a> › <span class="text-ink-800">영양제 궁합표</span></nav>
+      <p class="eyebrow-kicker mt-4"><i data-lucide="heart-handshake"></i> 영양제 궁합표</p>
+      <h1 class="page-title mt-3">영양제 궁합표: 같이 먹어도 되는 조합, 나눠 먹어야 하는 조합</h1>
+      <p class="page-lead mt-4 max-w-3xl">성분 사전 <strong>{len(by_id)}종</strong> 사이의 조합 <strong>{total}쌍</strong>을 한 장에 펼쳤습니다. 함께 먹으면 좋은 궁합 {n['synergy']}쌍, 시간을 띄우거나 용량에 주의할 궁합 {n['caution']}쌍, 특별한 상호작용이 없는 조합 {n['neutral']}쌍입니다. 먹고 있는 영양제를 모두 고르려면 궁합 체크가, 성분 하나의 궁합을 훑어보려면 이 표가 빠릅니다.</p>
+      <div class="mt-6 flex flex-wrap gap-3"><a href="{tool}" class="btn-primary"><i data-lucide="heart-handshake"></i>내 영양제로 궁합 체크 <i data-lucide="arrow-right"></i></a><a href="{TIMING_PATH}" class="btn-outline"><i data-lucide="calendar-days"></i>영양제 복용 시간표</a></div>
+      <div class="mt-5 flex flex-wrap gap-2"><a href="#matrix" class="chip">한눈에 보기</a>{cat_chips}</div>
+    </div></section>
+    <div class="mx-auto max-w-7xl space-y-14 px-4 py-12 sm:px-6">
+      {matrix_html}
+      <section id="by-ingredient" class="scroll-mt-24"><h2 class="text-2xl font-extrabold tracking-tight text-ink-900">성분별 영양제 궁합표 — 전체 {len(by_id)}종</h2>
+        <p class="mt-1 text-sm text-ink-500">성분 이름을 누르면 효능·권장량·먹는 시간을, 조합 칩을 누르면 그 조합의 이유를 궁합 체크에서 봅니다. ★는 특히 잘 맞는 조합, '2시간 간격'은 같은 시간에 먹지 않는 것이 좋은 조합입니다.</p>
+        {blocks}
+      </section>
+      <section class="rounded-3xl bg-cream-200 p-6 sm:p-8"><h2 class="text-lg font-extrabold text-ink-900">궁합표 읽는 법</h2><ul class="list-dot mt-3 text-sm text-ink-700">
+        <li>'함께 먹으면 좋아요'는 흡수나 기능을 서로 돕는 조합입니다. 같은 시간, 같은 끼니에 드셔도 됩니다.</li>
+        <li>'시간을 띄우거나 용량 주의'는 같은 시간에 먹으면 흡수가 줄거나 중복되는 조합입니다. 표에 적힌 간격만 지키면 두 가지 모두 드실 수 있습니다.</li>
+        <li>'특별한 상호작용 없음'은 같은 시간에 먹어도 무방하다는 뜻이며, 효과를 보장한다는 뜻은 아닙니다.</li>
+        <li>약을 복용 중이라면 <a class="font-bold text-brand-700 underline" href="guide/with-medication.html">약과 영양제 가이드</a>를 먼저 읽고 약사·의사와 상의하세요. 원칙은 <a class="font-bold text-brand-700 underline" href="guide/how-to-combine.html">영양제 조합 기본 원칙</a>과 <a class="font-bold text-brand-700 underline" href="guide/do-not-take-together.html">같이 먹으면 안되는 영양제 조합</a> 가이드에 있습니다.</li>
+      </ul></section>
+      {faq_html}
+    </div>
+  </main>
+  <div id="site-footer"></div>
+</body>
+</html>
+"""
+    return head + body
+
+
+def render_timing_chart(core: dict, cfg: dict) -> str:
+    """영양제 복용 시간표 — 성분별 권장 시간대를 한 장에 모은 정적 페이지 ('영양제 복용 시간표'·'영양제 먹는 시간표' 검색용)."""
+    by_id, cats = core["by_id"], core["categories"]
+    tm = timing_model(list(by_id.values()), cats)
+    rows, slots = tm["rows"], tm["slots"]
+    title = f"영양제 복용 시간표 — 아침·점심·저녁·공복·식후, 성분별 먹는 시간 한눈에 | {cfg['name']}"
+    desc = (f"성분 {len(rows)}종의 영양제 복용 시간표. 아침 공복·아침 식후·식전·점심 식후·저녁 식후·취침 전 여섯 시간대로 나눠 기본 시간대와 대체 시간대, 지용성 여부를 정리했습니다. "
+            f"내 영양제에 저장하면 궁합 간격까지 반영한 하루 시간표가 만들어집니다.")
+
+    def names(key: str) -> str:
+        return ", ".join(r["name"] for r in rows if r["slot"] == key)
+
+    faq_items = [
+        ("영양제는 아침에 먹나요, 저녁에 먹나요?", f"성분마다 다릅니다. 지용성 성분(비타민 A·D·E·K, 오메가3, 루테인, 코엔자임Q10 등 {len(tm['fat'])}종)은 지방이 포함된 식사 직후가 흡수에 유리하고, 아침 공복이 기본인 성분은 {names('morning_empty') or '없음'}, 취침 전이 기본인 성분은 {names('bedtime') or '없음'}입니다. 표의 '기본 시간대'와 '대체 시간대' 안에서 생활 리듬에 맞춰 고르면 됩니다."),
+        ("여러 영양제를 한 번에 먹어도 되나요?", "대부분은 같은 시간에 드셔도 되지만, 칼슘과 철분처럼 흡수를 서로 방해하는 조합은 2시간 정도 간격을 두는 것이 좋습니다. 어떤 조합이 그런지는 영양제 궁합표에서 확인할 수 있습니다."),
+        ("내 영양제에 맞는 시간표를 자동으로 만들 수 있나요?", "네. 내 영양제에 먹는 성분을 저장하면 기본 시간대에 배치하고, 간격이 필요한 조합은 대체 시간대로 옮겨 하루 시간표를 만들어 줍니다. 앱에서는 시간대별 복용 알림도 받을 수 있습니다."),
+    ]
+    faq_html, faq_ld = faq_block(faq_items)
+    ld = {"@context": "https://schema.org", "@graph": [
+        {"@type": "BreadcrumbList", "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "홈", "item": f"{cfg['url']}/"},
+            {"@type": "ListItem", "position": 2, "name": "영양제 추천 가이드", "item": page_url(cfg, "guides.html")},
+            {"@type": "ListItem", "position": 3, "name": "영양제 복용 시간표", "item": page_url(cfg, TIMING_PATH)}]},
+        faq_ld,
+    ]}
+    head = head_html(cfg, title=title, desc=desc, path=TIMING_PATH, root="./", keywords="영양제 복용 시간표, 영양제 먹는 시간표, 영양제 복용 시간, 영양제 먹는 시간, 공복 영양제, 식후 영양제", og_type="website", ld=ld)
+
+    # 1) 시간대별
+    slot_cards = ""
+    for s in slots:
+        chips = "".join(f'<a class="chart-chip chart-chip-slot" href="#{esc(r["id"])}" title="{esc(r["label"])}">{esc(r["name"])}</a>' for r in s["items"]) or '<span class="text-sm text-ink-400">기본 시간대로 둔 성분이 없습니다</span>'
+        slot_cards += (f'<div class="timing-slot"><h3 class="flex items-center gap-2 text-base font-extrabold text-ink-900"><i data-lucide="{esc(s["icon"])}" class="h-5 w-5 text-brand-600"></i>{esc(s["label"])}<span class="text-xs font-semibold text-ink-400">{len(s["items"])}종</span></h3>'
+                       f'<p class="mt-0.5 text-xs text-ink-500">{esc(s["sub"])}</p><div class="chart-chips mt-3">{chips}</div></div>')
+
+    # 2) 성분별 표
+    trs = ""
+    cur = None
+    for r in rows:
+        if r["category"] != cur:
+            cur = r["category"]
+            c = cats.get(cur, {})
+            trs += f'<tr class="timing-cat"><th colspan="5" scope="colgroup"><span class="badge {cat_class(c.get("color", ""))}">{esc(c.get("label", cur))}</span></th></tr>'
+        alts = " · ".join(SLOT_META[a]["label"] for a in r["alts"]) or "—"
+        fat = ' <span class="badge badge-neutral">지용성</span>' if r["fat"] else ""
+        trs += (f'<tr id="{esc(r["id"])}" class="scroll-mt-28"><th scope="row"><a href="i/{esc(r["id"])}.html">{esc(r["name"])}</a>{fat}</th>'
+                f'<td>{esc(r["label"])}</td><td><span class="chart-chip chart-chip-slot chart-chip-static">{esc(SLOT_META[r["slot"]]["label"])}</span></td><td>{esc(alts)}</td><td class="timing-note">{esc(r["note"])}</td></tr>')
+    table_html = (f'<div class="timing-table-wrap"><table class="timing-table"><caption class="sr-only">성분별 영양제 복용 시간표</caption>'
+                  f'<thead><tr><th scope="col">성분</th><th scope="col">권장 시간</th><th scope="col">기본 시간대</th><th scope="col">대체 시간대</th><th scope="col">메모</th></tr></thead><tbody>{trs}</tbody></table></div>')
+
+    # 3) 원칙 상자 (데이터에서)
+    def box(title_: str, body_: str, icon: str) -> str:
+        return f'<div class="rounded-2xl border border-ink-100 bg-white p-5 shadow-card"><h3 class="flex items-center gap-2 text-base font-extrabold text-ink-900"><i data-lucide="{icon}" class="h-5 w-5 text-brand-600"></i>{esc(title_)}</h3><p class="mt-2 text-sm leading-relaxed text-ink-700">{body_}</p></div>'
+    fat_names = ", ".join(r["name"] for r in tm["fat"])
+    boxes = box(f"지용성 {len(tm['fat'])}종은 식후", f"지방이 포함된 식사 직후가 흡수에 유리합니다: {esc(fat_names)}.", "droplet") + \
+        box("공복이 기본인 성분", f"{esc(names('morning_empty') or '없음')}. 속이 불편하면 각 성분 페이지의 대체 시간대를 참고하세요.", "sunrise") + \
+        box("취침 전이 기본인 성분", f"{esc(names('bedtime') or '없음')}. 잠들기 30~60분 전에 드세요.", "bed") + \
+        box("식전이 기본인 성분", f"{esc(names('before_meal') or '없음')}. 식사 30분 전, 물과 함께가 기본입니다.", "timer")
+
+    body = f"""
+<body data-page="guides" data-path="{TIMING_PATH}" class="min-h-screen antialiased">
+  {SKIP_LINK}
+  <main id="main">
+    <section class="page-hero"><div class="mx-auto max-w-7xl px-4 pb-10 pt-8 sm:px-6 sm:pt-10">
+      <nav class="text-xs text-ink-500" aria-label="경로"><a class="hover:text-brand-700" href="index.html">홈</a> › <a class="hover:text-brand-700" href="guides.html">영양제 추천 가이드</a> › <span class="text-ink-800">영양제 복용 시간표</span></nav>
+      <p class="eyebrow-kicker mt-4"><i data-lucide="calendar-days"></i> 영양제 복용 시간표</p>
+      <h1 class="page-title mt-3">영양제 복용 시간표: 성분별 먹는 시간 한눈에</h1>
+      <p class="page-lead mt-4 max-w-3xl">성분 <strong>{len(rows)}종</strong>을 아침 공복·아침 식후·식전·점심 식후·저녁 식후·취침 전 여섯 시간대로 나눴습니다. 기본 시간대와 대체 시간대, 지용성 여부를 보고 생활 리듬에 맞춰 고르세요. 먹는 성분을 내 영양제에 저장하면 궁합 간격까지 반영한 하루 시간표가 자동으로 만들어집니다.</p>
+      <div class="mt-6 flex flex-wrap gap-3"><a href="my.html" class="btn-primary"><i data-lucide="pill"></i>내 영양제로 시간표 만들기 <i data-lucide="arrow-right"></i></a><a href="guide/when-to-take.html" class="btn-outline"><i data-lucide="clock"></i>영양제 먹는 시간 가이드</a><a href="{CHART_PATH}" class="btn-outline"><i data-lucide="heart-handshake"></i>영양제 궁합표</a></div>
+      <div class="mt-5 flex flex-wrap gap-2"><a href="#by-slot" class="chip">시간대별</a><a href="#by-ingredient" class="chip">성분별 표</a><a href="#rules" class="chip">원칙</a><a href="#faq" class="chip">자주 묻는 질문</a></div>
+    </div></section>
+    <div class="mx-auto max-w-7xl space-y-14 px-4 py-12 sm:px-6">
+      <section id="by-slot" class="scroll-mt-24"><h2 class="text-2xl font-extrabold tracking-tight text-ink-900">시간대별 영양제 복용 시간표</h2><p class="mt-1 text-sm text-ink-500">각 성분의 기본 시간대입니다. 성분을 누르면 아래 표의 권장 시간·대체 시간대·메모로 이동합니다.</p><div class="mt-5 grid gap-4 md:grid-cols-2 lg:grid-cols-3">{slot_cards}</div></section>
+      <section id="by-ingredient" class="scroll-mt-24"><h2 class="text-2xl font-extrabold tracking-tight text-ink-900">성분별 영양제 복용 시간표 — 전체 {len(rows)}종</h2><p class="mt-1 text-sm text-ink-500">권장 시간은 성분 사전의 섭취 시간 안내와 같습니다. 대체 시간대는 궁합 간격이 필요하거나 생활 리듬이 다를 때 옮길 수 있는 시간대입니다.</p><div class="mt-4">{table_html}</div></section>
+      <section id="rules" class="scroll-mt-24"><h2 class="text-2xl font-extrabold tracking-tight text-ink-900">한눈에 보는 원칙</h2><div class="mt-4 grid gap-4 md:grid-cols-2">{boxes}</div></section>
+      {faq_html}
+      <section class="rounded-3xl bg-cream-200 p-6 sm:p-8"><h2 class="text-lg font-extrabold text-ink-900">함께 보면 좋은 가이드</h2><ul class="list-dot mt-3 text-sm text-ink-700"><li><a class="font-bold text-brand-700 underline" href="guide/when-to-take.html">영양제 먹는 시간 총정리</a> — 아침·저녁·공복·식후 원칙</li><li><a class="font-bold text-brand-700 underline" href="guide/empty-stomach.html">공복에 먹어도 되는 영양제</a> — 속쓰림 없이 먹는 법</li><li><a class="font-bold text-brand-700 underline" href="guide/how-to-combine.html">영양제 조합 기본 원칙</a> — 먹는 순서와 나눠 먹는 조합</li><li><a class="font-bold text-brand-700 underline" href="{CHART_PATH}">영양제 궁합표</a> — 간격이 필요한 조합 전체</li></ul></section>
+    </div>
+  </main>
+  <div id="site-footer"></div>
+</body>
+</html>
+"""
+    return head + body
+
+
+def build_charts(core: dict, cfg: dict) -> None:
+    """영양제 궁합표·복용 시간표 정적 페이지 생성 (루트, sitemap 은 STATIC_PAGES 로)."""
+    (ROOT / CHART_PATH).write_text(render_compat_chart(core, cfg), encoding="utf-8")
+    (ROOT / TIMING_PATH).write_text(render_timing_chart(core, cfg), encoding="utf-8")
+    log.info("영양제 궁합표·복용 시간표 생성 (%s · %s)", CHART_PATH, TIMING_PATH)
 
 
 def build_sitemap(ingredients: list[dict], cfg: dict, data_date: str, guides: dict | None = None) -> None:
@@ -727,6 +998,7 @@ def main() -> int:
     log.info("성분 페이지 %d개 생성 (i/)", len(wanted))
 
     guides = build_guides(core, cfg)
+    build_charts(core, cfg)
     build_sitemap(ingredients["items"], cfg, data_date, guides)
     inject_verification(cfg)
     inject_pwa_tags()

@@ -1,4 +1,5 @@
 """scripts/build_site.py 의 PWA 관련 순수 함수 테스트. 실행: python -m unittest tests.test_build_site -v"""
+import re
 import sys
 import unittest
 from pathlib import Path
@@ -64,3 +65,79 @@ class ServiceWorkerBuildTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ChartModelTests(unittest.TestCase):
+    """영양제 궁합표·복용 시간표(compatibility-chart.html · timing-chart.html) 자료 함수."""
+
+    CORE = {
+        "by_id": {
+            "a": {"id": "a", "name": "A 성분", "category": "vitamin", "timing": {"label": "식후", "slot": "morning_after", "altSlots": ["evening_after"]}, "fatSoluble": True},
+            "b": {"id": "b", "name": "B 성분", "category": "mineral", "timing": {"label": "취침 전", "slot": "bedtime", "altSlots": ["bedtime", "evening_after"]}},
+            "c": {"id": "c", "name": "C 성분 (별칭)", "category": "mineral", "timing": {}},
+        },
+        "pairs": [
+            {"pair": ["a", "b"], "type": "synergy", "level": 3, "title": "a+b", "detail": "", "tip": ""},
+            {"pair": ["c", "b"], "type": "caution", "level": 1, "separateHours": 2, "title": "c+b", "detail": "", "tip": ""},
+            {"pair": ["x", "a"], "type": "synergy", "level": 1, "title": "없는 성분", "detail": "", "tip": ""},
+        ],
+        "categories": {"vitamin": {"label": "비타민"}, "mineral": {"label": "미네랄"}},
+        "types": {},
+    }
+
+    def test_slot_meta_matches_schedule_js(self):
+        js = (Path(__file__).resolve().parents[1] / "assets/js/schedule.js").read_text(encoding="utf-8")
+        order = re.search(r"SLOT_ORDER = \[(.*?)\]", js).group(1)
+        self.assertEqual(re.findall(r'"([a-z_]+)"', order), B.SLOT_ORDER)
+        for key, meta in B.SLOT_META.items():
+            m = re.search(key + r':\s*\{\s*label:\s*"([^"]+)",\s*sub:\s*"([^"]+)",\s*icon:\s*"([^"]+)"', js)
+            self.assertIsNotNone(m, key)
+            self.assertEqual((m.group(1), m.group(2), m.group(3)), (meta["label"], meta["sub"], meta["icon"]), key)
+
+    def test_chart_model_is_symmetric_and_skips_unknown(self):
+        m = B.chart_model(self.CORE, popular=["a", "b", "c", "zzz"])
+        p = m["partners"]
+        self.assertEqual([x["id"] for x in p["a"]["synergy"]], ["b"])
+        self.assertEqual([x["id"] for x in p["b"]["synergy"]], ["a"])
+        self.assertEqual(p["b"]["caution"][0]["hours"], 2)
+        self.assertEqual(m["total"], 2)                      # 사전에 없는 성분(x)의 쌍은 제외
+        self.assertEqual(m["counts"], {"synergy": 1, "caution": 1, "avoid": 0, "neutral": 0})
+        self.assertEqual(m["matrix"]["ids"], ["a", "b", "c"])   # 모르는 id 는 행렬에서 제외
+        cells = m["matrix"]["cells"]
+        self.assertEqual(cells["a"]["a"], "self")
+        self.assertEqual(cells["a"]["b"], "synergy")
+        self.assertEqual(cells["b"]["c"], "caution")
+        self.assertIsNone(cells["a"]["c"])                   # 데이터에 없는 쌍은 None (무난으로 보이면 안 됨)
+
+    def test_chart_model_sorts_strong_pairs_first(self):
+        core = dict(self.CORE, pairs=[
+            {"pair": ["a", "c"], "type": "synergy", "level": 1, "title": "", "detail": "", "tip": ""},
+            {"pair": ["a", "b"], "type": "synergy", "level": 3, "title": "", "detail": "", "tip": ""},
+        ])
+        self.assertEqual([x["id"] for x in B.chart_model(core)["partners"]["a"]["synergy"]], ["b", "c"])
+
+    def test_timing_model_rows_and_slots(self):
+        tm = B.timing_model(list(self.CORE["by_id"].values()), self.CORE["categories"])
+        self.assertEqual([r["id"] for r in tm["rows"]], ["a", "b", "c"])       # 분류 순서 → 이름순
+        self.assertTrue(all(r["slot"] in B.SLOT_META for r in tm["rows"]))
+        c = next(r for r in tm["rows"] if r["id"] == "c")
+        self.assertEqual((c["slot"], c["label"]), ("morning_after", "아침 식후"))   # timing 이 비면 기본값
+        b = next(r for r in tm["rows"] if r["id"] == "b")
+        self.assertEqual(b["alts"], ["evening_after"])                          # 기본 시간대와 같은 대체는 제외
+        self.assertEqual([s["key"] for s in tm["slots"]], B.SLOT_ORDER)
+        self.assertEqual([r["id"] for r in next(s for s in tm["slots"] if s["key"] == "bedtime")["items"]], ["b"])
+        self.assertEqual([r["id"] for r in tm["fat"]], ["a"])
+
+    def test_render_uses_real_data_once_per_ingredient(self):
+        ingredients = B.read_json(B.DATA_DIR / "ingredients.json")
+        interactions = B.read_json(B.DATA_DIR / "interactions.json")
+        core = {"categories": ingredients["_meta"]["categories"], "by_id": {i["id"]: i for i in ingredients["items"]}, "pairs": interactions["pairs"], "types": interactions["_meta"]["types"]}
+        cfg = {"name": "테스트", "url": "https://example.test"}
+        chart = B.render_compat_chart(core, cfg)
+        timing = B.render_timing_chart(core, cfg)
+        for it in ingredients["items"]:
+            self.assertEqual(chart.count(f'<article id="{it["id"]}"'), 1, it["id"])
+            self.assertEqual(timing.count(f'<tr id="{it["id"]}"'), 1, it["id"])
+        self.assertIn('rel="canonical" href="https://example.test/compatibility-chart"', chart)
+        self.assertIn('rel="canonical" href="https://example.test/timing-chart"', timing)
+        self.assertNotIn("inferred", chart)   # 규칙 판정은 파이썬에 복제하지 않는다

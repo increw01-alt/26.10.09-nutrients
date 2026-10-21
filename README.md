@@ -19,6 +19,8 @@ project/
 ├─ ingredient.html            # 성분 상세 (JS 렌더링, ?id=vitamin-d)
 ├─ i/<id>.html                # 성분별 정적 상세 페이지 (SEO용, scripts/build_site.py 가 생성)
 ├─ compatibility.html         # 궁합 체크 (최대 8개 선택, 매트릭스, 복용 시간표, 공유 링크)
+├─ compatibility-chart.html   # 영양제 궁합표 — 12종 행렬 + 성분별 좋은·주의·무난 목록 (scripts/build_site.py 가 생성)
+├─ timing-chart.html          # 영양제 복용 시간표 — 시간대별·성분별 표 (scripts/build_site.py 가 생성)
 ├─ guides.html                # 영양제 가이드 허브 (scripts/build_site.py 가 생성)
 ├─ guide/<slug>.html          # 고민별·대상별·복용법 가이드 28개 (data/guides.json 에서 생성)
 ├─ products.html              # 제품 찾기 (식약처 신고 제품 + 쇼핑몰 링크 + 변경 이력)

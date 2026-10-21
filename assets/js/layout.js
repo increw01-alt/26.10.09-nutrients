@@ -6,9 +6,9 @@
   var NAV = [
     { key: "home", label: "홈", href: "index.html", desktop: false },
     { key: "ingredients", label: "성분 사전", href: "ingredients.html" },
-    { key: "compat", label: "궁합 체크", href: "compatibility.html" },
+    { key: "compat", label: "영양제 궁합", href: "compatibility.html" },
     { key: "my", label: "내 영양제", href: "my.html" },
-    { key: "guides", label: "가이드", href: "guides.html" },
+    { key: "guides", label: "영양제 추천", href: "guides.html" },
     { key: "products", label: "제품 찾기", href: "products.html" },
     { key: "news", label: "뉴스", href: "news.html" },
     { key: "about", label: "소개", href: "about.html" }
@@ -88,7 +88,9 @@
               '<p class="mt-4 text-xs leading-relaxed text-ink-400" id="footer-updated"></p>' +
             '</div>' +
             '<div class="md:col-span-3"><h3 class="text-sm font-bold text-ink-900">바로가기</h3><ul class="mt-3 space-y-2 text-sm text-ink-600">' +
-              NAV.slice(1).map(function (n) { return '<li><a class="hover:text-brand-700" href="' + D.url(n.href) + '">' + esc(n.label === "뉴스" ? "뉴스·자료" : n.label === "가이드" ? "영양제 가이드" : n.label) + '</a></li>'; }).join("") +
+              NAV.slice(1).map(function (n) { return '<li><a class="hover:text-brand-700" href="' + D.url(n.href) + '">' + esc(n.label === "뉴스" ? "뉴스·자료" : n.label === "영양제 추천" ? "영양제 추천 가이드" : n.label) + '</a></li>'; }).join("") +
+              '<li><a class="hover:text-brand-700" href="' + D.url("compatibility-chart.html") + '">영양제 궁합표</a></li>' +
+              '<li><a class="hover:text-brand-700" href="' + D.url("timing-chart.html") + '">영양제 복용 시간표</a></li>' +
               '<li><a class="hover:text-brand-700" href="' + D.url("materials.html") + '">기능성 원료 인정현황</a></li>' +
             '</ul></div>' +
             '<div class="md:col-span-4"><h3 class="text-sm font-bold text-ink-900">데이터 출처</h3><ul class="mt-3 space-y-2 text-sm text-ink-600">' +
