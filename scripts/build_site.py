@@ -1389,12 +1389,19 @@ def write_functions(core: dict, cfg: dict, guides: dict) -> list[str]:
             log.info("삭제된 기능성 페이지 정리: %s", stale.name)
     (ROOT / FUNCTIONS_HUB).write_text(render_functions_hub(model, model["data"], core, cfg), encoding="utf-8")
     write_json(DATA_DIR / "functions-index.json", {
-        "_meta": {"updatedAt": now_iso(), "note": "functions.json 의 요약 색인 — scripts/build_site.py 가 생성, 직접 수정하지 않음 (성분 페이지의 기능성 칩용)"},
+        "_meta": {"updatedAt": data_stamp(model["data"], default=core.get("updated_at") or now_iso()[:10]), "note": "functions.json 의 요약 색인 — scripts/build_site.py 가 생성, 직접 수정하지 않음 (성분 페이지의 기능성 칩용)"},
         "items": [{"id": e["fn"]["id"], "label": e["fn"]["label"], "claim": _fn_claim_short(e["fn"]), "group": e["fn"]["group"], "icon": e["fn"]["icon"], "ingredients": [i["id"] for i in e["ingredients"]],
                    "counts": {"ingredients": len(e["ingredients"]), "materials": len(e["materials"]), "products": e["products"]["total"]}} for e in model["items"]],
     }, compact=True, quiet=True)
     log.info("기능성별 허브 생성: %s + function/ %d장", FUNCTIONS_HUB, len(wanted))
     return [e["fn"]["id"] for e in model["items"]]
+
+
+def data_stamp(*datas, default: str = "") -> str:
+    """생성 색인의 _meta.updatedAt — 빌드 시각 대신 원본 데이터 _meta.updatedAt 가운데 가장 최신 값을 쓴다. 내용이 같으면 파일도 같아져
+    CI(build-assets.yml)가 시각만 바뀐 색인을 매번 커밋하는 일을 막는다. 원본에 값이 없으면 default(데이터 기준일)."""
+    stamps = [str((d.get("_meta") or {}).get("updatedAt") or "") for d in datas if isinstance(d, dict)]
+    return max(stamps) if any(stamps) else default
 
 
 def photo_img(category: str) -> str:
@@ -1679,7 +1686,7 @@ def write_compares(core: dict, cfg: dict, guides: dict) -> list[str]:
             log.info("삭제된 비교 페이지 정리: %s", stale.name)
     (ROOT / COMPARES_HUB).write_text(render_compare_hub(model, model["data"], core, cfg), encoding="utf-8")
     write_json(DATA_DIR / "compares-index.json", {
-        "_meta": {"updatedAt": now_iso(), "note": "compares.json(성분 대 성분)·form-compares.json(kind: form, 제형·형태) 의 요약 색인 — scripts/build_site.py 가 생성, 직접 수정하지 않음 (성분 페이지의 '비교 글' 칩용)"},
+        "_meta": {"updatedAt": data_stamp(model["data"], model.get("forms_data"), default=core.get("updated_at") or now_iso()[:10]), "note": "compares.json(성분 대 성분)·form-compares.json(kind: form, 제형·형태) 의 요약 색인 — scripts/build_site.py 가 생성, 직접 수정하지 않음 (성분 페이지의 '비교 글' 칩용)"},
         "items": [{"slug": e["cmp"]["slug"], "title": _cmp_short_title(e["cmp"]), "ids": [i["id"] for i in e["ingredients"]]} for e in model["items"]]
                  + [{"slug": e["fc"]["slug"], "title": _cmp_short_title(e["fc"]), "ids": [e["fc"]["id"]], "kind": "form"} for e in (model.get("forms") or [])],
     }, compact=True, quiet=True)
@@ -2223,7 +2230,7 @@ def write_drug_guides(core: dict, cfg: dict, guides: dict) -> list[str]:
             log.info("삭제된 약별 가이드 정리: %s", stale.name)
     (ROOT / DRUG_GUIDES_HUB).write_text(render_drug_guides_hub(model, model["data"], core, cfg), encoding="utf-8")
     write_json(DATA_DIR / "drug-guides-index.json", {
-        "_meta": {"updatedAt": now_iso(), "note": "drug-guides.json 의 요약 색인 — scripts/build_site.py 가 생성, 직접 수정하지 않음 (성분 페이지의 '약과 함께' 칩용)"},
+        "_meta": {"updatedAt": data_stamp(model["data"], default=core.get("updated_at") or now_iso()[:10]), "note": "drug-guides.json 의 요약 색인 — scripts/build_site.py 가 생성, 직접 수정하지 않음 (성분 페이지의 '약과 함께' 칩용)"},
         "items": [{"id": e["dg"]["id"], "short": e["dg"]["short"], "title": e["dg"]["title"], "rx": bool(e["dg"].get("rx")), "good": [g["id"] for g in e["good"]], "caution": [c["id"] for c in e["caution"]], "drugs": e["drugs"]["total"]} for e in model["items"]],
     }, compact=True, quiet=True)
     log.info("약별 영양제 가이드 생성: %s + drug-guide/ %d편", DRUG_GUIDES_HUB, len(wanted))
@@ -2514,7 +2521,7 @@ def write_glossary(core: dict, cfg: dict, guides: dict) -> list[str]:
             log.info("삭제된 용어 페이지 정리: %s", stale.name)
     (ROOT / GLOSSARY_HUB).write_text(render_glossary_hub(model, cfg), encoding="utf-8")
     write_json(DATA_DIR / "glossary-index.json", {
-        "_meta": {"updatedAt": now_iso(), "note": "glossary.json 의 요약 색인 — scripts/build_site.py 가 생성, 직접 수정하지 않음 (검색·성분 페이지 본문 자동 링크용)"},
+        "_meta": {"updatedAt": data_stamp(model["data"], default=core.get("updated_at") or now_iso()[:10]), "note": "glossary.json 의 요약 색인 — scripts/build_site.py 가 생성, 직접 수정하지 않음 (검색·성분 페이지 본문 자동 링크용)"},
         "items": [{"slug": e["t"]["slug"], "term": e["t"]["term"], "en": e["t"].get("en") or "", "aliases": e["t"].get("aliases") or [], "short": e["t"]["short"], "category": e["t"]["category"]} for e in model["items"]],
     }, compact=True, quiet=True)
     log.info("용어 사전 생성: %s + term/ %d개", GLOSSARY_HUB, len(wanted))

@@ -432,6 +432,15 @@ class FormCompareTests(unittest.TestCase):
         self.assertIn('href="../compare/omega-3-forms.html"', page)
 
 
+class StampTests(unittest.TestCase):
+    """생성 색인의 updatedAt 은 빌드 시각이 아니라 원본 데이터의 updatedAt(최신값) — 같은 데이터로 두 번 빌드해도 파일이 같아야 CI 자동 커밋이 반복되지 않는다."""
+
+    def test_data_stamp_uses_source_updated_at(self):
+        self.assertEqual(B.data_stamp({"_meta": {"updatedAt": "2026-10-22"}}, {"_meta": {"updatedAt": "2026-10-23"}}, default="2020-01-01"), "2026-10-23")
+        self.assertEqual(B.data_stamp({"_meta": {}}, None, default="2020-01-01"), "2020-01-01")
+        self.assertEqual(B.data_stamp({"_meta": {"updatedAt": "2026-10-22"}}, None), "2026-10-22")
+
+
 class DrugGuideTests(unittest.TestCase):
     """약별 영양제 가이드(drug-guides.html · drug-guide/<id>.html) — 데이터 검증·의약품 판정·모델·렌더."""
 

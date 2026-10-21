@@ -187,7 +187,7 @@ KO: dict[str, str] = {
     "sodium picosulfate": "피코설페이트나트륨", "picosulfate": "피코설페이트",
     "atorvastatin": "아토르바스타틴", "rosuvastatin": "로수바스타틴", "simvastatin": "심바스타틴", "pravastatin": "프라바스타틴", "pitavastatin": "피타바스타틴",
     "fluvastatin": "플루바스타틴", "lovastatin": "로바스타틴", "ezetimibe": "에제티미브",
-    "levothyroxine": "레보티록신", "liothyronine": "리오티로닌", "warfarin": "와파린",
+    "levothyroxine": "레보티록신", "liothyronine": "리오티로닌", "warfarin": "와파린", "clonixin": "클로닉신",
     "doxycycline": "독시사이클린", "minocycline": "미노사이클린", "tetracycline": "테트라사이클린", "ciprofloxacin": "시프로플록사신", "levofloxacin": "레보플록사신",
     "ofloxacin": "오플록사신", "moxifloxacin": "목시플록사신",
     "alendronate": "알렌드로네이트", "alendronic acid": "알렌드론산", "risedronate": "리세드로네이트", "ibandronate": "이반드로네이트",
