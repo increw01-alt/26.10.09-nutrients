@@ -25,8 +25,19 @@
       window.Reminders.sync(ln, state, schedule(), { shortName: D.shortName }).catch(function (e) { if (window.console) console.warn("[reminders] 동기화 실패:", e && e.message); });
     }, 300);
   }
+  var saveWarned = false;
+  function persist() {   // 저장 실패(용량 초과·비공개 모드·차단)는 페이지당 한 번만 알린다 — 화면은 그대로 동작하고 새로고침하면 사라진다
+    if (S.save(state) || saveWarned) return;
+    saveWarned = true; toast("저장하지 못했어요 — 브라우저 저장 공간이 꽉 찼거나 비공개 모드일 수 있어요");
+  }
+  var midnightTimer = null;
+  function scheduleMidnight() {   // 열어 둔 채 자정을 넘기면 '오늘' 기준으로 다시 그린다 (visibilitychange 는 숨겼다 돌아올 때만 잡는다)
+    clearTimeout(midnightTimer);
+    var now = new Date(), next = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 2);
+    midnightTimer = setTimeout(function () { render(); scheduleMidnight(); }, Math.max(1000, next - now));
+  }
   function commit(next) {
-    state = next; S.save(state); render();
+    state = next; persist(); render();
     if (isApp()) { window.AppBridge.mirror(JSON.stringify(state)); scheduleSync(); }
   }
   /* 토글을 켤 때: 권한을 먼저 받고, 거부면 토글을 되돌리며 안내 */
@@ -65,7 +76,7 @@
   function toast(msg) {
     var t = document.createElement("div");
     t.className = "fixed bottom-36 left-1/2 z-50 -translate-x-1/2 rounded-full bg-ink-900 px-4 py-2 text-sm font-semibold text-white shadow-lg md:bottom-20";
-    t.textContent = msg; document.body.appendChild(t); setTimeout(function () { t.remove(); }, 2200);
+    t.setAttribute("role", "status"); t.textContent = msg; document.body.appendChild(t); setTimeout(function () { t.remove(); }, 2200);
   }
   function schedule() {
     return state.items.length ? window.Schedule.build(ids(), core, S.overrides(state)) : { slots: [], notes: [] };
@@ -112,7 +123,7 @@
     ui.q = ""; ui.open = false; ui.cursor = -1; ui.focusSearch = true;
     if (!r.added.length) { toast("이미 내 영양제에 있어요"); render(); return; }
     commit(r.state);
-    toast(byId(id).name + " 을(를) 추가했어요");
+    toast(D.josa(byId(id).name, "을를") + " 추가했어요");   // 받침·숫자·영문 끝 이름의 조사는 data.js josa 가 판별
   }
 
   /* ---- 오늘 시간표 ---- */
@@ -160,6 +171,10 @@
     var st = S.dayStats(state, key);
     return "my-day" + (st.complete ? " is-complete" : st.done > 0 ? " is-partial" : "") + (key === t ? " is-today" : "") + (key === ui.selectedDay ? " is-selected" : "");
   }
+  function dayLabel(k) {   // 날짜 버튼의 읽기용 이름: 날짜 + 상태
+    var st = S.dayStats(state, k);
+    return k + (st.due ? (st.complete ? " 완료" : " " + st.done + "/" + st.due + " 챙김") : " 기록 없음");
+  }
   function sectionLog(sched) {
     if (!state.items.length || state.settings.logEnabled === null) return "";
     if (state.settings.logEnabled === false) {
@@ -170,8 +185,8 @@
       var done = !!(state.log[t] && state.log[t].done[s.key]);
       return '<button type="button" class="my-check' + (done ? " is-done" : "") + '" data-check="' + s.key + '" aria-pressed="' + (done ? "true" : "false") + '"><span class="tick"><i data-lucide="check"></i></span><span><b>' + esc(label(s.key)) + ' <span class="my-muted" data-time-slot="' + s.key + '">' + esc(state.settings.times[s.key]) + '</span></b><small>' + esc(s.items.map(function (it) { return D.shortName(it); }).join(" · ")) + '</small></span></button>';
     }).join("");
-    var week = S.lastDays(t, 7).map(function (k) { return '<button type="button" class="' + dayClass(k, t) + '" data-day="' + k + '" aria-label="' + k + '"><span>' + (k === t ? "오늘" : k.slice(5).replace("-", "/")) + '</span><span class="dot"></span></button>'; }).join("");
-    var month = S.lastDays(t, 30).map(function (k) { return '<button type="button" class="' + dayClass(k, t) + '" data-day="' + k + '" aria-label="' + k + '"><span>' + parseInt(k.slice(8), 10) + '</span><span class="dot"></span></button>'; }).join("");
+    var week = S.lastDays(t, 7).map(function (k) { return '<button type="button" class="' + dayClass(k, t) + '" data-day="' + k + '" aria-label="' + esc(dayLabel(k)) + '"><span>' + (k === t ? "오늘" : k.slice(5).replace("-", "/")) + '</span><span class="dot"></span></button>'; }).join("");
+    var month = S.lastDays(t, 30).map(function (k) { return '<button type="button" class="' + dayClass(k, t) + '" data-day="' + k + '" aria-label="' + esc(dayLabel(k)) + '"><span>' + parseInt(k.slice(8), 10) + '</span><span class="dot"></span></button>'; }).join("");
     var detail = "";
     if (ui.selectedDay) {
       var day = state.log[ui.selectedDay];
@@ -189,6 +204,10 @@
   function qrSvg(text) {
     try { var q = window.qrcode(0, "M"); q.addData(text); q.make(); return q.createSvgTag({ cellSize: 4, margin: 2, scalable: true }); } catch (e) { return ""; }
   }
+  function qrBlock(url) {   // QR 한 장의 용량(약 2.3KB)을 넘으면 그리지 못하므로 안내로 대신한다
+    var svg = qrSvg(url);
+    return svg ? '<div class="my-qr" role="img" aria-label="가져오기 링크 QR 코드">' + svg + "</div>" : '<p class="my-muted">목록이 길어 QR 코드에 담기지 않아요. 링크나 텍스트 코드를 복사해 옮겨 주세요.</p>';
+  }
   function previewCard(payload, source) {
     var known = payload.items.filter(function (it) { return byId(it.id); }), unknown = payload.items.length - known.length;
     return '<section class="my-card" id="' + (source === "url" ? "my-import" : "my-import-preview") + '"><h3>' + (source === "url" ? "링크로 받은 내 영양제 목록" : "가져올 목록") + '</h3>' +
@@ -200,9 +219,9 @@
   function sectionTransfer() {
     var exportPanel = "";
     if (ui.exportOpen && state.items.length) {
-      var code = S.exportCode(state), url = S.exportUrl(code, baseUrl());
+      var code = S.exportCode(state), url = S.exportUrl(code, baseUrl(), !/\.html$/.test(location.pathname));   // 운영(/my)에서는 리다이렉트를 거치지 않는 주소 형태로
       exportPanel = '<div class="my-field"><label for="my-export-url">링크 (열면 바로 가져오기)</label><div class="my-copy"><input id="my-export-url" type="text" readonly value="' + esc(url) + '"><button type="button" class="btn-outline btn-sm" data-copy="my-export-url">복사</button></div></div>' +
-        '<div class="my-qr" aria-label="가져오기 링크 QR 코드">' + qrSvg(url) + "</div>" +
+        qrBlock(url) +
         '<div class="my-field"><label for="my-export-code">텍스트 코드 (앱의 가져오기 칸에 붙여넣기)</label><div class="my-copy"><textarea id="my-export-code" readonly>' + esc(code) + '</textarea><button type="button" class="btn-outline btn-sm" data-copy="my-export-code">복사</button></div></div>';
     }
     return '<section class="my-section" id="my-transfer"><h2><i data-lucide="arrow-right"></i>다른 기기로 옮기기</h2>' +
@@ -242,10 +261,10 @@
     var tk = today();
     if (state.settings.logEnabled === true) {   // 오늘 챙겨야 할 시간대를 기록해 두어야 체크·통계가 시간표를 따라간다
       var marked = S.markDue(state, tk, dueSlots(sched));
-      if (JSON.stringify(marked.log) !== JSON.stringify(state.log)) { state = marked; S.save(state); }
+      if (JSON.stringify(marked.log) !== JSON.stringify(state.log)) { state = marked; persist(); }
     }
     var keep = focusKey(document.activeElement);
-    app.innerHTML = (ui.notice ? '<div class="my-notice">' + esc(ui.notice) + "</div>" : "") +
+    app.innerHTML = (ui.notice ? '<div class="my-notice" role="status">' + esc(ui.notice) + "</div>" : "") +
       sectionImport() + sectionAskLog() + sectionList(sched) + sectionSchedule(sched) + sectionLog(sched) + sectionReminders(sched) + sectionTransfer();
     ui.renderedDay = tk;
     D.icons(app);
@@ -288,7 +307,7 @@
       else if (t.matches("input.my-time")) {   // 시각은 입력 중 끊기지 않도록 다시 그리지 않고 저장만 하고, 시간표의 시각 표시만 바꾼다
         var slot = t.getAttribute("data-slot"), next = S.setTime(state, slot, t.value);
         if (next === state) { t.value = state.settings.times[slot]; return; }
-        state = next; S.save(state);
+        state = next; persist();
         document.querySelectorAll('#my-schedule time[data-slot="' + slot + '"], #my-log [data-time-slot="' + slot + '"]').forEach(function (el) { el.textContent = t.value; });
         if (isApp()) { window.AppBridge.mirror(JSON.stringify(state)); scheduleSync(); }   // 시각이 바뀌면 알림도 다시 예약
       }
@@ -323,12 +342,12 @@
       var hasLocal = false;
       try { hasLocal = !!localStorage.getItem(S.KEY); } catch (e) { /* 무시 */ }
       if (isApp() && !hasLocal) {   // 웹뷰 저장소가 비어 있으면(재설치·백업 복원) 앱 저장소 복제본에서 되살린다
-        return window.AppBridge.restore().then(function (json) { if (json) { state = S.load({ getItem: function () { return json; } }); S.save(state); } return c; });
+        return window.AppBridge.restore().then(function (json) { if (json) { state = S.load({ getItem: function () { return json; } }); persist(); } return c; });
       }
       return c;
     }).then(function (c) {
       var pr = S.pruneUnknown(state, core.byId);
-      if (pr.removed.length) { state = pr.state; S.save(state); ui.notice = "성분 사전에서 사라진 항목 " + pr.removed.length + "개를 목록에서 뺐어요."; }
+      if (pr.removed.length) { state = pr.state; persist(); ui.notice = "성분 사전에서 사라진 항목 " + pr.removed.length + "개를 목록에서 뺐어요."; }
       /* 가져오기 링크(#import=, 옛 ?import=)는 읽자마자 주소에서 지운다 — 목록이 주소에 남아 공유·기록되지 않게.
          이미 열린 페이지에서 조각만 바뀌는 이동(hashchange)도 같은 길로 처리한다 */
       function readImportFromUrl() {
@@ -346,6 +365,8 @@
       bind(app);
       render();
       initAppReminders();
+      scheduleMidnight();
+      window.addEventListener("storage", function (e) { if (!e.key || e.key === S.KEY) { state = S.load(); render(); } });   // 다른 탭·창에서 바꾼 내용을 바로 반영
     }).catch(function () { app.innerHTML = '<p class="text-sm text-ink-500">데이터를 불러오지 못했어요. 잠시 뒤 다시 시도해 주세요.</p>'; });
   });
 })();

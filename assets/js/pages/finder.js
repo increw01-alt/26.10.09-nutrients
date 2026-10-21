@@ -180,7 +180,12 @@
       if (window.Store) {
         var saved = {}; window.Store.load().items.forEach(function (i) { saved[i.id] = true; });
         var addBtn = qs("[data-my-add]", result);
-        if (addBtn && all.every(function (id) { return saved[id]; })) { addBtn.innerHTML = '<i data-lucide="check"></i>내 영양제에 있어요 · <a href="' + D.url("my.html") + '">보기</a>'; addBtn.classList.add("is-added"); D.icons(addBtn); }
+        if (addBtn && all.every(function (id) { return saved[id]; })) {   // 버튼 안에 링크를 넣지 않고 같은 모양의 링크로 바꾼다 (layout.js markMyAdded 와 같은 틀)
+          var link = document.createElement("a");
+          link.className = addBtn.className + " is-added"; link.href = D.url("my.html"); link.setAttribute("data-my-added", addBtn.getAttribute("data-my-add") || "");
+          link.innerHTML = '<i data-lucide="check"></i>내 영양제에 있어요 · 보기';
+          addBtn.replaceWith(link); D.icons(link);
+        }
       }
     } catch (e3) { /* 저장소를 못 쓰는 환경 */ }
   }

@@ -98,15 +98,16 @@ def sw_version(template: str, urls: list[str], extra_digests: list[str] | None =
     return hashlib.sha1((template.replace("\r\n", "\n") + "\n".join(urls) + "\n".join(extra_digests or [])).encode("utf-8")).hexdigest()[:8]
 
 
-def build_sw() -> None:
-    """scripts/sw_template.js 에 버전과 precache 목록을 채워 루트 sw.js 를 생성한다 (sw.js 는 생성 파일)."""
+def build_sw(out_path: Path | None = None) -> str:
+    """scripts/sw_template.js 에 버전과 precache 목록을 채워 루트 sw.js 를 생성한다 (sw.js 는 생성 파일). out_path 를 주면 그 파일에 쓴다(테스트). 버전을 돌려준다."""
     template = SW_TEMPLATE.read_text(encoding="utf-8")
     urls = precache_urls()
     ver = sw_version(template, urls, precache_extra_digests())
     out = template.replace('"__VERSION__"', json.dumps(ver)).replace("/*__PRECACHE__*/[]", json.dumps(urls, ensure_ascii=False))
-    with open(ROOT / "sw.js", "w", encoding="utf-8", newline="\n") as f:
+    with open(out_path or (ROOT / "sw.js"), "w", encoding="utf-8", newline="\n") as f:
         f.write(out)
     log.info("sw.js 생성: precache %d개, 버전 %s", len(urls), ver)
+    return ver
 
 
 def stamp_assets() -> None:
@@ -265,12 +266,13 @@ ICON_V = "2"   # 아이콘 파일 주소에 붙는 버전 — /assets/images/* �
 
 
 def pwa_tags(root: str) -> str:
-    """홈 화면 설치(PWA)용 head 태그 6줄 — 매니페스트·iOS 아이콘·테마색. root 는 페이지의 data-root('./'·'../'·'/')."""
+    """홈 화면 설치(PWA)용 head 태그 7줄 — 매니페스트·iOS 아이콘·테마색·홈 화면 앱 메타. root 는 페이지의 data-root('./'·'../'·'/')."""
     return "\n".join([
         f'<link rel="manifest" href="{root}manifest.webmanifest">',
         f'<link rel="apple-touch-icon" href="{root}assets/images/app/apple-touch-icon.png?v={ICON_V}">',
         f'<meta name="theme-color" content="{PWA_THEME}">',
         '<meta name="mobile-web-app-capable" content="yes">',
+        '<meta name="apple-mobile-web-app-capable" content="yes">',   # iOS 16.4 미만 Safari 는 manifest 의 display 대신 이 메타로 홈 화면 앱(전체 화면)을 판단 (Chrome 은 위 표준 메타가 함께 있으면 경고하지 않음)
         '<meta name="apple-mobile-web-app-title" content="영양제.kr">',
         '<meta name="apple-mobile-web-app-status-bar-style" content="default">',
     ])

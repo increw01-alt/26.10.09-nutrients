@@ -110,7 +110,8 @@
             '<a href="' + D.compatUrl([it.id]) + '" class="btn-outline"><i data-lucide="heart-handshake" class="text-brand-600"></i>다른 영양제와 궁합 보기</a>' +
             (window.Store ? (function () {   // '내 영양제에 추가' (기기 내 저장, 클릭은 layout.js 의 [data-my-add] 공통 처리)
               var inMy = window.Store.load().items.some(function (i) { return i.id === it.id; });
-              return '<button type="button" class="btn-outline' + (inMy ? " is-added" : "") + '" data-my-add="' + esc(it.id) + '">' + (inMy ? '<i data-lucide="check"></i>내 영양제에 있어요 · <a href="' + D.url("my.html") + '">보기</a>' : '<i data-lucide="plus"></i>내 영양제에 추가') + "</button>";
+              return inMy ? '<a class="btn-outline is-added" href="' + D.url("my.html") + '" data-my-added="' + esc(it.id) + '"><i data-lucide="check"></i>내 영양제에 있어요 · 보기</a>'   // 버튼 안 링크 대신 링크 자체
+                : '<button type="button" class="btn-outline" data-my-add="' + esc(it.id) + '"><i data-lucide="plus"></i>내 영양제에 추가</button>';
             })() : "") +
           '</div>' +
           '<div class="mt-4 flex flex-wrap gap-1.5">' + (it.tags || []).map(function (t) { return '<a href="' + D.url("ingredients.html?tag=" + encodeURIComponent(t)) + '" class="rounded-full bg-white/80 px-2.5 py-1 text-xs font-semibold text-ink-600 ring-1 ring-[#e3ebdc] hover:bg-white hover:text-brand-700">#' + esc(t) + '</a>'; }).join("") + '</div>' +

@@ -18,6 +18,22 @@
   function clone(o) { return JSON.parse(JSON.stringify(o)); }
   function isSlot(s) { return SLOT_ORDER.indexOf(s) >= 0; }
   function defaultStorage() { try { return typeof localStorage !== "undefined" ? localStorage : null; } catch (e) { return null; } }
+  var DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+  function own(o, k) { return !!o && Object.prototype.hasOwnProperty.call(o, k); }
+  /* 저장된 기록 가운데 날짜 키 + {due: [시간대], done: {시간대: true}} 꼴만 받는다 — 프로토타입 키("__proto__"·"constructor")나 깨진 값은 버린다 */
+  function cleanLog(raw) {
+    var out = {};
+    if (!raw || typeof raw !== "object") return out;
+    Object.keys(raw).forEach(function (k) {
+      var d = raw[k];
+      if (!DATE_RE.test(k) || !d || typeof d !== "object" || !Array.isArray(d.due)) return;
+      var due = d.due.filter(isSlot), done = {};
+      if (!due.length) return;
+      due.forEach(function (s) { if (d.done && own(d.done, s) && d.done[s] === true) done[s] = true; });
+      out[k] = { due: due, done: done };
+    });
+    return out;
+  }
 
   function empty() {
     var slotOn = {};
@@ -46,7 +62,7 @@
     SETTING_KEYS.forEach(function (k) { if (k in s) out.settings[k] = s[k]; });
     if (s.times) SLOT_ORDER.forEach(function (k) { if (TIME_RE.test(String(s.times[k] || ""))) out.settings.times[k] = s.times[k]; });
     if (s.slotOn) SLOT_ORDER.forEach(function (k) { if (typeof s.slotOn[k] === "boolean") out.settings.slotOn[k] = s.slotOn[k]; });
-    if (data.log && typeof data.log === "object") out.log = clone(data.log);
+    out.log = cleanLog(data.log);
     return out;
   }
 
@@ -140,7 +156,7 @@
   }
 
   function toggleDone(state, key, slot, done) {
-    var day = state.log[key];
+    var day = own(state.log, key) ? state.log[key] : null;
     if (!day || day.due.indexOf(slot) < 0) return state;
     var out = clone(state);
     if (done) out.log[key].done[slot] = true; else delete out.log[key].done[slot];
@@ -148,7 +164,7 @@
   }
 
   function dayStats(state, key) {
-    var day = state.log[key];
+    var day = own(state.log, key) ? state.log[key] : null;
     if (!day || !day.due.length) return { due: 0, done: 0, complete: false };
     var n = day.due.filter(function (s) { return day.done[s]; }).length;
     return { due: day.due.length, done: n, complete: n === day.due.length };
@@ -215,7 +231,11 @@
   function merge(state, payload, mode, byId) {
     var out = clone(state), added = [], skipped = [];
     var known = payload.items.filter(function (it) { if (byId && byId[it.id]) return true; skipped.push(it.id); return false; });
-    if (mode === "replace") out.items = [];
+    if (mode === "replace") {   // 바꾸기: 목록뿐 아니라 알림 시각·시간대 켜짐도 기본값으로 되돌린 뒤 가져온 값만 덮는다 (코드에는 기본값과 다른 것만 담기므로)
+      out.items = [];
+      out.settings.times = clone(DEFAULT_TIMES);
+      SLOT_ORDER.forEach(function (k) { out.settings.slotOn[k] = true; });
+    }
     var have = {};
     out.items.forEach(function (it) { have[it.id] = true; });
     known.forEach(function (it) {
@@ -231,8 +251,9 @@
     return { state: out, added: added, skipped: skipped };
   }
 
-  /* 가져오기 링크는 해시 조각(#import=)에 싣는다 — 조각은 서버·분석 도구·서비스워커 캐시 키 어디에도 전송되지 않는다 */
-  function exportUrl(code, base) { return (base || "") + "my.html#import=" + encodeURIComponent(code); }
+  /* 가져오기 링크는 해시 조각(#import=)에 싣는다 — 조각은 서버·분석 도구·서비스워커 캐시 키 어디에도 전송되지 않는다.
+     extensionless 가 true 면 운영 주소 형태(/my — Cloudflare 가 /my.html 을 /my 로 보내는 리다이렉트를 거치지 않음)로 만든다 */
+  function exportUrl(code, base, extensionless) { return (base || "") + (extensionless ? "my" : "my.html") + "#import=" + encodeURIComponent(code); }
 
   var Store = {
     KEY: KEY, SLOT_ORDER: SLOT_ORDER, SLOT_LABEL: SLOT_LABEL, DEFAULT_TIMES: DEFAULT_TIMES,

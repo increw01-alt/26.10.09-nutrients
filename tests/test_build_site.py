@@ -18,6 +18,11 @@ class PwaTagTests(unittest.TestCase):
         self.assertLess(out.index('rel="icon"'), out.index(B.PWA_START))
         self.assertLess(out.index(B.PWA_END), out.index('rel="stylesheet"'))
 
+    def test_pwa_tags_include_both_web_app_metas(self):
+        out = B.pwa_tags("./")
+        self.assertIn('<meta name="mobile-web-app-capable" content="yes">', out)
+        self.assertIn('<meta name="apple-mobile-web-app-capable" content="yes">', out)   # iOS 16.4 미만
+
     def test_ensure_pwa_tags_is_idempotent_and_updates(self):
         once = B.ensure_pwa_tags(HEAD, "../")
         self.assertEqual(B.ensure_pwa_tags(once, "../"), once)
@@ -38,6 +43,19 @@ class ServiceWorkerBuildTests(unittest.TestCase):
         self.assertTrue(all(u.startswith("/") for u in urls))
         self.assertEqual(urls, sorted(urls))
         self.assertFalse(any("vendor/capacitor" in u for u in urls))   # 앱 전용 런타임은 웹 방문자에게 미리 받게 하지 않는다
+
+    def test_build_sw_writes_to_given_path(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            out = Path(d) / "sw.js"
+            ver = B.build_sw(out)
+            src = out.read_text(encoding="utf-8")
+        self.assertRegex(ver, r"^[0-9a-f]{8}$")
+        self.assertIn(f'var VERSION = "{ver}";', src)
+        self.assertNotIn("__VERSION__", src); self.assertNotIn("/*__PRECACHE__*/[]", src)
+        for must in ("/my.html", "/offline.html", "/assets/images/favicon.svg"):   # 앱 첫 화면·오프라인 안내·파비콘은 해시 없이 precache
+            self.assertIn(f'"{must}"', src)
+        self.assertIn('"static-" + version', src)
 
     def test_sw_version_changes_when_precache_changes(self):
         t = "var x;"

@@ -287,7 +287,7 @@
       try { sessionStorage.setItem("pwaBannerShown", "1"); } catch (e) { /* 무시 */ }
       document.body.classList.add("has-pwa-banner");   // 겹치는 '맨 위로' 버튼은 배너가 떠 있는 동안 숨김(style.css)
       el = document.createElement("div");
-      el.className = "pwa-banner no-print"; el.setAttribute("role", "dialog"); el.setAttribute("aria-label", "홈 화면에 설치");
+      el.className = "pwa-banner no-print"; el.setAttribute("role", "region"); el.setAttribute("aria-label", "홈 화면에 설치 안내");   // 포커스를 옮기지 않는 배너라 dialog 가 아닌 region
       el.innerHTML = '<img src="' + D.url("assets/images/app/icon-192.png") + '" alt="" width="40" height="40">' +
         '<div class="pwa-banner-text"><strong>영양제.kr 을 홈 화면에 설치하면 앱처럼 바로 열려요</strong>' +
         (mode === "ios" ? "<span>Safari 공유 버튼 → '홈 화면에 추가'</span>" : "") + "</div>" +
@@ -307,7 +307,13 @@
   }
 
   /* "내 영양제에 추가" 버튼([data-my-add="성분id"] 또는 쉼표로 이은 여러 id) — store.js 가 실린 페이지(성분 상세·가이드)에서만 동작. 모두 이미 있으면 처음부터 '있어요' 표시 */
-  function markMyAdded(b) { b.innerHTML = '<i data-lucide="check"></i>내 영양제에 있어요 · <a href="' + D.url("my.html") + '">보기</a>'; b.classList.add("is-added"); D.icons(b); }
+  /* 추가된 뒤에는 버튼 안에 링크를 넣지 않고(버튼 속 링크는 잘못된 중첩) 같은 모양의 링크로 바꾼다 — ingredient.js·finder.js 의 표시와 같은 틀 */
+  function markMyAdded(b) {
+    var a = document.createElement("a");
+    a.className = b.className + " is-added"; a.href = D.url("my.html"); a.setAttribute("data-my-added", b.getAttribute("data-my-add") || "");
+    a.innerHTML = '<i data-lucide="check"></i>내 영양제에 있어요 · 보기';
+    b.replaceWith(a); D.icons(a); return a;
+  }
   function myAddIds(b) { return b.getAttribute("data-my-add").split(",").map(function (s) { return s.trim(); }).filter(Boolean); }
   function initMyAddButtons() {
     var St = window.Store; if (!St) return;

@@ -122,3 +122,26 @@ test("exportCode ↔ importCode: 시간대별 알림 토글(slotOn)도 옮긴다
   const m = S.merge(S.empty(), p, "merge", { zinc: {} });
   assert.equal(m.state.settings.slotOn.bedtime, false); assert.equal(m.state.settings.slotOn.morning_after, true);
 });
+
+test("load: 기록은 날짜 키 + due/done 꼴만 받고 프로토타입 키·깨진 값은 버린다", () => {
+  const raw = { v: 1, items: [], settings: {}, log: { "2026-10-20": { due: ["morning_after", "nope"], done: { morning_after: true, bedtime: true } }, "__proto__": { due: ["bedtime"], done: {} }, "constructor": 1, "2026-10-21": { due: [] }, "bad": { due: ["bedtime"], done: {} } } };
+  const s = S.load(fakeStorage({ "yj.my.v1": JSON.stringify(raw) }));
+  assert.deepEqual(Object.keys(s.log), ["2026-10-20"]);
+  assert.deepEqual(s.log["2026-10-20"], { due: ["morning_after"], done: { morning_after: true } });
+  assert.deepEqual(S.dayStats(s, "constructor"), { due: 0, done: 0, complete: false });   // 상속된 키는 기록으로 보지 않는다
+  assert.equal(S.toggleDone(s, "toString", "bedtime", true), s);
+});
+test("merge replace: 알림 시각·시간대 켜짐을 기본값으로 되돌린 뒤 가져온 값만 덮는다", () => {
+  let s = S.addItems(S.empty(), ["zinc"]).state;
+  s = S.setTime(s, "bedtime", "23:30"); s = S.setSlotOn(s, "lunch_after", false);
+  const payload = S.importCode(S.exportCode(S.setTime(S.addItems(S.empty(), ["magnesium"]).state, "morning_after", "07:00")));
+  const r = S.merge(s, payload, "replace", { magnesium: {}, zinc: {} });
+  assert.deepEqual(r.state.items.map((i) => i.id), ["magnesium"]);
+  assert.equal(r.state.settings.times.bedtime, "22:30"); assert.equal(r.state.settings.times.morning_after, "07:00"); assert.equal(r.state.settings.slotOn.lunch_after, true);
+  const m = S.merge(s, payload, "merge", { magnesium: {}, zinc: {} });   // 합치기는 기존 설정 유지
+  assert.equal(m.state.settings.times.bedtime, "23:30"); assert.equal(m.state.settings.slotOn.lunch_after, false);
+});
+test("exportUrl: 기본은 my.html, 확장자 없는 운영 주소 형태도 만든다", () => {
+  assert.equal(S.exportUrl("YJ1-abc", "https://xn--og5b1hx9c.kr/"), "https://xn--og5b1hx9c.kr/my.html#import=YJ1-abc");
+  assert.equal(S.exportUrl("YJ1-abc", "https://xn--og5b1hx9c.kr/", true), "https://xn--og5b1hx9c.kr/my#import=YJ1-abc");
+});
