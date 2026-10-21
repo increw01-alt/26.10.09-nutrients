@@ -24,7 +24,7 @@
   }
   function show() { $("search-loading").classList.add("hidden"); $("search-results").classList.remove("hidden"); D.icons(); }
 
-  function render(q, core, guides, products, drugs, meta) {
+  function render(q, core, guides, products, drugs, meta, terms) {
     var input = $("search-q"); if (input) input.value = q;
     var site = (window.SITE || {}).name || "영양제.kr";
     document.title = (q ? "‘" + q + "’ 검색 결과" : "통합 검색") + " | " + site;
@@ -45,7 +45,8 @@
     var pm = D.productMatcher(products), ph = pm(q, 30);   // 이름 + 제조사로 검색 (브랜드·제조사명으로도 찾도록), 잘 알려진 브랜드 우선
     var dm = D.drugMatcher(drugs), dh = dm(q, 20);
     var gs = (guides || []).filter(function (g) { return D.has([g.title, g.h1, (g.keywords || []).join(" ")].join(" "), q); }).slice(0, 8);
-    var counts = [ings.length ? "성분 " + ings.length : "", ph.total ? "건강기능식품 " + ph.total.toLocaleString() : "", dh.total ? "의약품 " + dh.total.toLocaleString() : "", gs.length ? "가이드 " + gs.length : ""].filter(Boolean);
+    var ts = (terms || []).filter(function (t) { return D.has([t.term, t.en || "", (t.aliases || []).join(" ")].join(" "), q); }).slice(0, 6);   // 용어 사전 (이름·영문·별칭)
+    var counts = [ings.length ? "성분 " + ings.length : "", ph.total ? "건강기능식품 " + ph.total.toLocaleString() : "", dh.total ? "의약품 " + dh.total.toLocaleString() : "", gs.length ? "가이드 " + gs.length : "", ts.length ? "용어 " + ts.length : ""].filter(Boolean);
     summary.textContent = counts.length ? counts.join(" · ") + "건을 찾았어요. 제품명은 일부만 맞아도 나오며, 이름 앞부분이 맞는 제품과 잘 알려진 브랜드를 먼저 보여줍니다." : "일치하는 결과가 없어요. 아래 비슷한 이름과 검색 요령을 확인해 보세요.";
 
     var html = "";
@@ -72,6 +73,8 @@
       }).join("") + '</ul>');
     if (gs.length) html += section("sec-guides", "가이드", "book-open", gs.length + "건",
       '<ul class="mt-3 divide-y divide-ink-100">' + gs.map(function (g) { return '<li class="py-3"><a class="text-[15px] font-bold text-ink-900 hover:text-brand-700" href="' + D.guideUrl(g.slug) + '">' + esc(String(g.h1 || g.title || "").split(" — ")[0]) + '</a><p class="mt-0.5 line-clamp-2 text-xs text-ink-500">' + esc(g.description || g.intro || "") + '</p></li>'; }).join("") + '</ul>');
+    if (ts.length) html += section("sec-terms", "용어 사전", "book-open", ts.length + "건",
+      '<ul class="mt-3 divide-y divide-ink-100">' + ts.map(function (t) { return '<li class="py-3"><a class="text-[15px] font-bold text-ink-900 hover:text-brand-700" href="' + D.termUrl(t.slug) + '">' + D.markMatch(t.term, q) + '</a>' + (t.en ? '<span class="ml-2 text-xs font-semibold text-ink-400">' + esc(t.en) + '</span>' : "") + '<p class="mt-0.5 line-clamp-2 text-xs text-ink-500">' + esc(t.short || "") + '</p></li>'; }).join("") + '</ul>');
 
     if (!html) {
       var pool = products.p.map(function (p) { return ["p", p]; }).concat(drugs.p.map(function (p) { return ["d", p]; }));
@@ -93,8 +96,9 @@
       D.guides().then(function (g) { return (g && g.items) || []; }).catch(function () { return []; }),
       D.productNames().then(function (n) { return n && n.more ? n.more : (n && n.p ? n : { i: [], p: [] }); }).catch(function () { return { i: [], p: [] }; }),   // 과거 색인까지 합쳐진 뒤
       D.drugNames().then(function (n) { return n && n.p ? n : { i: [], p: [] }; }).catch(function () { return { i: [], p: [] }; }),
-      D.meta().catch(function () { return {}; })
-    ]).then(function (r) { render(q, r[0], r[1], r[2], r[3], r[4]); }).catch(function (e) {
+      D.meta().catch(function () { return {}; }),
+      D.glossary().then(function (g) { return (g && g.items) || []; }).catch(function () { return []; })
+    ]).then(function (r) { render(q, r[0], r[1], r[2], r[3], r[4], r[5]); }).catch(function (e) {
       if (window.console) console.warn(e);
       $("search-loading").innerHTML = '<p class="text-sm text-rose-600">데이터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</p>';
     });

@@ -93,6 +93,7 @@
               '<li><a class="hover:text-brand-700" href="' + D.url("functions.html") + '">기능성별 영양제</a></li>' +
               '<li><a class="hover:text-brand-700" href="' + D.url("compare.html") + '">성분 비교</a></li>' +
               '<li><a class="hover:text-brand-700" href="' + D.url("drug-guides.html") + '">약별 영양제 가이드</a></li>' +
+              '<li><a class="hover:text-brand-700" href="' + D.url("glossary.html") + '">영양제 용어 사전</a></li>' +
               '<li><a class="hover:text-brand-700" href="' + D.url("compatibility-chart.html") + '">영양제 궁합표</a></li>' +
               '<li><a class="hover:text-brand-700" href="' + D.url("timing-chart.html") + '">영양제 복용 시간표</a></li>' +
               '<li><a class="hover:text-brand-700" href="' + D.url("materials.html") + '">기능성 원료 인정현황</a></li>' +
@@ -146,7 +147,7 @@
     input.focus();
     D.ingredients().then(function (d) {
       var byId = {}; d.items.forEach(function (it) { byId[it.id] = it; });
-      var names = null, drugs = null, prodMatch = null, drugMatch = null, namesLoading = false;
+      var names = null, drugs = null, terms = null, prodMatch = null, drugMatch = null, namesLoading = false;
       function norm(v) { return String(v || "").toLowerCase().replace(/[\s·\-]+/g, ""); }
       function row(href, iconHtml, title, sub) {
         return '<a class="search-result" href="' + href + '">' + iconHtml + '<span class="min-w-0"><span class="block truncate text-sm font-bold text-ink-900">' + title + '</span><span class="block truncate text-xs text-ink-500">' + sub + '</span></span></a>';
@@ -158,7 +159,8 @@
         var hits = D.search(d.items, q, 8);
         var ph = prodMatch ? prodMatch(q, 4) : { idx: [], total: 0 }, prods = ph.idx.map(function (i) { return names.p[i]; });   // 자모 비교: 일부만 입력해도 관련 제품
         var dh = drugMatch ? drugMatch(q, 4) : { idx: [], total: 0 }, meds = dh.idx.map(function (i) { return drugs.p[i]; });
-        if (!hits.length && !prods.length && !meds.length) { results.innerHTML = '<p class="px-5 py-6 text-sm text-ink-400">"' + esc(q) + '"에 해당하는 성분·제품·의약품이 없습니다. 제품명 일부나 성분명으로 다시 입력해 보세요. <a class="font-semibold text-brand-700" href="' + esc(D.searchUrl(q.trim())) + '">비슷한 이름 찾아보기 →</a></p>'; return; }
+        var th = terms ? terms.filter(function (t) { return D.has([t.term, t.en || "", (t.aliases || []).join(" ")].join(" "), q); }).slice(0, 3) : [];   // 용어 사전
+        if (!hits.length && !prods.length && !meds.length && !th.length) { results.innerHTML = '<p class="px-5 py-6 text-sm text-ink-400">"' + esc(q) + '"에 해당하는 성분·제품·의약품이 없습니다. 제품명 일부나 성분명으로 다시 입력해 보세요. <a class="font-semibold text-brand-700" href="' + esc(D.searchUrl(q.trim())) + '">비슷한 이름 찾아보기 →</a></p>'; return; }
         var html = hits.map(function (it) {
           var cat = d._meta.categories[it.category] || {};
           return row(D.ingredientUrl(it.id), '<span class="grid h-9 w-9 shrink-0 place-items-center rounded-lg ring-1 ' + D.catClass(cat.color) + '"><i data-lucide="' + esc(it.icon || cat.icon || "pill") + '" class="h-4 w-4"></i></span>',
@@ -173,6 +175,9 @@
           var dmaker = (drugs.c || [])[pp[5]] || "";
           return row(D.drugUrl(pp[0]), '<span class="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-amber-50 text-amber-700 ring-1 ring-amber-200"><i data-lucide="pill-bottle" class="h-4 w-4"></i></span>', D.markMatch(pp[1], q), (dmaker ? '<span class="font-semibold text-ink-700">' + esc(dmaker) + '</span> · ' : "") + (pp[3] ? "주성분: " + esc(pp[3]) : "식약처 허가 의약품") + (pp[4] === 2 ? " · 전문의약품" : ""));
         }).join("");
+        if (th.length) html += '<p class="px-5 pb-1 pt-3 text-[11px] font-bold text-ink-400">용어 사전</p>' + th.map(function (t) {
+          return row(D.termUrl(t.slug), '<span class="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-cream-200 text-brand-700"><i data-lucide="book-open" class="h-4 w-4"></i></span>', D.markMatch(t.term, q) + (t.en ? ' <span class="font-medium text-ink-400">' + esc(t.en) + '</span>' : ""), esc(t.short || ""));
+        }).join("");
         var total = ph.total + dh.total;
         html += '<a class="search-result justify-center border-t border-ink-100 text-sm font-bold text-brand-700" href="' + esc(D.searchUrl(q.trim())) + '">‘' + esc(q.trim()) + '’ 전체 검색 결과 보기' + (total > prods.length + meds.length ? ' (제품·의약품 ' + total.toLocaleString() + '건)' : '') + ' →</a>';
         results.innerHTML = html; D.icons(results);
@@ -182,7 +187,8 @@
           namesLoading = true;
           Promise.all([
             D.productNames().then(function (n) { names = n && n.p ? n : { i: [], p: [] }; }).catch(function () { names = { i: [], p: [] }; }).then(function () { prodMatch = D.productMatcher(names); if (names.more) names.more.then(function () { prodMatch = D.productMatcher(names); render(); }); }),
-            D.drugNames().then(function (n) { drugs = n && n.p ? n : { i: [], p: [] }; }).catch(function () { drugs = { i: [], p: [] }; }).then(function () { drugMatch = D.drugMatcher(drugs); })
+            D.drugNames().then(function (n) { drugs = n && n.p ? n : { i: [], p: [] }; }).catch(function () { drugs = { i: [], p: [] }; }).then(function () { drugMatch = D.drugMatcher(drugs); }),
+            D.glossary().then(function (g) { terms = (g && g.items) || []; }).catch(function () { terms = []; })
           ]).then(render);
         }
         render();

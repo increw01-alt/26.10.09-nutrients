@@ -423,3 +423,100 @@ class AppSafeAreaTests(unittest.TestCase):
         self.assertIn("html.is-app #site-header", css)
         self.assertIn("env(safe-area-inset-top", css)
         self.assertIn("html.is-app { --header-h: calc(68px + env(safe-area-inset-top", css)
+
+
+class GlossaryTests(unittest.TestCase):
+    """용어 사전(glossary.html · term/<slug>.html) — 데이터 검증·본문 자동 링크·렌더 (tests/terms.test.mjs 와 같은 링크 사례)."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.data = B.read_json(B.DATA_DIR / "glossary.json")
+        ingredients = B.read_json(B.DATA_DIR / "ingredients.json")
+        interactions = B.read_json(B.DATA_DIR / "interactions.json")
+        guides = B.read_json(B.DATA_DIR / "guides.json")
+        cls.guides = guides
+        cls.core = {"categories": ingredients["_meta"]["categories"], "by_id": {i["id"]: i for i in ingredients["items"]}, "guides": guides["items"], "pairs": interactions["pairs"], "types": interactions["_meta"]["types"], "updated_at": "2026-10-22"}
+        cls.slugs = {g["slug"] for g in guides["items"]}
+        cls.model = B.glossary_model(cls.data, cls.core, guides["items"])
+        cls.core["glossary"] = cls.model
+        cls.core["term_linker"] = B.TermLinker(cls.data["items"])
+        cls.cfg = {"name": "테스트", "url": "https://example.test"}
+        cls.items = [
+            {"slug": "heme-iron", "aliases": ["헴철"], "short": "동물성 철"},
+            {"slug": "non-heme-iron", "aliases": ["비헴철"], "short": "식물성 철"},
+            {"slug": "rtg", "aliases": ["rTG", "r-TG"], "short": '재에스테르화 "TG"'},
+            {"slug": "ul", "aliases": ["상한섭취량", "UL"], "short": "상한"},
+            {"slug": "cfu", "aliases": ["CFU", "보장균수"], "short": "균 수"},
+        ]
+
+    def test_validate_real_data_and_rejects_bad(self):
+        import copy
+        B.validate_glossary(self.data, set(self.core["by_id"]), self.slugs)
+        self.assertGreaterEqual(len(self.data["items"]), 60)
+        bad = copy.deepcopy(self.data); bad["items"][1]["aliases"].append(bad["items"][0]["aliases"][0])   # 다른 용어와 별칭 중복
+        with self.assertRaises(SystemExit):
+            B.validate_glossary(bad, set(self.core["by_id"]), self.slugs)
+        bad = copy.deepcopy(self.data); bad["items"][0]["related"] = ["no-such-term"]
+        with self.assertRaises(SystemExit):
+            B.validate_glossary(bad, set(self.core["by_id"]), self.slugs)
+        bad = copy.deepcopy(self.data); bad["items"][0]["ingredients"] = ["no-such-ingredient"]
+        with self.assertRaises(SystemExit):
+            B.validate_glossary(bad, set(self.core["by_id"]), self.slugs)
+
+    def test_linker_first_occurrence_and_boundaries(self):
+        T = B.TermLinker(self.items)
+        out = T.link(B.esc("비헴철은 헴철보다 흡수가 낮고 rTG 오메가3 는 xrTGx 가 아니다. 헴철을 다시."), "../", {})
+        self.assertRegex(out, r'<a class="term-link" href="\.\./term/non-heme-iron\.html" title="식물성 철">비헴철</a>은')
+        self.assertRegex(out, r'href="\.\./term/heme-iron\.html"[^>]*>헴철</a>보다')
+        self.assertRegex(out, r'href="\.\./term/rtg\.html" title="재에스테르화 &quot;TG&quot;">rTG</a> 오메가3')
+        self.assertIn("xrTGx 가 아니다", out)
+        self.assertEqual(out.count("term/heme-iron.html"), 1)
+        T2 = B.TermLinker(self.items + [{"slug": "iu", "aliases": ["IU"], "short": "국제단위"}])
+        out2 = T2.link("100억 cfu 와 4000IU, 그리고 IU 단위", "", {})
+        self.assertRegex(out2, r'href="term/cfu\.html"[^>]*>cfu</a>')
+        self.assertIn("4000IU,", out2)
+        self.assertRegex(out2, r'그리고 <a class="term-link" href="term/iu\.html"[^>]*>IU</a> 단위')
+
+    def test_linker_exclude_state_and_max(self):
+        T = B.TermLinker(self.items)
+        st = {"used": set(), "exclude": {"heme-iron"}}
+        a = T.link("헴철과 비헴철", "../", st)
+        b = T.link("비헴철 다시, 상한섭취량", "../", st)
+        self.assertTrue("term/heme-iron.html" not in a and "term/non-heme-iron.html" in a)
+        self.assertTrue("term/non-heme-iron.html" not in b and "term/ul.html" in b)
+        many = [{"slug": f"t{i}", "aliases": ["용어" + chr(0xAC00 + i)], "short": ""} for i in range(20)]
+        out = B.TermLinker(many).link(" ".join(m["aliases"][0] for m in many), "", {})
+        self.assertEqual(out.count("term-link"), B.TERM_LINK_MAX)
+        self.assertEqual(B.TermLinker(self.items).link("&lt;b&gt;굵게&lt;/b&gt;", "", {}), "&lt;b&gt;굵게&lt;/b&gt;")
+        self.assertEqual(B.TermLinker([]).link("헴철", "", {}), "헴철")
+        js = (B.ROOT / "assets/js/terms.js").read_text(encoding="utf-8")
+        self.assertIn(f"var MAX = {B.TERM_LINK_MAX};", js)
+
+    def test_term_initial(self):
+        self.assertEqual(B.term_initial("생체이용률"), "ㅅ")
+        self.assertEqual(B.term_initial("rTG(재에스테르화 중성지방)"), "A")
+        self.assertEqual(B.term_initial("25(OH)D"), "A")
+        self.assertEqual(B.term_initial("킬레이트"), "ㅋ")
+
+    def test_render_term_hub_and_autolink_in_pages(self):
+        types = self.guides["_meta"]["types"]
+        e = self.model["by_slug"]["heme-iron"]
+        html = B.render_term(e, self.model, self.core, self.cfg, types, "2026-10-22")
+        self.assertIn('rel="canonical" href="https://example.test/term/heme-iron"', html)
+        self.assertNotIn('href="../term/heme-iron.html"', html)   # 자기 자신은 링크하지 않음
+        self.assertIn('href="../term/non-heme-iron.html"', html)
+        self.assertIn("DefinedTerm", html)
+        hub = B.render_glossary_hub(self.model, self.cfg)
+        for x in self.model["items"]:
+            self.assertIn(f'href="term/{x["t"]["slug"]}.html"', hub)
+        self.assertIn('id="term-filter"', hub)
+        self.assertIn("glossary.html", B.STATIC_PAGES)
+        guides = {"_meta": self.guides["_meta"], "items": self.guides["items"], "by_id": {g["id"]: g for g in self.guides["items"]}}
+        gd = next(g for g in self.guides["items"] if g["slug"] == "omega3-guide")
+        ghtml = B.render_guide(gd, guides, self.core, self.cfg)
+        self.assertIn('class="term-link"', ghtml)
+        self.assertIn('href="../term/rtg.html"', ghtml)
+        self.assertLessEqual(ghtml.count('class="term-link"'), B.TERM_LINK_MAX)
+        it = self.core["by_id"]["iron"]
+        ihtml = B.render_page(it, self.core, self.cfg)
+        self.assertIn("assets/js/terms.js", ihtml)

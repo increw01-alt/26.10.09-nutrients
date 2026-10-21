@@ -4,10 +4,12 @@
   var D = window.Data, esc = D.esc;
   var id = window.__INGREDIENT_ID || D.qs("id");
 
+  var TL = null;   // 용어 자동 링크(assets/js/terms.js) — 용어 색인을 받으면 만들어지고, 없으면 esc 만 한다
+  function tlink(text, state) { var s = esc(text); return TL ? TL.link(s, D.url(""), state) : s; }
   function section(title, icon, bodyHtml, extraClass, id) {
     return '<section' + (id ? ' id="' + id + '"' : "") + ' class="scroll-mt-36 rounded-2xl border border-ink-100 bg-white p-6 shadow-card ' + (extraClass || "") + '"><h2 class="flex items-center gap-2 text-lg font-extrabold text-ink-900"><i data-lucide="' + icon + '" class="h-5 w-5 text-brand-600"></i>' + esc(title) + '</h2><div class="mt-4">' + bodyHtml + '</div></section>';
   }
-  function list(arr, cls) { return arr && arr.length ? '<ul class="' + cls + ' text-[15px] text-ink-700">' + arr.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul>" : '<p class="text-sm text-ink-400">해당 없음</p>'; }
+  function list(arr, cls, fn) { return arr && arr.length ? '<ul class="' + cls + ' text-[15px] text-ink-700">' + arr.map(function (x) { return "<li>" + (fn ? fn(x) : esc(x)) + "</li>"; }).join("") + "</ul>" : '<p class="text-sm text-ink-400">해당 없음</p>'; }
 
   function compatBlock(core, it) {
     var rel = D.related(core, it.id);
@@ -71,6 +73,7 @@
   }
 
   function render(core, it) {
+    var st = { used: {}, count: 0, exclude: {} };   // 용어 자동 링크 상태 (페이지당 첫 등장만, 권장량 메모 → 시간 메모 → 주의 → FAQ 순)
     var cat = core.categories[it.category] || {};
     document.title = it.name + " 효능·권장량·궁합·먹는 시간 | " + (window.SITE && window.SITE.name);   // 빌드가 넣는 정적 <title> 과 같은 틀 (scripts/build_site.py render_page)
     var md = document.querySelector('meta[name="description"]'); if (md) md.content = it.summary;
@@ -128,14 +131,14 @@
       section("이런 효과를 기대할 수 있어요", "sparkles", list(it.benefits, "list-check")) +
       section("권장 섭취량과 복용법", "flask-conical",
         '<dl class="grid gap-3 sm:grid-cols-2"><div class="rounded-xl bg-ink-50 p-4"><dt class="text-xs font-bold text-ink-400">하루 권장</dt><dd class="mt-1 font-bold text-ink-900">' + esc(it.dosage.daily) + '</dd></div><div class="rounded-xl bg-ink-50 p-4"><dt class="text-xs font-bold text-ink-400">상한 섭취량</dt><dd class="mt-1 font-bold text-ink-900">' + esc(it.dosage.upper) + '</dd></div></dl>' +
-        (it.dosage.note ? '<p class="mt-3 flex items-start gap-2 text-sm text-ink-600"><i data-lucide="lightbulb" class="mt-0.5 h-4 w-4 shrink-0 text-amber-500"></i>' + esc(it.dosage.note) + '</p>' : "") +
-        '<div class="mt-4 flex items-start gap-3 rounded-xl border border-brand-100 bg-brand-50/60 p-4"><i data-lucide="clock" class="mt-0.5 h-5 w-5 shrink-0 text-brand-600"></i><div><p class="font-bold text-brand-900">' + esc(it.timing.label) + '</p><p class="mt-0.5 text-sm text-brand-900/80">' + esc(it.timing.note || "") + '</p></div></div>' +
+        (it.dosage.note ? '<p class="mt-3 flex items-start gap-2 text-sm text-ink-600"><i data-lucide="lightbulb" class="mt-0.5 h-4 w-4 shrink-0 text-amber-500"></i>' + tlink(it.dosage.note, st) + '</p>' : "") +
+        '<div class="mt-4 flex items-start gap-3 rounded-xl border border-brand-100 bg-brand-50/60 p-4"><i data-lucide="clock" class="mt-0.5 h-5 w-5 shrink-0 text-brand-600"></i><div><p class="font-bold text-brand-900">' + esc(it.timing.label) + '</p><p class="mt-0.5 text-sm text-brand-900/80">' + tlink(it.timing.note || "", st) + '</p></div></div>' +
         '<p class="mt-3 text-xs"><a class="font-bold text-brand-700 hover:underline" href="' + D.url("timing-chart.html") + '#' + encodeURIComponent(it.id) + '">영양제 복용 시간표에서 다른 성분과 비교 <i data-lucide="arrow-right" class="inline h-3.5 w-3.5"></i></a></p>', "", "sec-intake") +
       section("이런 분께 추천해요", "user", list(it.whoFor, "list-dot")) +
-      section("섭취 시 주의사항", "triangle-alert", list(it.cautions, "list-warn") + (it.drugCautions && it.drugCautions.length ? '<h3 class="mt-5 text-sm font-bold text-rose-700">약과 함께 먹을 때</h3>' + list(it.drugCautions, "list-warn") : "") + '<p class="mt-4 text-xs text-ink-400">질환이 있거나 약을 복용 중이라면 섭취 전 의사·약사와 상담하세요.</p>', "ring-1 ring-amber-100") +
+      section("섭취 시 주의사항", "triangle-alert", list(it.cautions, "list-warn", function (x) { return tlink(x, st); }) + (it.drugCautions && it.drugCautions.length ? '<h3 class="mt-5 text-sm font-bold text-rose-700">약과 함께 먹을 때</h3>' + list(it.drugCautions, "list-warn", function (x) { return tlink(x, st); }) : "") + '<p class="mt-4 text-xs text-ink-400">질환이 있거나 약을 복용 중이라면 섭취 전 의사·약사와 상담하세요.</p>', "ring-1 ring-amber-100") +
       section(it.name + " 궁합 한눈에", "heart-handshake", compatBlock(core, it) + '<p class="mt-4 text-xs"><a class="font-bold text-brand-700 hover:underline" href="' + D.url("compatibility-chart.html") + '#' + encodeURIComponent(it.id) + '">전체 영양제 궁합표에서 ' + esc(it.name) + ' 보기 <i data-lucide="arrow-right" class="inline h-3.5 w-3.5"></i></a></p>', "", "sec-compat") +
       '<section id="shop" class="app-hide scroll-mt-36 rounded-2xl border border-ink-100 bg-white p-6 shadow-card"><h2 class="flex items-center gap-2 text-lg font-extrabold text-ink-900"><i data-lucide="shopping-cart" class="h-5 w-5 text-brand-600"></i>' + esc(it.name) + ' 제품 찾기</h2><p class="mt-2 text-sm text-ink-500">쇼핑몰에서 "' + esc(it.shopQuery) + '" 검색 결과로 바로 이동합니다. 함량·형태·보장균수 등은 제품 라벨을 꼭 확인하세요.</p><div class="mt-4">' + window.Affiliate.buttonsHtml(it.shopQuery) + '</div><div id="ingredient-products" class="mt-6"><div class="skeleton h-24"></div></div><p class="mt-4 text-[11px] text-ink-400">' + esc(window.Affiliate.disclosure()) + '</p></section>' +
-      (it.faq && it.faq.length ? section("자주 묻는 질문", "circle-help", it.faq.map(function (f) { return '<details class="group border-b border-ink-100 py-3 last:border-0"><summary class="flex cursor-pointer list-none items-center justify-between gap-3 font-bold text-ink-900"><span>Q. ' + esc(f.q) + '</span><i data-lucide="chevron-down" class="h-4 w-4 shrink-0 text-ink-400 transition group-open:rotate-180"></i></summary><p class="mt-2 text-sm leading-relaxed text-ink-600">' + esc(f.a) + '</p></details>'; }).join(""), "", "sec-faq") : "");
+      (it.faq && it.faq.length ? section("자주 묻는 질문", "circle-help", it.faq.map(function (f) { return '<details class="group border-b border-ink-100 py-3 last:border-0"><summary class="flex cursor-pointer list-none items-center justify-between gap-3 font-bold text-ink-900"><span>Q. ' + esc(f.q) + '</span><i data-lucide="chevron-down" class="h-4 w-4 shrink-0 text-ink-400 transition group-open:rotate-180"></i></summary><p class="mt-2 text-sm leading-relaxed text-ink-600">' + tlink(f.a, st) + '</p></details>'; }).join(""), "", "sec-faq") : "");
 
     // 이 성분이 들어간 기능성별 허브 페이지 칩 (data/functions-index.json, 빌드 생성)
     D.functions().then(function (fx) {
@@ -214,7 +217,9 @@
   }
 
   document.addEventListener("DOMContentLoaded", function () {
-    D.core().then(function (core) {
+    Promise.all([D.core(), D.glossary().catch(function () { return null; })]).then(function (r) {   // 용어 색인은 없어도 페이지는 그려진다
+      var core = r[0];
+      TL = (window.Terms && r[1] && r[1].items) ? window.Terms.build(r[1].items) : null;
       var it = core.byId[id];
       if (!it) {
         document.getElementById("ingredient-hero").innerHTML = '<div class="rounded-2xl border border-rose-100 bg-rose-50 p-6"><h1 class="text-xl font-extrabold text-rose-700">성분을 찾을 수 없습니다</h1><p class="mt-2 text-sm text-rose-800">주소가 잘못되었거나 아직 등록되지 않은 성분입니다.</p><a class="mt-4 inline-block font-bold text-brand-700 underline" href="' + D.url("ingredients.html") + '">성분 사전으로 이동</a></div>';

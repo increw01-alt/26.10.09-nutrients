@@ -37,7 +37,7 @@ def warn(msg: str) -> None:
 
 
 def html_files() -> list[Path]:
-    return sorted([*ROOT.glob("*.html"), *(ROOT / "i").glob("*.html"), *(ROOT / "guide").glob("*.html"), *(ROOT / "function").glob("*.html"), *(ROOT / "compare").glob("*.html"), *(ROOT / "drug-guide").glob("*.html")])
+    return sorted([*ROOT.glob("*.html"), *(ROOT / "i").glob("*.html"), *(ROOT / "guide").glob("*.html"), *(ROOT / "function").glob("*.html"), *(ROOT / "compare").glob("*.html"), *(ROOT / "drug-guide").glob("*.html"), *(ROOT / "term").glob("*.html")])
 
 
 def rel(p: Path) -> str:

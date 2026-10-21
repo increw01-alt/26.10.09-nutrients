@@ -410,3 +410,14 @@ html.is-app #site-header > div { padding-top: env(safe-area-inset-top, 0px); }
 .dg-table tbody th { min-width: 7rem; }
 .dg-table tbody td { line-height: 1.5; }
 .dg-table td:last-child { min-width: 18rem; }
+
+/* ---------- 용어 사전 (glossary.html · term/*.html, 빌드 생성) + 본문 용어 링크 ---------- */
+.term-link { color: inherit; text-decoration: underline dotted #7fae8a; text-decoration-thickness: 1.5px; text-underline-offset: 3px; cursor: help; }
+.term-link:hover { color: #175136; text-decoration-style: solid; text-decoration-color: #246d4b; }
+.term-card { display: flex; flex-direction: column; gap: .25rem; border: 1px solid #e3ebdc; border-radius: 1rem; background: #fff; padding: .95rem 1.05rem; text-decoration: none; transition: all .15s ease; }
+.term-card:hover { border-color: #9cc49c; box-shadow: 0 8px 22px rgba(31,42,35,.08); transform: translateY(-1px); }
+.term-card-name { font-size: 1rem; font-weight: 800; color: #1f2a23; line-height: 1.35; }
+.term-card-en { font-size: .75rem; font-weight: 600; color: #94a3b8; }
+.term-card-short { font-size: .82rem; line-height: 1.5; color: #4b5563; }
+.term-initial { min-width: 2.5rem; justify-content: center; }
+.term-initial.is-on { background: #246d4b; color: #fff; border-color: #246d4b; }

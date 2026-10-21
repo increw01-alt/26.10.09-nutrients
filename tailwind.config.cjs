@@ -1,7 +1,7 @@
 /* Tailwind 정적 빌드 설정 — `npm run css` 가 assets/css/tailwind.css 를 생성한다 (런타임 CDN 사용 안 함)
  * 색 체계: 메인 시안과 같은 딥 그린(brand) + 연한 민트·크림(cream) + 녹색 기운의 중립색(ink) */
 module.exports = {
-  content: ["./*.html", "./i/*.html", "./guide/*.html", "./function/*.html", "./compare/*.html", "./drug-guide/*.html", "./assets/js/**/*.js", "./scripts/build_site.py"],
+  content: ["./*.html", "./i/*.html", "./guide/*.html", "./function/*.html", "./compare/*.html", "./drug-guide/*.html", "./term/*.html", "./assets/js/**/*.js", "./scripts/build_site.py"],
   theme: {
     extend: {
       fontFamily: { sans: ["Pretendard Variable", "Pretendard", "-apple-system", "BlinkMacSystemFont", "system-ui", "Roboto", "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "sans-serif"], hand: ["Nanum Pen Script", "cursive"] },

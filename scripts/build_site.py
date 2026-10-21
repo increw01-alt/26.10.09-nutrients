@@ -25,7 +25,7 @@ from common import DATA_DIR, KST, ROOT, env, log, now_iso, read_json, write_json
 
 OUT_DIR = ROOT / "i"
 GUIDE_DIR = ROOT / "guide"
-STATIC_PAGES = ["index.html", "ingredients.html", "compatibility.html", "compatibility-chart.html", "timing-chart.html", "finder.html", "functions.html", "compare.html", "drug-guides.html", "guides.html", "products.html", "news.html", "materials.html", "about.html", "terms.html", "privacy.html"]   # compatibility-chart·timing-chart 는 build_charts() 가 생성
+STATIC_PAGES = ["index.html", "ingredients.html", "compatibility.html", "compatibility-chart.html", "timing-chart.html", "finder.html", "functions.html", "compare.html", "drug-guides.html", "glossary.html", "guides.html", "products.html", "news.html", "materials.html", "about.html", "terms.html", "privacy.html"]   # compatibility-chart·timing-chart 는 build_charts() 가 생성
 
 
 def esc(s) -> str:
@@ -112,7 +112,7 @@ def build_sw() -> None:
 def stamp_assets() -> None:
     """모든 HTML 의 assets/js·css 링크에 내용 해시(?v=…)를 붙여, 배포 후 브라우저가 예전 캐시 대신 새 파일을 받게 합니다.
     (Cloudflare Pages + 휴대폰 브라우저에서 새 HTML 과 옛 JS/CSS 가 섞여 동작이 깨지는 문제 방지)"""
-    files = sorted(ROOT.glob("*.html")) + sorted(OUT_DIR.glob("*.html")) + sorted((ROOT / "guide").glob("*.html")) + sorted((ROOT / "function").glob("*.html")) + sorted((ROOT / "compare").glob("*.html")) + sorted((ROOT / "drug-guide").glob("*.html"))
+    files = sorted(ROOT.glob("*.html")) + sorted(OUT_DIR.glob("*.html")) + sorted((ROOT / "guide").glob("*.html")) + sorted((ROOT / "function").glob("*.html")) + sorted((ROOT / "compare").glob("*.html")) + sorted((ROOT / "drug-guide").glob("*.html")) + sorted((ROOT / "term").glob("*.html"))
     changed = 0
     for html_path in files:
         src = html_path.read_text(encoding="utf-8")
@@ -296,7 +296,7 @@ def ensure_pwa_tags(html_src: str, root: str) -> str:
 
 def inject_pwa_tags() -> None:
     """모든 HTML(루트·i/·guide/)의 <link rel="icon"> 뒤 마커 블록에 PWA 태그를 넣거나 갱신한다 (경로는 각 페이지의 data-root 기준)."""
-    files = sorted(ROOT.glob("*.html")) + sorted(OUT_DIR.glob("*.html")) + sorted(GUIDE_DIR.glob("*.html")) + sorted((ROOT / "function").glob("*.html")) + sorted((ROOT / "compare").glob("*.html")) + sorted((ROOT / "drug-guide").glob("*.html"))
+    files = sorted(ROOT.glob("*.html")) + sorted(OUT_DIR.glob("*.html")) + sorted(GUIDE_DIR.glob("*.html")) + sorted((ROOT / "function").glob("*.html")) + sorted((ROOT / "compare").glob("*.html")) + sorted((ROOT / "drug-guide").glob("*.html")) + sorted((ROOT / "term").glob("*.html"))
     changed = 0
     for p in files:
         src = p.read_text(encoding="utf-8")
@@ -334,10 +334,10 @@ def validate(ingredients: dict, interactions: dict) -> None:
     log.info("데이터 검증 통과: 성분 %d · 궁합 %d", len(ids), len(interactions["pairs"]))
 
 
-def ul(items: list[str], cls: str) -> str:
+def ul(items: list[str], cls: str, render=None) -> str:
     if not items:
         return '<p class="text-sm text-ink-400">해당 없음</p>'
-    return f'<ul class="{cls} text-[15px] text-ink-700">' + "".join(f"<li>{esc(x)}</li>" for x in items) + "</ul>"
+    return f'<ul class="{cls} text-[15px] text-ink-700">' + "".join(f"<li>{(render(x) if render else esc(x))}</li>" for x in items) + "</ul>"
 
 
 def render_page(it: dict, core: dict, cfg: dict) -> str:
@@ -355,6 +355,12 @@ def render_page(it: dict, core: dict, cfg: dict) -> str:
     dg_chips = ('<div class="mt-2 flex flex-wrap items-center gap-2"><span class="text-xs font-bold text-ink-500">약과 함께:</span>' + "".join(f'<a class="chart-chip chart-chip-{"synergy" if d["kind"] == "good" else "caution"}" href="../drug-guide/{esc(d["id"])}.html"><i data-lucide="pill" class="h-3.5 w-3.5"></i>{esc(d["short"])}</a>' for d in dgs) + '</div>') if dgs else ""
     fn_chips = ('<div class="mt-3 flex flex-wrap items-center gap-2"><span class="text-xs font-bold text-ink-500">기능성별 페이지:</span>' + "".join(f'<a class="chart-chip" href="../function/{esc(f)}.html"><i data-lucide="{esc(fn_meta[f]["icon"])}" class="h-3.5 w-3.5"></i>{esc(fn_meta[f]["label"])}</a>' for f in fns) + '</div>') if fns else ""
     desc = it["summary"][:150]
+    st = {"used": set(), "exclude": set()}   # 용어 자동 링크 상태 (페이지 순서대로: 요약 → 권장량 메모 → 시간 메모 → 주의 → FAQ)
+    summary_html = term_html(core, it["summary"], st)
+    dnote_html = term_html(core, it["dosage"].get("note", ""), st)
+    tnote_html = term_html(core, it["timing"].get("note", ""), st)
+    caut_html = ul(it.get("cautions", []), "list-warn", render=lambda s: term_html(core, s, st))
+    dcaut_html = ul(it.get("drugCautions", []), "list-warn", render=lambda s: term_html(core, s, st))
     url = page_url(cfg, f"i/{it['id']}.html")
     by_id = core["by_id"]
 
@@ -391,7 +397,7 @@ def render_page(it: dict, core: dict, cfg: dict) -> str:
     if rel_guides:
         guides_html = '<h2 class="mt-6 text-lg font-extrabold">이 성분이 등장하는 가이드</h2><ul class="list-dot text-sm text-ink-700">' + "".join(f'<li><a class="font-semibold text-brand-700" href="../guide/{esc(g["slug"])}.html">{esc(g["h1"])}</a></li>' for g in rel_guides[:8]) + "</ul>"
 
-    faq_html = "".join(f'<details class="border-b border-ink-100 py-3"><summary class="cursor-pointer font-bold text-ink-900">Q. {esc(f["q"])}</summary><p class="mt-2 text-sm text-ink-600">{esc(f["a"])}</p></details>' for f in it.get("faq", []))
+    faq_html = "".join(f'<details class="border-b border-ink-100 py-3"><summary class="cursor-pointer font-bold text-ink-900">Q. {esc(f["q"])}</summary><p class="mt-2 text-sm text-ink-600">{term_html(core, f["a"], st)}</p></details>' for f in it.get("faq", []))
 
     ld = {"@context": "https://schema.org", "@graph": [
         {"@type": "BreadcrumbList", "itemListElement": [
@@ -408,13 +414,13 @@ def render_page(it: dict, core: dict, cfg: dict) -> str:
     <div id="ssr">
       <nav class="text-xs text-ink-500" aria-label="경로"><a href="../index.html">홈</a> › <a href="../ingredients.html">성분 사전</a> › <span>{esc(it["name"])}</span></nav>
       <h1 class="mt-4 text-3xl font-extrabold text-ink-900">{esc(it["name"])} <span class="text-base font-medium text-ink-400">{esc(it["en"])}</span></h1>
-      <p class="mt-3 text-[15px] text-ink-700">{esc(it["summary"])}</p>
+      <p class="mt-3 text-[15px] text-ink-700">{summary_html}</p>
       <h2 class="mt-8 text-lg font-extrabold">식약처 인정 기능성</h2><p class="mt-2 text-sm text-ink-700">{esc(it.get("mfdsFunction") or "고시형 기능성 원료 아님")}</p>{fn_chips}{cmp_chips}{dg_chips}
       <h2 class="mt-6 text-lg font-extrabold">기대 효과</h2>{ul(it.get("benefits", []), "list-check")}
-      <h2 class="mt-6 text-lg font-extrabold">권장 섭취량</h2><p class="text-sm text-ink-700">하루 권장: {esc(it["dosage"].get("daily"))} · 상한: {esc(it["dosage"].get("upper"))}</p><p class="text-sm text-ink-600">{esc(it["dosage"].get("note", ""))}</p>
-      <h2 class="mt-6 text-lg font-extrabold">{esc(it["name"])} 먹는 시간</h2><p class="text-sm text-ink-700">{esc(it["timing"].get("label"))} — {esc(it["timing"].get("note", ""))}</p><p class="mt-1 text-xs"><a class="font-bold text-brand-700 hover:underline" href="../timing-chart.html#{esc(it["id"])}">영양제 복용 시간표에서 다른 성분과 비교 →</a></p>
+      <h2 class="mt-6 text-lg font-extrabold">권장 섭취량</h2><p class="text-sm text-ink-700">하루 권장: {esc(it["dosage"].get("daily"))} · 상한: {esc(it["dosage"].get("upper"))}</p><p class="text-sm text-ink-600">{dnote_html}</p>
+      <h2 class="mt-6 text-lg font-extrabold">{esc(it["name"])} 먹는 시간</h2><p class="text-sm text-ink-700">{esc(it["timing"].get("label"))} — {tnote_html}</p><p class="mt-1 text-xs"><a class="font-bold text-brand-700 hover:underline" href="../timing-chart.html#{esc(it["id"])}">영양제 복용 시간표에서 다른 성분과 비교 →</a></p>
       <h2 class="mt-6 text-lg font-extrabold">이런 분께 추천</h2>{ul(it.get("whoFor", []), "list-dot")}
-      <h2 class="mt-6 text-lg font-extrabold">주의사항</h2>{ul(it.get("cautions", []), "list-warn")}{('<h3 class="mt-3 text-sm font-bold text-rose-700">약과 함께 먹을 때</h3>' + ul(it.get("drugCautions", []), "list-warn")) if it.get("drugCautions") else ""}
+      <h2 class="mt-6 text-lg font-extrabold">주의사항</h2>{caut_html}{('<h3 class="mt-3 text-sm font-bold text-rose-700">약과 함께 먹을 때</h3>' + dcaut_html) if it.get("drugCautions") else ""}
       {mat_html}
       {guides_html}
       <h2 class="mt-6 text-lg font-extrabold">{esc(it["name"])} 궁합</h2><p class="mb-2 text-sm text-ink-500">같이 먹으면 좋은 영양제와 시간을 나눠야 할 조합입니다. 전체는 <a class="font-bold text-brand-700 hover:underline" href="../compatibility-chart.html#{esc(it["id"])}">영양제 궁합표</a>에서 볼 수 있습니다.</p>{rel_html or '<p class="text-sm text-ink-400">등록된 궁합 정보가 없습니다.</p>'}
@@ -456,6 +462,7 @@ def render_page(it: dict, core: dict, cfg: dict) -> str:
   <script src="../assets/js/store.js" defer></script>
   <script>window.__INGREDIENT_ID = {json.dumps(it["id"])};</script>
   <script src="../assets/js/illus.js" defer></script>
+  <script src="../assets/js/terms.js" defer></script>
   <script src="../assets/js/pages/ingredient.js" defer></script>
   <script type="application/ld+json" id="ld-ingredient">{json.dumps(ld, ensure_ascii=False)}</script>
 </head>
@@ -545,6 +552,8 @@ def render_guide(gd: dict, guides: dict, core: dict, cfg: dict) -> str:
     path = f"guide/{gd['slug']}.html"
     url = page_url(cfg, path)
     desc = gd["description"]
+    st = {"used": set(), "exclude": set()}   # 용어 자동 링크 상태 (페이지당 첫 등장만)
+    intro_html = term_html(core, gd["intro"], st)
     ld = {"@context": "https://schema.org", "@graph": [
         {"@type": "BreadcrumbList", "itemListElement": [
             {"@type": "ListItem", "position": 1, "name": "홈", "item": f"{cfg['url']}/"},
@@ -567,7 +576,7 @@ def render_guide(gd: dict, guides: dict, core: dict, cfg: dict) -> str:
         ing_html += (f'<div class="flex gap-4 rounded-2xl border border-ink-100 bg-white p-5 shadow-card"><a href="../i/{esc(it["id"])}.html" class="grid h-12 w-12 shrink-0 place-items-center rounded-xl ring-1 {cat_class(cat.get("color", ""))}"><i data-lucide="{esc(it.get("icon") or cat.get("icon", "pill"))}" class="h-6 w-6"></i></a>'
                      f'<div class="min-w-0"><a href="../i/{esc(it["id"])}.html" class="font-extrabold text-ink-900 hover:text-brand-700">{esc(it["name"])}</a>'
                      f'<p class="mt-0.5 text-xs text-brand-800">{esc((it.get("mfdsFunction") or "")[:70])}{"…" if len(it.get("mfdsFunction") or "") > 70 else ""}</p>'
-                     f'<p class="mt-2 text-sm leading-relaxed text-ink-700">{esc(x["why"])}</p>'
+                     f'<p class="mt-2 text-sm leading-relaxed text-ink-700">{term_html(core, x["why"], st)}</p>'
                      f'<p class="mt-2 text-xs text-ink-500"><i data-lucide="clock" class="mr-1 inline h-3.5 w-3.5 align-text-bottom"></i>{esc(it["timing"]["label"])} · 하루 {esc(it["dosage"]["daily"][:40])}</p></div></div>')
 
     # 조합
@@ -582,13 +591,13 @@ def render_guide(gd: dict, guides: dict, core: dict, cfg: dict) -> str:
         tlabel = core["types"].get(ptype, {}).get("short", "")
         combo_html += (f'<div class="rounded-2xl border p-5 card-{ptype}"><div class="flex flex-wrap items-center gap-2"><span class="badge badge-{ptype}">{esc(tlabel)}</span>'
                        + (f'<span class="text-xs font-bold text-amber-700">{p["separateHours"]}시간 이상 간격</span>' if p and p.get("separateHours") else "") + "</div>"
-                       f'<h3 class="mt-2 font-extrabold text-ink-900">{esc(" + ".join(names))}</h3><p class="mt-1 text-sm text-ink-700">{esc(c["note"])}</p>'
+                       f'<h3 class="mt-2 font-extrabold text-ink-900">{esc(" + ".join(names))}</h3><p class="mt-1 text-sm text-ink-700">{term_html(core, c["note"], st)}</p>'
                        f'<a href="../compatibility.html?items={",".join(c["ids"])}" class="mt-3 inline-flex items-center gap-1 text-sm font-bold text-brand-700 hover:underline">궁합 체크에서 자세히 <i data-lucide="arrow-right" class="h-4 w-4"></i></a></div>')
 
-    sections_html = "".join(f'<section class="rounded-2xl border border-ink-100 bg-white p-6 shadow-card"><h2 class="text-lg font-extrabold text-ink-900">{esc(sec["h2"])}</h2><p class="mt-3 whitespace-pre-line text-[15px] leading-relaxed text-ink-700">{esc(sec["body"])}</p></section>' for sec in gd.get("sections", []))
-    tips_html = ul(gd["tips"], "list-check")
-    caut_html = ul(gd["cautions"], "list-warn")
-    faq_html = "".join(f'<details class="group border-b border-ink-100 py-3 last:border-0"><summary class="flex cursor-pointer list-none items-center justify-between gap-3 font-bold text-ink-900"><span>Q. {esc(f["q"])}</span><i data-lucide="chevron-down" class="h-4 w-4 shrink-0 text-ink-400 transition group-open:rotate-180"></i></summary><p class="mt-2 text-sm leading-relaxed text-ink-600">{esc(f["a"])}</p></details>' for f in gd["faq"])
+    sections_html = "".join(f'<section class="rounded-2xl border border-ink-100 bg-white p-6 shadow-card"><h2 class="text-lg font-extrabold text-ink-900">{esc(sec["h2"])}</h2><p class="mt-3 whitespace-pre-line text-[15px] leading-relaxed text-ink-700">{term_html(core, sec["body"], st)}</p></section>' for sec in gd.get("sections", []))
+    tips_html = ul(gd["tips"], "list-check", render=lambda s: term_html(core, s, st))
+    caut_html = ul(gd["cautions"], "list-warn", render=lambda s: term_html(core, s, st))
+    faq_html = "".join(f'<details class="group border-b border-ink-100 py-3 last:border-0"><summary class="flex cursor-pointer list-none items-center justify-between gap-3 font-bold text-ink-900"><span>Q. {esc(f["q"])}</span><i data-lucide="chevron-down" class="h-4 w-4 shrink-0 text-ink-400 transition group-open:rotate-180"></i></summary><p class="mt-2 text-sm leading-relaxed text-ink-600">{term_html(core, f["a"], st)}</p></details>' for f in gd["faq"])
     shop_html = "".join(f'<div class="flex flex-col gap-2 rounded-xl border border-ink-100 bg-white p-4 sm:flex-row sm:items-center sm:justify-between"><div><p class="font-bold text-ink-900">{esc(by_id[x["id"]]["name"])}</p><p class="text-xs text-ink-500">검색어: {esc(by_id[x["id"]]["shopQuery"])}</p></div><div class="js-shop" data-query="{esc(by_id[x["id"]]["shopQuery"])}"></div></div>' for x in gd["ingredients"][:3] if x["id"] in by_id)
     related = [guides["by_id"][r] for r in gd.get("related", []) if r in guides["by_id"]]
     related_html = "".join(guide_card(r, types, "../") for r in related)
@@ -603,7 +612,7 @@ def render_guide(gd: dict, guides: dict, core: dict, cfg: dict) -> str:
       <nav class="text-xs text-ink-500" aria-label="경로"><a class="hover:text-brand-700" href="../index.html">홈</a> › <a class="hover:text-brand-700" href="../guides.html">영양제 가이드</a> › <a class="hover:text-brand-700" href="../guides.html#{gd['type']}">{esc(t.get('short', ''))}</a> › <span class="text-ink-800">{esc(gd['h1'])}</span></nav>
       <span class="mt-4 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold ring-1 {TYPE_STYLE.get(gd['type'], '')}"><i data-lucide="{esc(gd['icon'])}" class="h-3.5 w-3.5"></i>{esc(t.get('label', ''))}</span>
       <h1 class="page-title mt-3">{esc(gd['h1'])}</h1>
-      <p class="page-lead mt-4 max-w-3xl">{esc(gd['intro'])}</p>
+      <p class="page-lead mt-4 max-w-3xl">{intro_html}</p>
       <div class="mt-5 flex flex-wrap gap-2 text-xs">{nav_chips}</div>
       <p class="mt-4 text-xs text-ink-400">식약처 인정 기능성 표현을 기준으로 작성한 일반 건강 정보이며 의학적 조언이 아닙니다 · 최종 수정 {esc(guides['_meta'].get('updatedAt', ''))}</p>
     </div></section>
@@ -662,7 +671,7 @@ def render_guides_hub(guides: dict, cfg: dict) -> str:
     <div class="mx-auto max-w-7xl space-y-14 px-4 py-12 sm:px-6">
       <p id="guide-empty" class="hidden rounded-2xl border border-dashed border-ink-200 bg-white p-6 text-sm text-ink-600">일치하는 가이드가 없습니다. 다른 말로 검색하거나 <a class="font-bold text-brand-700 underline" href="search.html">통합 검색</a>에서 성분·제품·의약품까지 찾아보세요.</p>
       {secs}
-      <section class="rounded-3xl bg-cream-200 p-6 sm:p-8"><h2 class="text-lg font-extrabold text-ink-900">가이드를 읽는 법</h2><ul class="list-dot mt-3 text-sm text-ink-700"><li>'추천 성분'은 식약처가 인정한 기능성과 결핍 가능성을 기준으로 고른 것이며 특정 제품·브랜드를 보증하지 않습니다.</li><li>건강기능식품은 질병의 예방·치료 목적이 아닙니다. 증상이 지속되면 진료가 먼저입니다.</li><li>약을 복용 중이라면 <a class="font-bold text-brand-700 underline" href="guide/with-medication.html">약과 영양제 가이드</a>를 먼저 읽고 약사·의사와 상의하세요.</li><li>표로 한눈에 보려면 <a class="font-bold text-brand-700 underline" href="compatibility-chart.html">영양제 궁합표</a>와 <a class="font-bold text-brand-700 underline" href="timing-chart.html">영양제 복용 시간표</a>를, 식약처 인정 기능성 문구로 찾으려면 <a class="font-bold text-brand-700 underline" href="functions.html">기능성별 영양제</a>를, 헷갈리는 두 성분은 <a class="font-bold text-brand-700 underline" href="compare.html">성분 비교</a>를, 약을 먹는 중이면 <a class="font-bold text-brand-700 underline" href="drug-guides.html">약별 영양제 가이드</a>를 참고하세요.</li></ul></section>
+      <section class="rounded-3xl bg-cream-200 p-6 sm:p-8"><h2 class="text-lg font-extrabold text-ink-900">가이드를 읽는 법</h2><ul class="list-dot mt-3 text-sm text-ink-700"><li>'추천 성분'은 식약처가 인정한 기능성과 결핍 가능성을 기준으로 고른 것이며 특정 제품·브랜드를 보증하지 않습니다.</li><li>건강기능식품은 질병의 예방·치료 목적이 아닙니다. 증상이 지속되면 진료가 먼저입니다.</li><li>약을 복용 중이라면 <a class="font-bold text-brand-700 underline" href="guide/with-medication.html">약과 영양제 가이드</a>를 먼저 읽고 약사·의사와 상의하세요.</li><li>표로 한눈에 보려면 <a class="font-bold text-brand-700 underline" href="compatibility-chart.html">영양제 궁합표</a>와 <a class="font-bold text-brand-700 underline" href="timing-chart.html">영양제 복용 시간표</a>를, 식약처 인정 기능성 문구로 찾으려면 <a class="font-bold text-brand-700 underline" href="functions.html">기능성별 영양제</a>를, 헷갈리는 두 성분은 <a class="font-bold text-brand-700 underline" href="compare.html">성분 비교</a>를, 약을 먹는 중이면 <a class="font-bold text-brand-700 underline" href="drug-guides.html">약별 영양제 가이드</a>를 참고하세요. 라벨·가이드의 낯선 말은 <a class="font-bold text-brand-700 underline" href="glossary.html">영양제 용어 사전</a>에서 찾을 수 있습니다.</li></ul></section>
     </div>
   </main>
   <div id="site-footer"></div>
@@ -763,10 +772,10 @@ def timing_model(ingredients: list[dict], categories: dict | None = None) -> dic
     return {"rows": rows, "slots": slots, "fat": [r for r in rows if r["fat"]]}
 
 
-def faq_block(items: list[tuple[str, str]], heading: str = "자주 묻는 질문") -> tuple[str, dict]:
+def faq_block(items: list[tuple[str, str]], heading: str = "자주 묻는 질문", render=None) -> tuple[str, dict]:
     """보이는 FAQ 섹션 HTML 과 같은 내용의 FAQPage JSON-LD (구글은 보이는 본문과 구조화 데이터가 같아야 한다)."""
     html_ = f'<section id="faq" class="scroll-mt-24 rounded-2xl border border-ink-100 bg-white p-6 shadow-card"><h2 class="text-lg font-extrabold text-ink-900">{esc(heading)}</h2><div class="mt-2 divide-y divide-ink-100">' + \
-        "".join(f'<details class="group py-3"><summary class="cursor-pointer list-none font-bold text-ink-900">{esc(q)}</summary><p class="mt-2 text-sm leading-relaxed text-ink-700">{esc(a)}</p></details>' for q, a in items) + "</div></section>"
+        "".join(f'<details class="group py-3"><summary class="cursor-pointer list-none font-bold text-ink-900">{esc(q)}</summary><p class="mt-2 text-sm leading-relaxed text-ink-700">{(render(a) if render else esc(a))}</p></details>' for q, a in items) + "</div></section>"
     ld = {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in items]}
     return html_, ld
 
@@ -1189,6 +1198,8 @@ def render_function(entry: dict, model: dict, core: dict, cfg: dict, guides_type
     groups = (core.get("functions_meta") or {}).get("groups") or {}
     path = f"function/{it['id']}.html"
     n_i, n_m, n_p = len(ings), len(mats), prods["total"]
+    st = {"used": set(), "exclude": set()}
+    intro_html = term_html(core, it["intro"], st)
     title = f"{it['label']} 영양제 — 식약처 인정 기능성 성분·원료·신고 제품 총정리 | {cfg['name']}"
     desc = f"식약처 인정 기능성 '{_fn_claim_short(it)}'을 표시할 수 있는 성분 {n_i}종, 개별인정 원료 {n_m}종, 신고 제품 {n_p:,}건을 한 장에 정리했습니다. {it['intro']}"[:300]
     ids = [i["id"] for i in ings]
@@ -1261,7 +1272,7 @@ def render_function(entry: dict, model: dict, core: dict, cfg: dict, guides_type
       <p class="eyebrow-kicker mt-4"><i data-lucide="{esc(it["icon"])}"></i> {esc(grp.get("label", "기능성별 영양제"))}</p>
       <h1 class="page-title mt-3">{esc(it["label"])} 영양제: 식약처 인정 기능성 성분·원료·제품</h1>
       <blockquote class="fn-claim mt-4"><i data-lucide="badge-check" class="h-5 w-5 shrink-0 text-brand-600"></i><span>식약처 인정 기능성 — <strong>{esc(it["claim"])}</strong></span></blockquote>
-      <p class="page-lead mt-4 max-w-3xl">{esc(it["intro"])}</p>
+      <p class="page-lead mt-4 max-w-3xl">{intro_html}</p>
       <ul class="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm text-ink-600">
         <li class="inline-flex items-center gap-1.5"><i data-lucide="leaf" class="h-4 w-4 text-brand-600"></i>성분 사전 <strong>{n_i}종</strong></li>
         <li class="inline-flex items-center gap-1.5"><i data-lucide="microscope" class="h-4 w-4 text-brand-600"></i>개별인정 원료 <strong>{n_m}종</strong></li>
@@ -1486,7 +1497,10 @@ def render_compare(entry: dict, core: dict, cfg: dict, guides_types: dict, updat
     title = f"{it['title']} | {cfg['name']}"
     ids = [i["id"] for i in ings]
     names = [i["name"] for i in ings]
-    faq_html, faq_ld = faq_block([(f["q"], f["a"]) for f in it["faq"]])
+    _, faq_ld = faq_block([(f["q"], f["a"]) for f in it["faq"]])
+    st = {"used": set(), "exclude": set()}   # 용어 자동 링크 상태 (소개 → 핵심 차이 → 이런 분은 → 같이 먹기 → FAQ)
+    intro_html = term_html(core, it["intro"], st)
+    verdict_html = term_html(core, it["verdict"], st)
     ld = {"@context": "https://schema.org", "@graph": [
         {"@type": "BreadcrumbList", "itemListElement": [
             {"@type": "ListItem", "position": 1, "name": "홈", "item": f"{cfg['url']}/"},
@@ -1512,7 +1526,7 @@ def render_compare(entry: dict, core: dict, cfg: dict, guides_types: dict, updat
 
     picks_html = "".join(
         f'<article class="finder-card"><div class="flex items-start gap-3"><span class="finder-thumb">{photo_img(i["category"])}</span><div class="min-w-0 flex-1"><h3 class="text-base font-extrabold text-ink-900"><a class="hover:text-brand-700" href="../i/{esc(i["id"])}.html">{esc(i["name"])}</a></h3>'
-        f'<p class="mt-1 text-sm text-ink-600">{esc(points.get(i["id"], {}).get("line", ""))}</p><ul class="list-check mt-2 text-sm text-ink-700">{"".join(f"<li>{esc(w)}</li>" for w in points.get(i["id"], {}).get("pick", []))}</ul>'
+        f'<p class="mt-1 text-sm text-ink-600">{term_html(core, points.get(i["id"], {}).get("line", ""), st)}</p><ul class="list-check mt-2 text-sm text-ink-700">{"".join(f"<li>{term_html(core, w, st)}</li>" for w in points.get(i["id"], {}).get("pick", []))}</ul>'
         f'<div class="mt-3 flex flex-wrap gap-2"><a class="btn-outline btn-sm" href="../i/{esc(i["id"])}.html">자세히</a><button type="button" class="btn-outline btn-sm" data-my-add="{esc(i["id"])}"><i data-lucide="plus"></i>내 영양제에 추가</button></div></div></div></article>'
         for i in ings)
 
@@ -1526,7 +1540,7 @@ def render_compare(entry: dict, core: dict, cfg: dict, guides_types: dict, updat
         else:
             pair_rows += (f'<li class="finder-pair" style="border-color:#e2e8f0;background:#f8fafc"><span class="badge badge-neutral">데이터 없음</span><div><p class="font-bold text-ink-900">{esc(pr["a"]["name"])} + {esc(pr["b"]["name"])}</p>'
                           f'<p class="text-sm text-ink-600">궁합 데이터에 등록된 조합이 아니라 아래 안내를 따르고, 궁합 체크에서 규칙 판정을 확인하세요.</p></div></li>')
-    together_html = (f'<ul class="space-y-2">{pair_rows}</ul><p class="mt-4 text-sm leading-relaxed text-ink-700">{esc(it.get("together", ""))}</p>'
+    together_html = (f'<ul class="space-y-2">{pair_rows}</ul><p class="mt-4 text-sm leading-relaxed text-ink-700">{term_html(core, it.get("together", ""), st)}</p>'
                      f'<div class="mt-4 flex flex-wrap gap-2"><a href="../compatibility.html?items={esc(",".join(ids))}" class="btn-primary"><i data-lucide="heart-handshake"></i>궁합 체크에서 시간표까지 보기 <i data-lucide="arrow-right"></i></a><a href="../compatibility-chart.html" class="btn-outline"><i data-lucide="table"></i>영양제 궁합표</a></div>')
 
     timing_rows = "".join(f'<tr><th scope="row"><a href="../i/{esc(i["id"])}.html">{esc(i["name"])}</a></th><td>{esc((i.get("timing") or {}).get("label", ""))}</td><td class="timing-note">{esc((i.get("timing") or {}).get("note", ""))}</td></tr>' for i in ings)
@@ -1541,6 +1555,7 @@ def render_compare(entry: dict, core: dict, cfg: dict, guides_types: dict, updat
     shop_html = f'<div class="grid gap-4 md:grid-cols-{min(len(ings), 3)}">{"".join(shop_card(i) for i in ings)}</div><p id="compare-disclosure" class="app-hide mt-3 text-[11px] text-ink-400"></p>'
 
     guides_html = f'<div class="grid gap-4 md:grid-cols-2">{"".join(guide_card(g, guides_types, "../") for g in rel_guides)}</div>' if rel_guides else ""
+    faq_html, _ = faq_block([(f["q"], f["a"]) for f in it["faq"]], render=lambda s: term_html(core, s, st))
     chips = [("table", "비교표"), ("verdict", "핵심 차이"), ("picks", "이런 분은"), ("together", "같이 먹어도 될까"), ("timing", "먹는 시간"), ("shop", "제품 보기"), ("faq", "자주 묻는 질문")]
     body = f"""
 <body data-page="ingredients" data-path="{path}" class="min-h-screen antialiased">
@@ -1550,14 +1565,14 @@ def render_compare(entry: dict, core: dict, cfg: dict, guides_types: dict, updat
       <nav class="text-xs text-ink-500" aria-label="경로"><a class="hover:text-brand-700" href="../index.html">홈</a> › <a class="hover:text-brand-700" href="../{COMPARES_HUB}">성분 비교</a> › <span class="text-ink-800">{esc(_cmp_short_title(it))}</span></nav>
       <p class="eyebrow-kicker mt-4"><i data-lucide="scale"></i> 성분 비교</p>
       <h1 class="page-title mt-3">{esc(it["h1"])}</h1>
-      <p class="page-lead mt-4 max-w-3xl">{esc(it["intro"])}</p>
+      <p class="page-lead mt-4 max-w-3xl">{intro_html}</p>
       <div class="mt-6 grid gap-3 md:grid-cols-{min(len(ings), 3)}">{"".join(mini(i) for i in ings)}</div>
       <div class="mt-5 flex flex-wrap gap-2">{"".join(f'<a href="#{a}" class="chip">{b}</a>' for a, b in chips)}</div>
       <p class="mt-4 text-xs text-ink-400">식약처 인정 기능성 표현을 기준으로 정리한 일반 건강 정보이며 의학적 조언이 아닙니다 · 최종 수정 {esc(updated)}</p>
     </div></section>
     <div class="mx-auto max-w-7xl space-y-14 px-4 py-12 sm:px-6">
       <section id="table" class="scroll-mt-24"><h2 class="text-2xl font-extrabold tracking-tight text-ink-900">한눈에 비교</h2><p class="mt-1 text-sm text-ink-500">인정 기능성·권장량·먹는 시간·주의·추천 대상은 성분 사전에서, 신고 제품 수는 식약처 품목신고 수집분(2021-04 이후)에서 가져옵니다.</p><div class="mt-4">{table_html}</div></section>
-      <section id="verdict" class="scroll-mt-24 rounded-3xl bg-cream-200 p-6 sm:p-8"><h2 class="text-2xl font-extrabold tracking-tight text-ink-900">핵심 차이</h2><p class="mt-3 text-[15px] leading-relaxed text-ink-800">{esc(it["verdict"])}</p></section>
+      <section id="verdict" class="scroll-mt-24 rounded-3xl bg-cream-200 p-6 sm:p-8"><h2 class="text-2xl font-extrabold tracking-tight text-ink-900">핵심 차이</h2><p class="mt-3 text-[15px] leading-relaxed text-ink-800">{verdict_html}</p></section>
       <section id="picks" class="scroll-mt-24"><h2 class="text-2xl font-extrabold tracking-tight text-ink-900">이런 분은 이걸</h2><div class="mt-4 grid gap-4 md:grid-cols-{min(len(ings), 3)}">{picks_html}</div></section>
       <section id="together" class="scroll-mt-24"><h2 class="text-2xl font-extrabold tracking-tight text-ink-900">같이 먹어도 될까</h2><div class="mt-4">{together_html}</div></section>
       <section id="timing" class="scroll-mt-24"><h2 class="text-2xl font-extrabold tracking-tight text-ink-900">먹는 시간</h2><div class="mt-4">{timing_html}</div><p class="mt-2 text-xs text-ink-500">전체 성분은 <a class="font-bold text-brand-700 underline" href="../timing-chart.html">영양제 복용 시간표</a>에서 보세요.</p></section>
@@ -1775,7 +1790,9 @@ def render_drug_guide(entry: dict, core: dict, cfg: dict, guides_types: dict, up
     n_drugs = entry["drugs"]["total"]
     title = f"{dg['title']} | {cfg['name']}"
     desc = dg["description"][:300]
-    faq_html, faq_ld = faq_block([(f["q"], f["a"]) for f in dg["faq"]])
+    _, faq_ld = faq_block([(f["q"], f["a"]) for f in dg["faq"]])
+    st = {"used": set(), "exclude": set()}   # 용어 자동 링크 상태 (소개 → 요약 표 → 좋은/주의 → 복용 요령 → FAQ)
+    intro_html = term_html(core, dg["intro"], st)
     ld = {"@context": "https://schema.org", "@graph": [
         {"@type": "BreadcrumbList", "itemListElement": [
             {"@type": "ListItem", "position": 1, "name": "홈", "item": f"{cfg['url']}/"},
@@ -1796,7 +1813,7 @@ def render_drug_guide(entry: dict, core: dict, cfg: dict, guides_types: dict, up
 
     rows = [('<span class="badge badge-synergy">함께 챙기면 좋아요</span>', g) for g in good] + [('<span class="badge badge-caution">주의</span>', c) for c in caution]
     summary_html = (f'<div class="timing-table-wrap"><table class="timing-table dg-table"><caption class="sr-only">{esc(dg["short"])}와 영양 성분 조합 요약</caption><thead><tr><th scope="col">영양 성분</th><th scope="col">판정</th><th scope="col">간격</th><th scope="col">이유</th></tr></thead><tbody>'
-                    + "".join(f'<tr><th scope="row"><a href="../i/{esc(x["id"])}.html">{esc(x["name"])}</a></th><td>{badge}</td><td>{esc(_dg_hours(x.get("hours")) or "—")}</td><td class="timing-note">{esc(x["why"])}</td></tr>' for badge, x in rows)
+                    + "".join(f'<tr><th scope="row"><a href="../i/{esc(x["id"])}.html">{esc(x["name"])}</a></th><td>{badge}</td><td>{esc(_dg_hours(x.get("hours")) or "—")}</td><td class="timing-note">{term_html(core, x["why"], st)}</td></tr>' for badge, x in rows)
                     + '</tbody></table></div>') if rows else \
         '<p class="rounded-2xl border border-dashed border-ink-200 bg-white p-5 text-sm leading-relaxed text-ink-600">이 분류의 약과 특별히 겹치거나 시간을 띄워야 하는 영양 성분으로 정리된 것은 없습니다. 아래 복용 요령과 성분 사전의 주의사항을 확인하고, 약을 복용 중이면 새 영양제를 시작하기 전에 약사·의사와 상의하세요.</p>'
 
@@ -1805,7 +1822,7 @@ def render_drug_guide(entry: dict, core: dict, cfg: dict, guides_types: dict, up
         cat = cats.get(i["category"], {})
         return (f'<article class="ing-card"><div class="flex items-start gap-3"><span class="finder-thumb">{photo_img(i["category"])}</span><div class="min-w-0 flex-1">'
                 f'<span class="badge {cat_class(cat.get("color", ""))}">{esc(cat.get("label", ""))}</span><h3 class="mt-1 text-base font-extrabold text-ink-900"><a class="hover:text-brand-700" href="../i/{esc(i["id"])}.html">{esc(i["name"])}</a></h3>'
-                f'<p class="mt-1.5 text-sm leading-relaxed text-ink-700">{esc(g["why"])}</p>'
+                f'<p class="mt-1.5 text-sm leading-relaxed text-ink-700">{term_html(core, g["why"], st)}</p>'
                 + (f'<p class="mt-1 text-xs font-bold text-amber-700">{esc(_dg_hours(g["hours"]))}</p>' if g.get("hours") else "")
                 + f'<p class="mt-2 text-xs text-ink-500"><i data-lucide="badge-check" class="inline h-3.5 w-3.5 text-brand-600"></i> {esc(i.get("mfdsFunction") or "")}</p>'
                 f'<div class="mt-3 flex flex-wrap gap-2"><button type="button" class="btn-outline" data-my-add="{esc(i["id"])}"><i data-lucide="plus"></i>내 영양제에 추가</button></div>'
@@ -1813,9 +1830,9 @@ def render_drug_guide(entry: dict, core: dict, cfg: dict, guides_types: dict, up
     good_html = (f'<section id="good" class="scroll-mt-24"><h2 class="text-2xl font-extrabold tracking-tight text-ink-900">함께 챙기면 좋은 영양 성분</h2><p class="mt-1 text-sm text-ink-500">이 약을 오래 먹을 때 부족해지기 쉽거나 같은 목적으로 흔히 함께 챙기는 성분입니다. 시작 전에 의사·약사와 상의하세요.</p>'
                  f'<div class="mt-4 grid gap-4 md:grid-cols-2">{"".join(good_card(g) for g in good)}</div></section>') if good else ""
     caution_html = (f'<section id="caution" class="scroll-mt-24"><h2 class="text-2xl font-extrabold tracking-tight text-ink-900">같이 먹을 때 주의할 영양 성분</h2><p class="mt-1 text-sm text-ink-500">흡수를 방해하거나 작용이 겹치는 성분입니다. 간격이 적힌 것은 시간을 띄우면 되고, 나머지는 용량·검사·상담이 필요합니다.</p><ul class="mt-3 space-y-2">'
-                    + "".join(f'<li class="finder-pair finder-pair-caution"><span class="badge badge-caution">주의</span><div><p class="font-bold text-ink-900"><a class="hover:text-brand-700" href="../i/{esc(c["id"])}.html">{esc(c["name"])}</a>{(" · " + esc(_dg_hours(c["hours"]))) if c.get("hours") else ""}</p><p class="text-sm text-ink-600">{esc(c["why"])}</p></div></li>' for c in caution)
+                    + "".join(f'<li class="finder-pair finder-pair-caution"><span class="badge badge-caution">주의</span><div><p class="font-bold text-ink-900"><a class="hover:text-brand-700" href="../i/{esc(c["id"])}.html">{esc(c["name"])}</a>{(" · " + esc(_dg_hours(c["hours"]))) if c.get("hours") else ""}</p><p class="text-sm text-ink-600">{term_html(core, c["why"], st)}</p></div></li>' for c in caution)
                     + '</ul></section>') if caution else ""
-    howto_html = ('<ul class="list-dot mt-3 space-y-2 text-[15px] leading-relaxed text-ink-800">' + "".join(f"<li>{esc(t)}</li>" for t in dg["timing"]) + "</ul>"
+    howto_html = ('<ul class="list-dot mt-3 space-y-2 text-[15px] leading-relaxed text-ink-800">' + "".join(f"<li>{term_html(core, t, st)}</li>" for t in dg["timing"]) + "</ul>"
                   + (f'<div class="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-relaxed text-amber-950"><strong>메모</strong> — {esc(entry["note"])}</div>' if entry["note"] else ""))
     drugs_list = '<ul class="list-dot mt-3 text-sm leading-relaxed text-ink-700">' + "".join(f"<li>{esc(x)}</li>" for x in dg["drugs"]) + "</ul>"
     top = entry["drugs"]["top"]
@@ -1826,6 +1843,7 @@ def render_drug_guide(entry: dict, core: dict, cfg: dict, guides_types: dict, up
                       f'<ul class="mt-2 divide-y divide-ink-100">{drug_rows}</ul><p class="mt-3 text-sm"><a class="font-bold text-brand-700 underline" href="../search.html?q={esc(first_ko)}">‘{esc(first_ko)}’ 의약품 더 찾기 →</a></p>')
     else:
         drugs_html = drugs_list + '<p class="mt-4 rounded-xl border border-dashed border-ink-200 bg-white p-4 text-sm leading-relaxed text-ink-600">이 분류는 전문의약품(처방) 중심이라 이 사이트의 의약품 검색(식약처 e약은요, 일반의약품 중심)에 제품이 없어 목록을 싣지 않습니다. 복용 중인 약은 처방전·약봉투의 성분명으로 확인하세요.</p>'
+    faq_html, _ = faq_block([(f["q"], f["a"]) for f in dg["faq"]], render=lambda s: term_html(core, s, st))
     rel = entry["guides"]
     guides_html = (f'<section id="guides" class="scroll-mt-24"><h2 class="text-2xl font-extrabold tracking-tight text-ink-900">관련 가이드</h2><p class="mt-1 text-sm text-ink-500">약 복용자 상황별로 어떤 성분을 어떻게 조합할지는 가이드에서 자세히 설명합니다.</p><div class="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">{"".join(guide_card(g, guides_types, "../") for g in rel)}</div></section>') if rel else ""
     chips = ('<div class="mt-4 flex flex-wrap items-center gap-2"><span class="text-xs font-bold text-ink-400">대표 성분</span>' + "".join(f'<span class="chip cursor-default">{esc(k)}</span>' for k in ingr_ko) + '</div>') if ingr_ko else ""
@@ -1840,7 +1858,7 @@ def render_drug_guide(entry: dict, core: dict, cfg: dict, guides_types: dict, up
       <nav class="text-xs text-ink-500" aria-label="경로"><a class="hover:text-brand-700" href="../index.html">홈</a> › <a class="hover:text-brand-700" href="../{DRUG_GUIDES_HUB}">약별 영양제 가이드</a> › <span class="text-ink-800">{esc(dg["short"])}</span></nav>
       <p class="eyebrow-kicker mt-4"><i data-lucide="pill"></i> 약별 영양제 가이드 · {"처방약(전문의약품) 중심" if rx else "일반의약품"}</p>
       <h1 class="page-title mt-3">{esc(dg["h1"])}</h1>
-      <p class="page-lead mt-4 max-w-3xl">{esc(dg["intro"])}</p>
+      <p class="page-lead mt-4 max-w-3xl">{intro_html}</p>
       {chips}
       <ul class="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm text-ink-600">
         <li class="inline-flex items-center gap-1.5"><i data-lucide="heart-handshake" class="h-4 w-4 text-brand-600"></i>함께 챙기면 좋은 성분 <strong>{len(good)}</strong></li>
@@ -1983,6 +2001,297 @@ def write_drug_guides(core: dict, cfg: dict, guides: dict) -> list[str]:
     return [e["dg"]["id"] for e in model["items"]]
 
 
+# ---------- 영양제 용어 사전 (glossary.html · term/<slug>.html) + 본문 용어 자동 링크 ----------
+TERM_DIR = ROOT / "term"
+GLOSSARY_HUB = "glossary.html"
+TERM_LINK_MAX = 12   # 페이지당 자동 링크 최대 수 (assets/js/terms.js 의 MAX 와 같아야 함)
+_CHOSEONG = "ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ"
+_CHOSEONG_BASE = {"ㄲ": "ㄱ", "ㄸ": "ㄷ", "ㅃ": "ㅂ", "ㅆ": "ㅅ", "ㅉ": "ㅈ"}
+_INITIAL_ORDER = ["ㄱ", "ㄴ", "ㄷ", "ㄹ", "ㅁ", "ㅂ", "ㅅ", "ㅇ", "ㅈ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ", "A"]
+
+
+def term_initial(term: str) -> str:
+    """용어 첫 글자의 초성(ㄱ~ㅎ, 된소리는 예사소리로) — 한글이 아니면 'A'(영문·숫자·기호 묶음)."""
+    ch = (term or "").strip()[:1]
+    if "가" <= ch <= "힣":
+        c = _CHOSEONG[(ord(ch) - 0xAC00) // 588]
+        return _CHOSEONG_BASE.get(c, c)
+    return "A"
+
+
+def _alias_pattern(alias: str) -> str:
+    """영문·숫자로 시작하는 별칭은 앞이, 끝나는 별칭은 뒤가 영문·숫자가 아닐 때만, 한글로 시작하는 별칭은 앞이 한글이 아닐 때만 맞춘다('헴철'이 '비헴철' 안에서 걸리지 않게; 뒤의 조사는 허용)."""
+    head = r"(?<![A-Za-z0-9])" if re.match(r"[A-Za-z0-9]", alias) else r"(?<![가-힣])"
+    tail = r"(?![A-Za-z0-9])" if re.search(r"[A-Za-z0-9]$", alias) else ""
+    return head + re.escape(alias) + tail
+
+
+class TermLinker:
+    """HTML 이스케이프된 본문 조각에서 용어 별칭의 첫 등장만 term/<slug>.html 링크로 바꾼다 (assets/js/terms.js 와 같은 규칙).
+    별칭은 긴 것부터 맞추고 대소문자를 무시한다. state = {"used": set(), "exclude": set()} 를 페이지마다 하나 만들어 넘기면
+    페이지당 용어마다 한 번, 최대 TERM_LINK_MAX 개만 링크하며 exclude 의 용어(자기 페이지)는 건너뛴다. 태그가 든 문자열에는 쓰지 않는다."""
+
+    def __init__(self, items: list[dict]):
+        self.by_alias: dict[str, tuple[str, str]] = {}
+        aliases: list[str] = []
+        for it in items:
+            for a in it.get("aliases") or []:
+                a_esc = esc(a)
+                key = a_esc.lower()
+                if key in self.by_alias:
+                    continue
+                self.by_alias[key] = (it["slug"], it.get("short") or "")
+                aliases.append(a_esc)
+        aliases.sort(key=len, reverse=True)
+        self.re = re.compile("|".join(_alias_pattern(a) for a in aliases), re.IGNORECASE) if aliases else None
+
+    def link(self, text_esc: str, root: str, state: dict) -> str:
+        if not self.re or not text_esc:
+            return text_esc
+        used = state.setdefault("used", set())
+        exclude = state.get("exclude") or set()
+        if len(used) >= TERM_LINK_MAX:
+            return text_esc
+
+        def rep(m: re.Match) -> str:
+            hit = self.by_alias.get(m.group(0).lower())
+            if not hit:
+                return m.group(0)
+            slug, short = hit
+            if slug in exclude or slug in used or len(used) >= TERM_LINK_MAX:
+                return m.group(0)
+            used.add(slug)
+            return f'<a class="term-link" href="{root}term/{slug}.html" title="{esc(short)}">{m.group(0)}</a>'
+        return self.re.sub(rep, text_esc)
+
+
+def term_html(core: dict, text, state: dict, root: str = "../") -> str:
+    """esc() + 용어 자동 링크. 제목·칩·버튼이 아닌 본문 조각에만 쓴다 (용어 사전이 없으면 esc 와 같다)."""
+    s = esc(text)
+    linker = core.get("term_linker")
+    return linker.link(s, root, state) if linker else s
+
+
+def validate_glossary(data: dict, valid_ids: set[str], guide_slugs: set[str]) -> None:
+    """data/glossary.json: slug 형식·중복, 필수 항목, 분류, 별칭(2자 이상·용어 간 중복 금지), related 용어·성분 id·가이드 slug 를 확인한다."""
+    cats = (data.get("_meta") or {}).get("categories") or {}
+    items = data.get("items") or []
+    slugs = [it.get("slug") for it in items]
+    if len(set(slugs)) != len(slugs):
+        raise SystemExit("glossary.json: 중복 slug " + str(sorted({s for s in slugs if slugs.count(s) > 1})))
+    alias_owner: dict[str, str] = {}
+    for it in items:
+        slug = it.get("slug") or ""
+        if not re.fullmatch(r"[a-z0-9-]+", slug):
+            raise SystemExit(f"glossary.json: slug 형식 오류 {slug!r}")
+        for k in ("term", "short", "body", "category"):
+            if not str(it.get(k) or "").strip():
+                raise SystemExit(f"glossary.json[{slug}]: {k} 가 비어 있음")
+        if it["category"] not in cats:
+            raise SystemExit(f"glossary.json[{slug}]: 없는 분류 {it['category']!r}")
+        aliases = it.get("aliases")
+        if not isinstance(aliases, list) or not aliases:
+            raise SystemExit(f"glossary.json[{slug}]: aliases(자동 링크 표기)가 필요")
+        for a in aliases:
+            a = str(a)
+            if len(a.strip()) < 2:
+                raise SystemExit(f"glossary.json[{slug}]: 별칭이 너무 짧음 {a!r}")
+            key = a.strip().lower()
+            if alias_owner.get(key, slug) != slug:
+                raise SystemExit(f"glossary.json: 별칭 {a!r} 이 {alias_owner[key]} 와 {slug} 에 중복")
+            alias_owner[key] = slug
+        bad = [s for s in it.get("related", []) if s not in slugs]
+        if bad:
+            raise SystemExit(f"glossary.json[{slug}]: 없는 관련 용어 {bad}")
+        bad = [i for i in it.get("ingredients", []) if i not in valid_ids]
+        if bad:
+            raise SystemExit(f"glossary.json[{slug}]: 없는 성분 id {bad}")
+        bad = [g for g in it.get("guides", []) if g not in guide_slugs]
+        if bad:
+            raise SystemExit(f"glossary.json[{slug}]: 없는 가이드 slug {bad}")
+
+
+def glossary_model(data: dict, core: dict, guides: list[dict]) -> dict:
+    by_id = core["by_id"]
+    g_by = {g["slug"]: g for g in guides}
+    cats = data["_meta"]["categories"]
+    by_slug_raw = {it["slug"]: it for it in data["items"]}
+    order = list(cats.keys())
+    entries = []
+    for it in data["items"]:
+        entries.append({"t": it, "initial": term_initial(it["term"]),
+                        "related": [by_slug_raw[s] for s in it.get("related", []) if s in by_slug_raw],
+                        "ingredients": [by_id[i] for i in it.get("ingredients", []) if i in by_id],
+                        "guides": [g_by[s] for s in it.get("guides", []) if s in g_by]})
+    entries.sort(key=lambda e: (order.index(e["t"]["category"]) if e["t"]["category"] in order else 99, e["t"]["term"]))
+    return {"items": entries, "categories": cats, "by_slug": {e["t"]["slug"]: e for e in entries}}
+
+
+def _term_search_key(t: dict) -> str:
+    return re.sub(r"[\s·\-()（）.,/]+", "", " ".join([t["term"], t.get("en") or "", " ".join(t.get("aliases") or []), t.get("short") or ""])).lower()
+
+
+def render_term(entry: dict, model: dict, core: dict, cfg: dict, guides_types: dict, updated: str) -> str:
+    t = entry["t"]
+    cats = model["categories"]
+    cat = cats.get(t["category"], {})
+    path = f"term/{t['slug']}.html"
+    en = (t.get("en") or "").strip()
+    title = f"{t['term']} 뜻 · 영양제 용어 사전 | {cfg['name']}"
+    paras = [p.strip() for p in str(t["body"]).split("\n\n") if p.strip()]
+    first = re.split(r"(?<=[.다])\s", paras[0], maxsplit=1)[0] if paras else ""
+    desc = (t["short"] + " " + first)[:300]
+    ld = {"@context": "https://schema.org", "@graph": [
+        {"@type": "BreadcrumbList", "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "홈", "item": f"{cfg['url']}/"},
+            {"@type": "ListItem", "position": 2, "name": "영양제 용어 사전", "item": page_url(cfg, GLOSSARY_HUB)},
+            {"@type": "ListItem", "position": 3, "name": t["term"], "item": page_url(cfg, path)}]},
+        {"@type": "DefinedTerm", "name": t["term"], "alternateName": [x for x in [en] + list(t.get("aliases") or []) if x and x != t["term"]], "description": t["short"], "url": page_url(cfg, path),
+         "inDefinedTermSet": {"@type": "DefinedTermSet", "name": "영양제 용어 사전", "url": page_url(cfg, GLOSSARY_HUB)}},
+    ]}
+    head = head_html(cfg, title=title, desc=desc, path=path, root="../", keywords=", ".join([f"{t['term']} 뜻", f"{t['term']}이란"] + ([en] if en else []) + ["영양제 용어"]), og_type="article", ld=ld)
+    st = {"used": set(), "exclude": {t["slug"]}}   # 자기 자신은 링크하지 않는다
+    body_html = "".join(f'<p class="text-[15px] leading-relaxed text-ink-800">{term_html(core, p, st)}</p>' for p in paras)
+    label_html = f'<section id="label" class="scroll-mt-24 rounded-2xl border border-ink-100 bg-white p-6 shadow-card"><h2 class="flex items-center gap-2 text-lg font-extrabold text-ink-900"><i data-lucide="tags" class="h-5 w-5 text-brand-600"></i>라벨·검사지에서 보는 법</h2><p class="mt-2 text-[15px] leading-relaxed text-ink-700">{term_html(core, t["label"], st)}</p></section>' if t.get("label") else ""
+    rel_terms = entry["related"]
+    rel_html = (f'<section id="related" class="scroll-mt-24"><h2 class="text-lg font-extrabold text-ink-900">관련 용어</h2><div class="mt-3 flex flex-wrap gap-2">' + "".join(f'<a class="chart-chip" href="../term/{esc(r["slug"])}.html" title="{esc(r.get("short") or "")}"><i data-lucide="book-open" class="h-3.5 w-3.5"></i>{esc(r["term"])}</a>' for r in rel_terms) + '</div></section>') if rel_terms else ""
+    ings = entry["ingredients"]
+    cats_i = core["categories"]
+    ing_html = (f'<section id="ingredients" class="scroll-mt-24"><h2 class="text-lg font-extrabold text-ink-900">관련 성분</h2><div class="mt-3 grid gap-3 md:grid-cols-2">' + "".join(
+        f'<a class="cmp-mini" href="../i/{esc(i["id"])}.html"><span class="finder-thumb">{photo_img(i["category"])}</span><span class="min-w-0"><span class="badge {cat_class(cats_i.get(i["category"], {}).get("color", ""))}">{esc(cats_i.get(i["category"], {}).get("label", ""))}</span><span class="mt-1 block text-base font-extrabold text-ink-900">{esc(i["name"])}</span><span class="mt-0.5 line-clamp-2 block text-sm text-ink-600">{esc(i.get("mfdsFunction") or i.get("summary") or "")}</span></span></a>'
+        for i in ings) + '</div></section>') if ings else ""
+    gds = entry["guides"]
+    guides_html = (f'<section id="guides" class="scroll-mt-24"><h2 class="text-lg font-extrabold text-ink-900">관련 가이드</h2><div class="mt-3 grid gap-4 md:grid-cols-2 lg:grid-cols-3">{"".join(guide_card(g, guides_types, "../") for g in gds)}</div></section>') if gds else ""
+    body = f"""
+<body data-page="ingredients" data-path="{path}" class="min-h-screen antialiased">
+  {SKIP_LINK}
+  <main id="main">
+    <section class="page-hero"><div class="mx-auto max-w-5xl px-4 pb-10 pt-8 sm:px-6 sm:pt-10">
+      <nav class="text-xs text-ink-500" aria-label="경로"><a class="hover:text-brand-700" href="../index.html">홈</a> › <a class="hover:text-brand-700" href="../{GLOSSARY_HUB}">영양제 용어 사전</a> › <a class="hover:text-brand-700" href="../{GLOSSARY_HUB}#{esc(t["category"])}">{esc(cat.get("label", ""))}</a> › <span class="text-ink-800">{esc(t["term"])}</span></nav>
+      <p class="eyebrow-kicker mt-4"><i data-lucide="book-open"></i> 영양제 용어 사전 · {esc(cat.get("label", ""))}</p>
+      <h1 class="page-title mt-3">{esc(t["term"])}</h1>
+      {('<p class="mt-1.5 text-sm font-medium text-ink-400">' + esc(en) + '</p>') if en else ""}
+      <p class="page-lead mt-4 max-w-3xl">{esc(t["short"])}</p>
+      <p class="mt-4 text-xs text-ink-400">제도·단위·사실 관계를 설명하는 일반 정보이며 의학적 조언이 아닙니다. 기능성 표현은 식약처 인정 범위를 따릅니다 · 최종 수정 {esc(updated)}</p>
+    </div></section>
+    <div class="mx-auto max-w-5xl space-y-8 px-4 py-10 sm:px-6">
+      <section id="meaning" class="scroll-mt-24 rounded-2xl border border-ink-100 bg-white p-6 shadow-card"><h2 class="text-lg font-extrabold text-ink-900">뜻</h2><div class="mt-3 space-y-3">{body_html}</div></section>
+      {label_html}
+      {rel_html}
+      {ing_html}
+      {guides_html}
+      <section class="rounded-2xl border border-ink-100 bg-cream-200 p-5"><h2 class="text-base font-extrabold text-ink-900">함께 보면 좋은 페이지</h2><ul class="list-dot mt-3 text-sm text-ink-700"><li><a class="font-bold text-brand-700 underline" href="../{GLOSSARY_HUB}">영양제 용어 사전 전체</a> — 분류·초성으로 찾기</li><li><a class="font-bold text-brand-700 underline" href="../ingredients.html">성분 사전</a> · <a class="font-bold text-brand-700 underline" href="../compatibility.html">영양제 궁합 체크</a></li><li><a class="font-bold text-brand-700 underline" href="../guide/daily-limit.html">영양제 하루 권장량과 상한섭취량</a> · <a class="font-bold text-brand-700 underline" href="../guide/with-medication.html">약과 영양제 같이 먹어도 될까</a></li></ul></section>
+    </div>
+  </main>
+  <div id="site-footer"></div>
+</body>
+</html>
+"""
+    return head + body
+
+
+def render_glossary_hub(model: dict, cfg: dict) -> str:
+    items = model["items"]
+    cats = model["categories"]
+    n = len(items)
+    title = f"영양제 용어 사전 — rTG·생체이용률·상한섭취량·보장균수 등 용어 {n}개 뜻 | {cfg['name']}"
+    desc = f"영양제 라벨과 가이드에 나오는 용어 {n}개를 제형·흡수, 성분 형태, 섭취 기준·라벨, 제도·인증, 작용·상호작용, 검사·수치로 나눠 한 줄 뜻과 자세한 설명, 라벨에서 보는 법, 관련 성분·가이드로 정리했습니다."
+    faq_items = [
+        ("영양제 라벨에서 가장 먼저 봐야 할 용어는 무엇인가요?", "기능성 내용(식약처 인정 문구), 1일 섭취량(기능성 원료 기준 범위), 지표성분 함량, 상한섭취량과의 비교입니다. 이 네 가지만 읽어도 광고 문구와 실제 함량을 구분할 수 있습니다."),
+        ("흡수율이 높다는 제품이 꼭 좋은가요?", "흡수율(생체이용률)은 형태·제형·식사에 따라 달라지지만 '○배 흡수' 같은 광고 수치는 조건이 제각각입니다. 식약처 1일 섭취량을 채우고 먹는 시간을 지키는 것이 먼저이고, 형태(헴철·구연산칼슘·rTG 등)는 그다음 기준입니다."),
+        ("본문의 점선 밑줄 링크는 무엇인가요?", "가이드·성분·비교·약별 페이지의 본문에 처음 나오는 용어를 이 사전으로 자동 연결한 것입니다. 마우스를 올리면 한 줄 뜻이 보이고, 누르면 자세한 설명과 관련 성분·가이드로 이동합니다."),
+    ]
+    faq_html, faq_ld = faq_block(faq_items)
+    ld = {"@context": "https://schema.org", "@graph": [
+        {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "홈", "item": f"{cfg['url']}/"}, {"@type": "ListItem", "position": 2, "name": "영양제 용어 사전", "item": page_url(cfg, GLOSSARY_HUB)}]},
+        {"@type": "DefinedTermSet", "name": "영양제 용어 사전", "url": page_url(cfg, GLOSSARY_HUB), "description": desc,
+         "hasDefinedTerm": [{"@type": "DefinedTerm", "name": e["t"]["term"], "description": e["t"]["short"], "url": page_url(cfg, f"term/{e['t']['slug']}.html")} for e in items]},
+        faq_ld,
+    ]}
+    head = head_html(cfg, title=title, desc=desc, path=GLOSSARY_HUB, root="./", keywords="영양제 용어, 영양제 용어 사전, 생체이용률 뜻, rTG 뜻, 상한섭취량, 보장균수, 지표성분, 개별인정형 고시형", og_type="website",
+                     extra_scripts='<script src="assets/js/pages/glossary.js" defer></script>', ld=ld)
+    present = {e["initial"] for e in items}
+    chips = "".join(f'<button type="button" class="chip term-initial" data-initial-chip="{esc(i)}" aria-pressed="false">{"A-Z·숫자" if i == "A" else esc(i)}</button>' for i in _INITIAL_ORDER if i in present)
+    secs = ""
+    for ck, c in cats.items():
+        es = [e for e in items if e["t"]["category"] == ck]
+        if not es:
+            continue
+        cards = "".join(
+            f'<a class="term-card" data-term-card data-initial="{esc(e["initial"])}" data-search="{esc(_term_search_key(e["t"]))}" href="term/{esc(e["t"]["slug"])}.html"><span class="term-card-name">{esc(e["t"]["term"])}</span>'
+            + (f'<span class="term-card-en">{esc(e["t"]["en"])}</span>' if e["t"].get("en") else "") + f'<span class="term-card-short">{esc(e["t"]["short"])}</span></a>'
+            for e in es)
+        secs += f'<section id="{esc(ck)}" class="scroll-mt-24" data-term-section><h2 class="text-2xl font-extrabold tracking-tight text-ink-900">{esc(c.get("label", ck))} <span class="text-base font-bold text-ink-400">{len(es)}</span></h2><p class="mt-1 text-ink-500">{esc(c.get("desc", ""))}</p><div class="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{cards}</div></section>'
+    cat_chips = "".join(f'<a href="#{esc(k)}" class="chip">{esc(c.get("label", k))}</a>' for k, c in cats.items() if any(e["t"]["category"] == k for e in items))
+    body = f"""
+<body data-page="ingredients" data-path="{GLOSSARY_HUB}" class="min-h-screen antialiased">
+  {SKIP_LINK}
+  <main id="main">
+    <section class="page-hero"><div class="mx-auto max-w-7xl px-4 pb-10 pt-8 sm:px-6 sm:pt-10">
+      <nav class="text-xs text-ink-500" aria-label="경로"><a class="hover:text-brand-700" href="index.html">홈</a> › <span class="text-ink-800">영양제 용어 사전</span></nav>
+      <p class="eyebrow-kicker mt-4"><i data-lucide="book-open"></i> 라벨·가이드의 낯선 말 {n}개</p>
+      <h1 class="page-title mt-3">영양제 용어 사전: 라벨과 가이드에 나오는 말 뜻 풀이</h1>
+      <p class="page-lead mt-4 max-w-3xl">rTG·생체이용률·상한섭취량·보장균수·지표성분·개별인정형처럼 영양제를 고를 때 마주치는 용어를 분류별로 모았습니다. 한 줄 뜻을 보고, 자세한 설명과 관련 성분·가이드로 이어집니다. 가이드·성분 페이지 본문의 점선 밑줄 링크가 이 사전으로 연결됩니다.</p>
+      <div class="mt-6 max-w-xl"><label for="term-filter" class="sr-only">용어 검색</label><input id="term-filter" type="search" placeholder="용어·영문·설명으로 찾기 (예: rTG, 상한, 보장균수)" autocomplete="off" class="w-full rounded-2xl border border-ink-200 bg-white px-4 py-3 text-[15px] shadow-card focus:border-brand-600 focus:outline-none"></div>
+      <div class="mt-4 flex flex-wrap gap-2">{chips}</div>
+      <div class="mt-4 flex flex-wrap gap-2">{cat_chips}</div>
+      <p class="mt-4 text-xs text-ink-400">표시 <span id="term-count">{n}</span> / {n} · 제도·단위·사실 관계를 설명하는 일반 정보이며 의학적 조언이 아닙니다</p>
+    </div></section>
+    <div class="mx-auto max-w-7xl space-y-14 px-4 py-12 sm:px-6">
+      <p id="term-empty" class="hidden rounded-2xl border border-dashed border-ink-200 bg-white p-6 text-sm text-ink-600">검색어에 맞는 용어가 없습니다. 성분 이름은 <a class="font-bold text-brand-700 underline" href="ingredients.html">성분 사전</a>에서, 제품·의약품은 <a class="font-bold text-brand-700 underline" href="search.html">통합 검색</a>에서 찾아보세요.</p>
+      {secs}
+      <section class="rounded-3xl bg-cream-200 p-6 sm:p-8"><h2 class="text-lg font-extrabold text-ink-900">읽는 법</h2><ul class="list-dot mt-3 text-sm text-ink-700"><li>성분 이름(비타민D·오메가3 등)은 <a class="font-bold text-brand-700 underline" href="ingredients.html">성분 사전</a>이 맡고, 여기서는 제형·형태·기준·제도·상호작용·검사처럼 성분을 둘러싼 말을 다룹니다.</li><li>기능성 표현은 식약처 인정 문구 범위에서만 쓰며, 검사 수치의 기준값은 널리 쓰이는 일반 기준이라 검사 기관·개인에 따라 다를 수 있습니다.</li><li>약을 복용 중이면 <a class="font-bold text-brand-700 underline" href="drug-guides.html">약별 영양제 가이드</a>와 <a class="font-bold text-brand-700 underline" href="guide/with-medication.html">약과 영양제 가이드</a>를 함께 보세요.</li></ul></section>
+      {faq_html}
+    </div>
+  </main>
+  <div id="site-footer"></div>
+</body>
+</html>
+"""
+    return head + body
+
+
+def prepare_glossary(core: dict, guides_items: list[dict]) -> dict | None:
+    """data/glossary.json 을 읽어 검증·모델을 만들고 본문 자동 링크기(core['term_linker'])를 둔다 — 가이드·성분·비교·약별 페이지보다 먼저 호출."""
+    data = read_json(DATA_DIR / "glossary.json", None)
+    if not data:
+        log.warning("data/glossary.json 이 없어 용어 사전과 본문 자동 링크를 만들지 않습니다")
+        return None
+    validate_glossary(data, set(core["by_id"]), {g["slug"] for g in guides_items})
+    model = glossary_model(data, core, guides_items)
+    model["data"] = data
+    core["glossary"] = model
+    core["term_linker"] = TermLinker(data["items"])
+    log.info("용어 사전 데이터 검증 통과: %d개 (별칭 %d개)", len(model["items"]), len(core["term_linker"].by_alias))
+    return model
+
+
+def write_glossary(core: dict, cfg: dict, guides: dict) -> list[str]:
+    """term/<slug>.html · glossary.html · data/glossary-index.json 생성, 오래된 파일 정리. 생성한 slug 목록을 돌려준다(사이트맵)."""
+    model = core.get("glossary")
+    if not model:
+        return []
+    TERM_DIR.mkdir(exist_ok=True)
+    types = guides.get("_meta", {}).get("types", {})
+    updated = (model["data"].get("_meta") or {}).get("updatedAt") or core.get("updated_at") or now_iso()[:10]
+    wanted = set()
+    for e in model["items"]:
+        p = TERM_DIR / f"{e['t']['slug']}.html"
+        p.write_text(render_term(e, model, core, cfg, types, updated), encoding="utf-8")
+        wanted.add(p.name)
+    for stale in TERM_DIR.glob("*.html"):
+        if stale.name not in wanted:
+            stale.unlink()
+            log.info("삭제된 용어 페이지 정리: %s", stale.name)
+    (ROOT / GLOSSARY_HUB).write_text(render_glossary_hub(model, cfg), encoding="utf-8")
+    write_json(DATA_DIR / "glossary-index.json", {
+        "_meta": {"updatedAt": now_iso(), "note": "glossary.json 의 요약 색인 — scripts/build_site.py 가 생성, 직접 수정하지 않음 (검색·성분 페이지 본문 자동 링크용)"},
+        "items": [{"slug": e["t"]["slug"], "term": e["t"]["term"], "en": e["t"].get("en") or "", "aliases": e["t"].get("aliases") or [], "short": e["t"]["short"], "category": e["t"]["category"]} for e in model["items"]],
+    }, compact=True, quiet=True)
+    log.info("용어 사전 생성: %s + term/ %d개", GLOSSARY_HUB, len(wanted))
+    return [e["t"]["slug"] for e in model["items"]]
+
+
 def build_charts(core: dict, cfg: dict) -> None:
     """영양제 궁합표·복용 시간표 정적 페이지 생성 (루트, sitemap 은 STATIC_PAGES 로)."""
     (ROOT / CHART_PATH).write_text(render_compat_chart(core, cfg), encoding="utf-8")
@@ -1990,7 +2299,7 @@ def build_charts(core: dict, cfg: dict) -> None:
     log.info("영양제 궁합표·복용 시간표 생성 (%s · %s)", CHART_PATH, TIMING_PATH)
 
 
-def build_sitemap(ingredients: list[dict], cfg: dict, data_date: str, guides: dict | None = None, functions: list[str] | None = None, compares: list[str] | None = None, drug_guides: list[str] | None = None) -> None:
+def build_sitemap(ingredients: list[dict], cfg: dict, data_date: str, guides: dict | None = None, functions: list[str] | None = None, compares: list[str] | None = None, drug_guides: list[str] | None = None, terms: list[str] | None = None) -> None:
     today = now_iso()[:10]
     dynamic = ("index.html", "news.html", "products.html")
     # 주소는 Cloudflare Pages 가 실제로 서비스하는 확장자 없는 형태(홈은 /) — .html 주소는 리다이렉트되어 색인에 불리하다
@@ -2001,6 +2310,7 @@ def build_sitemap(ingredients: list[dict], cfg: dict, data_date: str, guides: di
     urls += [(page_url(cfg, f"function/{fid}.html"), "monthly", "0.7", data_date) for fid in (functions or [])]
     urls += [(page_url(cfg, f"compare/{s}.html"), "monthly", "0.7", data_date) for s in (compares or [])]
     urls += [(page_url(cfg, f"drug-guide/{i}.html"), "monthly", "0.7", data_date) for i in (drug_guides or [])]
+    urls += [(page_url(cfg, f"term/{s}.html"), "monthly", "0.5", data_date) for s in (terms or [])]
     body = "".join(f"  <url><loc>{esc(u)}</loc><lastmod>{d}</lastmod><changefreq>{c}</changefreq><priority>{p}</priority></url>\n" for u, c, p, d in urls)
     (ROOT / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + body + "</urlset>\n", encoding="utf-8")
     log.info("sitemap.xml: %d URL", len(urls))
@@ -2022,6 +2332,7 @@ def main() -> int:
     prepare_functions(core, core["guides"])   # 기능성별 허브 모델 (성분 페이지의 기능성 칩이 먼저 쓴다)
     prepare_compares(core, core["guides"])    # 성분 비교 모델 (성분 페이지의 비교 글 칩, 기능성 모델 뒤)
     prepare_drug_guides(core, core["guides"])  # 약별 영양제 가이드 모델 (성분 페이지의 '약과 함께' 칩)
+    prepare_glossary(core, core["guides"])     # 용어 사전 모델 + 본문 자동 링크기 (가이드·성분·비교·약별·기능성 페이지가 쓴다)
 
     OUT_DIR.mkdir(exist_ok=True)
     wanted = set()
@@ -2041,7 +2352,8 @@ def main() -> int:
     function_ids = write_functions(core, cfg, guides)
     compare_slugs = write_compares(core, cfg, guides)
     drug_guide_ids = write_drug_guides(core, cfg, guides)
-    build_sitemap(ingredients["items"], cfg, data_date, guides, function_ids, compare_slugs, drug_guide_ids)
+    term_slugs = write_glossary(core, cfg, guides)
+    build_sitemap(ingredients["items"], cfg, data_date, guides, function_ids, compare_slugs, drug_guide_ids, term_slugs)
     inject_verification(cfg)
     inject_pwa_tags()
     build_product_names()
