@@ -91,3 +91,28 @@ test("summary: 고른 옵션 라벨만, '없음' 류(exclusive)는 제외", () =
   const s = F.summary({ age: ["30s"], sex: ["na"], concern: ["fatigue", "none"], meds: ["none"], have: ["vitamin-d"] }, data);
   assert.deepEqual(s, ["30대", "답하지 않음", "피로·활력"]);
 });
+
+test("항응고제 복용 → bleeding 플래그, 출혈 경향 성분은 추천에서 빠지고 avoided 에 점수순으로 남는다", () => {
+  const r = F.score({ age: ["50s"], sex: ["m"], concern: ["circulation", "memory"], meds: ["anticoagulant"] }, data, guides, core);
+  assert.ok(r.flags.includes("bleeding") && r.flags.includes("meds"));
+  for (const id of ["ginkgo", "nattokinase", "omega-3", "red-ginseng", "vitamin-k", "coq10"]) assert.ok(!r.recommended.includes(id) && !r.ingredients.some((x) => x.id === id), id);
+  assert.ok(r.avoided.includes("ginkgo") && r.avoided.includes("omega-3"));
+  assert.ok(r.recommended.length >= 3);
+  assert.ok(r.guides.map((g) => g.slug).includes("with-medication"));
+  const plain = F.score({ age: ["50s"], sex: ["m"], concern: ["circulation", "memory"], meds: ["none"] }, data, guides, core);
+  assert.ok(plain.recommended.includes("omega-3") && plain.avoided.length === 0 && plain.avoidedHave.length === 0);
+});
+
+test("수술 예정 → 출혈 경향 성분 제외, 이미 먹는 성분이 제외 대상이면 avoidedHave 에 표시", () => {
+  const r = F.score({ age: ["40s"], sex: ["f"], concern: ["joint"], meds: ["surgery"], have: ["ginkgo", "vitamin-c"] }, data, guides, core);
+  assert.ok(r.flags.includes("surgery"));
+  assert.deepEqual(r.avoidedHave, ["ginkgo"]);
+  assert.ok(r.have.includes("ginkgo") && r.have.includes("vitamin-c"));
+  assert.ok(!r.recommended.includes("omega-3"));
+});
+
+test("기억력 고민 → 기억력 가이드와 핵심 성분(오메가3·포스파티딜세린)이 상위에 온다", () => {
+  const r = F.score({ age: ["50s"], sex: ["f"], concern: ["memory"], meds: ["none"] }, data, guides, core);
+  assert.ok(r.guides.map((g) => g.slug).includes("memory"));
+  for (const id of ["omega-3", "phosphatidylserine"]) assert.ok(r.recommended.slice(0, 5).includes(id), id);
+});

@@ -89,7 +89,8 @@
     meds: { title: "약을 복용 중이라면", body: "약과 영양제의 상호작용이 있을 수 있어 약 복용자 가이드를 함께 보여드립니다. 복용 간격과 주의 성분을 확인하고 의사·약사와 상의하세요.", link: "with-medication" },
     cancer: { title: "항암 치료 중에는 담당 의료진과 먼저", body: "치료 중 영양제는 치료 반응에 영향을 줄 수 있어 담당 의료진의 확인이 먼저입니다. 가이드는 참고용입니다.", link: "cancer-treatment" },
     kidney: { title: "신장질환·투석 중에는 제한이 많아요", body: "칼륨·마그네슘·비타민 등 일부 성분은 제한될 수 있습니다. 담당 의료진과 영양사의 안내를 우선하세요.", link: "kidney" },
-    surgery: { title: "수술 전에는 중단할 성분이 있어요", body: "일부 성분은 수술 전 일정 기간 중단을 권하기도 합니다. 수술 일정을 의료진에게 알리고 복용 중인 영양제를 상의하세요.", link: "surgery" }
+    surgery: { title: "수술 전에는 중단할 성분이 있어요", body: "출혈 경향이 있는 성분(오메가3·은행잎·마늘·비타민E·홍삼·커큐민·나토키나제 등)은 추천에서 뺐습니다. 수술 일정을 의료진에게 알리고 복용 중인 영양제의 중단·재개 시점을 상의하세요.", link: "surgery" },
+    bleeding: { title: "항응고제·항혈소판제를 드신다면 출혈 경향 성분은 뺐어요", body: "혈소판·응고에 작용하는 성분(은행잎·나토키나제·오메가3·비타민E·홍삼·마늘·커큐민 등)과 와파린 효과를 바꾸는 성분(비타민K·코엔자임Q10·클로렐라)은 추천에서 제외했습니다. 새 영양제는 반드시 의사·약사와 상의하고 임의로 시작·중단하지 마세요.", link: "with-medication" }
   };
 
   function pairRows(ids) {
@@ -124,6 +125,10 @@
     }).join("");
     if (flagsHtml) html += '<div class="mt-5 space-y-3">' + flagsHtml + "</div>";
 
+    // 약·수술 때문에 추천에서 뺀 성분 (규칙 avoid) — 이미 먹고 있으면 따로 경고
+    var avoided = r.avoided || [], avoidedHave = r.avoidedHave || [];
+    var avoidedHtml = avoided.length ? '<p class="mt-3 text-sm text-ink-700"><span class="font-bold text-amber-800">복용 중인 약·수술 때문에 추천에서 뺀 성분:</span> ' + avoided.map(function (id) { return '<a class="chip chip-sm" href="' + D.ingredientUrl(id) + '">' + esc(core.byId[id].name) + "</a>"; }).join(" ") + ' <span class="text-xs text-ink-500">— 출혈 경향이나 약효 변화와 관련된 성분이라 새로 시작하기 전에 의사·약사와 상의하세요.</span></p>' : "";
+    if (avoidedHave.length) avoidedHtml += '<p class="mt-2 text-sm font-bold text-amber-800">이미 드시는 성분 가운데 ' + esc(avoidedHave.map(function (id) { return core.byId[id].name; }).join(", ")) + ' — 복용 중인 약·수술과 관련해 주의가 필요한 성분입니다. 중단 여부를 의사·약사와 상의하세요.</p>';
     // 추천 성분
     html += '<section class="mt-8"><h3 class="text-lg font-extrabold text-ink-900">추천 성분</h3><div class="mt-3 grid gap-3 md:grid-cols-2">' + rec.map(function (id, n) {
       var it = core.byId[id], info = r.ingredients.filter(function (x) { return x.id === id; })[0] || { from: [] };
@@ -137,7 +142,7 @@
         '<div class="mt-3 flex flex-wrap gap-2"><a class="btn-outline btn-sm" href="' + D.ingredientUrl(id) + '">자세히</a><a class="btn-outline btn-sm app-hide" href="' + D.productsUrl(id) + '">제품 찾기</a></div></div></div></article>';
     }).join("") + "</div>" +
       (r.recommended.length > rec.length ? '<p class="mt-3 text-xs text-ink-500">그다음으로 점수가 높은 성분: ' + esc(r.recommended.slice(top, top + 5).map(function (id) { return core.byId[id].name; }).join(", ")) + "</p>" : "") +
-      (have.length ? '<p class="mt-3 text-sm text-ink-700"><span class="font-bold">이미 드시는 성분:</span> ' + have.map(function (id) { return '<a class="chip chip-sm" href="' + D.ingredientUrl(id) + '">' + esc(core.byId[id].name) + "</a>"; }).join(" ") + ' <span class="text-xs text-ink-500">— 추천에서는 빼고 궁합·시간표에는 넣었어요</span></p>' : "") +
+      avoidedHtml + (have.length ? '<p class="mt-3 text-sm text-ink-700"><span class="font-bold">이미 드시는 성분:</span> ' + have.map(function (id) { return '<a class="chip chip-sm" href="' + D.ingredientUrl(id) + '">' + esc(core.byId[id].name) + "</a>"; }).join(" ") + ' <span class="text-xs text-ink-500">— 추천에서는 빼고 궁합·시간표에는 넣었어요</span></p>' : "") +
       '<div class="mt-4 flex flex-wrap gap-2"><button type="button" class="btn-primary" data-my-add="' + esc(all.join(",")) + '"><i data-lucide="plus"></i>추천 성분을 내 영양제에 추가</button><a class="btn-outline" href="' + D.compatUrl(all) + '"><i data-lucide="heart-handshake"></i>궁합 체크에서 자세히</a></div></section>';
 
     // 궁합

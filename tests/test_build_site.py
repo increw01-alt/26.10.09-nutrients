@@ -188,6 +188,19 @@ class FinderBuildTests(unittest.TestCase):
         with self.assertRaises(SystemExit):
             B.validate_finder(bad, set(self.core["by_id"]), self.slugs)
 
+    def test_validate_rejects_unknown_avoid_and_anticoagulant_covers_warfarin_cautions(self):
+        import copy
+        bad = copy.deepcopy(self.data); bad["rules"].append({"if": {"meds": ["surgery"]}, "guides": ["surgery"], "avoid": ["no-such-ingredient"]})
+        with self.assertRaises(SystemExit):
+            B.validate_finder(bad, set(self.core["by_id"]), self.slugs)
+        rule = next(r for r in self.data["rules"] if (r.get("if") or {}).get("meds") == ["anticoagulant"])
+        warfarin = next(r for r in B.read_json(B.DATA_DIR / "drug-pairings.json")["rules"] if r["id"] == "warfarin")
+        self.assertTrue({c["id"] for c in warfarin["caution"]} <= set(rule["avoid"]))   # 와파린 규칙의 주의 성분은 모두 추천에서 뺀다
+        self.assertIn("bleeding", rule["flags"])
+        surgery = next(r for r in self.data["rules"] if (r.get("if") or {}).get("meds") == ["surgery"])
+        self.assertTrue({"omega-3", "ginkgo", "garlic", "vitamin-e", "red-ginseng", "curcumin"} <= set(surgery["avoid"]))
+        self.assertIn("memory", {o["id"] for q in self.data["questions"] if q["id"] == "concern" for o in q["options"]})
+
     def test_render_has_every_question_and_option_statically(self):
         html = B.render_finder(self.data, self.core, self.cfg)
         self.assertIn('id="finder-form"', html)

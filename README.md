@@ -187,7 +187,7 @@ python scripts/build_site.py
 - `data/drug-guides.json`: 약별 영양제 가이드의 수동 본문(소개·대표 성분·제품·복용 요령·FAQ). 좋은/주의 성분과 간격은 `data/drug-pairings.json` 규칙에서, 약 목록은 의약품 상세 조각에서 빌드가 채웁니다. 규칙을 추가하면 같은 id 의 본문도 함께 넣어야 빌드가 통과합니다.
 - `data/glossary.json`: 용어 사전(용어·영문·별칭·한 줄 뜻·설명·라벨에서 보는 법·관련 용어/성분/가이드). 별칭(`aliases`)은 본문 자동 링크에 쓰이므로 다른 용어·성분명과 겹치지 않는 분명한 표기만 넣습니다. 새 용어를 추가하면 `term/<slug>.html` 이 생성되고 본문의 첫 등장이 자동으로 연결됩니다.
 - `data/functions.json`: 기능성별 허브의 정규화 표(식약처 인정 문구별 정규식·설명·관련 가이드). 기능성을 추가하거나 정규식을 고친 뒤 빌드하면 `function/<id>.html` 이 생성·정리되고 성분 페이지의 기능성 칩이 갱신됩니다.
-- `data/finder.json`: 셀프체크의 질문과 규칙(답 → 가이드 slug·가중치·주의 플래그·성분 범위 제한). 새 가이드를 셀프체크 결과에 쓰려면 규칙에 slug 를 추가하고 빌드하세요. 빌드가 slug·옵션·성분 id 를 검증합니다.
+- `data/finder.json`: 셀프체크의 질문과 규칙(답 → 가이드 slug·가중치·주의 플래그·성분 범위 제한·추천 제외 성분). 새 가이드를 셀프체크 결과에 쓰려면 규칙에 slug 를 추가하고 빌드하세요. 빌드가 slug·옵션·성분 id 를 검증합니다.
 - 필수 키: id, type(concern|target|howto), slug, icon(lucide 아이콘명), title(SEO 제목), h1, keywords, description, intro, ingredients[{id, why}], combos[{ids, note}], tips, cautions, faq[{q, a}], related(가이드 id). 긴 본문은 sections[{h2, body}].
 - 성분 id 는 `data/ingredients.json` 과 일치해야 하며, 빌드 시 참조가 검증됩니다.
 - 표현은 식약처 인정 기능성 범위("~에 도움을 줄 수 있음")를 지키고 질병 치료·예방 표현을 쓰지 마세요.

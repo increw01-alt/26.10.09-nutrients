@@ -1027,7 +1027,7 @@ FINDER_PATH = "finder.html"
 
 
 def validate_finder(data: dict, valid_ids: set[str], guide_slugs: set[str]) -> None:
-    """data/finder.json 무결성: 질문·옵션 id 중복, 규칙이 가리키는 질문·옵션·가이드 slug, restrictTo, 인기 성분 id. 어긋나면 빌드 실패."""
+    """data/finder.json 무결성: 질문·옵션 id 중복, 규칙이 가리키는 질문·옵션·가이드 slug, restrictTo, avoid(추천 제외 성분 id), 인기 성분 id. 어긋나면 빌드 실패."""
     qs: dict[str, dict] = {}
     for q in data.get("questions", []):
         if q["id"] in qs:
@@ -1050,6 +1050,9 @@ def validate_finder(data: dict, valid_ids: set[str], guide_slugs: set[str]) -> N
         for s in list(r.get("guides", [])) + list(r.get("restrictTo", [])):
             if s not in guide_slugs:
                 raise SystemExit(f"finder.json: 규칙 {n} 이 없는 가이드 slug {s} 를 참조")
+        for i in r.get("avoid", []):
+            if i not in valid_ids:
+                raise SystemExit(f"finder.json: 규칙 {n} 의 avoid 에 없는 성분 id {i}")
         if not r.get("guides") and not r.get("flags"):
             raise SystemExit(f"finder.json: 규칙 {n} 에 guides 또는 flags 가 필요")
     log.info("셀프체크 규칙 검증 통과: 질문 %d개 · 규칙 %d개", len(qs), len(data.get("rules", [])))
@@ -1060,7 +1063,7 @@ def render_finder(data: dict, core: dict, cfg: dict) -> str:
     by_id = core["by_id"]
     questions = data.get("questions", [])
     title = f"나에게 맞는 영양제 추천 — 1분 셀프체크로 성분·궁합·복용 시간표까지 | {cfg['name']}"
-    desc = ("연령·성별·고민·생활 습관·복용 중인 약·이미 먹는 영양제를 고르면 가이드 87편의 핵심 성분에서 나에게 맞는 영양제 성분을 추천하고, "
+    desc = (f"연령·성별·고민·생활 습관·복용 중인 약·이미 먹는 영양제를 고르면 가이드 {len(core.get('guides') or [])}편의 핵심 성분에서 나에게 맞는 영양제 성분을 추천하고, "
             "추천 조합의 궁합과 하루 복용 시간표까지 한 번에 보여줍니다. 답변은 저장되지 않으며 결과는 링크로 공유할 수 있습니다.")
     faq_items = [
         ("셀프체크는 어떤 기준으로 영양제를 추천하나요?", "답변을 고민별·대상별 가이드에 연결하고, 그 가이드들이 식약처 인정 기능성을 기준으로 꼽은 핵심 성분을 가중 합산해 상위 성분을 보여줍니다. 특정 제품이나 브랜드를 추천하지 않으며, 결과는 일반 건강 정보이고 의학적 진단·처방이 아닙니다."),

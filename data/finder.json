@@ -1,7 +1,7 @@
 {
   "_meta": {
-    "updatedAt": "2026-10-21",
-    "note": "셀프체크(finder.html)의 질문과 규칙. 규칙은 답을 가이드(guides.json slug)로 잇고, 추천 성분은 그 가이드들의 핵심 성분(guides-index.json)에서 가중 합산한다. restrictTo 는 추천 성분을 그 가이드들의 성분 범위로 제한(어린이·청소년·임신·수유). flags 는 결과의 주의 상자. 빌드(scripts/build_site.py validate_finder)가 질문·옵션 id, 가이드 slug, 성분 id 를 검증하고 finder.html 의 정적 폼을 만든다.",
+    "updatedAt": "2026-10-22",
+    "note": "셀프체크(finder.html)의 질문과 규칙. 규칙은 답을 가이드(guides.json slug)로 잇고, 추천 성분은 그 가이드들의 핵심 성분(guides-index.json)에서 가중 합산한다. restrictTo 는 추천 성분을 그 가이드들의 성분 범위로 제한(어린이·청소년·임신·수유). flags 는 결과의 주의 상자, avoid 는 그 답이면 추천에서 빼는 성분 id(항응고제·수술 예정의 출혈 경향 성분 — 성분 사전 drugCautions 와 drug-pairings.json 와파린 규칙 기준, 결과에 '제외한 성분'과 이미 먹는 성분 경고로 표시). 빌드(scripts/build_site.py validate_finder)가 질문·옵션 id, 가이드 slug, 성분 id 를 검증하고 finder.html 의 정적 폼을 만든다.",
     "top": 5
   },
   "questions": [
@@ -23,7 +23,7 @@
         { "id": "sleep", "label": "수면" }, { "id": "immunity", "label": "면역·잔병치레" }, { "id": "skin", "label": "피부" }, { "id": "gut", "label": "장 건강·배변" },
         { "id": "diet", "label": "체중·다이어트" }, { "id": "blood-sugar", "label": "혈당" }, { "id": "cholesterol", "label": "콜레스테롤" }, { "id": "stress", "label": "스트레스·긴장" },
         { "id": "hair", "label": "탈모·모발" }, { "id": "circulation", "label": "혈행·손발 저림" }, { "id": "menopause", "label": "갱년기" }, { "id": "anemia", "label": "빈혈·어지러움" },
-        { "id": "exercise", "label": "운동·근육" }, { "id": "dental", "label": "치아·잇몸" }, { "id": "pms", "label": "생리 전 불편" }, { "id": "prostate", "label": "전립선" },
+        { "id": "exercise", "label": "운동·근육" }, { "id": "dental", "label": "치아·잇몸" }, { "id": "pms", "label": "생리 전 불편" }, { "id": "prostate", "label": "전립선" }, { "id": "memory", "label": "기억력·건망증" },
         { "id": "none", "label": "특별히 없음", "exclusive": true }
       ]
     },
@@ -39,7 +39,7 @@
     {
       "id": "meds", "type": "multi", "title": "복용 중인 약", "hint": "약과 함께 챙기면 좋은 성분과 주의할 성분을 가이드로 안내합니다",
       "options": [
-        { "id": "none", "label": "없음", "exclusive": true }, { "id": "hypertension", "label": "고혈압약" }, { "id": "diabetes", "label": "당뇨약" }, { "id": "thyroid", "label": "갑상선약" },
+        { "id": "none", "label": "없음", "exclusive": true }, { "id": "hypertension", "label": "고혈압약" }, { "id": "diabetes", "label": "당뇨약" }, { "id": "anticoagulant", "label": "항응고제·항혈소판제(와파린·아스피린 등)" }, { "id": "thyroid", "label": "갑상선약" },
         { "id": "nsaid", "label": "진통소염제(자주)" }, { "id": "ppi", "label": "위산억제제·위장약" }, { "id": "contraceptive", "label": "피임약" }, { "id": "antibiotics", "label": "항생제" },
         { "id": "antidepressant", "label": "항우울제" }, { "id": "osteoporosis", "label": "골다공증약" }, { "id": "gout", "label": "통풍약" }, { "id": "antihistamine", "label": "항히스타민제" },
         { "id": "hair-loss", "label": "탈모약" }, { "id": "weight-loss", "label": "비만 치료제" }, { "id": "cancer", "label": "항암 치료 중" }, { "id": "kidney", "label": "신장질환·투석" },
@@ -85,6 +85,7 @@
     { "if": { "concern": ["dental"] }, "guides": ["dental"], "weight": 3 },
     { "if": { "concern": ["pms"] }, "guides": ["pms"], "weight": 3 },
     { "if": { "concern": ["prostate"] }, "guides": ["prostate"], "weight": 3 },
+    { "if": { "concern": ["memory"] }, "guides": ["memory"], "weight": 3 },
 
     { "if": { "life": ["office"] }, "guides": ["office-workers"], "weight": 2 },
     { "if": { "life": ["shift"] }, "guides": ["shift-workers"], "weight": 2 },
@@ -113,6 +114,7 @@
     { "if": { "meds": ["cancer"] }, "guides": ["cancer-treatment"], "weight": 3, "flags": ["meds", "cancer"] },
     { "if": { "meds": ["kidney"] }, "guides": ["kidney", "dialysis"], "weight": 3, "flags": ["meds", "kidney"] },
     { "if": { "meds": ["liver-disease"] }, "guides": ["liver-disease"], "weight": 3, "flags": ["meds"] },
-    { "if": { "meds": ["surgery"] }, "guides": ["surgery"], "weight": 3, "flags": ["meds", "surgery"] }
+    { "if": { "meds": ["surgery"] }, "guides": ["surgery"], "weight": 3, "flags": ["meds", "surgery"], "avoid": ["bilberry", "cla", "coleus-forskohlii", "curcumin", "cynanchum", "garlic", "ginkgo", "ginseng", "gla", "green-lipped-mussel", "msm", "nattokinase", "omega-3", "policosanol", "pycnogenol", "red-ginseng", "sophora", "vitamin-e"] },
+    { "if": { "meds": ["anticoagulant"] }, "guides": ["with-medication"], "weight": 3, "flags": ["meds", "bleeding"], "avoid": ["bilberry", "chitosan", "chlorella", "chondroitin", "cla", "coleus-forskohlii", "coq10", "curcumin", "cynanchum", "garlic", "ginkgo", "ginseng", "gla", "glucosamine", "green-lipped-mussel", "l-carnitine", "msm", "nattokinase", "omega-3", "policosanol", "pycnogenol", "red-ginseng", "sophora", "vitamin-a", "vitamin-e", "vitamin-k"] }
   ]
 }

@@ -3,7 +3,8 @@
  *   parse(search, data)            주소 쿼리("?age=30s&concern=fatigue,sleep") → 답변 {질문id: [옵션id…]} (모르는 값·초과 선택 제거)
  *   serialize(answers, data)       답변 → 쿼리 문자열 (질문 순서대로)
  *   matches(cond, answers)         규칙 조건: 질문마다 하나라도 일치, 질문끼리는 AND
- *   score(answers, data, guides, core) → { guides:[{slug,score}], ingredients:[{id,score,from}], recommended:[id…], have:[id…], flags:[…], restricted }
+ *   score(answers, data, guides, core) → { guides:[{slug,score}], ingredients:[{id,score,from}], recommended:[id…], have:[id…], flags:[…], restricted,
+ *                                          avoided:[id…](규칙 avoid 로 추천에서 뺀 성분, 점수순), avoidedHave:[id…](이미 먹는 성분 중 제외 대상) }
  *   summary(answers, data)         고른 옵션 라벨 목록 (결과 머리글용) */
 (function () {
   "use strict";
@@ -48,12 +49,13 @@
     answers = answers || {};
     var bySlug = {};
     (guides || []).forEach(function (g) { bySlug[g.slug] = g; });
-    var gScore = {}, flags = {}, restrict = null;
+    var gScore = {}, flags = {}, restrict = null, avoid = {};
     (data.rules || []).forEach(function (r) {
       if (!matches(r["if"], answers)) return;
       var w = r.weight || 1;
       (r.guides || []).forEach(function (s) { if (bySlug[s]) gScore[s] = (gScore[s] || 0) + w; });
       (r.flags || []).forEach(function (f) { flags[f] = true; });
+      (r.avoid || []).forEach(function (id) { avoid[id] = true; });   // 항응고제·수술 예정 등: 출혈 경향 성분을 추천에서 뺀다
       if (r.restrictTo && r.restrictTo.length) {
         restrict = restrict || {};
         r.restrictTo.forEach(function (s) { ((bySlug[s] && bySlug[s].ingredients) || []).forEach(function (i) { restrict[i.id] = true; }); });
@@ -68,9 +70,11 @@
         (from[ing.id] = from[ing.id] || []).push(s);
       });
     });
+    var byScore = function (a, b) { return iScore[b] - iScore[a] || a.localeCompare(b); };
     var ranked = Object.keys(iScore)
-      .filter(function (id) { return !restrict || restrict[id]; })
-      .sort(function (a, b) { return iScore[b] - iScore[a] || a.localeCompare(b); });
+      .filter(function (id) { return (!restrict || restrict[id]) && !avoid[id]; })
+      .sort(byScore);
+    var avoided = Object.keys(iScore).filter(function (id) { return avoid[id] && (!restrict || restrict[id]); }).sort(byScore);
     var guidesRanked = Object.keys(gScore).sort(function (a, b) { return gScore[b] - gScore[a] || a.localeCompare(b); });
     return {
       guides: guidesRanked.map(function (s) { return { slug: s, score: gScore[s] }; }),
@@ -78,7 +82,9 @@
       recommended: ranked.filter(function (id) { return have.indexOf(id) < 0; }),
       have: have,
       flags: Object.keys(flags),
-      restricted: !!restrict
+      restricted: !!restrict,
+      avoided: avoided,
+      avoidedHave: have.filter(function (id) { return !!avoid[id]; })
     };
   }
 
