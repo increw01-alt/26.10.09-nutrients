@@ -31,7 +31,7 @@
       "id": "life", "type": "multi", "title": "해당하는 생활 상황", "hint": "모두 고르세요",
       "options": [
         { "id": "office", "label": "하루 종일 앉아서 일해요" }, { "id": "shift", "label": "야근·교대 근무" }, { "id": "student", "label": "수험생·장시간 공부" }, { "id": "vegan", "label": "채식 위주" },
-        { "id": "smoker", "label": "흡연" }, { "id": "athlete", "label": "운동을 많이 해요" }, { "id": "travel", "label": "출장·여행이 잦아요" },
+        { "id": "smoker", "label": "흡연" }, { "id": "athlete", "label": "운동을 많이 해요" }, { "id": "travel", "label": "출장·여행이 잦아요" }, { "id": "drinker", "label": "술자리가 잦아요" }, { "id": "indoor", "label": "햇빛을 거의 못 봐요" },
         { "id": "pregnant", "label": "임신 중·임신 준비" }, { "id": "breastfeeding", "label": "수유 중" }, { "id": "postpartum", "label": "출산 후 회복 중" },
         { "id": "none", "label": "해당 없음", "exclusive": true }
       ]
@@ -97,6 +97,8 @@
     { "if": { "life": ["smoker"] }, "guides": ["smokers"], "weight": 2 },
     { "if": { "life": ["athlete"] }, "guides": ["athletes"], "weight": 2 },
     { "if": { "life": ["travel"] }, "guides": ["travel-jetlag"], "weight": 2 },
+    { "if": { "life": ["drinker"] }, "guides": ["liver-health"], "weight": 2 },
+    { "if": { "life": ["indoor"] }, "guides": ["vitamin-d-guide"], "weight": 2 },
     { "if": { "life": ["pregnant"] }, "guides": ["pregnancy", "pregnancy-symptoms"], "weight": 4, "flags": ["pregnancy"], "restrictTo": ["pregnancy", "pregnancy-symptoms"] },
     { "if": { "life": ["breastfeeding"] }, "guides": ["breastfeeding"], "weight": 4, "flags": ["pregnancy"], "restrictTo": ["breastfeeding"] },
     { "if": { "life": ["postpartum"] }, "guides": ["postpartum"], "weight": 3, "flags": ["pregnancy"] },

@@ -100,6 +100,7 @@
         "혈압"
       ],
       "guides": [
+        "blood-pressure",
         "hypertension"
       ],
       "intro": "높은 혈압을 낮추는 데 도움을 줄 수 있는 기능성입니다. 혈압약을 복용 중이라면 함께 먹기 전에 의사·약사와 상의하세요."
@@ -361,6 +362,7 @@
         "골밀도"
       ],
       "guides": [
+        "bone-health",
         "osteoporosis-meds",
         "50s-plus",
         "calcium-guide"
@@ -448,6 +450,7 @@
         "인지"
       ],
       "guides": [
+        "memory",
         "seniors-70",
         "students"
       ],

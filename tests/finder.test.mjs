@@ -129,3 +129,12 @@ test("뼈 고민 → 뼈 건강 가이드와 칼슘·비타민D 상위; 혈압 �
   for (const id of ["potassium", "magnesium"]) assert.ok(!k.recommended.includes(id) && !k.ingredients.some((x) => x.id === id), id);
   assert.ok(k.flags.includes("kidney"));
 });
+
+test("생활 '술자리가 잦아요' → 간 건강 가이드와 밀크씨슬, '햇빛을 거의 못 봐요' → 비타민D 가이드", () => {
+  const d = F.score({ age: ["40s"], sex: ["m"], life: ["drinker"], meds: ["none"] }, data, guides, core);
+  assert.ok(d.guides.map((g) => g.slug).includes("liver-health"));
+  assert.ok(d.recommended.slice(0, 5).includes("milk-thistle"));
+  const i = F.score({ age: ["30s"], sex: ["f"], life: ["indoor", "office"], meds: ["none"] }, data, guides, core);
+  assert.ok(i.guides.map((g) => g.slug).includes("vitamin-d-guide"));
+  assert.ok(i.recommended.slice(0, 3).includes("vitamin-d"));
+});
