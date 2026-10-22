@@ -73,6 +73,37 @@ class ServiceWorkerBuildTests(unittest.TestCase):
         self.assertEqual(len(B.precache_extra_digests()), len(unhashed))
         self.assertTrue(all(len(d) == 8 for d in B.precache_extra_digests()))
 
+    def test_asset_digest_follows_rewritten_file(self):
+        # 같은 경로의 파일이 빌드 중 다시 쓰이면(my.html 의 ?v= 스탬프 등) 캐시된 옛 해시가 아니라 새 내용의 해시를 돌려야 한다
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "a.css"
+            p.write_bytes(b"a{}\n"); d1 = B.asset_digest(p)
+            p.write_bytes(b"a{color:red}\n"); d2 = B.asset_digest(p)
+        self.assertNotEqual(d1, d2)
+
+    def test_sw_version_is_computed_from_stamped_html(self):
+        """sw 버전은 ?v= 스탬프를 마친 뒤의 my.html·offline.html 내용으로 계산해야 한다. 스탬프 전 내용으로 계산하면 자산이 바뀐 커밋마다
+        로컬(스탬프 전 파일로 빌드)과 CI(스탬프된 커밋을 받아 빌드)의 VERSION 이 갈려 CI 가 sw.js 커밋을 올리고 pull --rebase 가 충돌한다(10-22)."""
+        import tempfile
+        my = B.ROOT / "my.html"
+        orig = my.read_bytes()
+        try:
+            dirty = re.sub(rb"\?v=[0-9a-f]{8}", b"?v=00000000", orig, count=1)   # 자산이 바뀐 뒤 아직 스탬프하지 않은 상태
+            self.assertNotEqual(dirty, orig)
+            my.write_bytes(dirty)
+            B._DIGEST_CACHE.clear()
+            with tempfile.TemporaryDirectory() as d:
+                v1 = B.stamp_and_build_sw(Path(d) / "sw.js")
+                v2 = B.stamp_and_build_sw(Path(d) / "sw.js")
+            self.assertEqual(v1, v2, "같은 입력으로 다시 빌드하면 같은 버전이어야 한다")
+            self.assertNotIn(b"?v=00000000", my.read_bytes())   # 스탬프가 돌아 bogus 해시가 바로잡혔다
+            expect = B.sw_version(B.SW_TEMPLATE.read_text(encoding="utf-8"), B.precache_urls(), [B.asset_digest(B.ROOT / p) for p in B.PRECACHE_EXTRA if (B.ROOT / p).exists()])
+            self.assertEqual(v1, expect, "버전은 디스크에 남는(스탬프된) 파일 내용과 맞아야 한다")
+        finally:
+            my.write_bytes(orig)
+            B._DIGEST_CACHE.clear()
+
     def test_build_sw_fills_placeholders(self):
         B.build_sw()
         sw = (B.ROOT / "sw.js").read_text(encoding="utf-8")

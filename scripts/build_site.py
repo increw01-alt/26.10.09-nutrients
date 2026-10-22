@@ -60,16 +60,20 @@ VERIFY_START, VERIFY_END = "<!-- site-verification:start", "<!-- site-verificati
 ASSET_LINK_RE = re.compile(r'(?P<pre>(?:src|href)=")(?P<path>/?(?:\.\./|\./)*assets/(?:js|css)/[A-Za-z0-9_./-]+\.(?:js|css))(?:\?v=[0-9a-f]+)?(?P<post>")')
 
 
-_DIGEST_CACHE: dict[str, str] = {}
+_DIGEST_CACHE: dict[tuple[str, int, int], str] = {}   # (경로, 수정 시각 ns, 크기) → 해시
 
 
 def asset_digest(path: Path) -> str:
     """자산 파일 내용 해시 앞 8자 (?v= 스탬프와 서비스워커 precache 가 같은 값을 쓴다). 없는 파일은 "0".
-    줄끝을 LF 로 맞춘 뒤 해시: Windows 의 core.autocrlf 로 CRLF 가 된 체크아웃에서도 CI(Linux) 와 같은 값이 나오게."""
+    줄끝을 LF 로 맞춘 뒤 해시: Windows 의 core.autocrlf 로 CRLF 가 된 체크아웃에서도 CI(Linux) 와 같은 값이 나오게.
+    캐시 키에 수정 시각·크기를 넣어, 빌드 중 다시 쓰인 파일(?v= 스탬프된 my.html 등)은 옛 해시가 아니라 새 내용으로 다시 해시한다."""
     import hashlib
-    key = str(path)
+    if not path.exists():
+        return "0"
+    st = path.stat()
+    key = (str(path), st.st_mtime_ns, st.st_size)
     if key not in _DIGEST_CACHE:
-        _DIGEST_CACHE[key] = hashlib.sha1(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()[:8] if path.exists() else "0"
+        _DIGEST_CACHE[key] = hashlib.sha1(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()[:8]
     return _DIGEST_CACHE[key]
 
 
@@ -108,6 +112,14 @@ def build_sw(out_path: Path | None = None) -> str:
         f.write(out)
     log.info("sw.js 생성: precache %d개, 버전 %s", len(urls), ver)
     return ver
+
+
+def stamp_and_build_sw(sw_out: Path | None = None) -> str:
+    """HTML 의 ?v= 스탬프를 먼저 마친 뒤 서비스워커를 만든다 — 이 순서가 중요하다.
+    sw 버전은 my.html·offline.html 의 내용 해시를 섞는데, 스탬프 전에 만들면 자산이 바뀐 커밋마다 로컬(스탬프 전 파일로 계산)과
+    CI(스탬프된 커밋을 받아 계산)의 VERSION 이 갈려 CI 가 sw.js 커밋을 올리고 pull --rebase 가 충돌했다(10-22, 테스트가 지킨다)."""
+    stamp_assets()
+    return build_sw(sw_out)
 
 
 def stamp_assets() -> None:
@@ -2658,8 +2670,7 @@ def main() -> int:
     validate_drug_pairings(set(core["by_id"].keys()))
     ensure_drug_index()
     check_icons()
-    build_sw()
-    stamp_assets()
+    stamp_and_build_sw()
     products = read_json(DATA_DIR / "products.json", {"_meta": {}, "items": []})
     news = read_json(DATA_DIR / "news.json", {"_meta": {}, "items": []})
     materials = read_json(DATA_DIR / "materials.json", {"_meta": {}, "items": []})
