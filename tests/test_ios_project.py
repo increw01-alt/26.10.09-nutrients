@@ -60,3 +60,11 @@ class IosProjectTests(unittest.TestCase):
             self.assertIs(t["NSPrivacyCollectedDataTypeTracking"], False)
             self.assertEqual(t["NSPrivacyCollectedDataTypePurposes"], ["NSPrivacyCollectedDataTypePurposeAnalytics"])
         self.assertIn("PrivacyInfo.xcprivacy in Resources", PBX.read_text(encoding="utf-8"))   # 리소스 빌드 단계에 들어가야 번들에 실림
+
+    def test_in_app_navigation_allowed_for_site_host(self):
+        # Capacitor iOS 는 server.url 문자열(…/my)로 시작하지 않는 주소를 외부로 보고 Safari 로 연다(WebViewDelegationHandler).
+        # 같은 호스트의 다른 페이지(성분·궁합·가이드)를 앱 안에서 열려면 allowNavigation 에 호스트가 있어야 한다
+        from urllib.parse import urlparse
+        cfg = json.loads((ROOT / "app/capacitor.config.json").read_text(encoding="utf-8"))
+        host = urlparse(cfg["server"]["url"]).hostname
+        self.assertIn(host, cfg["server"].get("allowNavigation", []))

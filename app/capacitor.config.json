@@ -4,6 +4,7 @@
   "webDir": "www",
   "server": {
     "url": "https://xn--og5b1hx9c.kr/my",
+    "allowNavigation": ["xn--og5b1hx9c.kr"],
     "androidScheme": "https",
     "cleartext": false,
     "errorPath": "index.html"
