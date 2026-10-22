@@ -103,6 +103,12 @@ GitHub 저장소 → Actions → 왼쪽 `release-android` → Run workflow → R
 python scripts/build_store_assets.py --screens "C:/Users/<이름>/Pictures/app-shots"
 ```
 
+촬영 전에 앱에서 아래 예시 링크를 열어 '바꾸기'를 누르면 자주 먹는 성분 5개(비타민 D·오메가3·마그네슘·유산균·비타민 C)가 담긴 상태가 되어 화면이 비어 보이지 않는다(기록은 그대로). 알림 스위치를 켜고 '먹었어요'를 한두 번 눌러 두면 기록 화면도 채워진다.
+
+```
+https://xn--og5b1hx9c.kr/my#import=YJ1-eyJ2IjoxLCJpdGVtcyI6W1sidml0YW1pbi1kIiwwXSxbIm9tZWdhLTMiLDBdLFsibWFnbmVzaXVtIiwwXSxbInByb2Jpb3RpY3MiLDBdLFsidml0YW1pbi1jIiwwXV0sInRpbWVzIjp7fSwib24iOnt9LCJvcHRzIjp7Im5hbWVzIjp0cnVlLCJ3ZWVrZW5kcyI6dHJ1ZX19
+```
+
 촬영 목록(앱에서, 이 순서로 파일 이름을 01~07 로):
 
 1. 내 영양제 목록(성분 3~4개 담긴 상태)
