@@ -15,8 +15,8 @@
   <!-- pwa:end -->
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-  <link rel="stylesheet" href="assets/css/style.css?v=86237f7d">
-  <link rel="stylesheet" href="assets/css/tailwind.css?v=923e14ad">
+  <link rel="stylesheet" href="assets/css/style.css?v=296cbb33">
+  <link rel="stylesheet" href="assets/css/tailwind.css?v=10783feb">
   <script src="assets/js/icons.js?v=c06a033f" defer></script>
   <script src="assets/js/config.js?v=b696f061" defer></script>
   <script src="assets/js/app.js?v=3ab78b53" defer></script>
@@ -37,7 +37,7 @@
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <script src="assets/js/illus.js?v=5c359cba" defer></script>
-  <script src="assets/js/pages/ingredients.js?v=f46d23fd" defer></script>
+  <script src="assets/js/pages/ingredients.js?v=66d77039" defer></script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"홈","item":"https://xn--og5b1hx9c.kr/"},{"@type":"ListItem","position":2,"name":"성분 사전","item":"https://xn--og5b1hx9c.kr/ingredients"}]}</script>
 </head>
 <body data-page="ingredients" data-path="ingredients.html" class="min-h-screen antialiased">
@@ -54,7 +54,9 @@
             <h1 class="page-title mt-3">영양제 성분, 한 번에 비교하기</h1>
             <p class="page-lead mt-4">식약처 인정 기능성과 한국인 영양소 섭취기준을 바탕으로 효능·권장량·섭취 시간·주의사항을 정리했습니다. 체지방 감소·혈당·간 건강처럼 기능성 문구로 찾으려면 <a class="font-bold text-brand-700 underline" href="functions.html">기능성별 영양제</a>를 보세요. 성분을 고르면 궁합과 함유 제품까지 이어서 확인할 수 있습니다.</p>
           </div>
-          <form class="relative w-full lg:w-80" role="search" onsubmit="return false;"><label for="list-search" class="sr-only">성분 검색</label><i data-lucide="search" class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400"></i><input id="list-search" type="search" placeholder="성분명·별칭·태그로 검색" class="w-full rounded-full border border-ink-200 bg-white py-3 pl-11 pr-4 text-sm shadow-card outline-none focus:border-brand-400 focus:ring-4 focus:ring-brand-100"></form>
+          <form class="w-full lg:w-80" role="search" onsubmit="return false;"><label for="list-search" class="sr-only">성분 검색</label><div class="relative"><i data-lucide="search" class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400"></i><input id="list-search" type="search" role="combobox" aria-autocomplete="list" aria-controls="list-suggest-list" aria-expanded="false" autocomplete="off" placeholder="성분명·별칭·태그로 검색" class="w-full rounded-full border border-ink-200 bg-white py-3 pl-11 pr-4 text-sm shadow-card outline-none focus:border-brand-400 focus:ring-4 focus:ring-brand-100"></div>
+            <div class="list-suggest" id="list-suggest" hidden><ul id="list-suggest-list" role="listbox" aria-label="성분 검색 제안"></ul></div>
+            <div class="sr-only" id="list-suggest-status" role="status" aria-live="polite"></div></form>
         </div>
         <div id="category-filters" class="scroll-x mt-6 flex gap-2 overflow-x-auto pb-1"></div>
         <p id="active-tag" class="mt-3 hidden text-sm text-ink-600"></p>

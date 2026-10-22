@@ -153,6 +153,18 @@ html.app-noshop .app-hide, html.app-noshop #sec-shop, html.app-noshop #shop { di
 .my-row-main { flex: 1; min-width: 0; }
 .my-row-main b { display: block; font-size: .9rem; color: #15291d; }
 .my-row-main small { display: block; font-size: .75rem; color: #6b7a71; }
+/* 성분 사전 검색창 아래 제안 목록 (pages/ingredients.js initSuggest) — 입력란 아래 흐름 안에 둔다(히어로가 overflow:hidden 이라 절대 위치는 잘림) */
+.list-suggest { margin-top: .5rem; background: #fff; border: 1px solid #e3ebdc; border-radius: 1rem; box-shadow: 0 16px 40px -18px rgba(21,41,29,.35); padding: .35rem; max-height: min(55vh, 21rem); overflow-y: auto; text-align: left; }
+.list-suggest ul { list-style: none; margin: 0; padding: 0; }
+.suggest-option { display: flex; align-items: center; gap: .6rem; padding: .55rem .7rem; border-radius: .6rem; font-size: .875rem; cursor: pointer; user-select: none; }
+.suggest-option:hover, .suggest-option[aria-selected="true"] { background: #eef5e8; }
+.suggest-option > span:first-child { flex: 1; min-width: 0; }
+.suggest-option b { display: block; font-weight: 700; color: #15291d; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.suggest-option small { display: block; margin-top: 1px; font-size: .72rem; color: #6d7e65; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.suggest-option .option-type { flex-shrink: 0; font-size: .68rem; font-weight: 700; color: #4f6b54; background: #eef2ef; border-radius: 9999px; padding: .15rem .5rem; }
+.suggest-option.all { margin-top: .25rem; border-top: 1px solid #edf1e8; border-radius: 0 0 .6rem .6rem; }
+.suggest-option.all b { color: #175136; font-size: .8rem; }
+.suggest-option mark { background: #e3efdc; color: #175136; border-radius: 3px; padding: 0 1px; }
 .my-time { display: inline-flex; align-items: center; gap: .2rem; flex-shrink: 0; }
 .my-time select { font: inherit; font-size: .9rem; font-weight: 800; color: #15291d; background: #eef2ef; border: 1px solid #d3e0ca; border-radius: .6rem; padding: .3rem .35rem; }
 .my-toggle { position: relative; width: 42px; height: 24px; flex-shrink: 0; appearance: none; -webkit-appearance: none; border-radius: 9999px; background: #cfd6d1; cursor: pointer; transition: background .15s; border: 0; margin: 0; }
