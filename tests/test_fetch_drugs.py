@@ -169,7 +169,7 @@ class RxRuleLoadTests(unittest.TestCase):
     def test_load_rx_rules_includes_new_prescription_rules(self):
         ids = {r["id"] for r in F.load_rx_rules()}
         self.assertTrue({"statin", "antihypertensive", "antidepressant", "anticonvulsant", "antidiabetic", "hair-loss", "gout"} <= ids)
-        self.assertNotIn("sleep-aid", ids)   # 일반의약품 중심 분류는 처방약 수집 대상이 아님
+        self.assertFalse({"sleep-aid", "calcium-drug", "iron-drug", "probiotic-drug"} & ids)   # 일반의약품 중심 분류는 처방약 수집 대상이 아님
         import drug_ingr_ko as K
         for r in F.load_rx_rules():
             for term in r["ingr"]:

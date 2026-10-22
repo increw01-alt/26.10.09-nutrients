@@ -575,6 +575,27 @@ class DrugGuideTests(unittest.TestCase):
         self.assertFalse(B.drug_rule_hits(by["sleep-aid"], {"name": "레스타민코와파우더크림", "ingrEn": ["Diphenhydramine HCl"], "usage": "환부에 바릅니다"}))   # 외용은 제외
         self.assertFalse(B.drug_rule_hits(by["hair-loss"], {"name": "동성미녹시딜액3%", "ingrEn": ["Minoxidil"]}))   # 외용 미녹시딜은 탈모약 규칙 밖
         self.assertTrue(B.drug_rule_hits(by["antidiabetic"], {"name": "자누메트정", "ingrEn": ["Sitagliptin", "Metformin HCl"]}) and B.drug_rule_hits(by["metformin"], {"name": "자누메트정", "ingrEn": ["Sitagliptin", "Metformin HCl"]}))
+        # 3차(10-22): 일반의약품 빈틈 — 칼슘제·철분제·정장제 + 비타민제 분류명·주의 성분
+        self.assertTrue({"calcium-drug", "iron-drug", "probiotic-drug"} <= set(by))
+        self.assertTrue({"calcium", "iron", "zinc", "magnesium", "psyllium"} <= {c["id"] for c in by["calcium-drug"]["caution"]} and {"vitamin-d", "vitamin-k"} <= {g["id"] for g in by["calcium-drug"]["good"]})
+        self.assertTrue({"iron", "calcium", "zinc", "green-tea-extract", "psyllium", "chitosan", "multivitamin"} <= {c["id"] for c in by["iron-drug"]["caution"]} and {"vitamin-c", "folate", "vitamin-b12"} <= {g["id"] for g in by["iron-drug"]["good"]})
+        self.assertTrue({"probiotics"} == {c["id"] for c in by["probiotic-drug"]["caution"]} and {"fos", "psyllium"} <= {g["id"] for g in by["probiotic-drug"]["good"]})
+        self.assertTrue({"multivitamin", "vitamin-b-complex", "vitamin-b6", "vitamin-a", "vitamin-d", "vitamin-e"} <= {c["id"] for c in by["vitamin-drug"]["caution"]})
+        self.assertTrue(B.drug_rule_hits(by["calcium-drug"], {"name": "디카맥스디플러스정", "cls": "칼슘제", "ingrEn": ["Calcium Carbonate Granules 95%", "Cholecalciferol Concentrate Granules"]}))
+        self.assertTrue(B.drug_rule_hits(by["calcium-drug"], {"name": "시트큐정", "cls": "기타의 비타민제", "ingrEn": ["Calcium Citrate Hydrate", "Cholecalciferol Concentrate Powder", "Folic Acid"]}))
+        self.assertFalse(B.drug_rule_hits(by["calcium-drug"], {"name": "개비스콘더블액션현탁액", "cls": "소화성궤양용제", "ingrEn": ["Calcium Carbonate", "Sodium Alginate", "Sodium Bicarbonate"]}))   # 제산 용도 탄산칼슘은 칼슘제 규칙 밖
+        self.assertFalse(B.drug_rule_hits(by["calcium-drug"], {"name": "임팩타민파워에이플러스정", "cls": "기타의 비타민제", "ingrEn": ["Anhydrous Dibasic Calcium Phosphate", "Benfotiamine"]}))   # 부형제성 인산칼슘도 제외
+        self.assertTrue(B.drug_rule_hits(by["iron-drug"], {"name": "훼로바-유서방정(건조황산제일철)", "cls": "무기질제제", "ingrEn": ["Dried Ferrous Sulfate"]}))
+        self.assertTrue(B.drug_rule_hits(by["iron-drug"], {"name": "훼럼포유연질캡슐", "cls": "무기질제제", "ingrEn": ["Ferric Hydroxide Polymaltose Complex", "Folic Acid"]}))
+        self.assertFalse(B.drug_rule_hits(by["iron-drug"], {"name": "알닥톤필름코팅정", "cls": "이뇨제", "ingrEn": ["Spironolactone"]}))   # 'iron' 부분 문자열 오탐 방지
+        self.assertTrue(B.drug_rule_hits(by["probiotic-drug"], {"name": "메디락에스장용캡슐", "cls": "정장제", "ingrEn": ["Bacillus Subtilis", "Enterococcus Faecium Culture"]}))
+        self.assertTrue(B.drug_rule_hits(by["probiotic-drug"], {"name": "비오플250캡슐", "cls": "정장제", "ingrEn": ["Saccharomyces Boulardii"]}))
+        self.assertFalse(B.drug_rule_hits(by["probiotic-drug"], {"name": "지엘로페라미드염산염캡슐", "cls": "정장제", "ingrEn": ["Loperamide Hydrochloride"]}))   # 비생균 정장제는 제외
+        for cls in ("비타민 B제(비타민 B1을 제외)", "비타민 A 및 D제", "비타민 E 및 K제", "비타민 B1제", "비타민 C 및 P제", "저함량 비타민 및 미네랄 제제", "혼합비타민제(비타민AD 혼합제제를 제외)"):
+            self.assertTrue(B.drug_rule_hits(by["vitamin-drug"], {"name": "임팩타민정", "cls": cls, "ingrEn": ["Calcium Pantothenate"]}), cls)
+        guides = {g["id"]: g for g in B.read_json(B.DATA_DIR / "drug-guides.json")["items"]}
+        for rid in ("calcium-drug", "iron-drug", "probiotic-drug"):
+            self.assertTrue(not guides[rid].get("rx") and len(guides[rid]["drugs"]) >= 3 and len(guides[rid]["faq"]) >= 3, rid)
 
     def test_validate_real_data_and_rejects_bad(self):
         import copy
