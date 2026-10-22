@@ -195,6 +195,14 @@ KO: dict[str, str] = {
     "furosemide": "푸로세미드", "hydrochlorothiazide": "히드로클로로티아지드", "chlorthalidone": "클로르탈리돈", "torsemide": "토르세미드", "indapamide": "인다파미드",
     "isotretinoin": "이소트레티노인", "tretinoin": "트레티노인", "acitretin": "아시트레틴", "alitretinoin": "알리트레티노인",
     "methotrexate": "메토트렉세이트", "methylprednisolone": "메틸프레드니솔론", "deflazacort": "데플라자코트",
+    # 처방약 허가 목록(fetch_rx)에서 복합제로 함께 오는 성분 — 혈압약(사르탄·암로디핀)·당뇨약(DPP-4·SGLT-2)·항혈소판·이뇨·스테로이드
+    "amlodipine": "암로디핀", "fimasartan": "피마사르탄", "olmesartan": "올메사르탄", "telmisartan": "텔미사르탄", "valsartan": "발사르탄", "losartan": "로사르탄",
+    "candesartan": "칸데사르탄", "irbesartan": "이르베사르탄", "azilsartan": "아질사르탄", "fenofibrate": "페노피브레이트", "omega-3-acid ethyl esters": "오메가-3-산에틸에스테르",
+    "sitagliptin": "시타글립틴", "linagliptin": "리나글립틴", "gemigliptin": "제미글립틴", "evogliptin": "에보글립틴", "teneligliptin": "테네리글립틴", "vildagliptin": "빌다글립틴",
+    "saxagliptin": "삭사글립틴", "anagliptin": "아나글립틴", "alogliptin": "알로글립틴", "dapagliflozin": "다파글리플로진", "empagliflozin": "엠파글리플로진",
+    "ertugliflozin": "에르투글리플로진", "ipragliflozin": "이프라글리플로진", "glimepiride": "글리메피리드", "pioglitazone": "피오글리타존",
+    "cilostazol": "실로스타졸", "clopidogrel": "클로피도그렐", "spironolactone": "스피로노락톤", "amiloride": "아밀로라이드", "triamterene": "트리암테렌", "eplerenone": "에플레레논",
+    "prednisone": "프레드니손", "triamcinolone": "트리암시놀론", "budesonide": "부데소니드",
 }
 # 염·형태 접미사 (영문 끝말 → 한글 접미)
 SALT_KO: dict[str, str] = {
@@ -204,7 +212,7 @@ SALT_KO: dict[str, str] = {
     "citrate": "시트르산염", "phosphate": "인산염", "gluconate": "글루콘산염", "fumarate": "푸마르산염", "succinate": "숙신산염", "mesylate": "메실산염",
     "besylate": "베실산염", "butyrate": "부티르산염", "lactate": "젖산염", "pamoate": "파모산염", "valerate": "발레레이트", "propionate": "프로피오네이트", "orotate": "오로트산염",
     "dipropionate": "디프로피오네이트", "palmitate": "팔미테이트", "hibenzate": "히벤즈산염", "lysinate": "리시네이트", "methylsulfate": "메틸황산염",
-    "chloride": "염화물", "oxide": "산화물", "hemihydrate": "반수화물", "monohydrate": "일수화물", "dihydrate": "이수화물", "trihydrate": "삼수화물", "pentahydrate": "오수화물",
+    "calcium": "칼슘", "hyclate": "하이클레이트", "chloride": "염화물", "oxide": "산화물", "hemihydrate": "반수화물", "monohydrate": "일수화물", "dihydrate": "이수화물", "trihydrate": "삼수화물", "pentahydrate": "오수화물",
 }
 # 제형 접미사 (긴 것부터). '30% Ethanol Fluid Extract' 처럼 앞의 농도 표기는 _norm 이 지운다
 FORM_KO = [

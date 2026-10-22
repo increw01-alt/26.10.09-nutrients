@@ -26,6 +26,8 @@ class FakeClient:
         self.log = []
 
     def get(self, service, retries=3, **params):
+        if self.calls >= self.budget:   # 실제 Client 처럼 예산을 넘기면 QuotaExceeded
+            raise F.QuotaExceeded(f"실행당 호출 예산({self.budget}회) 소진")
         self.calls += 1
         self.log.append(dict(params))
         n = int(params.get("numOfRows", F.PAGE)); page = int(params.get("pageNo", 1))
@@ -125,6 +127,32 @@ class FetchRxTests(unittest.TestCase):
         recs = F.rx_records(cache, valid, per_rule=2, weight=lambda n, c: 3 if "리피토" in n else 0)
         self.assertEqual([r["id"] for r in sorted(recs, key=lambda r: r["permitDate"], reverse=True)], ["3", "1"])   # 가중치 → 최신, 취하 제외, 상한 2, 중복 한 번
         self.assertEqual(len(recs), 2)
+
+    def test_rx_records_prefers_brand_keywords_and_caps_company(self):
+        rows = {}
+        for i in range(15):   # 대형 제약사(가중치 3) 제네릭 15건 — 상한(12)을 넘는 만큼은 뒤로
+            rows[f"a{i}"] = F.permit_entry(row(f"a{i}", f"유한아토르바정{i}", "Atorvastatin Calcium Trihydrate", company="(주)유한양행", date=f"2024{(i % 12) + 1:02d}01"))
+        rows["lip"] = F.permit_entry(row("lip", "리피토정10밀리그램", "Atorvastatin Calcium Trihydrate", company="비아트리스코리아(주)", date="20041025"))
+        rows["c"] = F.permit_entry(row("c", "씨약정", "Atorvastatin Calcium", company="C제약", date="20250101"))
+        cache = {"statin": {"done": True, "rows": rows}}
+        recs = F.rx_records(cache, set(), per_rule=14, weight=lambda n, c: 3 if "유한" in c else 0, kw_weight=lambda n: 2 if "리피토" in n else 0)
+        ids = {r["id"] for r in recs}
+        self.assertIn("lip", ids); self.assertIn("c", ids)                                   # 브랜드 키워드·다른 제조사가 먼저 들어간다
+        self.assertEqual(sum(1 for r in recs if r["company"] == "(주)유한양행"), 12)          # 제조사당 상한
+        self.assertEqual(len(recs), 14)
+        self.assertEqual(next(r for r in recs if r["id"] == "lip")["ingr"], ["아토르바스타틴칼슘삼수화물"])   # 칼슘염 한글 표기
+        small = F.rx_records(cache, set(), per_rule=16, weight=lambda n, c: 3 if "유한" in c else 0, kw_weight=None)
+        self.assertEqual(len(small), 16)                                                    # 자리가 남으면 상한 너머도 채운다
+
+    def test_fetch_rx_keeps_progress_when_quota_runs_out(self):
+        pages = {("item_ingr_name", "Atorvastatin"): ATOR, ("item_name", "로수바스타틴"): ROSU, ("item_name", "레보티록신"): LEVO}
+        c = FakeClient(pages); c.budget = 3   # 경로 확인·전체 건수·1페이지 뒤 QuotaExceeded
+        cache = {}
+        st = F.fetch_rx(c, "svc", RULES, cache, budget=100)
+        self.assertTrue(st.get("stopped"))
+        self.assertFalse(cache["statin"]["done"]); self.assertEqual(len(cache["statin"]["rows"]), 100)
+        self.assertEqual((cache["statin"]["term"], cache["statin"]["page"]), (0, 2))
+        self.assertNotIn("thyroid", cache)
 
     def test_rebuild_rows_and_real_rules(self):
         prev = {"a": {"id": "a", "name": "A", "source": "mfds-drug"}, "b": {"id": "b", "name": "B", "source": "mfds-permit"}}

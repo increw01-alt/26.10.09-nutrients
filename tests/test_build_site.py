@@ -490,13 +490,22 @@ class DrugGuideTests(unittest.TestCase):
         with self.assertRaises(SystemExit):
             B.validate_drug_guides(bad, self.rules, set(self.core["by_id"]), self.slugs)
 
+    def test_brand_keywords_ignore_parenthetical_ingredients(self):
+        """브랜드 키워드는 괄호 안 성분 표기(아토르바스타틴칼슘…)에 걸리지 않고, 리피토 같은 브랜드명은 잡힌다."""
+        bp = B.load_brand_priority()
+        self.assertEqual(bp.keyword_weight("휴니즈아토르바스타틴칼슘정5밀리그램(아토르바스타틴칼슘삼수화물)"), 0)
+        self.assertEqual(bp.keyword_weight("제피토정10/5밀리그램(에제티미브,아토르바스타틴)"), 0)
+        self.assertGreaterEqual(bp.keyword_weight("리피토정10밀리그램(아토르바스타틴칼슘삼수화물)"), 2)
+        self.assertGreaterEqual(bp.weight("크레스토정10밀리그램(로수바스타틴칼슘)", "한국아스트라제네카(주)"), 2)
+
     def test_rx_guide_lists_permit_only_drugs(self):
         """fetch_drugs.py 가 더하는 허가정보 전용 레코드(source mfds-permit, 본문 없음)가 처방약 가이드의 '이 분류의 약' 목록에 실린다."""
         fake = [{"id": "rx1", "name": "리피토정10밀리그램", "company": "비아트리스코리아", "otc": "전문의약품", "cls": "동맥경화용제", "ingr": ["아토르바스타틴칼슘삼수화물"], "ingrEn": ["Atorvastatin Calcium Trihydrate"], "ingredients": [], "usage": "", "source": "mfds-permit"},
                 {"id": "rx2", "name": "아토르바정20밀리그램", "company": "유한양행", "otc": "전문의약품", "cls": "동맥경화용제", "ingr": ["아토르바스타틴칼슘삼수화물"], "ingrEn": ["Atorvastatin Calcium Trihydrate"], "ingredients": [], "usage": "", "source": "mfds-permit"}]
-        model = B.drug_guide_model(self.data, self.rules, self.core, self.drugs + fake, self.guides["items"], weight=lambda n, c: 3 if "리피토" in n else 0)
+        base = [d for d in self.drugs if d.get("source") != "mfds-permit"]   # 실제 수집된 처방약은 빼고 가짜 두 건만으로 본다
+        model = B.drug_guide_model(self.data, self.rules, self.core, base + fake, self.guides["items"], weight=lambda n, c: 3 if "리피토" in n else 0)
         e = next(x for x in model["items"] if x["dg"]["id"] == "statin")
-        self.assertGreaterEqual(e["drugs"]["total"], 2)
+        self.assertEqual(e["drugs"]["total"], 2)
         self.assertEqual(e["drugs"]["top"][0]["id"], "rx1")
         self.assertIn("rx2", [d["id"] for d in e["drugs"]["top"]])
         html = B.render_drug_guide(e, self.core, self.cfg, self.guides["_meta"]["types"], "2026-10-23")
@@ -532,11 +541,15 @@ class DrugGuideTests(unittest.TestCase):
                 self.assertTrue(x["name"] and x["why"], e["dg"]["id"])
             self.assertLessEqual(len(e["drugs"]["top"]), B.DRUG_GUIDE_TOP)
         self.assertIn("thyroid", [d["id"] for d in self.model["by_ingredient"]["calcium"]])
-        if self.drugs:   # 의약품 수집분이 있을 때만: 일반의약품 분류는 약이 잡히고 처방약 분류는 0건
+        if self.drugs:   # 의약품 수집분이 있을 때만: 일반의약품 분류는 e약은요에서, 처방약 분류는 허가 목록 수집분(mfds-permit)이 있을 때만 잡힌다
             nsaid = next(e for e in self.model["items"] if e["dg"]["id"] == "nsaid")
             statin = next(e for e in self.model["items"] if e["dg"]["id"] == "statin")
             self.assertGreater(nsaid["drugs"]["total"], 0)
-            self.assertEqual(statin["drugs"]["total"], 0)
+            if any(d.get("source") == "mfds-permit" for d in self.drugs):
+                self.assertGreater(statin["drugs"]["total"], 0)
+                self.assertTrue(all(d["otc"] == "전문의약품" for d in statin["drugs"]["top"]))
+            else:
+                self.assertEqual(statin["drugs"]["total"], 0)
 
     def test_render_page_and_hub(self):
         types = self.guides["_meta"]["types"]
@@ -550,7 +563,10 @@ class DrugGuideTests(unittest.TestCase):
             self.assertIn("../drug.html?id=", html)
         statin = next(e for e in self.model["items"] if e["dg"]["id"] == "statin")
         html2 = B.render_drug_guide(statin, self.core, self.cfg, types, "2026-10-22")
-        self.assertNotIn("../drug.html?id=", html2)
+        if statin["drugs"]["total"]:   # 처방약 허가 목록이 수집된 뒤에는 대표 제품이 실리고, 전이면 성분명 안내만
+            self.assertIn("../drug.html?id=", html2); self.assertIn("대표 제품", html2)
+        else:
+            self.assertNotIn("../drug.html?id=", html2)
         self.assertIn("처방전·약봉투", html2)
         self.assertIn('href="../i/red-yeast-rice.html"', html2)
         acet = next(e for e in self.model["items"] if e["dg"]["id"] == "acetaminophen")

@@ -37,6 +37,17 @@ def _keyword_regex(words) -> re.Pattern | None:
     return re.compile("|".join(parts)) if parts else None
 
 
+_PAREN = re.compile(r"\([^()]*\)")
+
+
+def _name_only(name) -> str:
+    """키워드 비교용 이름: 괄호 안(의약품의 성분 표기 '(아토르바스타틴칼슘삼수화물)'·'(수출용)' 등)은 뺀다 — 성분명이 브랜드 키워드에 걸리지 않게."""
+    s = str(name or "")
+    for _ in range(3):
+        s = _PAREN.sub(" ", s)
+    return s.lower()
+
+
 class BrandPriority:
     def __init__(self, rules: list[dict]):
         self.rules: list[tuple[int, tuple[str, ...], re.Pattern | None, str]] = []
@@ -64,7 +75,7 @@ class BrandPriority:
         best = self._company_weight(company)
         if best >= MAX_WEIGHT:
             return best
-        n = str(name or "").lower()
+        n = _name_only(name)
         for w, _, kw, _ in self.rules:
             if w <= best:
                 break
@@ -75,7 +86,7 @@ class BrandPriority:
 
     def keyword_weight(self, name) -> int:
         """제품(의약품) 이름의 브랜드 키워드만으로 매긴 가중치(제조사명은 보지 않음) — 같은 가중치 안에서 '브랜드명이 이름에 드러난' 제품을 먼저 고를 때 쓴다(약별 가이드의 대표 제품)."""
-        n = str(name or "").lower()
+        n = _name_only(name)
         return max((w for w, _, kw, _ in self.rules if kw is not None and kw.search(n)), default=0)
 
     def __len__(self) -> int:

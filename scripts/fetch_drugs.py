@@ -13,11 +13,11 @@
 
 API 키 발급: https://www.data.go.kr 회원가입 → 아래 두 API 를 '활용신청'(개발계정은 자동 승인) → 마이페이지 → 일반 인증키(Decoding)
   - 식품의약품안전처_의약품개요정보(e약은요)     DrbEasyDrugInfoService
-  - 식품의약품안전처_의약품 제품 허가정보        DrugPrdtPrmsnInfoService06
+  - 식품의약품안전처_의약품 제품 허가정보        DrugPrdtPrmsnInfoService08 (06 은 2026-10 폐기, 07 은 키 미등록 — 활용신청한 최신 버전)
 환경변수:
   DATA_GO_KR_KEY        필수. 없으면 기존 파일을 유지하고 정상 종료합니다. (Encoding 키를 넣어도 자동으로 풀어 씁니다)
   DRUG_API_BUDGET       선택. 한 번 실행에서 허용할 API 호출 수 (기본 900 — 공공데이터포털 개발계정 일일 1,000건 기준)
-  DRUG_TIME_BUDGET      선택. 한 번 실행에서 허용할 시간(초, 기본 780). 넘으면 허가정보 연결을 멈추고 받은 것까지 저장
+  DRUG_TIME_BUDGET      선택. 한 번 실행에서 허용할 시간(초, 기본 1200 — 허가정보 API 가 호출당 8~10초라 e약은요 48회에 6분이 든다). 넘으면 허가정보 연결·전문의약품 수집을 멈추고 받은 것까지 저장
   DRUG_MAX_ROWS         선택. e약은요 수집 상한 (기본 0 = 전체)
   DRUG_RX_BUDGET        선택. 전문의약품 허가 목록 수집에 쓸 호출 수 (기본 300, 0 이면 끔). 규칙별로 진행 위치를 캐시해 다음 실행에서 이어 가고, 완료된 규칙은 30일마다 다시 받음
   DRUG_RX_PER_RULE      선택. 처방약 규칙(분류)마다 저장할 제품 수 상한 (기본 200 — 브랜드 가중치 → 브랜드 키워드 → 허가일 최신 순)
@@ -52,16 +52,16 @@ from drug_ingr_ko import to_korean  # noqa: E402
 
 DEFAULT_API_BASE = "https://apis.data.go.kr/1471000"
 DEFAULT_EASY_SERVICE = "DrbEasyDrugInfoService/getDrbEasyDrugList"
-DEFAULT_PERMIT_SERVICE = "DrugPrdtPrmsnInfoService06/getDrugPrdtPrmsnInq06"
+DEFAULT_PERMIT_SERVICE = "DrugPrdtPrmsnInfoService08/getDrugPrdtPrmsnInq08"   # 2026-10-22 확인: 06 은 폐기(오류 12), 07 은 키 미등록(오류 30), 08 이 동작
 # 허가정보 API 는 식약처가 스키마를 바꿀 때마다 서비스 버전(…Service06)과 오퍼레이션 번호가 올라간다.
 # 기본 경로가 400/404 를 돌려주면 아래 후보를 차례로 1회씩 찔러 보고 품목 필드(ITEM_SEQ)가 오는 첫 경로를 쓴다.
-PERMIT_CANDIDATES = [
-    "DrugPrdtPrmsnInfoService06/getDrugPrdtPrmsnInq06", "DrugPrdtPrmsnInfoService06/getDrugPrdtPrmsnDtlInq05",
-    "DrugPrdtPrmsnInfoService07/getDrugPrdtPrmsnInq07", "DrugPrdtPrmsnInfoService07/getDrugPrdtPrmsnDtlInq06",
+PERMIT_CANDIDATES = [   # 기본 경로가 거부되면 차례로 시도 (새 버전이 나오면 앞에 추가)
     "DrugPrdtPrmsnInfoService08/getDrugPrdtPrmsnInq08", "DrugPrdtPrmsnInfoService08/getDrugPrdtPrmsnDtlInq07",
-    "DrugPrdtPrmsnInfoService05/getDrugPrdtPrmsnInq05", "DrugPrdtPrmsnInfoService05/getDrugPrdtPrmsnDtlInq04",
+    "DrugPrdtPrmsnInfoService09/getDrugPrdtPrmsnInq09", "DrugPrdtPrmsnInfoService09/getDrugPrdtPrmsnDtlInq08",
+    "DrugPrdtPrmsnInfoService07/getDrugPrdtPrmsnInq07", "DrugPrdtPrmsnInfoService07/getDrugPrdtPrmsnDtlInq06",
+    "DrugPrdtPrmsnInfoService06/getDrugPrdtPrmsnInq06", "DrugPrdtPrmsnInfoService06/getDrugPrdtPrmsnDtlInq05",
 ]
-DEFAULT_TIME_BUDGET = 780      # 실행당 허용 시간(초). 워크플로 단계 제한(20분) 전에 멈추고 받은 것까지 저장한다
+DEFAULT_TIME_BUDGET = 1200     # 실행당 허용 시간(초). 워크플로 단계 제한(25분) 전에 멈추고 받은 것까지 저장한다 (API 가 호출당 8~10초: e약은요 48회 ≈ 6분, 나머지를 허가정보·전문의약품에 씀)
 MAX_CONSECUTIVE_FAILS = 5      # 개별 조회가 연속으로 이만큼 실패하면 API 쪽 문제로 보고 중단
 PAGE = 100                     # 공공데이터포털 numOfRows 상한
 CONNECT_TIMEOUT = 15
@@ -507,6 +507,7 @@ DEFAULT_RX_PER_RULE = 200          # 규칙(처방약 분류)마다 저장하는
 RX_REFRESH_DAYS = 30               # 완료된 규칙을 다시 받는 주기(일)
 RX_MAX_PAGES = 30                  # 검색어 하나당 최대 페이지(100건씩)
 RX_SPCLTY = "전문의약품"
+RX_PER_COMPANY = 12                # 규칙당 선별에서 한 제조사가 먼저 차지할 수 있는 건수 (대형 제약사 제네릭이 상한을 독차지하지 않게)
 
 
 def load_rx_rules() -> list[dict]:
@@ -583,8 +584,10 @@ def fetch_rx(client: Client, service: str, rules: list[dict], cache: dict[str, d
                 continue
             try:
                 items, total = client.get(svc, pageNo=st["page"], spclty_pblc=RX_SPCLTY, **{p: v})
-            except QuotaExceeded:
-                raise
+            except QuotaExceeded as e:        # 호출·시간 예산 소진: 진행 위치를 남기고 멈춘다 (통계는 돌려준다)
+                stats["stopped"] = str(e)
+                ok = False
+                break
             except Exception as e:  # noqa: BLE001
                 log.warning("전문의약품 조회 실패 %s=%s %d페이지: %s", p, v, st["page"], str(e)[:200])
                 if st["page"] == 1:       # 첫 페이지부터 거부되면 파라미터 문제로 보고 다음 후보
@@ -619,6 +622,9 @@ def fetch_rx(client: Client, service: str, rules: list[dict], cache: dict[str, d
         else:
             log.info("전문의약품 수집 진행 중: %s — 검색어 %d/%d, %s건 (다음 실행에서 이어짐)", r["id"], st["term"], len(terms), f"{len(st['rows']):,}")
         cache[r["id"]] = st
+        if stats.get("stopped"):
+            log.warning("%s — 전문의약품 허가 목록 수집은 다음 실행에서 이어집니다.", stats["stopped"])
+            break
     stats["calls"] = client.calls - start
     return stats
 
@@ -657,8 +663,10 @@ def normalize_rx(seq: str, e: dict, valid: set[str]) -> dict | None:
     return rec
 
 
-def rx_records(cache: dict[str, dict], valid: set[str], per_rule: int, weight=None, kw_weight=None) -> list[dict]:
-    """캐시의 규칙별 허가 행 → 레코드 목록. 허가 취하·취소는 빼고, 규칙마다 브랜드 가중치 → 브랜드 키워드 → 허가일 최신 → 이름 순으로 per_rule 건까지. 여러 규칙에 겹치는 품목은 한 번."""
+def rx_records(cache: dict[str, dict], valid: set[str], per_rule: int, weight=None, kw_weight=None, per_company: int = RX_PER_COMPANY) -> list[dict]:
+    """캐시의 규칙별 허가 행 → 레코드 목록. 허가 취하·취소·유효기간만료는 빼고, 규칙마다 per_rule 건까지 고른다:
+    브랜드 키워드(리피토·크레스토·씬지로이드…) → 제조사 가중치 → 허가일 최신 → 이름 순으로 보되, 한 제조사는 per_company 건까지만 먼저 뽑아
+    대형 제약사의 제네릭이 상한을 독차지하지 않게 하고, 남는 자리는 같은 순서로 채운다. 여러 규칙에 겹치는 품목은 한 번."""
     out: dict[str, dict] = {}
     for st in cache.values():
         if not isinstance(st, dict):
@@ -669,8 +677,22 @@ def rx_records(cache: dict[str, dict], valid: set[str], per_rule: int, weight=No
         recs = [x for x in (normalize_rx(seq, e, valid) for seq, e in rows.items() if isinstance(e, dict)) if x and not x.get("cancel")]
         recs.sort(key=lambda x: x["name"])
         recs.sort(key=lambda x: x.get("permitDate") or "", reverse=True)
-        recs.sort(key=lambda x: (-(int(weight(x["name"], x["company"])) if weight else 0), -(int(kw_weight(x["name"])) if kw_weight else 0)))
-        for x in recs[:max(0, per_rule)]:
+        recs.sort(key=lambda x: (-(int(kw_weight(x["name"])) if kw_weight else 0), -(int(weight(x["name"], x["company"])) if weight else 0)))
+        cap = max(0, per_rule)
+        picked: list[dict] = []
+        taken: dict[str, int] = {}
+        for x in recs:                                   # 1차: 제조사당 per_company 건까지
+            if len(picked) >= cap:
+                break
+            c = x["company"]
+            if taken.get(c, 0) >= per_company:
+                continue
+            taken[c] = taken.get(c, 0) + 1
+            picked.append(x)
+        if len(picked) < cap:                            # 2차: 남는 자리는 순서대로
+            chosen = {x["id"] for x in picked}
+            picked += [x for x in recs if x["id"] not in chosen][: cap - len(picked)]
+        for x in picked:
             out.setdefault(x["id"], x)
     return sorted(out.values(), key=lambda x: x["name"])
 

@@ -1991,7 +1991,8 @@ def drug_guide_model(data: dict, rules: list[dict], core: dict, drugs: list[dict
             name = str(d.get("name") or "")
             base = re.split(r"[(\[]", name)[0]
             generic = any(k in base for k in inn_ko)   # '경남나프록센연질캡슐' 처럼 이름에 성분명이 든 제네릭은 뒤로
-            return (-(weight(name, d.get("company") or "") if weight else 0), -(kw_weight(name) if kw_weight else 0), generic, len(base), name)   # 브랜드명이 이름에 드러난 제품(우루사·타이레놀…) 먼저
+            n_ingr = len(d.get("ingrEn") or d.get("ingr") or [])   # 단일 성분 제품(우루사정·리피토정)을 복합제(베아제·로수바미브)보다 먼저 — 분류를 대표하는 약
+            return (-(kw_weight(name) if kw_weight else 0), -(weight(name, d.get("company") or "") if weight else 0), generic, n_ingr, len(base), name)   # 브랜드명이 이름에 드러난 제품(우루사·타이레놀·리피토…)을 제조사 가중치보다 먼저 — 대형 제약사 제네릭이 대표 자리를 차지하지 않게
         buckets: dict[str, list[dict]] = {}   # 제조사별로 묶어 돌아가며 뽑는다 — 한 브랜드(이지엔6 6종…)가 목록을 독점하지 않게
         seen_names: set[str] = set()
         for d in sorted(matched, key=rank):
