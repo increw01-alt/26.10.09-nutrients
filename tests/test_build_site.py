@@ -273,6 +273,18 @@ class FunctionHubTests(unittest.TestCase):
             self.assertIn(f'href="function/{e["fn"]["id"]}.html"', hub)
         self.assertIn("functions.html", B.STATIC_PAGES)
 
+    def test_function_page_links_related_compares(self):
+        cmp_model = B.compare_model(B.read_json(B.DATA_DIR / "compares.json"), self.core, self.guides["items"])
+        entry = next(e for e in self.model["items"] if e["fn"]["id"] == "eye")
+        fn_ids = {i["id"] if isinstance(i, dict) else i for i in entry["ingredients"]}
+        expect = next(e["cmp"]["slug"] for e in cmp_model["items"] if all(i in fn_ids for i in e["cmp"]["ids"]))   # 성분이 모두 이 기능성에 있는 비교 (루테인 vs 아스타잔틴 등)
+        html = B.render_function(entry, self.model, dict(self.core, compares=cmp_model), self.cfg, self.guides["_meta"]["types"])
+        self.assertIn('id="compares"', html)
+        self.assertIn(f'href="../compare/{expect}.html"', html)
+        self.assertIn('href="#compares" class="chip">비교 글</a>', html)
+        plain = B.render_function(entry, self.model, self.core, self.cfg, self.guides["_meta"]["types"])
+        self.assertNotIn('id="compares"', plain)
+
 
 class CompareTests(unittest.TestCase):
     """성분 비교(compare.html · compare/<slug>.html) — 데이터 검증·모델·렌더."""
@@ -336,6 +348,39 @@ class CompareTests(unittest.TestCase):
             self.assertIn(f'href="compare/{e["cmp"]["slug"]}.html"', hub)
         self.assertIn("compare.html", B.STATIC_PAGES)
 
+
+
+    def test_related_compares_pick_and_rank(self):
+        core = {"compares": {"items": [
+            {"cmp": {"slug": "a-vs-b", "ids": ["a", "b"], "h1": "A vs B", "description": "", "related": ["g1"]}, "ingredients": [{"name": "A"}, {"name": "B"}]},
+            {"cmp": {"slug": "a-vs-c", "ids": ["a", "c"], "h1": "A vs C", "description": "", "related": []}, "ingredients": [{"name": "A"}, {"name": "C"}]},
+            {"cmp": {"slug": "b-vs-d", "ids": ["b", "d"], "h1": "B vs D", "description": "", "related": ["g2"]}, "ingredients": [{"name": "B"}, {"name": "D"}]}],
+            "forms": [{"fc": {"slug": "a-forms", "id": "a", "h1": "A 형태", "description": "", "related": []}, "ingredient": {"name": "A"}, "forms": [1, 2]},
+                      {"fc": {"slug": "e-forms", "id": "e", "h1": "E 형태", "description": "", "related": ["g1"]}, "ingredient": {"name": "E"}, "forms": [1, 2, 3]}]}}
+        got = B.related_compares(core, ["a", "b"], "g1")
+        self.assertEqual([x["slug"] for x in got], ["a-vs-b", "e-forms", "a-forms"])   # related 명시 → 성분 겹침 수 → 제목; c·d 가 없는 비교는 제외
+        self.assertEqual([x["slug"] for x in B.related_compares(core, ["a", "b"], "g1", limit=2)], ["a-vs-b", "e-forms"])
+        self.assertEqual(B.related_compares(core, ["a", "b"]), [x for x in B.related_compares(core, ["a", "b"]) if x["slug"] in ("a-vs-b", "a-forms")])   # slug 없으면 성분 포함 조건만
+        self.assertEqual(B.related_compares({}, ["a", "b"], "g1"), [])
+        html = B.compare_cards_html(got, "../")
+        self.assertIn('href="../compare/a-vs-b.html"', html)
+        self.assertIn("A <em>vs</em> B", html)
+        self.assertIn("E <em>·</em> 형태 3가지", html)
+        self.assertEqual(B.related_compares_section("", "x"), "")
+
+    def test_guide_page_links_related_compares(self):
+        guides = {"_meta": self.guides["_meta"], "items": self.guides["items"], "by_id": {g["id"]: g for g in self.guides["items"]}}
+        gd = next(g for g in self.guides["items"] if g["slug"] == "eye-health")
+        model = dict(self.model, forms=[{"fc": {"slug": "omega-3-forms", "id": "omega-3", "h1": "오메가3 형태", "description": "d", "related": []}, "ingredient": self.core["by_id"]["omega-3"], "forms": [1, 2, 3, 4]}])
+        html = B.render_guide(gd, guides, dict(self.core, compares=model), self.cfg)
+        self.assertIn('id="compares"', html)
+        self.assertIn('href="../compare/lutein-vs-astaxanthin.html"', html)   # ids 가 모두 가이드 성분에 있음
+        self.assertIn('href="../compare/omega-3-forms.html"', html)           # 기준 성분이 가이드 성분에 있음
+        self.assertNotIn('href="../compare/omega-3-vs-gla.html"', html)       # 감마리놀렌산은 눈 가이드 성분이 아님
+        self.assertIn('href="#compares" class="chip">비교 글</a>', html)
+        plain = B.render_guide(gd, guides, self.core, self.cfg)               # 비교 모델 없이도 그려짐
+        self.assertNotIn('id="compares"', plain)
+        self.assertLessEqual(html.count('class="cmp-card"'), B.RELATED_COMPARES_MAX)
 
 
 class FormCompareTests(unittest.TestCase):
@@ -411,6 +456,18 @@ class FormCompareTests(unittest.TestCase):
         for x in self.model:   # 모든 편: rest 는 최대 하나, 전체 형태 합집합 ⊆ 기준 제품
             rests = [fm for fm in x["forms"] if fm["f"].get("rest")]
             self.assertLessEqual(len(rests), 1, x["fc"]["slug"])
+
+    def test_shape_token_matching(self):
+        self.assertEqual(B.form_match_text({"name": "n", "rawMaterials": "r", "shape": " 정 "}), "n | r | 제형:정")
+        data = {"items": [{"slug": "x-forms", "id": "omega-3", "title": "t", "h1": "h", "description": "d", "intro": "i", "verdict": "v", "label": "l", "faq": [{"q": "q", "a": "a"}],
+                           "forms": [{"key": "liquid", "label": "액상", "short": "s", "shopQuery": "q", "line": "l", "match": "제형:(액상|겔)"},
+                                     {"key": "rest", "label": "나머지", "short": "s", "shopQuery": "q", "line": "l", "rest": True}],
+                           "rows": [{"label": "r", "cells": {"liquid": "1", "rest": "2"}}]}]}
+        products = [dict(p, shape=s) for p, s in zip(self.products[:4], ["액상", "정", "겔", ""])]
+        by_key = {fm["f"]["key"]: fm for fm in B.form_compare_model(data, self.core, products, self.guides["items"], self.core["glossary"])[0]["forms"]}
+        self.assertEqual(by_key["liquid"]["ids"], {"p1", "p3"})   # 신고 제형 토큰으로 가름
+        self.assertEqual(by_key["rest"]["ids"], {"p2", "p4"})
+        self.assertTrue({"vitamin-k-forms", "red-ginseng-forms", "probiotics-forms"} <= {it["slug"] for it in self.data["items"]})
 
     def test_top_products_prefer_brand_weight(self):
         products = [dict(p, ingredients=["omega-3"], rawMaterials="크릴오일", name=f"크릴 {i}", company=("D" if i == 3 else "Z"), registeredAt=f"2025-0{i}-01") for i, p in enumerate(self.products[:5], start=1)]

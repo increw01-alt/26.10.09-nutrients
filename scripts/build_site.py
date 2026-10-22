@@ -538,6 +538,51 @@ def cat_class(color: str) -> str:
             "orange": "bg-orange-50 text-orange-700 ring-orange-200", "pink": "bg-pink-50 text-pink-700 ring-pink-200"}.get(color, "bg-slate-100 text-slate-600 ring-slate-200")
 
 
+RELATED_COMPARES_MAX = 6   # 가이드·기능성 페이지에 보여 주는 관련 비교 글 수
+
+
+def related_compares(core: dict, ids, slug: str | None = None, limit: int = RELATED_COMPARES_MAX) -> list[dict]:
+    """페이지(가이드·기능성 허브)의 성분 id 목록과 slug 로 관련 비교 글을 고른다: ① 비교의 related 가이드에 slug 가 있거나 ② 성분 대 성분 비교는 ids 가
+    모두 페이지 성분에 들어 있거나 ③ 제형·형태 비교는 기준 성분이 페이지 성분에 있는 것. 관련 가이드 명시 → 겹치는 성분 수 → 제목 순, 최대 limit 편.
+    core["compares"](compare_model + forms) 가 없으면 빈 목록이라 단위 테스트처럼 비교 모델 없이도 페이지를 그릴 수 있다."""
+    model = core.get("compares") or {}
+    have = set(ids or [])
+    out: list[dict] = []
+    for e in model.get("items") or []:
+        cmp_ids = list(e["cmp"].get("ids") or [])
+        rel = bool(slug) and slug in (e["cmp"].get("related") or [])
+        inside = bool(cmp_ids) and all(i in have for i in cmp_ids)
+        if not (rel or inside):
+            continue
+        out.append({"slug": e["cmp"]["slug"], "h1": e["cmp"]["h1"], "desc": e["cmp"].get("description") or "", "kind": "pair",
+                    "names": [i["name"] for i in e.get("ingredients") or []], "score": (10 if rel else 0) + len(have & set(cmp_ids))})
+    for e in model.get("forms") or []:
+        fc = e["fc"]
+        rel = bool(slug) and slug in (fc.get("related") or [])
+        inside = fc.get("id") in have
+        if not (rel or inside):
+            continue
+        out.append({"slug": fc["slug"], "h1": fc["h1"], "desc": fc.get("description") or "", "kind": "form",
+                    "names": [(e.get("ingredient") or {}).get("name") or fc.get("id") or ""], "n_forms": len(e.get("forms") or []), "score": (10 if rel else 0) + (1 if inside else 0)})
+    out.sort(key=lambda x: (-x["score"], x["h1"]))
+    return out[:limit]
+
+
+def compare_cards_html(entries: list[dict], root: str = "../") -> str:
+    """관련 비교 글 카드 — 허브(compare.html)의 cmp-card 와 같은 모양. entries 는 related_compares() 결과."""
+    cards = []
+    for x in entries:
+        names = (" <em>vs</em> ".join(esc(n) for n in x["names"])) if x["kind"] == "pair" else f'{esc(x["names"][0])} <em>·</em> 형태 {x.get("n_forms", 0)}가지'
+        cards.append(f'<a class="cmp-card" href="{root}compare/{esc(x["slug"])}.html"><span class="cmp-card-names">{names}</span>'
+                     f'<span class="mt-2 block text-base font-extrabold text-ink-900">{esc(x["h1"])}</span><span class="mt-1 line-clamp-2 block text-sm text-ink-500">{esc(x["desc"])}</span></a>')
+    return "".join(cards)
+
+
+def related_compares_section(cmps_html: str, lead: str) -> str:
+    return (f'<section id="compares" class="scroll-mt-24"><h2 class="text-2xl font-extrabold tracking-tight text-ink-900">관련 비교 글</h2><p class="mt-1 text-sm text-ink-500">{lead}</p>'
+            f'<div class="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">{cmps_html}</div></section>') if cmps_html else ""
+
+
 def guide_card(gd: dict, types: dict, root: str) -> str:
     t = types.get(gd["type"], {})
     return (f'<a href="{root}guide/{esc(gd["slug"])}.html" class="card-hover flex gap-4 rounded-2xl border border-[#e3ebdc] bg-white p-5 shadow-card">'
@@ -602,9 +647,10 @@ def render_guide(gd: dict, guides: dict, core: dict, cfg: dict) -> str:
     faq_html = "".join(f'<details class="group border-b border-ink-100 py-3 last:border-0"><summary class="flex cursor-pointer list-none items-center justify-between gap-3 font-bold text-ink-900"><span>Q. {esc(f["q"])}</span><i data-lucide="chevron-down" class="h-4 w-4 shrink-0 text-ink-400 transition group-open:rotate-180"></i></summary><p class="mt-2 text-sm leading-relaxed text-ink-600">{term_html(core, f["a"], st)}</p></details>' for f in gd["faq"])
     shop_html = "".join(f'<div class="flex flex-col gap-2 rounded-xl border border-ink-100 bg-white p-4 sm:flex-row sm:items-center sm:justify-between"><div><p class="font-bold text-ink-900">{esc(by_id[x["id"]]["name"])}</p><p class="text-xs text-ink-500">검색어: {esc(by_id[x["id"]]["shopQuery"])}</p></div><div class="js-shop" data-query="{esc(by_id[x["id"]]["shopQuery"])}"></div></div>' for x in gd["ingredients"][:3] if x["id"] in by_id)
     related = [guides["by_id"][r] for r in gd.get("related", []) if r in guides["by_id"]]
+    cmps_html = compare_cards_html(related_compares(core, [x["id"] for x in gd["ingredients"]], gd["slug"]), "../")   # 관련 비교 글 (core["compares"] 가 없으면 빈 문자열)
     related_html = "".join(guide_card(r, types, "../") for r in related)
     all_ids = ",".join(x["id"] for x in gd["ingredients"][:6])
-    nav_chips = "".join(f'<a href="#{a}" class="chip">{b}</a>' for a, b in (("ingredients", "핵심 성분"), ("combos", "추천 조합")) if (a != "combos" or combo_html)) + ("".join(f'<a href="#sec-{i}" class="chip">{esc(sec["h2"][:14])}</a>' for i, sec in enumerate(gd.get("sections", [])[:0]))) + '<a href="#tips" class="chip">이렇게 드세요</a><a href="#faq" class="chip">FAQ</a>'
+    nav_chips = "".join(f'<a href="#{a}" class="chip">{b}</a>' for a, b in (("ingredients", "핵심 성분"), ("combos", "추천 조합")) if (a != "combos" or combo_html)) + ("".join(f'<a href="#sec-{i}" class="chip">{esc(sec["h2"][:14])}</a>' for i, sec in enumerate(gd.get("sections", [])[:0]))) + '<a href="#tips" class="chip">이렇게 드세요</a><a href="#faq" class="chip">FAQ</a>' + ('<a href="#compares" class="chip">비교 글</a>' if cmps_html else '')
 
     body = f"""
 <body data-page="guides" data-path="{path}" class="min-h-screen antialiased">
@@ -628,6 +674,7 @@ def render_guide(gd: dict, guides: dict, core: dict, cfg: dict) -> str:
       <section class="rounded-2xl border border-ink-100 bg-cream-200 p-5"><h2 class="text-base font-extrabold text-ink-900">바로 보는 표</h2><p class="mt-1 text-sm text-ink-700">선택 없이 전체를 훑어보려면 <a class="font-bold text-brand-700 underline" href="../compatibility-chart.html">영양제 궁합표</a>와 <a class="font-bold text-brand-700 underline" href="../timing-chart.html">영양제 복용 시간표</a>를 참고하세요.</p></section>
       <section id="faq" class="scroll-mt-24 rounded-2xl border border-ink-100 bg-white p-6 shadow-card"><h2 class="text-lg font-extrabold text-ink-900">자주 묻는 질문</h2><div class="mt-2">{faq_html}</div></section>
       {('<section class="app-hide rounded-2xl border border-ink-100 bg-ink-50 p-6"><h2 class="flex items-center gap-2 text-lg font-extrabold text-ink-900"><i data-lucide="shopping-cart" class="h-5 w-5 text-brand-600"></i>관련 제품 찾기</h2><p class="mt-1 text-sm text-ink-500">쇼핑몰 검색 결과로 이동합니다. 함량·형태는 제품 라벨을 확인하세요.</p><div class="mt-4 grid gap-3">' + shop_html + '</div><p class="mt-3 text-[11px] text-ink-400">이 사이트는 쿠팡 파트너스 및 링크프라이스 등 제휴 마케팅 활동의 일환으로, 구매 시 일정액의 수수료를 제공받을 수 있습니다.</p></section>') if shop_html else ''}
+      {related_compares_section(cmps_html, "이 가이드의 성분을 비슷한 성분·다른 형태와 식약처 인정 기능성·권장량·먹는 시간 기준으로 나란히 비교한 글입니다.")}
       {('<section><h2 class="text-2xl font-extrabold tracking-tight text-ink-900">함께 보면 좋은 가이드</h2><div class="mt-4 grid gap-4 md:grid-cols-3">' + related_html + '</div></section>') if related_html else ''}
     </div>
   </main>
@@ -1264,6 +1311,7 @@ def render_function(entry: dict, model: dict, core: dict, cfg: dict, guides_type
                    f'<p class="mt-2 text-xs text-ink-500">전체 성분은 <a class="font-bold text-brand-700 underline" href="../timing-chart.html">영양제 복용 시간표</a>에서 보세요.</p></section>') if ings else ""
 
     guides_html = (f'<section class="scroll-mt-24"><h2 class="text-2xl font-extrabold tracking-tight text-ink-900">관련 가이드</h2><p class="mt-1 text-sm text-ink-500">어떤 성분을 어떻게 조합할지는 가이드에서 설명합니다.</p><div class="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">{"".join(guide_card(g, guides_types, "../") for g in rel_guides)}</div></section>') if rel_guides else ""
+    cmps_html = compare_cards_html(related_compares(core, [i["id"] if isinstance(i, dict) else i for i in ings]), "../")   # 관련 비교 글 (core["compares"] 가 없으면 빈 문자열)
     grp = groups.get(it["group"], {})
     body = f"""
 <body data-page="ingredients" data-path="{path}" class="min-h-screen antialiased">
@@ -1280,7 +1328,7 @@ def render_function(entry: dict, model: dict, core: dict, cfg: dict, guides_type
         <li class="inline-flex items-center gap-1.5"><i data-lucide="microscope" class="h-4 w-4 text-brand-600"></i>개별인정 원료 <strong>{n_m}종</strong></li>
         <li class="inline-flex items-center gap-1.5"><i data-lucide="package" class="h-4 w-4 text-brand-600"></i>신고 제품 <strong>{n_p:,}건</strong></li>
       </ul>
-      <div class="mt-5 flex flex-wrap gap-2"><a href="#ingredients" class="chip">성분</a><a href="#materials" class="chip">인정 원료</a><a href="#products" class="chip">신고 제품</a>{'<a href="#guides" class="chip">가이드</a>' if rel_guides else ""}<a href="#faq" class="chip">자주 묻는 질문</a></div>
+      <div class="mt-5 flex flex-wrap gap-2"><a href="#ingredients" class="chip">성분</a><a href="#materials" class="chip">인정 원료</a><a href="#products" class="chip">신고 제품</a>{'<a href="#compares" class="chip">비교 글</a>' if cmps_html else ""}{'<a href="#guides" class="chip">가이드</a>' if rel_guides else ""}<a href="#faq" class="chip">자주 묻는 질문</a></div>
     </div></section>
     <div class="mx-auto max-w-7xl space-y-14 px-4 py-12 sm:px-6">
       <section id="ingredients" class="scroll-mt-24"><h2 class="text-2xl font-extrabold tracking-tight text-ink-900">이 기능성이 인정된 성분 {n_i}종</h2><p class="mt-1 text-sm text-ink-500">성분 사전에 있는 성분 가운데 식약처 인정 기능성 내용에 이 문구가 들어간 성분입니다. 성분을 누르면 효능·권장량·궁합·먹는 시간을 봅니다.</p><div class="mt-4">{ings_html}</div></section>
@@ -1288,6 +1336,7 @@ def render_function(entry: dict, model: dict, core: dict, cfg: dict, guides_type
       <section id="products" class="scroll-mt-24"><h2 class="text-2xl font-extrabold tracking-tight text-ink-900">이 기능성을 표시한 신고 제품</h2><div class="mt-2">{prods_html}</div></section>
       {pairs_html}
       {timing_html}
+      {related_compares_section(cmps_html, "이 기능성의 성분을 비슷한 성분·다른 형태와 나란히 비교한 글입니다.")}
       {('<div id="guides" class="scroll-mt-24">' + guides_html + '</div>') if guides_html else ""}
       {faq_html}
       <section class="rounded-3xl bg-cream-200 p-6 sm:p-8"><h2 class="text-lg font-extrabold text-ink-900">함께 보면 좋은 페이지</h2><ul class="list-dot mt-3 text-sm text-ink-700"><li><a class="font-bold text-brand-700 underline" href="../{FUNCTIONS_HUB}">기능성별 영양제 전체 목록</a></li><li><a class="font-bold text-brand-700 underline" href="../finder.html">나에게 맞는 영양제 찾기</a> — 고민과 상황으로 성분 추천</li><li><a class="font-bold text-brand-700 underline" href="../compatibility-chart.html">영양제 궁합표</a> · <a class="font-bold text-brand-700 underline" href="../timing-chart.html">영양제 복용 시간표</a></li><li><a class="font-bold text-brand-700 underline" href="../guide/with-medication.html">약과 영양제 가이드</a></li></ul></section>
@@ -1747,8 +1796,14 @@ def validate_form_compares(data: dict, valid_ids: set[str], guide_slugs: set[str
     log.info("제형·형태 비교 데이터 검증 통과: %d편", len(seen))
 
 
+def form_match_text(p: dict) -> str:
+    """제형·형태 비교 정규식이 보는 문자열: '제품명 | 원재료명 | 제형:<식약처 신고 제형>'(액상·정·캡슐·분말·젤리·환·과립…).
+    정규식이 '제형:(액상|겔)' 처럼 신고 제형으로도 형태를 가를 수 있다(홍삼 농축액·유산균 분말 등). 이름·원재료명에는 '제형:' 글자가 없어 기존 정규식과 충돌하지 않는다."""
+    return f"{p.get('name') or ''} | {p.get('rawMaterials') or ''} | 제형:{(p.get('shape') or '').strip()}"
+
+
 def form_compare_model(data: dict, core: dict, products: list[dict], guides: list[dict], glossary: dict | None, weight=None) -> list[dict]:
-    """형태 비교마다 기준 성분의 신고 제품(상세 조각)을 제품명+원재료명 정규식으로 형태별로 나누고(rest = 어느 형태에도 안 걸린 나머지; 한 제품이 여러 형태에 들어갈 수 있음),
+    """형태 비교마다 기준 성분의 신고 제품(상세 조각)을 제품명+원재료명+신고 제형(form_match_text 의 '제형:액상' 토큰) 정규식으로 형태별로 나누고(rest = 어느 형태에도 안 걸린 나머지; 한 제품이 여러 형태에 들어갈 수 있음),
     형태별 제품 수·대표 제품(브랜드 가중치 → 신고일 순, 같은 이름은 한 번)·관련 가이드·용어를 모은다. weight(name, company) 는 brand_priority 의 가중치."""
     by_id = core["by_id"]
     guide_by_slug = {g["slug"]: g for g in guides}
@@ -1771,7 +1826,7 @@ def form_compare_model(data: dict, core: dict, products: list[dict], guides: lis
                 forms.append({"f": f, "hits": None})
                 continue
             rx = re.compile(f["match"], re.I)
-            hits = [p for p in base if rx.search(f"{p.get('name') or ''} | {p.get('rawMaterials') or ''}")]
+            hits = [p for p in base if rx.search(form_match_text(p))]
             matched.update(p["id"] for p in hits)
             forms.append({"f": f, "hits": hits})
         for fm in forms:
