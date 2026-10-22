@@ -164,5 +164,15 @@ class FetchRxTests(unittest.TestCase):
         self.assertNotIn("nsaid", {r["id"] for r in rules})
 
 
+
+class RxRuleLoadTests(unittest.TestCase):
+    def test_load_rx_rules_includes_new_prescription_rules(self):
+        ids = {r["id"] for r in F.load_rx_rules()}
+        self.assertTrue({"statin", "antihypertensive", "antidepressant", "anticonvulsant"} <= ids)
+        import drug_ingr_ko as K
+        for r in F.load_rx_rules():
+            for term in r["ingr"]:
+                self.assertTrue(any(k.startswith(term.lower()) or term.lower().startswith(k) for k in K.KO), f"KO 사전에 없는 주성분 {term}")
+
 if __name__ == "__main__":
     unittest.main()

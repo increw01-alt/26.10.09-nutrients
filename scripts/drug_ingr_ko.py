@@ -201,6 +201,15 @@ KO: dict[str, str] = {
     "sitagliptin": "시타글립틴", "linagliptin": "리나글립틴", "gemigliptin": "제미글립틴", "evogliptin": "에보글립틴", "teneligliptin": "테네리글립틴", "vildagliptin": "빌다글립틴",
     "saxagliptin": "삭사글립틴", "anagliptin": "아나글립틴", "alogliptin": "알로글립틴", "dapagliflozin": "다파글리플로진", "empagliflozin": "엠파글리플로진",
     "ertugliflozin": "에르투글리플로진", "ipragliflozin": "이프라글리플로진", "glimepiride": "글리메피리드", "pioglitazone": "피오글리타존",
+    # 혈압약(ACE 억제제·칼슘채널차단제·베타차단제)·항우울제(SSRI·SNRI 등)·항경련제 — 약별 영양제 가이드 규칙 24개 (10-22)
+    "ramipril": "라미프릴", "enalapril": "에날라프릴", "perindopril": "페린도프릴", "captopril": "캅토프릴", "lisinopril": "리시노프릴", "nifedipine": "니페디핀",
+    "felodipine": "펠로디핀", "lercanidipine": "레르카니디핀", "diltiazem": "딜티아젬", "verapamil": "베라파밀", "bisoprolol": "비소프롤롤", "carvedilol": "카르베딜롤",
+    "nebivolol": "네비볼롤", "atenolol": "아테놀올", "propranolol": "프로프라놀올", "metoprolol": "메토프롤롤", "escitalopram": "에스시탈로프람", "citalopram": "시탈로프람",
+    "sertraline": "설트랄린", "paroxetine": "파록세틴", "fluoxetine": "플루옥세틴", "fluvoxamine": "플루복사민", "venlafaxine": "벤라팍신", "desvenlafaxine": "데스벤라팍신",
+    "duloxetine": "둘록세틴", "vortioxetine": "보티옥세틴", "mirtazapine": "미르타자핀", "trazodone": "트라조돈", "bupropion": "부프로피온", "amitriptyline": "아미트립틸린",
+    "nortriptyline": "노르트립틸린", "valproic": "발프로산", "valproate": "발프로산", "divalproex": "디발프로엑스", "carbamazepine": "카르바마제핀", "oxcarbazepine": "옥스카르바제핀",
+    "phenytoin": "페니토인", "lamotrigine": "라모트리진", "levetiracetam": "레비티라세탐", "topiramate": "토피라메이트", "phenobarbital": "페노바르비탈", "gabapentin": "가바펜틴",
+    "pregabalin": "프레가발린", "zonisamide": "조니사미드", "lacosamide": "라코사미드",
     "cilostazol": "실로스타졸", "clopidogrel": "클로피도그렐", "spironolactone": "스피로노락톤", "amiloride": "아밀로라이드", "triamterene": "트리암테렌", "eplerenone": "에플레레논",
     "prednisone": "프레드니손", "triamcinolone": "트리암시놀론", "budesonide": "부데소니드",
 }

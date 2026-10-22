@@ -550,6 +550,22 @@ class DrugGuideTests(unittest.TestCase):
         cls.by_rule = {r["id"]: r for r in cls.rules}
         cls.cfg = {"name": "테스트", "url": "https://example.test"}
 
+    def test_new_prescription_rules_grounded_in_dictionary(self):
+        """혈압약·항우울제·항경련제 규칙(10-22): 성분 사전 drugCautions 근거 성분이 들어 있고 가이드 본문은 처방약(rx)."""
+        by = {r["id"]: r for r in self.rules}
+        self.assertTrue({"antihypertensive", "antidepressant", "anticonvulsant"} <= set(by))
+        self.assertTrue({"potassium", "coq10", "garlic", "omega-3", "arginine", "theanine", "rhodiola", "red-ginseng"} <= {c["id"] for c in by["antihypertensive"]["caution"]})
+        self.assertTrue({"rhodiola", "garcinia", "theanine", "ginkgo"} <= {c["id"] for c in by["antidepressant"]["caution"]})
+        self.assertTrue({"glutamine", "vitamin-b6", "ginkgo"} <= {c["id"] for c in by["anticonvulsant"]["caution"]})
+        self.assertTrue({"vitamin-d", "folate", "biotin"} <= {g["id"] for g in by["anticonvulsant"]["good"]})
+        guides = {g["id"]: g for g in B.read_json(B.DATA_DIR / "drug-guides.json")["items"]}
+        for rid in ("antihypertensive", "antidepressant", "anticonvulsant"):
+            self.assertTrue(guides[rid].get("rx") and len(guides[rid]["drugs"]) >= 3 and len(guides[rid]["faq"]) >= 3, rid)
+        hit = B.drug_rule_hits(by["antihypertensive"], {"name": "로제핀정", "ingrEn": ["Amlodipine Besylate", "Rosuvastatin Calcium", "Ezetimibe"]})
+        self.assertTrue(hit)   # 암로디핀 복합제(허가 목록)도 혈압약 규칙에 걸린다
+        self.assertFalse(B.drug_rule_hits(by["anticonvulsant"], {"name": "타이레놀정", "ingrEn": ["Acetaminophen"]}))
+        self.assertTrue(B.drug_rule_hits(by["anticonvulsant"], {"name": "오르필서방정", "ingrEn": ["Sodium Valproate"]}))
+
     def test_validate_real_data_and_rejects_bad(self):
         import copy
         B.validate_drug_guides(self.data, self.rules, set(self.core["by_id"]), self.slugs)
