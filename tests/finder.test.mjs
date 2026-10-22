@@ -116,3 +116,16 @@ test("기억력 고민 → 기억력 가이드와 핵심 성분(오메가3·포�
   assert.ok(r.guides.map((g) => g.slug).includes("memory"));
   for (const id of ["omega-3", "phosphatidylserine"]) assert.ok(r.recommended.slice(0, 5).includes(id), id);
 });
+
+test("뼈 고민 → 뼈 건강 가이드와 칼슘·비타민D 상위; 혈압 고민 + 혈압약 → 코엔자임Q10 추천·칼륨 제외; 신장질환 → 칼륨·마그네슘 제외", () => {
+  const b = F.score({ age: ["50s"], sex: ["f"], concern: ["bone"], meds: ["none"] }, data, guides, core);
+  assert.ok(b.guides.map((g) => g.slug).includes("bone-health"));
+  for (const id of ["calcium", "vitamin-d"]) assert.ok(b.recommended.slice(0, 5).includes(id), id);
+  const p = F.score({ age: ["50s"], sex: ["m"], concern: ["blood-pressure"], meds: ["hypertension"] }, data, guides, core);
+  const slugs = p.guides.map((g) => g.slug);
+  assert.ok(slugs.includes("blood-pressure") && slugs.includes("hypertension"));
+  assert.ok(p.recommended.includes("coq10") && !p.recommended.includes("potassium") && p.avoided.includes("potassium"));
+  const k = F.score({ age: ["50s"], sex: ["m"], concern: ["blood-pressure", "sleep"], meds: ["kidney"] }, data, guides, core);
+  for (const id of ["potassium", "magnesium"]) assert.ok(!k.recommended.includes(id) && !k.ingredients.some((x) => x.id === id), id);
+  assert.ok(k.flags.includes("kidney"));
+});

@@ -199,7 +199,10 @@ class FinderBuildTests(unittest.TestCase):
         self.assertIn("bleeding", rule["flags"])
         surgery = next(r for r in self.data["rules"] if (r.get("if") or {}).get("meds") == ["surgery"])
         self.assertTrue({"omega-3", "ginkgo", "garlic", "vitamin-e", "red-ginseng", "curcumin"} <= set(surgery["avoid"]))
-        self.assertIn("memory", {o["id"] for q in self.data["questions"] if q["id"] == "concern" for o in q["options"]})
+        self.assertTrue({"memory", "bone", "blood-pressure"} <= {o["id"] for q in self.data["questions"] if q["id"] == "concern" for o in q["options"]})
+        by_meds = {tuple((r.get("if") or {}).get("meds") or ()): r for r in self.data["rules"] if "meds" in (r.get("if") or {})}
+        self.assertIn("potassium", by_meds[("hypertension",)]["avoid"])   # 혈압약(ACE 억제제·ARB·칼륨보존 이뇨제) — 칼륨 보충제 제외
+        self.assertTrue({"potassium", "magnesium", "vitamin-a"} <= set(by_meds[("kidney",)]["avoid"]))
 
     def test_render_has_every_question_and_option_statically(self):
         html = B.render_finder(self.data, self.core, self.cfg)

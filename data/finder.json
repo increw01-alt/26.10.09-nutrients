@@ -23,7 +23,7 @@
         { "id": "sleep", "label": "수면" }, { "id": "immunity", "label": "면역·잔병치레" }, { "id": "skin", "label": "피부" }, { "id": "gut", "label": "장 건강·배변" },
         { "id": "diet", "label": "체중·다이어트" }, { "id": "blood-sugar", "label": "혈당" }, { "id": "cholesterol", "label": "콜레스테롤" }, { "id": "stress", "label": "스트레스·긴장" },
         { "id": "hair", "label": "탈모·모발" }, { "id": "circulation", "label": "혈행·손발 저림" }, { "id": "menopause", "label": "갱년기" }, { "id": "anemia", "label": "빈혈·어지러움" },
-        { "id": "exercise", "label": "운동·근육" }, { "id": "dental", "label": "치아·잇몸" }, { "id": "pms", "label": "생리 전 불편" }, { "id": "prostate", "label": "전립선" }, { "id": "memory", "label": "기억력·건망증" },
+        { "id": "exercise", "label": "운동·근육" }, { "id": "dental", "label": "치아·잇몸" }, { "id": "pms", "label": "생리 전 불편" }, { "id": "prostate", "label": "전립선" }, { "id": "memory", "label": "기억력·건망증" }, { "id": "bone", "label": "뼈·골다공증 걱정" }, { "id": "blood-pressure", "label": "혈압" },
         { "id": "none", "label": "특별히 없음", "exclusive": true }
       ]
     },
@@ -86,6 +86,9 @@
     { "if": { "concern": ["pms"] }, "guides": ["pms"], "weight": 3 },
     { "if": { "concern": ["prostate"] }, "guides": ["prostate"], "weight": 3 },
     { "if": { "concern": ["memory"] }, "guides": ["memory"], "weight": 3 },
+    { "if": { "concern": ["bone"] }, "guides": ["bone-health"], "weight": 3 },
+    { "if": { "concern": ["bone"] }, "guides": ["calcium-guide"], "weight": 1 },
+    { "if": { "concern": ["blood-pressure"] }, "guides": ["blood-pressure"], "weight": 3 },
 
     { "if": { "life": ["office"] }, "guides": ["office-workers"], "weight": 2 },
     { "if": { "life": ["shift"] }, "guides": ["shift-workers"], "weight": 2 },
@@ -98,7 +101,7 @@
     { "if": { "life": ["breastfeeding"] }, "guides": ["breastfeeding"], "weight": 4, "flags": ["pregnancy"], "restrictTo": ["breastfeeding"] },
     { "if": { "life": ["postpartum"] }, "guides": ["postpartum"], "weight": 3, "flags": ["pregnancy"] },
 
-    { "if": { "meds": ["hypertension"] }, "guides": ["hypertension"], "weight": 2, "flags": ["meds"] },
+    { "if": { "meds": ["hypertension"] }, "guides": ["hypertension"], "weight": 2, "flags": ["meds"], "avoid": ["potassium"] },
     { "if": { "meds": ["diabetes"] }, "guides": ["diabetes-meds"], "weight": 2, "flags": ["meds"] },
     { "if": { "meds": ["thyroid"] }, "guides": ["thyroid"], "weight": 2, "flags": ["meds"] },
     { "if": { "meds": ["nsaid"] }, "guides": ["nsaid-users"], "weight": 2, "flags": ["meds"] },
@@ -112,7 +115,7 @@
     { "if": { "meds": ["hair-loss"] }, "guides": ["hair-loss-meds"], "weight": 2, "flags": ["meds"] },
     { "if": { "meds": ["weight-loss"] }, "guides": ["weight-loss-drugs"], "weight": 2, "flags": ["meds"] },
     { "if": { "meds": ["cancer"] }, "guides": ["cancer-treatment"], "weight": 3, "flags": ["meds", "cancer"] },
-    { "if": { "meds": ["kidney"] }, "guides": ["kidney", "dialysis"], "weight": 3, "flags": ["meds", "kidney"] },
+    { "if": { "meds": ["kidney"] }, "guides": ["kidney", "dialysis"], "weight": 3, "flags": ["meds", "kidney"], "avoid": ["potassium", "magnesium", "vitamin-a"] },
     { "if": { "meds": ["liver-disease"] }, "guides": ["liver-disease"], "weight": 3, "flags": ["meds"] },
     { "if": { "meds": ["surgery"] }, "guides": ["surgery"], "weight": 3, "flags": ["meds", "surgery"], "avoid": ["bilberry", "cla", "coleus-forskohlii", "curcumin", "cynanchum", "garlic", "ginkgo", "ginseng", "gla", "green-lipped-mussel", "msm", "nattokinase", "omega-3", "policosanol", "pycnogenol", "red-ginseng", "sophora", "vitamin-e"] },
     { "if": { "meds": ["anticoagulant"] }, "guides": ["with-medication"], "weight": 3, "flags": ["meds", "bleeding"], "avoid": ["bilberry", "chitosan", "chlorella", "chondroitin", "cla", "coleus-forskohlii", "coq10", "curcumin", "cynanchum", "garlic", "ginkgo", "ginseng", "gla", "glucosamine", "green-lipped-mussel", "l-carnitine", "msm", "nattokinase", "omega-3", "policosanol", "pycnogenol", "red-ginseng", "sophora", "vitamin-a", "vitamin-e", "vitamin-k"] }
