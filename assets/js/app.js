@@ -1,4 +1,4 @@
-/* 앱 모드 브리지 — Capacitor 네이티브(안드로이드 앱) 안에서 열렸는지 감지하고, 앱일 때만 Capacitor 런타임·플러그인 복사본
+/* 앱 모드 브리지 — Capacitor 네이티브(안드로이드·iOS 앱) 안에서 열렸는지 감지하고, 앱일 때만 Capacitor 런타임·플러그인 복사본
    (assets/js/vendor/capacitor/*.js, npm 에서 `npm run vendor:cap` 으로 복사)을 동적으로 싣는다. 웹 방문자에게는 이 파일 하나만 더해진다.
    로컬 확인: localhost 에서 주소에 ?app=1 을 붙이면 localStorage appDev=1 로 앱을 흉내 낸다(dev 모드, 런타임은 싣지 않음), ?app=0 으로 끈다. 운영 도메인에서는 무시.
    다른 스크립트는 window.AppBridge.isNative() 로 앱 모드를 묻고, 플러그인은 AppBridge.ready() 뒤 AppBridge.plugin("LocalNotifications") 로 얻는다. */

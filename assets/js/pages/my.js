@@ -46,7 +46,7 @@
     if (!ln) { input.checked = false; ui.notice = "휴대폰 알림은 앱에서만 받을 수 있어요."; render(); return; }
     Promise.resolve(ln.requestPermissions()).then(function (r) {
       if (r && r.display === "granted") { ui.notice = ""; commit(S.setSetting(state, "remindersOn", true)); }
-      else { ui.notice = "알림 권한이 꺼져 있어요. 휴대폰 설정 → 앱 → 영양제.kr → 알림에서 켜 주세요."; commit(S.setSetting(state, "remindersOn", false)); }
+      else { ui.notice = "알림 권한이 꺼져 있어요. 휴대폰 설정 → 알림(또는 앱) → 영양제.kr 에서 켜 주세요."; commit(S.setSetting(state, "remindersOn", false)); }
     }).catch(function () { ui.notice = "알림을 켜지 못했어요. 잠시 뒤 다시 시도해 주세요."; commit(S.setSetting(state, "remindersOn", false)); });
   }
   /* 알림의 버튼(먹었어요·30분 뒤 다시)이나 본체를 눌렀을 때. app.js 가 모든 페이지에서 받아 이 페이지면 DOM 이벤트로, 다른 페이지면

@@ -116,6 +116,7 @@ python scripts/build_store_assets.py --ios-phone "C:/Users/OK/Pictures/ios-phone
 - **"Your team has no devices from which to generate a provisioning profile" + "No profiles … iOS App Development"**(10-21 첫 실행에서 발생): 자동 서명으로 아카이브하면 Xcode 가 개발용 프로파일을 만들려 한다(배포용 ID 를 직접 지정하면 "conflicting provisioning settings"). 워크플로는 아카이브를 서명 없이 만들고 IPA 내보내기 단계의 자동 서명(App Store 프로파일, 기기 불필요)으로 서명하도록 고쳤고 10-21 세 번째 실행(run #8)에서 TestFlight 업로드까지 성공했다. 그래도 같은 오류면 developer.apple.com → Devices → + 로 아이폰을 등록한다(UDID 는 윈도우의 'Apple Devices' 앱에서 아이폰을 연결하고 기기 정보의 일련번호를 클릭하면 보인다).
 - **"No profiles for 'kr.yeongyangje.app' were found" / "doesn't include signing certificate"**: 4절의 App ID 등록 확인 뒤 다시 실행(자동 서명이 프로파일을 만든다).
 - **altool "no suitable application records were found"**: 4절 2번의 App Store Connect 앱 레코드가 없음.
+- **altool 자체가 거부될 때**(애플이 업로드 도구를 바꾸는 경우): `release-ios.yml` 의 ExportOptions 에서 `destination` 을 `upload` 로 바꾸면 `xcodebuild -exportArchive` 가 같은 API 키 플래그로 직접 올린다(IPA 아티팩트는 안 남으므로 필요하면 `export` 실행을 따로). 또는 `xcrun iTMSTransporter` 로 전환.
 - **"ITMS-90xxx Missing Privacy Manifest"**: `build-ios` 의 번들 검사가 `PrivacyInfo.xcprivacy` 포함을 확인하므로 보통 나지 않음. 나면 `app/ios/App/App.xcodeproj/project.pbxproj` 의 참조를 확인.
 - **지침 4.2(최소 기능) 거절**: 7절 메모를 보강하고 알림·복용 기록·오프라인 화면 캡처를 첨부해 회신. 그래도 거절되면 앱 전용 기능을 더하는 쪽으로 계획.
 - **같은 빌드 번호 거부**: 실행을 Re-run 하지 말고 새로 Run workflow(실행 번호가 커진다).
