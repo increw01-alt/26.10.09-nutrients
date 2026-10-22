@@ -708,8 +708,10 @@ class AppSafeAreaTests(unittest.TestCase):
         self.assertTrue(metas)
         for line in metas:
             self.assertIn("viewport-fit=cover", line)
-        for page in ("index.html", "my.html"):
-            self.assertIn("viewport-fit=cover", (B.ROOT / page).read_text(encoding="utf-8"))
+        for page in sorted(B.ROOT.glob("*.html")):   # 직접 만든 정적 페이지(궁합 체크·약관·오프라인 안내 등)도 모두 — 빠지면 그 페이지에서만 상태바가 헤더를 덮는다
+            html = page.read_text(encoding="utf-8")
+            if 'name="viewport"' in html:
+                self.assertIn("viewport-fit=cover", html, page.name)
 
     def test_app_mode_pads_header_by_safe_area(self):
         css = (B.ROOT / "assets/css/style.css").read_text(encoding="utf-8")
