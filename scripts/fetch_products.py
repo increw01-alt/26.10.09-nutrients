@@ -92,6 +92,12 @@ HERBAL_RULES: dict[str, tuple[list[str], list[str]]] = {
     "lutein": (["루테인", "지아잔틴", "마리골드"], ["황반색소밀도"]),
     "coq10": (["코엔자임q10", "코엔자임 q10", "코큐텐", "유비퀴놀", "유비퀴논", "coq10"], []),
     "milk-thistle": (["밀크씨슬", "실리마린", "밀크시슬", "엉겅퀴"], []),
+    "lycopene": (["리코펜", "라이코펜", "토마토추출물", "lycopene"], []),
+    "bilberry": (["빌베리", "bilberry"], []),
+    "glutamine": (["re:글루타민(?!산)", "l-glutamine"], ["신체 저항능력"]),   # 'L-글루타민산 유래 GABA' 제품은 제외
+    "nattokinase": (["나토키나제", "낫토키나제", "나토배양물", "nattokinase"], []),
+    "hovenia": (["헛개"], []),
+    "lactoferrin": (["락토페린", "lactoferrin"], []),
     "red-ginseng": (["홍삼"], ["혈소판 응집억제"]),
     "glucosamine": (["글루코사민"], []),
     "msm": (["msm", "optimsm", "엠에스엠", "디메틸설폰", "식이유황", "메틸설포닐메탄"], []),   # 'msm' 은 단어 경계 검사 → OptiMSM·엠에스엠 표기는 따로
@@ -158,7 +164,9 @@ _SHORT_ASCII_RE = re.compile(r"^[a-z0-9\-]{1,4}$")
 
 
 def kw_in(k: str, text: str) -> bool:
-    """키워드 포함 검사. 짧은 영문 약어(epa·dha·hca·msm·rtg 등)는 단어 경계를 요구해 Hepazone·Ashwagandha·Healthcare 같은 오탐을 막는다."""
+    """키워드 포함 검사. 짧은 영문 약어(epa·dha·hca·msm·rtg 등)는 단어 경계를 요구해 Hepazone·Ashwagandha·Healthcare 같은 오탐을 막는다. 're:' 로 시작하면 정규식."""
+    if k.startswith("re:"):   # 정규식 키워드 — 뒤따르는 글자를 제한할 때('글루타민(?!산)')
+        return re.search(k[3:], text) is not None
     if _SHORT_ASCII_RE.match(k):
         return re.search(r"(?<![a-z])" + re.escape(k) + r"(?![a-z])", text) is not None
     if k[-1].isdigit():   # '비타민b1' 이 '비타민b12' 에, 'b6' 가 'b60' 에 걸리지 않게 뒤에 숫자가 이어지면 제외
