@@ -114,6 +114,17 @@
     var out = clone(state); out.settings.times[slot] = hhmm; return out;
   }
 
+  /* 알림 시각 선택란(시·분 드롭다운)용 — 저장값을 시·분으로 풀고 목록(시 0~23, 분 5분 단위)을 준다. 5분 단위가 아닌 저장값(옛 시간 입력란)은 분 목록에 끼워 선택이 유지되게 */
+  var MINUTE_STEP = 5;
+  function timeChoices(hhmm) {
+    var v = TIME_RE.test(String(hhmm || "")) ? String(hhmm) : "08:00";
+    var hour = v.slice(0, 2), minute = v.slice(3, 5), hours = [], minutes = [], m;
+    for (m = 0; m < 24; m++) hours.push(pad2(m));
+    for (m = 0; m < 60; m += MINUTE_STEP) minutes.push(pad2(m));
+    if (minutes.indexOf(minute) < 0) { minutes.push(minute); minutes.sort(); }
+    return { hour: hour, minute: minute, hours: hours, minutes: minutes };
+  }
+
   function setSetting(state, key, value) {
     if (SETTING_KEYS.indexOf(key) < 0) return state;
     var out = clone(state); out.settings[key] = value; return out;
@@ -259,7 +270,7 @@
     KEY: KEY, SLOT_ORDER: SLOT_ORDER, SLOT_LABEL: SLOT_LABEL, DEFAULT_TIMES: DEFAULT_TIMES,
     empty: empty, load: load, save: save,
     addItems: addItems, removeItem: removeItem, setSlot: setSlot, overrides: overrides,
-    setTime: setTime, setSetting: setSetting, setSlotOn: setSlotOn, pruneUnknown: pruneUnknown,
+    setTime: setTime, timeChoices: timeChoices, setSetting: setSetting, setSlotOn: setSlotOn, pruneUnknown: pruneUnknown,
     dateKey: dateKey, addDays: addDays, lastDays: lastDays, markDue: markDue, toggleDone: toggleDone, dayStats: dayStats, streak: streak, clearLog: clearLog,
     exportCode: exportCode, importCode: importCode, merge: merge, exportUrl: exportUrl
   };

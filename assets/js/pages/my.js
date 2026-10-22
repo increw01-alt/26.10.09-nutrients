@@ -58,7 +58,8 @@
       var slot = r.snooze, s = schedule().slots.filter(function (x) { return x.key === slot; })[0];
       var body = s ? s.items.map(function (it) { return D.shortName(it); }).join(" · ") : "";
       var ln = LN();
-      if (ln) Promise.resolve(ln.schedule({ notifications: [window.Reminders.snoozeNotification(slot, Date.now(), { shortName: D.shortName }, body, state.settings.logEnabled === true)] })).catch(function () { /* 무시 */ });
+      if (ln) window.Reminders.scheduleSnooze(ln, window.Reminders.snoozeNotification(slot, Date.now(), { shortName: D.shortName }, body, state.settings.logEnabled === true))
+        .then(function () { toast("30분 뒤에 다시 알려 드릴게요"); }).catch(function () { toast("30분 뒤 알림을 예약하지 못했어요"); });
     }
     if (r.state !== state) commit(r.state); else render();
     if (r.open) window.scrollTo(0, 0);
@@ -66,11 +67,19 @@
   function initAppReminders() {
     if (!isApp() || !window.Reminders) return;
     window.addEventListener("yj:notification-action", function (e) { e.preventDefault(); onNotificationAction(e.detail); });   // preventDefault = "받았음" (app.js 가 보관하지 않게)
+    var ln = LN();
+    if (ln) {
+      window.Reminders.ensureChannel(ln);   // 안드로이드 채널('복용 알림') — 예약(sync·30분 뒤)도 각자 확인하지만, 열 때 만들어 두면 설정 화면에 바로 보인다
+      if (ln.registerActionTypes) Promise.resolve(ln.registerActionTypes(window.Reminders.actionTypes())).catch(function () { /* 무시 */ });
+      /* 앱을 열었거나(이 페이지가 앱의 홈) 백그라운드에서 돌아오면 알림창에 남은 우리 알림을 정리 — 같은 번호가 남아 있으면 다음 알림이 소리 없이 갱신된다 */
+      var clear = function () { window.Reminders.clearDelivered(ln).catch(function () { /* 무시 */ }); };
+      clear();
+      document.addEventListener("visibilitychange", function () { if (document.visibilityState === "visible") clear(); });
+    }
     var pending = null;
     try { pending = JSON.parse(sessionStorage.getItem("yj.pendingAction") || "null"); sessionStorage.removeItem("yj.pendingAction"); } catch (e) { /* 무시 */ }
     if (pending) onNotificationAction(pending);
-    var ln = LN(); if (!ln) return;
-    if (ln.registerActionTypes) Promise.resolve(ln.registerActionTypes(window.Reminders.actionTypes())).catch(function () { /* 무시 */ });
+    if (!ln) return;
     if (state.settings.remindersOn) scheduleSync();   // 시간표가 바뀌어 있을 수 있으니 열 때 한 번 맞춘다
   }
   function toast(msg) {
@@ -145,9 +154,16 @@
   }
   function sectionReminders(sched) {
     if (!state.items.length) return "";
+    /* 시각은 시·분 드롭다운 두 개 — 브라우저 시간 입력란은 안드로이드에서 시계 다이얼이 떠 고르기 어렵다. 값은 그대로 "HH:MM" */
+    var sel = function (cls, list, cur, unit, aria) {
+      return '<select class="' + cls + '" aria-label="' + esc(aria) + '">' + list.map(function (v) {
+        return '<option value="' + v + '"' + (v === cur ? " selected" : "") + ">" + (unit === "시" ? String(+v) : v) + unit + "</option>";
+      }).join("") + "</select>";
+    };
     var rows = sched.slots.map(function (s) {
+      var tc = S.timeChoices(state.settings.times[s.key]);
       return '<div class="my-row"><div class="my-row-main"><b>' + esc(label(s.key)) + '</b><small>' + esc(s.items.map(function (it) { return D.shortName(it); }).join(" · ")) + '</small></div>' +
-        '<input type="time" class="my-time" data-slot="' + s.key + '" value="' + esc(state.settings.times[s.key]) + '" aria-label="' + esc(label(s.key)) + ' 알림 시각">' +
+        '<span class="my-time" data-slot="' + s.key + '">' + sel("my-hour", tc.hours, tc.hour, "시", label(s.key) + " 알림 시") + sel("my-min", tc.minutes, tc.minute, "분", label(s.key) + " 알림 분") + "</span>" +
         toggle("data-slot-on", s.key, state.settings.slotOn[s.key], false, label(s.key) + " 알림") + "</div>";
     }).join("");
     return '<section class="my-section" id="my-reminders"><h2><i data-lucide="bell"></i>복용 알림</h2>' +
@@ -304,11 +320,12 @@
     app.addEventListener("change", function (e) {
       var t = e.target;
       if (t.matches("select.my-slot")) commit(S.setSlot(state, t.getAttribute("data-id"), t.value || null));   // "" = 자동
-      else if (t.matches("input.my-time")) {   // 시각은 입력 중 끊기지 않도록 다시 그리지 않고 저장만 하고, 시간표의 시각 표시만 바꾼다
-        var slot = t.getAttribute("data-slot"), next = S.setTime(state, slot, t.value);
-        if (next === state) { t.value = state.settings.times[slot]; return; }
+      else if (t.matches("select.my-hour, select.my-min")) {   // 시·분을 고르면 다시 그리지 않고 저장만 하고, 시간표의 시각 표시만 바꾼다
+        var wrap = t.closest(".my-time"), slot = wrap.getAttribute("data-slot");
+        var value = wrap.querySelector(".my-hour").value + ":" + wrap.querySelector(".my-min").value, next = S.setTime(state, slot, value);
+        if (next === state) { render(); return; }
         state = next; persist();
-        document.querySelectorAll('#my-schedule time[data-slot="' + slot + '"], #my-log [data-time-slot="' + slot + '"]').forEach(function (el) { el.textContent = t.value; });
+        document.querySelectorAll('#my-schedule time[data-slot="' + slot + '"], #my-log [data-time-slot="' + slot + '"]').forEach(function (el) { el.textContent = value; });
         if (isApp()) { window.AppBridge.mirror(JSON.stringify(state)); scheduleSync(); }   // 시각이 바뀌면 알림도 다시 예약
       }
       else if (t.matches("input[data-slot-on]")) commit(S.setSlotOn(state, t.getAttribute("data-slot-on"), t.checked));

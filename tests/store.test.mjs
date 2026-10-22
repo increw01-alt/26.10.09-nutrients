@@ -145,3 +145,16 @@ test("exportUrl: 기본은 my.html, 확장자 없는 운영 주소 형태도 만
   assert.equal(S.exportUrl("YJ1-abc", "https://xn--og5b1hx9c.kr/"), "https://xn--og5b1hx9c.kr/my.html#import=YJ1-abc");
   assert.equal(S.exportUrl("YJ1-abc", "https://xn--og5b1hx9c.kr/", true), "https://xn--og5b1hx9c.kr/my#import=YJ1-abc");
 });
+
+// ---- 알림 시각 시·분 선택 (10-22) ----
+test("timeChoices: 저장된 HH:MM 을 시·분 선택 값과 목록(시 0~23, 분 5분 단위)으로 푼다", () => {
+  const c = S.timeChoices("07:30");
+  assert.equal(c.hour, "07"); assert.equal(c.minute, "30");
+  assert.equal(c.hours.length, 24); assert.equal(c.hours[0], "00"); assert.equal(c.hours[23], "23");
+  assert.deepEqual(c.minutes, ["00", "05", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55"]);
+});
+test("timeChoices: 5분 단위가 아닌 저장값(옛 입력란)은 분 목록에 제자리로 끼워 넣어 선택이 유지된다", () => {
+  const c = S.timeChoices("07:03");
+  assert.equal(c.minute, "03"); assert.deepEqual(c.minutes.slice(0, 3), ["00", "03", "05"]); assert.equal(c.minutes.length, 13);
+});
+test("timeChoices: 깨진 값은 08:00 으로", () => { const c = S.timeChoices("x"); assert.equal(c.hour, "08"); assert.equal(c.minute, "00"); });
