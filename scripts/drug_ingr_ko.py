@@ -202,6 +202,11 @@ KO: dict[str, str] = {
     "saxagliptin": "삭사글립틴", "anagliptin": "아나글립틴", "alogliptin": "알로글립틴", "dapagliflozin": "다파글리플로진", "empagliflozin": "엠파글리플로진",
     "ertugliflozin": "에르투글리플로진", "ipragliflozin": "이프라글리플로진", "glimepiride": "글리메피리드", "pioglitazone": "피오글리타존",
     # 혈압약(ACE 억제제·칼슘채널차단제·베타차단제)·항우울제(SSRI·SNRI 등)·항경련제 — 약별 영양제 가이드 규칙 24개 (10-22)
+    # 당뇨약(설포닐우레아·인슐린)·수면제(Z-약물·벤조디아제핀·멜라토닌)·탈모약·통풍약 — 규칙 28개 (10-22)
+    "gliclazide": "글리클라지드", "glibenclamide": "글리벤클라미드", "glipizide": "글리피지드", "insulin": "인슐린", "repaglinide": "레파글리니드", "zolpidem": "졸피뎀",
+    "zopiclone": "조피클론", "eszopiclone": "에스조피클론", "triazolam": "트리아졸람", "lorazepam": "로라제팜", "alprazolam": "알프라졸람", "diazepam": "디아제팜",
+    "clonazepam": "클로나제팜", "etizolam": "에티졸람", "melatonin": "멜라토닌", "finasteride": "피나스테리드", "dutasteride": "두타스테리드", "allopurinol": "알로푸리놀",
+    "febuxostat": "페북소스타트", "colchicine": "콜히친", "benzbromarone": "벤즈브로마론",
     "ramipril": "라미프릴", "enalapril": "에날라프릴", "perindopril": "페린도프릴", "captopril": "캅토프릴", "lisinopril": "리시노프릴", "nifedipine": "니페디핀",
     "felodipine": "펠로디핀", "lercanidipine": "레르카니디핀", "diltiazem": "딜티아젬", "verapamil": "베라파밀", "bisoprolol": "비소프롤롤", "carvedilol": "카르베딜롤",
     "nebivolol": "네비볼롤", "atenolol": "아테놀올", "propranolol": "프로프라놀올", "metoprolol": "메토프롤롤", "escitalopram": "에스시탈로프람", "citalopram": "시탈로프람",

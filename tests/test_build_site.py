@@ -565,6 +565,16 @@ class DrugGuideTests(unittest.TestCase):
         self.assertTrue(hit)   # 암로디핀 복합제(허가 목록)도 혈압약 규칙에 걸린다
         self.assertFalse(B.drug_rule_hits(by["anticonvulsant"], {"name": "타이레놀정", "ingrEn": ["Acetaminophen"]}))
         self.assertTrue(B.drug_rule_hits(by["anticonvulsant"], {"name": "오르필서방정", "ingrEn": ["Sodium Valproate"]}))
+        # 2차(10-22): 당뇨약·수면제·탈모약·통풍약
+        self.assertTrue({"antidiabetic", "sleep-aid", "hair-loss", "gout"} <= set(by))
+        self.assertTrue({"banaba", "bitter-melon", "chromium", "garcinia", "red-ginseng", "niacin"} <= {c["id"] for c in by["antidiabetic"]["caution"]})
+        self.assertTrue({"theanine", "lactium", "ecklonia"} <= {c["id"] for c in by["sleep-aid"]["caution"]} and by["sleep-aid"].get("oralOnly"))
+        self.assertIn("saw-palmetto", {c["id"] for c in by["hair-loss"]["caution"]})
+        self.assertTrue({"niacin", "molybdenum"} <= {c["id"] for c in by["gout"]["caution"]})
+        self.assertTrue(B.drug_rule_hits(by["sleep-aid"], {"name": "드림굿연질캡슐", "ingrEn": ["Diphenhydramine HCl"], "usage": "취침 전 복용"}))
+        self.assertFalse(B.drug_rule_hits(by["sleep-aid"], {"name": "레스타민코와파우더크림", "ingrEn": ["Diphenhydramine HCl"], "usage": "환부에 바릅니다"}))   # 외용은 제외
+        self.assertFalse(B.drug_rule_hits(by["hair-loss"], {"name": "동성미녹시딜액3%", "ingrEn": ["Minoxidil"]}))   # 외용 미녹시딜은 탈모약 규칙 밖
+        self.assertTrue(B.drug_rule_hits(by["antidiabetic"], {"name": "자누메트정", "ingrEn": ["Sitagliptin", "Metformin HCl"]}) and B.drug_rule_hits(by["metformin"], {"name": "자누메트정", "ingrEn": ["Sitagliptin", "Metformin HCl"]}))
 
     def test_validate_real_data_and_rejects_bad(self):
         import copy
