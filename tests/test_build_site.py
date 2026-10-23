@@ -35,6 +35,10 @@ class PwaTagTests(unittest.TestCase):
 
 
 class ServiceWorkerBuildTests(unittest.TestCase):
+    def test_help_page_is_a_static_page(self):
+        # 사용 설명(help.html)은 색인되는 정적 페이지라 sitemap(STATIC_PAGES)에 들어간다
+        self.assertIn("help.html", B.STATIC_PAGES)
+
     def test_today_home_is_precached(self):
         # 앱 첫 화면(today.html)은 my.html 처럼 오프라인에서도 열려야 한다
         self.assertIn("/today.html", B.precache_urls())

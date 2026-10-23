@@ -46,6 +46,7 @@
             var active = n.key === page;
             return '<a href="' + D.url(n.href) + '" class="flex items-center justify-between rounded-lg px-3 py-3 text-[15px] font-semibold ' + (active ? "bg-brand-50 text-brand-700" : "text-ink-700") + '">' + esc(n.label) + '<i data-lucide="chevron-right" class="h-4 w-4 text-ink-300"></i></a>';
           }).join("") +
+          '<a href="' + D.url("help.html") + '" class="flex items-center justify-between rounded-lg px-3 py-3 text-[15px] font-semibold ' + (page === "help" ? "bg-brand-50 text-brand-700" : "text-ink-700") + '">사용 설명<i data-lucide="chevron-right" class="h-4 w-4 text-ink-300"></i></a>' +
           '<a href="' + D.url("materials.html") + '" class="flex items-center justify-between rounded-lg px-3 py-3 text-[15px] font-semibold text-ink-700">기능성 원료 인정현황<i data-lucide="chevron-right" class="h-4 w-4 text-ink-300"></i></a>' +
         '</nav></div>' +
       '</div>';
@@ -104,6 +105,7 @@
               '<li><a class="hover:text-brand-700" href="' + D.url("glossary.html") + '">영양제 용어 사전</a></li>' +
               '<li><a class="hover:text-brand-700" href="' + D.url("compatibility-chart.html") + '">영양제 궁합표</a></li>' +
               '<li><a class="hover:text-brand-700" href="' + D.url("timing-chart.html") + '">영양제 복용 시간표</a></li>' +
+              '<li><a class="hover:text-brand-700" href="' + D.url("help.html") + '">앱 사용 설명</a></li>' +
               '<li><a class="hover:text-brand-700" href="' + D.url("materials.html") + '">기능성 원료 인정현황</a></li>' +
             '</ul></div>' +
             '<div class="md:col-span-4"><h3 class="text-sm font-bold text-ink-900">데이터 출처</h3><ul class="mt-3 space-y-2 text-sm text-ink-600">' +
