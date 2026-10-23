@@ -5,7 +5,8 @@
   var D = window.Data, S = window.Store, T = window.Today, esc = D.esc;
   var core = null, state = null, tips = [], ltRules = null, splashList = [];
 
-  /* 앱을 처음 열 때(세션당 한 번) 로고와 건강 한 마디를 잠깐 보여 준 뒤 홈을 드러낸다. 탭하면 바로 닫힌다. 로컬 확인은 ?splash=1 */
+  /* 앱을 처음 열 때(세션당 한 번) 로고와 건강 한 마디를 약 4초 보여 준 뒤 홈을 드러낸다. 탭하면 바로 닫힌다. 문구는 방문 횟수(localStorage yj.splashSeen)로 돌려 열 때마다 바뀐다. 로컬 확인은 ?splash=1 */
+  var SPLASH_MS = 4200, SPLASH_MS_REDUCED = 1500;
   function wantSplash() {
     try {
       if (/[?&]splash=1/.test(location.search)) return true;
@@ -19,14 +20,18 @@
     el.innerHTML = '<div class="splash-inner"><img class="splash-mark" src="' + root + 'assets/images/favicon.svg?v=2" alt="" width="72" height="72"><p class="splash-brand">영양제<span>.kr</span></p><p class="splash-line" id="splash-line"></p></div>';
     el.hidden = false; el.classList.add("is-on"); document.body.classList.add("has-splash");
     var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    var closed = false, timer = setTimeout(close, reduced ? 1200 : 2600);
+    var closed = false, timer = setTimeout(close, reduced ? SPLASH_MS_REDUCED : SPLASH_MS);
     function close() {
       if (closed) return; closed = true; clearTimeout(timer);
       el.classList.add("is-off");
-      setTimeout(function () { el.hidden = true; el.classList.remove("is-on", "is-off"); document.body.classList.remove("has-splash"); }, reduced ? 50 : 450);
+      setTimeout(function () { el.hidden = true; el.classList.remove("is-on", "is-off"); document.body.classList.remove("has-splash"); }, reduced ? 50 : 600);
     }
     el.addEventListener("click", close);
     return { setLine: function (text) { var p = document.getElementById("splash-line"); if (p && text) { p.textContent = text; p.classList.add("is-in"); } } };
+  }
+  /* 몇 번째 방문인지(0부터) 읽고 하나 올린다 — 저장소가 막혀 있으면 0 */
+  function splashVisit() {
+    try { var n = Math.max(0, parseInt(localStorage.getItem("yj.splashSeen"), 10) || 0); localStorage.setItem("yj.splashSeen", String(n + 1)); return n; } catch (e) { return 0; }
   }
 
   function isApp() { return !!(window.AppBridge && window.AppBridge.isNative()); }
@@ -123,7 +128,7 @@
       return (window.AppBridge ? window.AppBridge.ready() : Promise.resolve()).then(function () { return res; });   // 앱이면 런타임 로드·복원을 기다린다
     }).then(function (res) {
       core = res[0]; tips = (res[1] && res[1].items) || []; splashList = (res[1] && res[1].splash) || []; ltRules = res[2];
-      if (splash) splash.setLine(T.splashLine(splashList, new Date()));
+      if (splash) splash.setLine(T.splashLine(splashList, splashVisit()));
       state = S.load();
       var pr = S.pruneUnknown(state, core.byId);
       if (pr.removed.length) { state = pr.state; persist(); }

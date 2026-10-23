@@ -48,10 +48,13 @@ test("tip: 데이터 쌍의 시너지 팁은 조합 이름을 앞에 붙이고, 
   assert.equal(inferred.text, "일반");
 });
 
-test("splashLine: 시작 화면 문구를 날짜별로 하나 고르고, 목록이 비면 빈 문자열", () => {
+test("splashLine: 시작 화면 문구를 방문 순서대로 하나씩 돌려 보여 주고(연속 방문은 다른 문구), 목록이 비면 빈 문자열", () => {
   const list = [{ text: "하나" }, { text: "둘" }, { text: "셋" }];
-  assert.equal(T.splashLine(list, at(9, 0)), T.splashLine(list, at(21, 0)));
-  assert.ok(list.some(x => x.text === T.splashLine(list, at(9, 0))));
-  assert.notEqual(T.splashLine(list, new Date(2026, 9, 23)), T.splashLine(list, new Date(2026, 9, 24)));
-  assert.equal(T.splashLine([], at(9, 0)), "");
+  assert.equal(T.splashLine(list, 0), "하나");
+  assert.notEqual(T.splashLine(list, 1), T.splashLine(list, 0));
+  assert.notEqual(T.splashLine(list, 2), T.splashLine(list, 1));
+  assert.equal(T.splashLine(list, 3), T.splashLine(list, 0));   // 한 바퀴 돌면 처음으로
+  assert.deepEqual([0, 1, 2].map(n => T.splashLine(list, n)).sort(), ["둘", "셋", "하나"]);   // 전부 한 번씩
+  assert.equal(T.splashLine(list, undefined), "하나");   // 횟수가 없으면 첫 문구
+  assert.equal(T.splashLine([], 0), "");
 });
