@@ -285,6 +285,37 @@ body.has-sheet { overflow: hidden; }
 .today-steps small { display: block; font-size: .75rem; color: #6b7a71; }
 .today-cta { margin-top: 1rem; display: inline-flex; }
 .today-foot { margin-top: 1.25rem; font-size: .72rem; line-height: 1.5; color: #8a978e; }
+/* 맞춤 추천(recommend.html, pages/recommend.js) */
+.rec-badge { display: inline-flex; align-items: center; gap: .4rem; font-size: .8rem; font-weight: 800; color: #0b3d2a; background: #e3efdc; border-radius: 9999px; padding: .35rem .8rem; }
+.rec-badge svg { width: 14px; height: 14px; }
+.rec-h2 { display: flex; align-items: center; gap: .45rem; font-size: 1.1rem; font-weight: 800; color: #15291d; }
+.rec-h2 svg { width: 20px; height: 20px; color: #246d4b; }
+.rec-count { font-size: .8rem; font-weight: 600; color: #6b7a71; }
+.rec-privacy { display: flex; align-items: flex-start; gap: .4rem; font-size: .8rem; line-height: 1.5; color: #4f6b54; background: #f6f8f6; border-radius: .9rem; padding: .6rem .8rem; }
+.rec-privacy svg { width: 15px; height: 15px; flex-shrink: 0; margin-top: .15rem; color: #246d4b; }
+.rec-summary { display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem; border: 1px solid #e3ebdc; border-radius: 1.25rem; background: #fff; padding: .9rem 1.1rem; }
+.rec-summary .k { font-size: .72rem; letter-spacing: .04em; color: #6b7a71; }
+.rec-chips { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: .35rem; }
+.rec-chip { font-size: .72rem; font-weight: 700; color: #15291d; background: #eef2ef; border-radius: 9999px; padding: .2rem .55rem; }
+.rec-chip.why { color: #8a5a12; background: #fff6e8; border: 1px solid #f1dfc0; }
+.rec-chip.mfds { color: #175136; background: #e3efdc; }
+.rec-result { margin-top: 1.5rem; }
+.rec-grid { margin-top: .9rem; display: grid; gap: .75rem; }
+@media (min-width: 768px) { .rec-grid { grid-template-columns: 1fr 1fr; } }
+.rec-card { border: 1px solid #e3ebdc; border-left: 4px solid #2f7d4f; border-radius: 1.1rem; background: #fff; padding: .9rem 1rem; box-shadow: 0 4px 18px rgba(21,41,29,.05); }
+.rec-card.is-have { opacity: .6; border-left-color: #c9d4cc; }
+.rec-card h3 { font-size: 1rem; font-weight: 800; color: #15291d; }
+.rec-card h3 a:hover { color: #246d4b; }
+.rec-card h3 small { font-size: .72rem; font-weight: 600; color: #6b7a71; margin-left: .4rem; }
+.rec-line { margin-top: .45rem; font-size: .85rem; line-height: 1.5; color: #33433a; }
+.rec-who { margin-top: .25rem; font-size: .75rem; color: #6b7a71; }
+.rec-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin-top: .7rem; }
+.rec-actions .shop-buttons { display: inline-flex; }
+.rec-empty { margin-top: 1rem; border: 1px dashed #c9d4cc; border-radius: 1.1rem; padding: 1.25rem; text-align: center; font-size: .9rem; color: #4f6b54; }
+.rec-empty svg { width: 24px; height: 24px; color: #246d4b; margin: 0 auto .4rem; display: block; }
+.rec-note { margin-top: .75rem; font-size: .82rem; line-height: 1.5; color: #4f6b54; }
+.rec-note.is-warn { color: #92400e; }
+.finder-q.is-over { box-shadow: 0 0 0 3px #fde68a; }
 .my-qr { margin-top: .75rem; display: grid; place-items: center; }
 .my-qr svg { width: min(220px, 70vw); height: auto; }
 .my-error { margin-top: .5rem; font-size: .85rem; color: #b23a3a; }

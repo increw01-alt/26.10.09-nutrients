@@ -5,7 +5,8 @@
  *   matches(cond, answers)         규칙 조건: 질문마다 하나라도 일치, 질문끼리는 AND
  *   score(answers, data, guides, core) → { guides:[{slug,score}], ingredients:[{id,score,from}], recommended:[id…], have:[id…], flags:[…], restricted,
  *                                          avoided:[id…](규칙 avoid 로 추천에서 뺀 성분, 점수순), avoidedHave:[id…](이미 먹는 성분 중 제외 대상) }
- *   summary(answers, data)         고른 옵션 라벨 목록 (결과 머리글용) */
+ *   summary(answers, data)         고른 옵션 라벨 목록 (결과 머리글용)
+ *   reasons(answers, data, slugs)  맞춤 추천의 '왜' 칩 — slugs 가이드를 고른 규칙 조건 중 내가 답한 라벨 */
 (function () {
   "use strict";
 
@@ -101,7 +102,26 @@
     return out;
   }
 
-  var Finder = { parse: parse, serialize: serialize, matches: matches, score: score, summary: summary };
+  /* 맞춤 추천의 '왜' 칩: slugs(추천 성분에 점수를 준 가이드)를 고른 규칙들의 조건 가운데 내가 답한 옵션의 라벨 — 질문 순서 → 옵션 순서, 중복 없이, exclusive 옵션 제외 */
+  function reasons(answers, data, slugs) {
+    var want = {};
+    (data.rules || []).forEach(function (r) {
+      if (!matches(r["if"], answers)) return;
+      if (!(r.guides || []).some(function (s) { return (slugs || []).indexOf(s) >= 0; })) return;
+      Object.keys(r["if"] || {}).forEach(function (q) { (want[q] = want[q] || []).push.apply(want[q], r["if"][q]); });
+    });
+    var out = [];
+    (data.questions || []).forEach(function (q) {
+      var got = (answers && answers[q.id]) || [], cond = want[q.id] || [];
+      (q.options || []).forEach(function (o) {
+        if (o.exclusive || got.indexOf(o.id) < 0 || cond.indexOf(o.id) < 0 || out.indexOf(o.label) >= 0) return;
+        out.push(o.label);
+      });
+    });
+    return out;
+  }
+
+  var Finder = { parse: parse, serialize: serialize, matches: matches, score: score, summary: summary, reasons: reasons };
   if (typeof window !== "undefined") window.Finder = Finder;
   if (typeof module !== "undefined") module.exports = Finder;
 })();

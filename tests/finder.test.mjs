@@ -138,3 +138,11 @@ test("생활 '술자리가 잦아요' → 간 건강 가이드와 밀크씨슬, 
   assert.ok(i.guides.map((g) => g.slug).includes("vitamin-d-guide"));
   assert.ok(i.recommended.slice(0, 3).includes("vitamin-d"));
 });
+
+// ---- 맞춤 추천의 근거 칩: 추천 가이드를 고른 규칙의 조건 가운데 내가 답한 라벨 (10-23) ----
+test("reasons: 추천 가이드를 고른 규칙의 조건 가운데 내가 답한 라벨만, 질문 순서로 중복 없이", () => {
+  const data = { questions: [{ id: "age", type: "single", options: [{ id: "40s", label: "40대" }] }, { id: "concern", type: "multi", options: [{ id: "eye", label: "눈 건강" }, { id: "sleep", label: "수면" }] }],
+    rules: [{ if: { concern: ["eye"] }, guides: ["eye"] }, { if: { age: ["40s"], concern: ["eye", "sleep"] }, guides: ["eye", "aging"] }, { if: { concern: ["sleep"] }, guides: ["sleep"] }] };
+  assert.deepEqual(F.reasons({ age: ["40s"], concern: ["eye"] }, data, ["eye"]), ["40대", "눈 건강"]);
+  assert.deepEqual(F.reasons({ age: ["40s"], concern: ["sleep"] }, data, ["sleep"]), ["수면"]);   // 수면 가이드를 고른 규칙은 셋째뿐
+});
