@@ -68,3 +68,12 @@ class IosProjectTests(unittest.TestCase):
         cfg = json.loads((ROOT / "app/capacitor.config.json").read_text(encoding="utf-8"))
         host = urlparse(cfg["server"]["url"]).hostname
         self.assertIn(host, cfg["server"].get("allowNavigation", []))
+
+    def test_app_starts_on_today_home(self):
+        # 앱 시작 주소는 오늘 홈(/today). 안드로이드 sync 산출물(assets/capacitor.config.json)도 같은 주소여야 한다
+        cfg = json.loads((ROOT / "app/capacitor.config.json").read_text(encoding="utf-8"))
+        self.assertTrue(cfg["server"]["url"].endswith("/today"), cfg["server"]["url"])
+        android_cfg = ROOT / "app/android/app/src/main/assets/capacitor.config.json"   # cap sync 산출물(.gitignore) — 있으면 같은 주소여야 한다
+        if android_cfg.exists():
+            android = json.loads(android_cfg.read_text(encoding="utf-8"))
+            self.assertEqual(android["server"]["url"], cfg["server"]["url"])

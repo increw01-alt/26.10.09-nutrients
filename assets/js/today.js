@@ -67,7 +67,7 @@
     });
     if (opts.resolvePair) for (var i = 0; i < ids.length; i++) for (var j = i + 1; j < ids.length; j++) {
       var p = opts.resolvePair(core, ids[i], ids[j]);
-      if (p && p.type === "synergy" && p.tip) cands.push(p.tip);
+      if (p && p.type === "synergy" && p.tip) cands.push(core.byId[ids[i]].name + " + " + core.byId[ids[j]].name + ": " + p.tip);   // 어느 조합의 팁인지 앞에 붙인다
     }
     var source = SOURCE_MINE, pool = cands;
     if (!pool.length) { pool = (general || []).map(function (g) { return g.text; }); source = null; }

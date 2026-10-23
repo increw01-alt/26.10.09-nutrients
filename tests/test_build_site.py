@@ -35,6 +35,10 @@ class PwaTagTests(unittest.TestCase):
 
 
 class ServiceWorkerBuildTests(unittest.TestCase):
+    def test_today_home_is_precached(self):
+        # 앱 첫 화면(today.html)은 my.html 처럼 오프라인에서도 열려야 한다
+        self.assertIn("/today.html", B.precache_urls())
+
     def test_precache_urls_are_absolute_and_hashed(self):
         urls = B.precache_urls()
         self.assertIn("/offline.html", urls)

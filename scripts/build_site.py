@@ -78,7 +78,7 @@ def asset_digest(path: Path) -> str:
 
 
 SW_TEMPLATE = ROOT / "scripts/sw_template.js"
-PRECACHE_EXTRA = ["offline.html", "my.html", "assets/images/favicon.svg", "assets/images/home/leaf.webp",   # URL 에 해시가 없는 파일 — 내용 해시는 sw_version 에 섞는다 (my.html 은 앱의 첫 화면이라 오프라인에서도 열리게)
+PRECACHE_EXTRA = ["offline.html", "today.html", "my.html", "assets/images/favicon.svg", "assets/images/home/leaf.webp",   # URL 에 해시가 없는 파일 — 내용 해시는 sw_version 에 섞는다 (today.html 은 앱의 첫 화면, my.html 은 알림 동작 처리 화면이라 오프라인에서도 열리게)
                   "assets/images/app/icon-192.png", "assets/images/app/icon-512.png"]            # (manifest 는 서비스워커가 건드리지 않아 뺌)
 
 

@@ -60,16 +60,24 @@
   /* 모바일 하단 탭 바 */
   function renderTabbar() {
     var inApp = !!(window.AppBridge && window.AppBridge.isNative());
-    var TABS = [
-      inApp ? { key: "my", label: "내 영양제", href: "my.html", icon: "pill" } : { key: "home", label: "홈", href: "index.html", icon: "house" },   // 앱에서는 첫 탭이 내 영양제
+    /* 앱: 홈(오늘 today.html)·내 영양제·궁합·가이드·성분 — '제품'은 헤더 메뉴에만(앱은 쇼핑 버튼을 숨기므로). 웹 모바일: 홈·성분·궁합·가이드·제품 */
+    var TABS = inApp ? [
+      { key: "home", label: "홈", href: "today.html", icon: "house" },
+      { key: "my", label: "내 영양제", href: "my.html", icon: "pill" },
+      { key: "compat", label: "궁합", href: "compatibility.html", icon: "heart-handshake" },
+      { key: "guides", label: "가이드", href: "guides.html", icon: "compass" },
+      { key: "ingredients", label: "성분", href: "ingredients.html", icon: "book-open" }
+    ] : [
+      { key: "home", label: "홈", href: "index.html", icon: "house" },
       { key: "ingredients", label: "성분", href: "ingredients.html", icon: "book-open" },
       { key: "compat", label: "궁합", href: "compatibility.html", icon: "heart-handshake" },
       { key: "guides", label: "가이드", href: "guides.html", icon: "compass" },
       { key: "products", label: "제품", href: "products.html", icon: "shopping-bag" }
     ];
+    var active = (inApp && page === "today") ? "home" : page;   // 오늘 홈은 앱에서 홈 탭
     var nav = document.createElement("nav");
     nav.className = "tabbar no-print"; nav.setAttribute("aria-label", "하단 메뉴");
-    nav.innerHTML = TABS.map(function (t) { return '<a href="' + D.url(t.href) + '" class="' + (t.key === page ? "active" : "") + '"' + (t.key === page ? ' aria-current="page"' : "") + '><i data-lucide="' + t.icon + '"></i>' + esc(t.label) + '</a>'; }).join("");
+    nav.innerHTML = TABS.map(function (t) { return '<a href="' + D.url(t.href) + '" class="' + (t.key === active ? "active" : "") + '"' + (t.key === active ? ' aria-current="page"' : "") + '><i data-lucide="' + t.icon + '"></i>' + esc(t.label) + '</a>'; }).join("");
     document.body.appendChild(nav); document.body.classList.add("has-tabbar");
     D.icons(nav);
   }

@@ -3,7 +3,7 @@
   "appName": "영양제.kr",
   "webDir": "www",
   "server": {
-    "url": "https://xn--og5b1hx9c.kr/my",
+    "url": "https://xn--og5b1hx9c.kr/today",
     "allowNavigation": ["xn--og5b1hx9c.kr"],
     "androidScheme": "https",
     "cleartext": false,
