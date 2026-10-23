@@ -83,10 +83,32 @@
     D.icons(nav);
   }
 
+  /* 푸터 '바로가기': 자주 쓰는 FOOTER_SHOW 개만 먼저 보이고 나머지는 '더 보기'로 펼친다(웹·앱 모두 — 하단이 너무 길지 않게) */
+  var FOOTER_SHOW = 6;
+  function footerLinks() {
+    var top = NAV.slice(1).map(function (n) { return { href: n.href, label: n.label === "뉴스" ? "뉴스·자료" : n.label === "영양제 추천" ? "영양제 추천 가이드" : n.label }; });
+    var rest = [
+      { href: "finder.html", label: "나에게 맞는 영양제 찾기" },
+      { href: "functions.html", label: "기능성별 영양제" },
+      { href: "compare.html", label: "성분 비교" },
+      { href: "drug-guides.html", label: "약별 영양제 가이드" },
+      { href: "glossary.html", label: "영양제 용어 사전" },
+      { href: "compatibility-chart.html", label: "영양제 궁합표" },
+      { href: "timing-chart.html", label: "영양제 복용 시간표" },
+      { href: "help.html", label: "앱 사용 설명" },
+      { href: "materials.html", label: "기능성 원료 인정현황" }
+    ];
+    // 먼저 보이는 6개: 성분 사전·영양제 궁합·내 영양제·영양제 추천 가이드·제품 찾기·나에게 맞는 영양제 찾기 (뉴스·소개는 뒤로)
+    var main = top.slice(0, 5).concat([rest[0]]), tail = top.slice(5).concat(rest.slice(1));
+    return main.concat(tail);
+  }
+
   function renderFooter() {
     var el = document.getElementById("site-footer");
     if (!el) return;
     var A = window.AFFILIATE || {};
+    var links = footerLinks(), hiddenCount = Math.max(0, links.length - FOOTER_SHOW);
+    function moreLabel(collapsed) { return collapsed ? "나머지 " + hiddenCount + "개 더 보기" : "접기"; }
     el.innerHTML =
       '<footer class="mt-20 border-t border-[#e8eee1] bg-[#f8faf5]">' +
         '<div class="mx-auto max-w-7xl px-4 py-12 sm:px-6">' +
@@ -96,18 +118,10 @@
               '<p class="mt-4 text-sm leading-relaxed text-ink-500">' + esc(S.description) + '</p>' +
               '<p class="mt-4 text-xs leading-relaxed text-ink-400" id="footer-updated"></p>' +
             '</div>' +
-            '<div class="md:col-span-3"><h3 class="text-sm font-bold text-ink-900">바로가기</h3><ul class="mt-3 space-y-2 text-sm text-ink-600">' +
-              NAV.slice(1).map(function (n) { return '<li><a class="hover:text-brand-700" href="' + D.url(n.href) + '">' + esc(n.label === "뉴스" ? "뉴스·자료" : n.label === "영양제 추천" ? "영양제 추천 가이드" : n.label) + '</a></li>'; }).join("") +
-              '<li><a class="hover:text-brand-700" href="' + D.url("finder.html") + '">나에게 맞는 영양제 찾기</a></li>' +
-              '<li><a class="hover:text-brand-700" href="' + D.url("functions.html") + '">기능성별 영양제</a></li>' +
-              '<li><a class="hover:text-brand-700" href="' + D.url("compare.html") + '">성분 비교</a></li>' +
-              '<li><a class="hover:text-brand-700" href="' + D.url("drug-guides.html") + '">약별 영양제 가이드</a></li>' +
-              '<li><a class="hover:text-brand-700" href="' + D.url("glossary.html") + '">영양제 용어 사전</a></li>' +
-              '<li><a class="hover:text-brand-700" href="' + D.url("compatibility-chart.html") + '">영양제 궁합표</a></li>' +
-              '<li><a class="hover:text-brand-700" href="' + D.url("timing-chart.html") + '">영양제 복용 시간표</a></li>' +
-              '<li><a class="hover:text-brand-700" href="' + D.url("help.html") + '">앱 사용 설명</a></li>' +
-              '<li><a class="hover:text-brand-700" href="' + D.url("materials.html") + '">기능성 원료 인정현황</a></li>' +
-            '</ul></div>' +
+            '<div class="md:col-span-3"><h3 class="text-sm font-bold text-ink-900">바로가기</h3><ul id="footer-links" class="footer-links is-collapsed mt-3 space-y-2 text-sm text-ink-600">' +
+              links.map(function (l) { return '<li><a class="hover:text-brand-700" href="' + D.url(l.href) + '">' + esc(l.label) + '</a></li>'; }).join("") +
+            '</ul>' +
+            '<button type="button" class="footer-more" data-footer-more aria-expanded="false" aria-controls="footer-links"><i data-lucide="chevron-down"></i><span>' + moreLabel(true) + '</span></button></div>' +
             '<div class="md:col-span-4"><h3 class="text-sm font-bold text-ink-900">데이터 출처</h3><ul class="mt-3 space-y-2 text-sm text-ink-600">' +
               '<li><a class="hover:text-brand-700" href="https://www.foodsafetykorea.go.kr" target="_blank" rel="noopener">식품안전나라(식품의약품안전처) 건강기능식품 정보</a></li>' +
               '<li><a class="hover:text-brand-700" href="https://www.data.go.kr" target="_blank" rel="noopener">공공데이터포털</a></li>' +
@@ -127,6 +141,17 @@
           '</div>' +
         '</div>' +
       '</footer>';
+    var more = el.querySelector("[data-footer-more]"), list = document.getElementById("footer-links");
+    if (more && list) {
+      if (!hiddenCount) more.hidden = true;
+      more.addEventListener("click", function () {
+        var collapsed = list.classList.toggle("is-collapsed");
+        more.setAttribute("aria-expanded", collapsed ? "false" : "true");
+        more.querySelector("span").textContent = moreLabel(collapsed);
+        if (collapsed) list.scrollIntoView({ block: "nearest" });   // 접을 때 목록 머리가 화면 밖으로 밀리지 않게
+      });
+      D.icons(el);
+    }
     D.meta().then(function (m) {
       var t = document.getElementById("footer-updated");
       if (t && m && m.builtAt) t.textContent = "데이터 최종 갱신: " + D.fmtDate(m.builtAt) + (m.products && m.products.source === "sample" ? " · 제품/뉴스 샘플 데이터 표시 중" : "");

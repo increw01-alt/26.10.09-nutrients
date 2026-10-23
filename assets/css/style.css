@@ -364,6 +364,12 @@ body.has-sheet { overflow: hidden; }
 .fig-rec .chips span { font-size: .66rem; font-weight: 700; padding: .15rem .5rem; border-radius: 9999px; background: #eef2ef; color: #15291d; }
 .fig-rec .chips .why { color: #8a5a12; background: #fff6e8; border: 1px solid #f1dfc0; } .fig-rec .chips .mfds { color: #175136; background: #e3efdc; }
 .help-cta { margin-top: 1.75rem; display: flex; flex-wrap: wrap; gap: .6rem; }
+/* 푸터 바로가기 접기(layout.js renderFooter): 처음엔 FOOTER_SHOW(6)개만, '더 보기'로 펼침 — nth-child 기준은 layout.js 의 FOOTER_SHOW 와 같아야 한다 */
+.footer-links.is-collapsed > li:nth-child(n+7) { display: none; }
+.footer-more { display: inline-flex; align-items: center; gap: .25rem; margin-top: .75rem; padding: .25rem 0; font-size: .875rem; font-weight: 700; color: var(--brand); }
+.footer-more:hover { text-decoration: underline; }
+.footer-more svg { width: 1rem; height: 1rem; transition: transform .2s ease; }
+.footer-more[aria-expanded="true"] svg { transform: rotate(180deg); }
 /* 앱 시작 화면(today.html #today-splash) — 로고가 떠오르고 한 마디가 이어서 나타난 뒤 홈으로 사라진다 */
 .today-splash { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; background: #0b3d2a; color: #fff; transition: opacity .6s ease; padding: 2rem; text-align: center; }
 .today-splash[hidden] { display: none; }
