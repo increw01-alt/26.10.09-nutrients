@@ -105,6 +105,7 @@
   if (typeof document !== "undefined") document.addEventListener("DOMContentLoaded", function () { startup(); });
 
   /* 앱 첫 실행(세션당 한 번): 옛 빌드는 시작 주소가 /my 라 내 영양제로 열리므로 홈(today.html)으로 보낸다 — 순수(tests/app.test.mjs).
+     my.html head 의 인라인 스크립트가 같은 판정을 페이지가 그려지기 전에 먼저 하고, 여기는 그것이 못 돈 경우(저장소 예외 등)의 보강이다.
      env = { native, page(data-page), started(sessionStorage yj.started), hash(location.hash+search) }. 가져오기 링크(#import=)는 그대로 둔다 */
   function coldStartTarget(env) {
     if (!env || !env.native || env.started) return null;

@@ -36,6 +36,7 @@
 
   function isApp() { return !!(window.AppBridge && window.AppBridge.isNative()); }
   var splash = wantSplash() ? showSplash() : null;   // defer 스크립트 실행 시점(DOMContentLoaded 전)에 바로 띄운다 — 홈이 먼저 보이는 시간을 줄임
+  document.documentElement.classList.remove("splash-pending");   // head 인라인 스크립트가 숨겨 둔 본문을 다시 보임(시작 화면이 떠 있거나, 안 띄우는 경우 모두)
   function today() { return S.dateKey(new Date()); }
   function schedule() { return state.items.length ? window.Schedule.build(S.entries(state), core, S.overrides(state)) : { slots: [], notes: [] }; }
   function persist() { S.save(state); if (isApp()) { window.AppBridge.mirror(JSON.stringify(state)); window.AppBridge.requestSync(); } }

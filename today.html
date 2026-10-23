@@ -3,6 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <script>/* 앱에서 이 세션 처음 열 때: 시작 화면(pages/today.js)이 뜰 때까지 본문을 숨겨 홈이 먼저 번쩍이지 않게(html.splash-pending). 6초 안에 스크립트가 못 오면 해제. defer 규칙의 예외 */
+  (function () { try {
+    var c = window.Capacitor, h = location.hostname, local = h === "localhost" || h === "127.0.0.1", q = location.search;
+    if (local && /[?&]app=1(&|$)/.test(q)) localStorage.setItem("appDev", "1"); else if (local && /[?&]app=0(&|$)/.test(q)) localStorage.setItem("appDev", "0");
+    var app = !!(c && typeof c.isNativePlatform === "function" && c.isNativePlatform()) || (local && localStorage.getItem("appDev") === "1");
+    if (!(app && !sessionStorage.getItem("yj.splashShown")) && !/[?&]splash=1(&|$)/.test(q)) return;
+    var d = document.documentElement; d.classList.add("splash-pending");
+    setTimeout(function () { d.classList.remove("splash-pending"); }, 6000);
+  } catch (e) { /* 무시 */ } })();
+  </script>
   <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
   <!-- pwa:start -->
   <link rel="manifest" href="./manifest.webmanifest">
@@ -15,11 +25,11 @@
   <!-- pwa:end -->
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-  <link rel="stylesheet" href="assets/css/style.css?v=8a3f3d9a">
+  <link rel="stylesheet" href="assets/css/style.css?v=10262f71">
   <link rel="stylesheet" href="assets/css/tailwind.css?v=dbefc331">
   <script src="assets/js/icons.js?v=929904ff" defer></script>
   <script src="assets/js/config.js?v=b696f061" defer></script>
-  <script src="assets/js/app.js?v=55a2c8f9" defer></script>
+  <script src="assets/js/app.js?v=bb536a05" defer></script>
   <script src="assets/js/data.js?v=a70ddcd9" defer></script>
   <script src="assets/js/affiliate.js?v=b9120cbd" defer></script>
   <script src="assets/js/layout.js?v=5722d440" defer></script>
@@ -29,7 +39,7 @@
   <script src="assets/js/reminders.js?v=58008f0d" defer></script>
   <script src="assets/js/longterm.js?v=89863549" defer></script>
   <script src="assets/js/today.js?v=22f231a5" defer></script>
-  <script src="assets/js/pages/today.js?v=0e2c6659" defer></script>
+  <script src="assets/js/pages/today.js?v=65c72075" defer></script>
   <title>오늘 — 복용 시간과 오늘의 한 줄 | 영양제.kr</title>
   <meta name="description" content="오늘 챙길 영양제의 다음 복용 시간과 시간표, 오늘의 영양 한 줄을 한 화면에서 봅니다. 저장한 내 영양제는 이 기기에만 남습니다.">
   <meta name="robots" content="noindex">

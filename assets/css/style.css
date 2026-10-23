@@ -380,6 +380,9 @@ body.has-sheet { overflow: hidden; }
 @keyframes splash-float { from { transform: translateY(0); } to { transform: translateY(-8px); } }
 @media (prefers-reduced-motion: reduce) { .splash-mark, .splash-brand, .splash-inner { animation: none; opacity: 1; transform: none; } .splash-line { transition: none; } .today-splash { transition: none; } }
 body.has-splash { overflow: hidden; }
+/* today.html 첫 방문: head 인라인 스크립트가 켜고 pages/today.js 가 시작 화면을 띄운 직후 끈다 — 홈이 먼저 그려지지 않게 */
+html.splash-pending { background: #0b3d2a; }
+html.splash-pending body { visibility: hidden; }
 /* 장기 복용 점검 카드·쉬는 항목 */
 .my-lt { margin-top: .75rem; border: 1px solid #f1dfc0; border-left: 4px solid #d98a1f; border-radius: 1rem; background: #fffaf2; padding: .8rem .95rem; }
 .my-lt b { display: block; font-size: .92rem; color: #15291d; line-height: 1.45; }

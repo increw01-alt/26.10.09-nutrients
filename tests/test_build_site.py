@@ -856,6 +856,40 @@ class GlossaryTests(unittest.TestCase):
         self.assertIn("assets/js/terms.js", ihtml)
 
 
+class ColdStartInlineTests(unittest.TestCase):
+    """앱 첫 실행 전환(옛 빌드의 시작 주소 /my)은 스크립트가 내려받히기 전에 페이지가 그려지지 않도록 head 의 짧은 인라인 스크립트가 맡는다
+    (defer 스크립트만 쓰는 규칙의 유일한 예외). today.html 은 첫 방문이면 시작 화면이 뜰 때까지 본문을 숨긴다(html.splash-pending)."""
+
+    ROOT = Path(__file__).resolve().parents[1]
+
+    @staticmethod
+    def _head_inline_scripts(html: str):
+        head = html.split("</head>", 1)[0]
+        return [m.group(1) for m in re.finditer(r"<script(?![^>]*\bsrc=)[^>]*>(.*?)</script>", head, flags=re.S)]
+
+    def test_my_page_redirects_before_first_paint(self):
+        html = (self.ROOT / "my.html").read_text(encoding="utf-8")
+        head = html.split("</head>", 1)[0]
+        scripts = self._head_inline_scripts(html)
+        self.assertTrue(scripts, "my.html head 에 인라인 전환 스크립트가 없습니다")
+        js = "\n".join(scripts)
+        for needle in ("yj.started", "today.html", "import=", "isNativePlatform", "location.replace"):
+            self.assertIn(needle, js)
+        self.assertLess(head.index("<script"), head.index('<link rel="stylesheet"'), "인라인 스크립트는 스타일시트보다 앞에 있어야 스타일 내려받기를 기다리지 않는다")
+
+    def test_today_page_hides_body_until_splash_on_first_visit(self):
+        html = (self.ROOT / "today.html").read_text(encoding="utf-8")
+        head = html.split("</head>", 1)[0]
+        js = "\n".join(self._head_inline_scripts(html))
+        for needle in ("splash-pending", "yj.splashShown", "isNativePlatform"):
+            self.assertIn(needle, js)
+        self.assertLess(head.index("<script"), head.index('<link rel="stylesheet"'))
+        css = (self.ROOT / "assets" / "css" / "style.css").read_text(encoding="utf-8")
+        self.assertIn("html.splash-pending", css)
+        page_js = (self.ROOT / "assets" / "js" / "pages" / "today.js").read_text(encoding="utf-8")
+        self.assertIn('classList.remove("splash-pending")', page_js)
+
+
 class TipsTests(unittest.TestCase):
     """오늘의 한 줄 일반 팁(data/tips.json) 검증 — 금칙어·길이·개수."""
 
