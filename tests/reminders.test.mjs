@@ -128,3 +128,9 @@ test("clearDelivered: 알림창에 남은 우리 알림만 지운다 — 같은 
   assert.deepEqual(await R.clearDelivered({ getDeliveredNotifications: async () => ({ notifications: [{ id: 42 }] }), removeDeliveredNotifications: async (o) => calls.push(o) }), { removed: 0 }); assert.deepEqual(calls, []);
   assert.deepEqual(await R.clearDelivered({}), { removed: 0 });
 });
+
+test("plan: 제품 항목은 제품명으로 알림 본문에 들어간다", () => {
+  const sch = { slots: [{ key: "morning_after", items: [{ id: "p:1", name: "센트룸 맨", kind: "product", ings: [] }, core.byId["vitamin-d"]] }] };
+  const p = R.plan(on(), sch, { shortName: (it) => String(it.name).replace(/\s*\(.*$/, "") });
+  assert.equal(p[0].body, "센트룸 맨 · 비타민 D");
+});
