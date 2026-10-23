@@ -868,3 +868,23 @@ class TipsTests(unittest.TestCase):
         data = json.loads((B.ROOT / "data" / "tips.json").read_text(encoding="utf-8"))
         B.validate_tips(data)
         self.assertGreaterEqual(len(data["items"]), 10)
+
+
+class LongTermTests(unittest.TestCase):
+    """장기 복용 점검 데이터(data/longterm.json) 검증 — id·kind·weeks·note·source."""
+
+    def test_validate_longterm_rejects_bad_rows_and_accepts_data_file(self):
+        import json
+        meta = {"sources": [{"id": "s1", "title": "t", "url": "u"}]}
+        ok = {"id": "zinc", "kind": "upper", "weeks": 12, "note": "상한(하루 35mg)을 넘겨 오래 먹으면 구리 흡수가 줄 수 있어요.", "source": "s1"}
+        B.validate_longterm({"_meta": meta, "items": [ok]}, {"zinc"})
+        for bad in (dict(ok, id="nope"), dict(ok, kind="stop"), dict(ok, weeks=0), dict(ok, weeks=60), dict(ok, source="zz"),
+                    dict(ok, note="짧음"), dict(ok, note="이 성분은 질병을 치료하니 중단하세요 라고 쓰면 안 되는 긴 문장입니다")):
+            with self.assertRaises(ValueError, msg=str(bad)):
+                B.validate_longterm({"_meta": meta, "items": [bad]}, {"zinc"})
+        with self.assertRaises(ValueError):
+            B.validate_longterm({"_meta": meta, "items": []}, {"zinc"})
+        data = json.loads((B.ROOT / "data" / "longterm.json").read_text(encoding="utf-8"))
+        ids = {it["id"] for it in json.loads((B.ROOT / "data" / "ingredients.json").read_text(encoding="utf-8"))["items"]}
+        B.validate_longterm(data, ids)
+        self.assertGreaterEqual(len(data["items"]), 10)

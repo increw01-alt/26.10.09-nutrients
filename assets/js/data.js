@@ -115,6 +115,7 @@
     guides: function () { return load("guides-index"); },
     finder: function () { return load("finder"); },          // 셀프체크 질문·규칙 (data/finder.json, 수동)
     tips: function () { return load("tips"); },              // 오늘의 한 줄 일반 팁 (data/tips.json, 수동)
+    longterm: function () { return load("longterm"); },      // 장기 복용 점검 근거 표 (data/longterm.json, 수동)
     functions: function () { return load("functions-index"); },   // 기능성별 허브 요약 색인 (빌드 생성: id·label·claim·성분 id)
     compares: function () { return load("compares-index"); },     // 성분 비교 요약 색인 (빌드 생성: slug·title·ids)
     drugGuides: function () { return load("drug-guides-index"); },  // 약별 영양제 가이드 요약 색인 (빌드 생성: id·short·good/caution 성분 id)

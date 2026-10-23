@@ -6,6 +6,7 @@
  *     settings: { times: {시간대: "HH:MM"}, slotOn: {시간대: bool}, showNames: bool, weekends: bool, remindersOn: bool, logEnabled: bool|null },
  *     log: { "YYYY-MM-DD": { due: [시간대…], done: {시간대: true} } },
  *     profile?: { age: [옵션id], sex: […], concern: […], life: […], meds: […], updatedAt: ISO } }   // 내 정보(셀프체크 질문 id·옵션 id), 답한 질문만
+ *   항목의 선택 필드: pausedAt(ISO — '잠시 쉬기' 중: 시간표·알림·오늘 홈에서 빠지고 목록엔 '쉬는 중'), ltCheckedAt(ISO — 장기 복용 점검에서 '계속 먹기'를 누른 날, 다음 점검의 시작일)
  * 옮기기 코드: 접두사 YJ1- 그대로, 페이로드 v: 2 — 제품은 [id, slot, name] 만 담고(성분 목록은 크기 때문에 뺌) 가져오는 쪽이 제품 색인에서 다시 채운다. v1 코드도 읽는다.
  * 모든 변환 함수는 입력 상태를 바꾸지 않고 새 상태를 돌려준다(순수 함수). 저장소는 인자로 바꿔 끼울 수 있어 Node 에서 테스트한다(tests/store.test.mjs).
  * 스키마를 바꾸면 v 를 올리고 load() 에 마이그레이션을 넣는다. */
@@ -75,6 +76,8 @@
         o.name = it.name; o.ings = strList(it.ings);
       }
       if (isSlot(it.slot)) o.slot = it.slot;
+      if (typeof it.pausedAt === "string" && it.pausedAt) o.pausedAt = it.pausedAt;
+      if (typeof it.ltCheckedAt === "string" && it.ltCheckedAt) o.ltCheckedAt = it.ltCheckedAt;
       return o;
     }).filter(Boolean);
     var prof = cleanProfile(data.profile, true);
@@ -114,15 +117,32 @@
     });
     return { state: out, added: added };
   }
-  /* Schedule.build 에 넘기는 꼴: 성분은 id, 제품은 { id, name, ings } */
+  function isPaused(it) { return !!(it && it.pausedAt); }
+  /* Schedule.build 에 넘기는 꼴: 성분은 id, 제품은 { id, name, ings }. 쉬는 항목은 뺀다 */
   function entries(state) {
-    return state.items.map(function (it) { return isProduct(it.id) ? { id: it.id, name: it.name, ings: (it.ings || []).slice() } : it.id; });
+    return state.items.filter(function (it) { return !isPaused(it); }).map(function (it) { return isProduct(it.id) ? { id: it.id, name: it.name, ings: (it.ings || []).slice() } : it.id; });
   }
-  /* 따로 먹는 성분 id 먼저, 그다음 제품 안 성분, 중복 없이 */
+  /* 따로 먹는 성분 id 먼저, 그다음 제품 안 성분, 중복 없이 (쉬는 항목 제외) */
   function ingredientIds(state) {
-    var out = [];
-    state.items.forEach(function (it) { if (!isProduct(it.id) && out.indexOf(it.id) < 0) out.push(it.id); });
-    state.items.forEach(function (it) { if (isProduct(it.id)) (it.ings || []).forEach(function (id) { if (out.indexOf(id) < 0) out.push(id); }); });
+    var out = [], active = state.items.filter(function (it) { return !isPaused(it); });
+    active.forEach(function (it) { if (!isProduct(it.id) && out.indexOf(it.id) < 0) out.push(it.id); });
+    active.forEach(function (it) { if (isProduct(it.id)) (it.ings || []).forEach(function (id) { if (out.indexOf(id) < 0) out.push(id); }); });
+    return out;
+  }
+  /* 장기 복용 점검: 잠시 쉬기 / 다시 먹기(시작일을 오늘로, 점검 기록 초기화) / 계속 먹기(점검 기록 = 오늘 → 다음 점검은 weeks 뒤) */
+  function pauseItem(state, id, nowIso) {
+    var out = clone(state);
+    out.items.forEach(function (it) { if (it.id === id) it.pausedAt = nowIso || new Date().toISOString(); });
+    return out;
+  }
+  function resumeItem(state, id, nowIso) {
+    var out = clone(state);
+    out.items.forEach(function (it) { if (it.id === id) { delete it.pausedAt; delete it.ltCheckedAt; it.addedAt = nowIso || new Date().toISOString(); } });
+    return out;
+  }
+  function markChecked(state, id, nowIso) {
+    var out = clone(state);
+    out.items.forEach(function (it) { if (it.id === id) it.ltCheckedAt = nowIso || new Date().toISOString(); });
     return out;
   }
   /* 내 정보 저장 — 셀프체크 질문(data.questions: id·type·max·options[].id)으로 검증. 답이 하나도 안 남으면 profile 을 지운다 */
@@ -342,7 +362,8 @@
   var Store = {
     KEY: KEY, SLOT_ORDER: SLOT_ORDER, SLOT_LABEL: SLOT_LABEL, DEFAULT_TIMES: DEFAULT_TIMES,
     empty: empty, load: load, save: save,
-    isProduct: isProduct, addItems: addItems, removeItem: removeItem, setSlot: setSlot, overrides: overrides, entries: entries, ingredientIds: ingredientIds,
+    isProduct: isProduct, isPaused: isPaused, addItems: addItems, removeItem: removeItem, setSlot: setSlot, overrides: overrides, entries: entries, ingredientIds: ingredientIds,
+    pauseItem: pauseItem, resumeItem: resumeItem, markChecked: markChecked,
     setProfile: setProfile, profile: profile,
     setTime: setTime, timeChoices: timeChoices, setSetting: setSetting, setSlotOn: setSlotOn, pruneUnknown: pruneUnknown,
     dateKey: dateKey, addDays: addDays, lastDays: lastDays, markDue: markDue, toggleDone: toggleDone, dayStats: dayStats, streak: streak, clearLog: clearLog,

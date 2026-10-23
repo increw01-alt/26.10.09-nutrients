@@ -216,3 +216,18 @@ test("pruneUnknown: 제품은 남기고 안의 모르는 성분만 뺀다", () =
   const r = S.pruneUnknown(s, { zinc: {} });
   assert.deepEqual(r.removed, ["gone"]); assert.deepEqual(r.state.items.map(i => i.id), ["p:1"]); assert.deepEqual(r.state.items[0].ings, ["zinc"]);
 });
+
+// ---- 장기 복용 점검: 쉬기·다시 먹기·점검 기록 (10-23) ----
+test("pauseItem·isPaused·resumeItem: 쉬는 항목은 entries·ingredientIds 에서 빠지고, 다시 먹기는 시작일을 갱신한다", () => {
+  let s = S.addItems(S.empty(), ["zinc", { id: "p:1", name: "A", ings: ["iron"] }]).state;
+  s = S.pauseItem(s, "zinc", "2026-10-23T00:00:00.000Z");
+  assert.equal(S.isPaused(s.items[0]), true); assert.deepEqual(S.entries(s), [{ id: "p:1", name: "A", ings: ["iron"] }]); assert.deepEqual(S.ingredientIds(s), ["iron"]);
+  s = S.markChecked(s, "p:1", "2026-10-23T00:00:00.000Z"); assert.equal(s.items[1].ltCheckedAt, "2026-10-23T00:00:00.000Z");
+  s = S.resumeItem(s, "zinc", "2026-11-01T00:00:00.000Z");
+  assert.equal(S.isPaused(s.items[0]), false); assert.equal(s.items[0].addedAt, "2026-11-01T00:00:00.000Z"); assert.equal("ltCheckedAt" in s.items[0], false); assert.deepEqual(S.entries(s), ["zinc", { id: "p:1", name: "A", ings: ["iron"] }]);
+});
+test("load: pausedAt·ltCheckedAt 은 ISO 문자열이면 보존, 아니면 버린다", () => {
+  const raw = JSON.stringify({ v: 2, items: [{ id: "zinc", addedAt: "2026-10-01T00:00:00.000Z", pausedAt: "2026-10-20T00:00:00.000Z", ltCheckedAt: 5 }], settings: {}, log: {} });
+  const it = S.load({ getItem: () => raw }).items[0];
+  assert.equal(it.pausedAt, "2026-10-20T00:00:00.000Z"); assert.equal("ltCheckedAt" in it, false);
+});

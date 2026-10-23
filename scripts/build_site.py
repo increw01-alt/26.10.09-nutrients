@@ -1154,6 +1154,35 @@ def render_finder(data: dict, core: dict, cfg: dict) -> str:
 TIP_FORBIDDEN = ("치료", "예방", "완치", "진단", "AI가 분석")
 
 
+LONGTERM_KINDS = ("limit", "review", "upper")
+LONGTERM_FORBIDDEN = ("치료", "예방", "완치", "진단", "중단하세요")
+
+
+def validate_longterm(data: dict, valid_ids: set[str]) -> None:
+    """장기 복용 점검 표(data/longterm.json): 성분 id 가 사전에 있고, kind 는 limit/review/upper, weeks 는 1~52 정수, note 는 20~200자에 금칙어 없음, source 는 _meta.sources 의 id."""
+    items = (data or {}).get("items") or []
+    if not items:
+        raise ValueError("data/longterm.json: items 가 비어 있습니다")
+    sources = {s.get("id") for s in (((data or {}).get("_meta") or {}).get("sources") or [])}
+    for i, it in enumerate(items):
+        it = it or {}
+        if it.get("id") not in valid_ids:
+            raise ValueError(f"data/longterm.json[{i}]: 성분 사전에 없는 id: {it.get('id')}")
+        if it.get("kind") not in LONGTERM_KINDS:
+            raise ValueError(f"data/longterm.json[{i}]: kind 는 {LONGTERM_KINDS} 중 하나여야 합니다: {it.get('kind')}")
+        w = it.get("weeks")
+        if isinstance(w, bool) or not isinstance(w, int) or not 1 <= w <= 52:
+            raise ValueError(f"data/longterm.json[{i}]: weeks 는 1~52 정수여야 합니다: {w}")
+        note = str(it.get("note", "")).strip()
+        if not 20 <= len(note) <= 200:
+            raise ValueError(f"data/longterm.json[{i}]: note 는 20~200자여야 합니다: {note[:30]}")
+        for word in LONGTERM_FORBIDDEN:
+            if word in note:
+                raise ValueError(f"data/longterm.json[{i}]: 금칙어 '{word}': {note[:30]}")
+        if it.get("source") not in sources:
+            raise ValueError(f"data/longterm.json[{i}]: _meta.sources 에 없는 source: {it.get('source')}")
+
+
 def validate_tips(data: dict) -> None:
     """오늘의 한 줄 일반 팁(data/tips.json): 비어 있지 않고, 각 문장은 10~120자, 금칙어(질병 치료·예방·완치·진단, 'AI가 분석')가 없어야 한다."""
     items = (data or {}).get("items") or []
@@ -2683,6 +2712,11 @@ def main() -> int:
         validate_tips(tips)   # 오늘 홈의 일반 팁 — 금칙어·길이 검사
     else:
         log.warning("data/tips.json 이 없어 오늘의 한 줄 일반 팁 검증을 건너뜁니다")
+    longterm = read_json(DATA_DIR / "longterm.json", None)
+    if longterm:
+        validate_longterm(longterm, set(core["by_id"].keys()))   # 장기 복용 점검 표 — id·kind·weeks·note·source 검사
+    else:
+        log.warning("data/longterm.json 이 없어 장기 복용 점검 표 검증을 건너뜁니다")
     function_ids = write_functions(core, cfg, guides)
     compare_slugs = write_compares(core, cfg, guides)
     drug_guide_ids = write_drug_guides(core, cfg, guides)

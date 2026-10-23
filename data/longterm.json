@@ -1,0 +1,31 @@
+{
+  "_meta": {
+    "updatedAt": "2026-10-23",
+    "note": "장기 복용 점검 — 오래 먹을 때 근거 있는 '점검 시점'이 있는 성분만. kind: limit(연속 섭취 기간 권고가 있음)·review(효과를 판단할 시점이 안내됨)·upper(고용량 장기 섭취 주의가 있어 주기적으로 상한섭취량을 확인). weeks 는 시작(추가한 날, '계속 먹기'를 누른 날)부터 몇 주 뒤에 알릴지. upper 의 12주는 사이트의 점검 주기이지 의학적 기준이 아니므로 문구는 '점검'으로만 쓴다. 출처 없는 기간을 넣지 않는다. 빌드 validate_longterm 이 id·kind·weeks·note·source 를 검증한다.",
+    "sources": [
+      { "id": "kca-aloe", "title": "한국소비자원 알로에 건강기능식품 안전실태(2021) — WHO·EMA 생약 기준 1~2주", "url": "https://www.nutraingredients-asia.com/Article/2021/09/13/Aloe-leaf-side-effect-fears-Korea-Consumer-Agency-calls-for-re-evaluation-of-use-in-health-functional-foods" },
+      { "id": "nhs-glucosamine", "title": "영국 NHS 환자 안내 — 글루코사민·콘드로이친은 3개월 뒤 효과가 없으면 계속할지 재검토", "url": "https://swlimo.southwestlondon.icb.nhs.uk/wp-content/uploads/2021/06/Glucosamine-patient-information-leaflet.pdf" },
+      { "id": "efsa-b6", "title": "EFSA 비타민 B6 상한섭취량 과학 의견(2023) — 말초신경병증 근거, 상한 12.5mg", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10189633" },
+      { "id": "nih-zinc", "title": "미국 NIH 아연 자료 — 상한을 넘는 장기 섭취와 구리 결핍", "url": "https://ods.od.nih.gov/factsheets/Zinc-HealthProfessional/" },
+      { "id": "nih-iron", "title": "미국 NIH 철분 자료 — 결핍이 확인되지 않은 보충제 장기 섭취 주의, 상한 45mg", "url": "https://ods.od.nih.gov/factsheets/Iron-HealthProfessional/" },
+      { "id": "kdri", "title": "한국인 영양소 섭취기준 2020(보건복지부·한국영양학회) — 상한섭취량", "url": "https://www.kns.or.kr/" },
+      { "id": "site-caution", "title": "영양제.kr 성분 사전 주의사항(식약처 주의사항·학회 자료 요약)", "url": "https://xn--og5b1hx9c.kr/ingredients" }
+    ]
+  },
+  "items": [
+    { "id": "aloe-gel", "kind": "limit", "weeks": 2, "note": "알로에 전잎(알로인 함유) 제품이라면, 완하 작용이 있어 1~2주를 넘겨 연속으로 먹지 않는 것이 권고돼요. 겔 제품은 해당하지 않아요.", "source": "kca-aloe" },
+    { "id": "glucosamine", "kind": "review", "weeks": 12, "note": "3개월쯤 먹어 보고 관절 불편에 변화가 없으면 계속 먹을지 다시 판단해 보라는 안내가 있어요.", "source": "nhs-glucosamine" },
+    { "id": "chondroitin", "kind": "review", "weeks": 12, "note": "3개월쯤 먹어 보고 관절 불편에 변화가 없으면 계속 먹을지 다시 판단해 보라는 안내가 있어요.", "source": "nhs-glucosamine" },
+    { "id": "vitamin-b6", "kind": "upper", "weeks": 12, "note": "하루 50mg 이상을 오래 먹으면 손발 저림 같은 신경 증상이 보고돼요. 라벨의 B6 함량이 상한 안인지 확인해 보세요.", "source": "efsa-b6" },
+    { "id": "vitamin-b-complex", "kind": "upper", "weeks": 12, "note": "B군 복합제의 B6 함량이 높은 제품이 있어요. 하루 50mg 이상을 오래 먹으면 신경 증상이 보고되니 라벨을 한 번 확인해 보세요.", "source": "efsa-b6" },
+    { "id": "zinc", "kind": "upper", "weeks": 12, "note": "상한(하루 35mg)을 넘겨 오래 먹으면 구리 흡수가 줄 수 있어요. 여러 제품에 겹쳐 들어 있지 않은지 라벨을 확인해 보세요.", "source": "nih-zinc" },
+    { "id": "iron", "kind": "upper", "weeks": 12, "note": "철분은 부족이 확인된 경우에 맞춰 먹는 성분이에요. 오래 먹고 있다면 검사 결과를 바탕으로 계속할지 전문가와 이야기해 보세요.", "source": "nih-iron" },
+    { "id": "vitamin-a", "kind": "upper", "weeks": 12, "note": "지용성이라 몸에 쌓이기 쉬워요. 종합비타민·눈 영양제에 겹쳐 들어 있지 않은지, 합친 양이 상한(3,000㎍ RAE) 안인지 확인해 보세요.", "source": "kdri" },
+    { "id": "vitamin-d", "kind": "upper", "weeks": 12, "note": "고용량을 오래 먹으면 칼슘 수치가 올라갈 수 있어요. 합친 양이 상한(하루 4,000 IU) 안인지, 가능하면 혈중 수치를 검사해 용량을 맞춰 보세요.", "source": "kdri" },
+    { "id": "niacin", "kind": "upper", "weeks": 12, "note": "니코틴산 고용량을 오래 먹으면 간 수치·혈당에 영향이 보고돼요. 라벨 함량이 상한 안인지 확인해 보세요.", "source": "site-caution" },
+    { "id": "calcium", "kind": "upper", "weeks": 12, "note": "칼슘은 식사로 먼저 채우고 보충제는 부족한 만큼만 권해요. 고용량 보충제를 오래 혼자 먹고 있다면 양을 한 번 점검해 보세요.", "source": "site-caution" },
+    { "id": "manganese", "kind": "upper", "weeks": 12, "note": "상한(11mg)을 넘겨 오래 먹으면 신경계 이상이 보고돼요. 여러 미네랄 제품에 겹치지 않는지 확인해 보세요.", "source": "site-caution" },
+    { "id": "molybdenum", "kind": "upper", "weeks": 12, "note": "고용량을 오래 먹으면 구리 배출이 늘 수 있어요. 라벨 함량이 상한 안인지 확인해 보세요.", "source": "site-caution" },
+    { "id": "selenium", "kind": "upper", "weeks": 12, "note": "여러 종합영양제에 겹쳐 들어 있기 쉬워요. 합친 양이 상한(400㎍) 안인지 확인해 보세요.", "source": "kdri" }
+  ]
+}
