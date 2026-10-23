@@ -234,6 +234,8 @@ html.app-noshop .app-hide, html.app-noshop #sec-shop, html.app-noshop #shop { di
 .my-sheet-pair.is-unknown .dot { background: #fff; border: 2px solid #c9d4cc; }
 .my-sheet-pair b { display: block; color: #15291d; }
 .my-sheet-pair small { display: block; margin-top: .1rem; font-size: .75rem; color: #6b7a71; line-height: 1.4; }
+.my-sheet-assign b .t { font-size: .85rem; font-weight: 600; color: rgba(255,255,255,.85); }
+.my-sheet-note { margin-top: .6rem; font-size: .75rem; line-height: 1.5; color: #6b7a71; }
 .my-sheet .my-actions { margin-top: .8rem; }
 .my-sheet .my-actions .btn-primary { flex: 1; justify-content: center; }
 body.has-sheet { overflow: hidden; }

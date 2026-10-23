@@ -133,7 +133,7 @@
     }).join("");
     var empty = '<div class="my-empty">아직 저장한 영양제가 없어요.<br>아래 검색창에서 성분이나 제품을 추가하거나, <a class="font-semibold text-brand-700" href="compatibility.html">궁합 체크</a>에서 고른 성분을 한 번에 저장할 수 있어요.</div>';
     return '<section class="my-section" id="my-list"><h2><i data-lucide="pill"></i>먹고 있는 영양제 <span class="my-count">' + state.items.length + '개</span></h2>' +
-      '<p class="my-sub">시간대는 성분의 권장 시간과 궁합 간격 규칙으로 자동 배정돼요. 직접 고르면 그 시간대로 고정됩니다.</p>' +
+      '<p class="my-sub">시간대는 성분의 권장 시간과 궁합 간격 규칙으로 자동 배정돼요. 직접 고르면 그 시간대로 고정됩니다. 영양제는 많이 먹는다고 좋지 않으니 제품 라벨의 1일 섭취량을 지켜 주세요.</p>' +
       (rows || empty) +
       '<div class="my-search"><i data-lucide="search"></i><input id="my-search" type="text" autocomplete="off" role="combobox" aria-expanded="' + (ui.open ? "true" : "false") + '" aria-controls="my-search-list" placeholder="성분·제품 이름으로 추가 (예: 마그네슘, 센트룸)" value="' + esc(ui.q) + '"><div id="my-search-list" role="listbox" aria-label="추가할 성분·제품"></div></div>' +
       "</section>";
@@ -191,8 +191,9 @@
     box.innerHTML = '<div class="my-sheet-backdrop" data-sheet-close></div>' +
       '<div class="my-sheet" role="dialog" aria-modal="true" aria-labelledby="my-sheet-title"><div class="my-sheet-handle"></div>' +
       '<h2 id="my-sheet-title">' + esc(s.title) + (s.subtitle ? ' <small>' + esc(s.subtitle) + "</small>" : "") + "</h2>" +
-      '<div class="my-sheet-assign"><span class="k">배정된 시간대</span><b>' + esc(s.slotLabel) + (s.time ? " · " + esc(s.time) : "") + "</b><small>" + esc(s.reason) + "</small></div>" +
+      '<div class="my-sheet-assign"><span class="k">배정된 시간대</span><b>' + esc(s.slotLabel) + (s.time ? ' <span class="t">· 알림 ' + esc(s.time) + "</span>" : "") + "</b><small>" + esc(s.reason) + (s.time ? " 알림 시각(" + esc(s.time) + ")은 내 설정값이라 아래 알림 설정에서 바꿀 수 있어요." : "") + "</small></div>" +
       '<div class="my-sheet-pairs"><p class="k">내 영양제와의 궁합' + (nIngs ? " · 성분 " + nIngs + "가지 기준" : "") + '</p><ul>' + pairs + "</ul></div>" +
+      '<p class="my-sheet-note">영양제는 많이 먹는다고 좋지 않아요. 제품 라벨의 1일 섭취량을 지키고, 같은 성분이 겹치면 상한섭취량을 넘지 않는지 확인하세요.</p>' +
       '<div class="my-actions"><button type="button" class="btn-outline btn-sm" data-sheet-slot="' + esc(key) + '">시간대 바꾸기</button><button type="button" class="btn-primary btn-sm" data-sheet-close>확인</button></div></div>';
     box.hidden = false; document.body.classList.add("has-sheet");
     D.icons(box);
