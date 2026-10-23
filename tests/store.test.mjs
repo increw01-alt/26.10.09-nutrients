@@ -7,16 +7,16 @@ const S = createRequire(import.meta.url)("../assets/js/store.js");
 function fakeStorage(init) { const m = new Map(Object.entries(init || {})); return { getItem: k => (m.has(k) ? m.get(k) : null), setItem: (k, v) => m.set(k, String(v)), map: m }; }
 const throwing = { getItem() { throw new Error("blocked"); }, setItem() { throw new Error("blocked"); } };
 
-test("empty: 스키마 v1, 기본 시각 6개, logEnabled 는 null", () => {
+test("empty: 스키마 v2, 기본 시각 6개, logEnabled 는 null", () => {
   const s = S.empty();
-  assert.equal(s.v, 1); assert.deepEqual(s.items, []);
+  assert.equal(s.v, 2); assert.deepEqual(s.items, []);
   assert.equal(s.settings.times.morning_after, "08:00"); assert.equal(s.settings.times.bedtime, "22:30");
   assert.equal(s.settings.logEnabled, null); assert.equal(s.settings.remindersOn, false);
 });
 test("load: 저장소가 throw 하면 빈 상태", () => assert.deepEqual(S.load(throwing), S.empty()));
 test("load: 깨진 JSON·다른 버전은 빈 상태", () => {
   assert.deepEqual(S.load(fakeStorage({ "yj.my.v1": "{nope" })), S.empty());
-  assert.deepEqual(S.load(fakeStorage({ "yj.my.v1": JSON.stringify({ v: 2, items: [{ id: "zinc" }] }) })), S.empty());
+  assert.deepEqual(S.load(fakeStorage({ "yj.my.v1": JSON.stringify({ v: 3, items: [{ id: "zinc" }] }) })), S.empty());
 });
 test("load: 빠진 설정 키는 기본값으로 채운다", () => {
   const s = S.load(fakeStorage({ "yj.my.v1": JSON.stringify({ v: 1, items: [{ id: "zinc", addedAt: "2026-10-20T00:00:00Z" }], settings: { showNames: false }, log: {} }) }));
@@ -24,7 +24,7 @@ test("load: 빠진 설정 키는 기본값으로 채운다", () => {
 });
 test("save: throw 를 삼키고 false, 성공하면 true 와 저장 내용", () => {
   assert.equal(S.save(S.empty(), throwing), false);
-  const st = fakeStorage(); assert.equal(S.save(S.empty(), st), true); assert.equal(JSON.parse(st.map.get("yj.my.v1")).v, 1);
+  const st = fakeStorage(); assert.equal(S.save(S.empty(), st), true); assert.equal(JSON.parse(st.map.get("yj.my.v1")).v, 2);
 });
 test("addItems: 중복·빈 값 제외, 입력 상태는 그대로", () => {
   const s0 = S.empty(); const r = S.addItems(s0, ["zinc", "zinc", "", "vitamin-d"]);
@@ -96,7 +96,7 @@ test("importCode: URL 이나 import= 가 섞여도 코드만 뽑는다", () => {
   assert.equal(S.importCode("  " + code + "\n").items[0].id, "zinc");
 });
 test("importCode: 깨진 입력은 null", () => {
-  for (const bad of ["", "garbage", "YJ1-!!!", "YJ1-" + btoa("{nope"), "YJ1-" + btoa(JSON.stringify({ v: 2, items: [] })), "YJ1-" + btoa(JSON.stringify({ v: 1, items: "x" }))]) assert.equal(S.importCode(bad), null, bad);
+  for (const bad of ["", "garbage", "YJ1-!!!", "YJ1-" + btoa("{nope"), "YJ1-" + btoa(JSON.stringify({ v: 3, items: [] })), "YJ1-" + btoa(JSON.stringify({ v: 1, items: "x" }))]) assert.equal(S.importCode(bad), null, bad);
 });
 test("merge: 모르는 id 는 skipped 로, merge 는 기존 유지, replace 는 교체", () => {
   const byId = { zinc: {}, magnesium: {}, iron: {} };
@@ -158,3 +158,61 @@ test("timeChoices: 5분 단위가 아닌 저장값(옛 입력란)은 분 목록�
   assert.equal(c.minute, "03"); assert.deepEqual(c.minutes.slice(0, 3), ["00", "03", "05"]); assert.equal(c.minutes.length, 13);
 });
 test("timeChoices: 깨진 값은 08:00 으로", () => { const c = S.timeChoices("x"); assert.equal(c.hour, "08"); assert.equal(c.minute, "00"); });
+
+// ---- 스키마 v2: 제품 항목·내 정보·옮기기 코드 (10-23) ----
+const FD = { questions: [{ id: "age", type: "single", options: [{ id: "40s" }, { id: "30s" }] }, { id: "concern", type: "multi", max: 3, options: [{ id: "eye" }, { id: "fatigue" }, { id: "sleep" }, { id: "skin" }] }, { id: "have", type: "ingredients" }] };
+const P = { id: "p:1", name: "센트룸 맨", ings: ["vitamin-d", "zinc"] };
+test("empty: v2", () => assert.equal(S.empty().v, 2));
+test("addItems: 성분 id 와 제품 객체를 함께 받고 제품은 id·name·ings 로 저장", () => {
+  const r = S.addItems(S.empty(), ["magnesium", P, "magnesium", { id: "x", name: "no" }]);
+  assert.deepEqual(r.added, ["magnesium", "p:1"]);
+  const p = r.state.items[1]; assert.equal(p.name, "센트룸 맨"); assert.deepEqual(p.ings, ["vitamin-d", "zinc"]); assert.ok(p.addedAt);
+});
+test("isProduct·entries·ingredientIds", () => {
+  const s = S.addItems(S.empty(), ["magnesium", P, "zinc"]).state;
+  assert.equal(S.isProduct("p:1"), true); assert.equal(S.isProduct("zinc"), false);
+  assert.deepEqual(S.entries(s), ["magnesium", { id: "p:1", name: "센트룸 맨", ings: ["vitamin-d", "zinc"] }, "zinc"]);
+  assert.deepEqual(S.ingredientIds(s), ["magnesium", "zinc", "vitamin-d"]);
+});
+test("load: v1 저장본을 그대로 읽고 v2 로 올린다", () => {
+  const raw = JSON.stringify({ v: 1, items: [{ id: "magnesium", addedAt: "2026-10-01T00:00:00.000Z" }], settings: {}, log: {} });
+  const s = S.load({ getItem: () => raw }); assert.equal(s.v, 2); assert.equal(s.items[0].id, "magnesium");
+});
+test("load: 제품 항목은 name·ings 가 맞을 때만, ings 는 문자열만", () => {
+  const raw = JSON.stringify({ v: 2, items: [{ id: "p:1", name: "센트룸 맨", ings: ["zinc", 3] }, { id: "p:2", ings: [] }, { id: "p:3", name: "x" }], settings: {}, log: {} });
+  const s = S.load({ getItem: () => raw }); assert.deepEqual(s.items.map(i => i.id), ["p:1"]); assert.deepEqual(s.items[0].ings, ["zinc"]);
+});
+test("setProfile: 질문·옵션 검증, single 1개, max 초과 자름, have 무시, 비면 삭제", () => {
+  let s = S.setProfile(S.empty(), { age: ["40s", "30s"], concern: ["eye", "zzz", "fatigue", "sleep", "skin"], have: ["x"], bogus: ["1"] }, FD);
+  assert.deepEqual(s.profile.age, ["40s"]); assert.deepEqual(s.profile.concern, ["eye", "fatigue", "sleep"]); assert.equal("have" in s.profile, false); assert.ok(s.profile.updatedAt);
+  assert.deepEqual(S.profile(s).age, ["40s"]);
+  s = S.setProfile(s, { age: ["zzz"] }, FD); assert.equal(S.profile(s), null); assert.equal("profile" in s, false);
+});
+test("load: profile 은 문자열 배열 값만 남긴다", () => {
+  const raw = JSON.stringify({ v: 2, items: [], settings: {}, log: {}, profile: { age: ["40s"], concern: "eye", life: [1], updatedAt: "2026-10-23T00:00:00.000Z" } });
+  assert.deepEqual(S.load({ getItem: () => raw }).profile, { age: ["40s"], updatedAt: "2026-10-23T00:00:00.000Z" });
+});
+test("exportCode ↔ importCode v2: 제품은 id·slot·name 만, profile 은 updatedAt 빼고", () => {
+  let s = S.addItems(S.empty(), ["magnesium", P]).state; s = S.setSlot(s, "p:1", "evening_after"); s = S.setProfile(s, { age: ["40s"] }, FD);
+  const code = S.exportCode(s); assert.ok(code.startsWith("YJ1-")); assert.equal(code.indexOf("zinc"), -1);
+  const p = S.importCode(code);
+  assert.deepEqual(p.items, [{ id: "magnesium", slot: null }, { id: "p:1", slot: "evening_after", name: "센트룸 맨" }]);
+  assert.deepEqual(p.profile, { age: ["40s"] });
+});
+test("importCode: v1 코드도 읽는다(profile null)", () => {
+  const v1 = "YJ1-" + Buffer.from(JSON.stringify({ v: 1, items: [["magnesium", 0]], times: {}, on: {}, opts: {} })).toString("base64url");
+  const p = S.importCode(v1); assert.deepEqual(p.items, [{ id: "magnesium", slot: null }]); assert.equal(p.profile, null);
+});
+test("merge: 제품은 productIngs 로 성분을 채우고 없으면 빈 배열, 사전 검사 대상이 아니다", () => {
+  const byId = { magnesium: {}, zinc: {} };
+  const payload = { items: [{ id: "p:1", slot: null, name: "센트룸 맨" }, { id: "p:9", slot: "bedtime", name: "모름" }, { id: "nope", slot: null }], times: {}, slotOn: {}, opts: {}, profile: { age: ["40s"] } };
+  const r = S.merge(S.empty(), payload, "merge", byId, { productIngs: { "p:1": ["zinc"] }, finderData: FD });
+  assert.deepEqual(r.added, ["p:1", "p:9"]); assert.deepEqual(r.skipped, ["nope"]);
+  assert.deepEqual(r.state.items[0].ings, ["zinc"]); assert.deepEqual(r.state.items[1].ings, []); assert.equal(r.state.items[1].slot, "bedtime");
+  assert.deepEqual(r.state.profile.age, ["40s"]);
+});
+test("pruneUnknown: 제품은 남기고 안의 모르는 성분만 뺀다", () => {
+  const s = S.addItems(S.empty(), [{ id: "p:1", name: "x", ings: ["zinc", "gone"] }, "gone"]).state;
+  const r = S.pruneUnknown(s, { zinc: {} });
+  assert.deepEqual(r.removed, ["gone"]); assert.deepEqual(r.state.items.map(i => i.id), ["p:1"]); assert.deepEqual(r.state.items[0].ings, ["zinc"]);
+});
