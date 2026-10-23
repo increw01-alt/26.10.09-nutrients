@@ -30,12 +30,20 @@ test("timeline: 순서·done·isNext·알림 꺼짐 표시(모집단은 모든 �
 test("tip: 내 성분에서 날짜별로 결정적으로 고르고, 성분이 없으면 일반 팁", () => {
   const general = [{ text: "일반 하나", source: "영양 상식" }, { text: "일반 둘", source: "영양 상식" }];
   const a = T.tip(["vitamin-d", "magnesium"], core, at(9, 0), general, {}), b = T.tip(["vitamin-d", "magnesium"], core, at(21, 0), general, {});
-  assert.deepEqual(a, b); assert.equal(a.source, "내 영양제 기준 · 식약처 인정 기능성 자료"); assert.ok(a.text.length > 5);
+  assert.deepEqual(a, b); assert.equal(a.source, "내 영양제 기준 · 영양제.kr 성분 자료"); assert.ok(a.text.length > 5);
   assert.equal(T.tip([], core, at(9, 0), general, {}).source, "영양 상식");
   assert.notEqual(T.tip([], core, new Date(2026, 9, 24), general, {}).text, T.tip([], core, new Date(2026, 9, 23), general, {}).text);
 });
 test("tip: 제품 항목은 안의 성분으로 푼다, 성분 정보 없으면 일반 팁", () => {
   const general = [{ text: "일반", source: "영양 상식" }];
-  assert.equal(T.tip([{ id: "p:1", name: "x", ings: ["vitamin-d"] }], core, at(9, 0), general, {}).source, "내 영양제 기준 · 식약처 인정 기능성 자료");
+  assert.equal(T.tip([{ id: "p:1", name: "x", ings: ["vitamin-d"] }], core, at(9, 0), general, {}).source, "내 영양제 기준 · 영양제.kr 성분 자료");
   assert.equal(T.tip([{ id: "p:1", name: "x", ings: [] }], core, at(9, 0), general, {}).text, "일반");
+});
+
+test("tip: 데이터 쌍의 시너지 팁은 조합 이름을 앞에 붙이고, 규칙으로 판정한 쌍(inferred)의 팁은 쓰지 않는다", () => {
+  const c2 = { byId: { a: { id: "a", name: "A", timing: {} }, b: { id: "b", name: "B", timing: {} } } };
+  const data = T.tip(["a", "b"], c2, at(9, 0), [], { resolvePair: () => ({ type: "synergy", tip: "식후에 함께" }) });
+  assert.equal(data.text, "A + B: 식후에 함께");
+  const inferred = T.tip(["a", "b"], c2, at(9, 0), [{ text: "일반", source: "영양 상식" }], { resolvePair: () => ({ type: "synergy", tip: "식후에 함께", inferred: true }) });
+  assert.equal(inferred.text, "일반");
 });

@@ -45,3 +45,14 @@ test("restoreIfEmpty: 복제본이 없거나 restore 가 실패해도 false 로 
   assert.equal(await A.restoreIfEmpty({ hasLocal: () => false, restore: async () => null, write: () => {} }), false);
   assert.equal(await A.restoreIfEmpty({ hasLocal: () => { throw new Error("x"); }, restore: async () => { throw new Error("y"); }, write: () => {} }), false);
 });
+
+// ---- 최종 검토 반영: 복원은 defer 스크립트(store.js)가 모두 실행된 뒤(DOMContentLoaded)에 — defer 실행 중 readyState 는 이미 "interactive" ----
+test("waitForScripts: interactive(파싱 끝, defer 실행 중)면 DOMContentLoaded 까지 기다린다", async () => {
+  let fired = null; let done = false;
+  A.waitForScripts({ readyState: "interactive", addEventListener: (ev, fn) => { if (ev === "DOMContentLoaded") fired = fn; } }).then(() => { done = true; });
+  await Promise.resolve(); assert.equal(done, false); assert.equal(typeof fired, "function");
+  fired(); await Promise.resolve(); await Promise.resolve(); assert.equal(done, true);
+});
+test("waitForScripts: complete 면 바로 resolve", async () => {
+  let called = false; await A.waitForScripts({ readyState: "complete", addEventListener: () => { called = true; } }); assert.equal(called, false);
+});

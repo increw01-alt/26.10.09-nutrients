@@ -354,7 +354,7 @@
     window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
     window.gtag("js", new Date());
     if (window.AppBridge && window.AppBridge.isNative()) window.gtag("set", "user_properties", { platform: "app" });   // 앱 방문 구분(GA4 사용자 속성) — 첫 page_view 에도 실리도록 config 앞에
-    window.gtag("config", id, { anonymize_ip: true });
+    window.gtag("config", id, { anonymize_ip: true, page_location: String(location.href).split("#")[0] });   // 해시(#import= 옮기기 코드 — 성분·내 정보가 실림)는 통계에 보내지 않는다
     var sc = document.createElement("script"); sc.async = true; sc.src = "https://www.googletagmanager.com/gtag/js?id=" + encodeURIComponent(id);
     document.head.appendChild(sc);
   })();

@@ -185,6 +185,7 @@
     if (!s) { ui.sheet = null; box.hidden = true; return; }
     var pairs = s.pairs.map(function (p) { return '<li class="my-sheet-pair is-' + p.kind + '"><span class="dot"></span><div><b>' + esc(p.title) + "</b>" + (p.detail ? "<small>" + esc(p.detail) + "</small>" : "") + "</div></li>"; }).join("");
     if (s.okNames.length) pairs += '<li class="my-sheet-pair is-ok"><span class="dot"></span><div><b>' + (s.okNames.length === 1 ? esc(s.okNames[0]) + " — 무난해요" : "나머지 " + s.okNames.length + "개 — 무난해요") + "</b>" + (s.okNames.length > 1 ? "<small>" + esc(s.okNames.join(" · ")) + "</small>" : "") + "</div></li>";
+    if (s.unknownNames.length) pairs += '<li class="my-sheet-pair is-unknown"><span class="dot"></span><div><b>' + (isProd(key) && !nIngsOf(row) ? "성분 정보가 없어 궁합을 볼 수 없어요" : esc(s.unknownNames.join(" · ")) + " — 성분 정보가 없어 궁합을 볼 수 없어요") + "</b><small>" + (isProd(key) && !nIngsOf(row) ? "제품 라벨의 성분을 따로 추가하면 비교해 드려요" : "그 제품의 성분을 따로 추가하면 비교해 드려요") + "</small></div></li>";
     if (!pairs) pairs = '<li class="my-sheet-pair is-ok"><span class="dot"></span><div><b>아직 비교할 다른 영양제가 없어요</b><small>하나 더 추가하면 궁합을 알려 드려요</small></div></li>';
     var nIngs = isProd(key) ? (row.ings || []).length : 0;
     box.innerHTML = '<div class="my-sheet-backdrop" data-sheet-close></div>' +
@@ -197,6 +198,7 @@
     D.icons(box);
     var ok = box.querySelector("[data-sheet-close].btn-primary"); if (ok) ok.focus();
   }
+  function nIngsOf(row) { return row && row.ings ? row.ings.length : 0; }
   function closeSheet(focusKey) {
     ui.sheet = null; renderSheet();
     if (focusKey) {

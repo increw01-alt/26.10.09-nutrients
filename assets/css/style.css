@@ -231,6 +231,7 @@ html.app-noshop .app-hide, html.app-noshop #sec-shop, html.app-noshop #shop { di
 .my-sheet-pair.is-dup .dot { background: #c0392b; }
 .my-sheet-pair.is-care .dot { background: #d98a1f; }
 .my-sheet-pair.is-good .dot { background: #2f7d4f; }
+.my-sheet-pair.is-unknown .dot { background: #fff; border: 2px solid #c9d4cc; }
 .my-sheet-pair b { display: block; color: #15291d; }
 .my-sheet-pair small { display: block; margin-top: .1rem; font-size: .75rem; color: #6b7a71; line-height: 1.4; }
 .my-sheet .my-actions { margin-top: .8rem; }

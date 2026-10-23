@@ -35,7 +35,9 @@ test("제품끼리 같은 성분이면 겹쳐요, 제품 안 성분과 상대 �
 });
 test("성분 정보 없는 제품: 부제·ok 로 '성분 정보 없음'", () => {
   const s = A.build(core, [{ id: "p:9", name: "이름만", ings: [] }, "magnesium"], "magnesium", { assign: { "p:9": "morning_after", magnesium: "bedtime" }, notes: [] }, opts);
-  assert.deepEqual(s.pairs, []); assert.deepEqual(s.okNames, ["이름만"]);
+  assert.deepEqual(s.pairs, []); assert.deepEqual(s.okNames, []); assert.deepEqual(s.unknownNames, ["이름만"]);   // 판단 근거가 없으면 "무난"이 아니라 "볼 수 없음"
   const s2 = A.build(core, [{ id: "p:9", name: "이름만", ings: [] }], "p:9", { assign: { "p:9": "morning_after" }, notes: [] }, opts);
   assert.equal(s2.subtitle, "제품 · 성분 정보 없음");
+  const s3 = A.build(core, [{ id: "p:9", name: "이름만", ings: [] }, "magnesium", "calcium"], "p:9", { assign: { "p:9": "morning_after", magnesium: "bedtime", calcium: "morning_after" }, notes: [] }, opts);
+  assert.deepEqual(s3.pairs, []); assert.deepEqual(s3.okNames, []); assert.deepEqual(s3.unknownNames, ["마그네슘", "칼슘"]);
 });

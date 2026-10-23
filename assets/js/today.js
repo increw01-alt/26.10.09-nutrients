@@ -9,7 +9,7 @@
   "use strict";
   var S = (typeof window !== "undefined" && window.Store) || (typeof require === "function" ? require("./store.js") : null);
   var DAYS = ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"];
-  var SOURCE_MINE = "내 영양제 기준 · 식약처 인정 기능성 자료";
+  var SOURCE_MINE = "내 영양제 기준 · 영양제.kr 성분 자료";   // 식약처 인정 문구는 mfdsFunction 뿐이라 '식약처 인정 기능성 자료'라고 적지 않는다
 
   function greeting(date) {
     var h = date.getHours();
@@ -67,7 +67,7 @@
     });
     if (opts.resolvePair) for (var i = 0; i < ids.length; i++) for (var j = i + 1; j < ids.length; j++) {
       var p = opts.resolvePair(core, ids[i], ids[j]);
-      if (p && p.type === "synergy" && p.tip) cands.push(core.byId[ids[i]].name + " + " + core.byId[ids[j]].name + ": " + p.tip);   // 어느 조합의 팁인지 앞에 붙인다
+      if (p && p.type === "synergy" && p.tip && !p.inferred) cands.push(core.byId[ids[i]].name + " + " + core.byId[ids[j]].name + ": " + p.tip);   // 데이터 쌍만(규칙 판정은 일반 문장이라 뺌), 어느 조합의 팁인지 앞에 붙인다
     }
     var source = SOURCE_MINE, pool = cands;
     if (!pool.length) { pool = (general || []).map(function (g) { return g.text; }); source = null; }

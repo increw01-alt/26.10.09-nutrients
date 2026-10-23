@@ -9,7 +9,7 @@
   "use strict";
   var VENDOR = ["capacitor.js", "local-notifications.js", "preferences.js"];
   var VENDOR_VERSION = "8.5.3";   // app/package.json 의 @capacitor/core 버전 — `npm run vendor:cap` 이 함께 갱신. ?v= 로 실어 1년 캐시(_headers)·서비스워커를 무효화한다
-  var state = { mode: null, ready: null };
+  var state = { mode: null, ready: null, domReady: null };
 
   function isLocalHost(h) { return h === "localhost" || h === "127.0.0.1"; }
 
@@ -39,6 +39,7 @@
       if ((q === "1" || q === "0") && isLocalHost(window.location.hostname)) window.localStorage.setItem("appDev", q);
     } catch (e) { /* 무시 */ }
     state.mode = detect(window);
+    state.domReady = waitForScripts(document);   // defer 스크립트 실행 중이라 DOMContentLoaded 가 아직 안 났다 — 여기서 만들어 둬야 놓치지 않는다
     if (!state.mode) { state.ready = Promise.resolve(); return; }
     document.documentElement.classList.add("is-app");
     if (!(window.SITE && window.SITE.appShopping)) document.documentElement.classList.add("app-noshop");   // 쇼핑 버튼·안내·고지 숨김(.app-hide), config.js 의 appShopping 으로 켬
@@ -59,16 +60,20 @@
       return Promise.resolve(env.restore()).then(function (json) { if (!json) return false; env.write(json); return true; });
     }).catch(function () { return false; });
   }
-  /* defer 스크립트(store.js 등)가 모두 실행된 뒤(DOMContentLoaded)를 기다린다 — app.js 는 그보다 먼저 실행되므로 */
-  function whenScripts() {
+  /* defer 스크립트(store.js 등)가 모두 실행된 뒤(DOMContentLoaded)를 기다린다 — 순수(tests/app.test.mjs). defer 스크립트가 실행되는 동안
+     readyState 는 이미 "interactive" 이므로 "loading" 검사로는 기다릴 수 없고, "complete" 가 아니면 DOMContentLoaded 를 기다려야 한다.
+     init() 이 app.js 실행 시점(DOMContentLoaded 전)에 호출해 약속을 보관한다 */
+  function waitForScripts(doc) {
     return new Promise(function (resolve) {
-      if (document.readyState !== "loading") resolve();
-      else document.addEventListener("DOMContentLoaded", function () { resolve(); });
+      if (doc.readyState === "complete") resolve();
+      else doc.addEventListener("DOMContentLoaded", function () { resolve(); });
     });
   }
+  function whenScripts() { return state.domReady || Promise.resolve(); }
   function restoreLocal() {
     return whenScripts().then(function () {
-      if (!AppBridge.isNative() || !window.Store) return false;
+      if (!AppBridge.isNative()) return false;
+      if (!window.Store) { if (window.console) console.warn("[app] store.js 가 없어 복원을 건너뜁니다"); return false; }
       var key = window.Store.KEY;
       return restoreIfEmpty({
         hasLocal: function () { return !!window.localStorage.getItem(key); },
@@ -145,7 +150,7 @@
   }
 
   var AppBridge = {
-    detect: detect, routeAction: routeAction, requestSync: requestSync, restoreIfEmpty: restoreIfEmpty, startup: startup, VENDOR_VERSION: VENDOR_VERSION,
+    detect: detect, routeAction: routeAction, requestSync: requestSync, restoreIfEmpty: restoreIfEmpty, waitForScripts: waitForScripts, startup: startup, VENDOR_VERSION: VENDOR_VERSION,
     mode: function () { return state.mode; },
     isNative: function () { return state.mode === "native" || state.mode === "dev"; },
     isReal: function () { return state.mode === "native"; },
@@ -163,11 +168,13 @@
     /* 내 영양제 상태를 앱 저장소(Preferences)에 복제 — 휴대폰 백업(Google·iCloud)에 실리고, 웹뷰 저장소가 비면 restore 로 되살린다 */
     mirror: function (json) {
       var P = AppBridge.plugin("Preferences");
+      if (!P && state.mode === "dev") { try { window.localStorage.setItem("appDevBackup", json); } catch (e) { /* 무시 */ } return Promise.resolve(); }   // dev 모드: 가짜 앱 저장소(복원 확인용)
       if (!P || typeof P.set !== "function") return Promise.resolve();
       return Promise.resolve(P.set({ key: "yj.my.v1", value: json })).catch(function () { /* 무시 */ });
     },
     restore: function () {
       var P = AppBridge.plugin("Preferences");
+      if (!P && state.mode === "dev") { try { return Promise.resolve(window.localStorage.getItem("appDevBackup") || null); } catch (e) { return Promise.resolve(null); } }
       if (!P || typeof P.get !== "function") return Promise.resolve(null);
       return Promise.resolve(P.get({ key: "yj.my.v1" })).then(function (r) { return r && r.value ? r.value : null; }).catch(function () { return null; });
     }
