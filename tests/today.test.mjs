@@ -47,3 +47,11 @@ test("tip: 데이터 쌍의 시너지 팁은 조합 이름을 앞에 붙이고, 
   const inferred = T.tip(["a", "b"], c2, at(9, 0), [{ text: "일반", source: "영양 상식" }], { resolvePair: () => ({ type: "synergy", tip: "식후에 함께", inferred: true }) });
   assert.equal(inferred.text, "일반");
 });
+
+test("splashLine: 시작 화면 문구를 날짜별로 하나 고르고, 목록이 비면 빈 문자열", () => {
+  const list = [{ text: "하나" }, { text: "둘" }, { text: "셋" }];
+  assert.equal(T.splashLine(list, at(9, 0)), T.splashLine(list, at(21, 0)));
+  assert.ok(list.some(x => x.text === T.splashLine(list, at(9, 0))));
+  assert.notEqual(T.splashLine(list, new Date(2026, 9, 23)), T.splashLine(list, new Date(2026, 9, 24)));
+  assert.equal(T.splashLine([], at(9, 0)), "");
+});

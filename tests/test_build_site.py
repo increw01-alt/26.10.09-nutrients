@@ -865,9 +865,12 @@ class TipsTests(unittest.TestCase):
             B.validate_tips({"items": [{"text": "이 성분은 질병을 치료합니다", "source": "x"}]})
         with self.assertRaises(ValueError):
             B.validate_tips({"items": []})
+        with self.assertRaises(ValueError):   # 시작 화면 문구(splash)도 같은 규칙
+            B.validate_tips({"items": [{"text": "지용성 비타민은 기름기 있는 식사와 함께", "source": "x"}], "splash": [{"text": "질병을 예방하는 한 마디"}]})
         data = json.loads((B.ROOT / "data" / "tips.json").read_text(encoding="utf-8"))
         B.validate_tips(data)
         self.assertGreaterEqual(len(data["items"]), 10)
+        self.assertGreaterEqual(len(data["splash"]), 6)
 
 
 class LongTermTests(unittest.TestCase):

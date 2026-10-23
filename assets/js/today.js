@@ -4,6 +4,7 @@
  *   nextDose(state, sched, now)          { status: "none"|"upcoming"|"missed"|"all-done", slot?, time?, names? }
  *   timeline(state, sched, now)          [{ key, label, time, names, done, isNext, reminderOff }]
  *   tip(entries, core, date, general, opts) { text, source } — 내 성분(제품은 안의 성분)의 팁을 날짜별로 하나, 없으면 일반 팁(data/tips.json)
+ *   splashLine(list, date)               앱 시작 화면의 한 마디(data/tips.json splash)를 날짜별로 하나
  * 모집단은 시간표의 모든 시간대다: slotOn(시간대 알림 끄기)·weekends 는 알림에만 관여하고 복용 여부와는 무관하다(설계 7절 ②). */
 (function () {
   "use strict";
@@ -76,7 +77,14 @@
     return { text: pool[idx], source: source || (general[idx] && general[idx].source) || "영양 상식" };
   }
 
-  var Today = { greeting: greeting, dateLabel: dateLabel, nextDose: nextDose, timeline: timeline, tip: tip, SOURCE_MINE: SOURCE_MINE };
+  function splashLine(list, date) {
+    var pool = (list || []).map(function (x) { return x && x.text; }).filter(Boolean);
+    if (!pool.length) return "";
+    var d = date || new Date();
+    return pool[(d.getFullYear() * 366 + dayOfYear(d)) % pool.length];
+  }
+
+  var Today = { greeting: greeting, dateLabel: dateLabel, nextDose: nextDose, timeline: timeline, tip: tip, splashLine: splashLine, SOURCE_MINE: SOURCE_MINE };
   if (typeof window !== "undefined") window.Today = Today;
   if (typeof module !== "undefined") module.exports = Today;
 })();

@@ -56,3 +56,14 @@ test("waitForScripts: interactive(파싱 끝, defer 실행 중)면 DOMContentLoa
 test("waitForScripts: complete 면 바로 resolve", async () => {
   let called = false; await A.waitForScripts({ readyState: "complete", addEventListener: () => { called = true; } }); assert.equal(called, false);
 });
+
+// ---- 앱 첫 실행: 옛 빌드(시작 주소 /my)도 홈(today)으로 — 세션당 한 번, 가져오기 링크는 제외 (10-23) ----
+test("coldStartTarget: 앱에서 처음 연 페이지가 내 영양제면 today.html, 이미 시작했으면 null", () => {
+  assert.equal(A.coldStartTarget({ native: true, page: "my", started: false, hash: "" }), "today.html");
+  assert.equal(A.coldStartTarget({ native: true, page: "my", started: true, hash: "" }), null);
+});
+test("coldStartTarget: 웹·다른 페이지·가져오기 링크(#import=)는 보내지 않는다", () => {
+  assert.equal(A.coldStartTarget({ native: false, page: "my", started: false, hash: "" }), null);
+  assert.equal(A.coldStartTarget({ native: true, page: "today", started: false, hash: "" }), null);
+  assert.equal(A.coldStartTarget({ native: true, page: "my", started: false, hash: "#import=YJ1-abc" }), null);
+});

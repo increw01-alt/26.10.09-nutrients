@@ -3,9 +3,34 @@
 (function () {
   "use strict";
   var D = window.Data, S = window.Store, T = window.Today, esc = D.esc;
-  var core = null, state = null, tips = [], ltRules = null;
+  var core = null, state = null, tips = [], ltRules = null, splashList = [];
+
+  /* 앱을 처음 열 때(세션당 한 번) 로고와 건강 한 마디를 잠깐 보여 준 뒤 홈을 드러낸다. 탭하면 바로 닫힌다. 로컬 확인은 ?splash=1 */
+  function wantSplash() {
+    try {
+      if (/[?&]splash=1/.test(location.search)) return true;
+      if (!isApp() || sessionStorage.getItem("yj.splashShown")) return false;
+      sessionStorage.setItem("yj.splashShown", "1"); return true;
+    } catch (e) { return false; }
+  }
+  function showSplash() {
+    var el = document.getElementById("today-splash"); if (!el) return null;
+    var root = document.documentElement.getAttribute("data-root") || "./";
+    el.innerHTML = '<div class="splash-inner"><img class="splash-mark" src="' + root + 'assets/images/favicon.svg?v=2" alt="" width="72" height="72"><p class="splash-brand">영양제<span>.kr</span></p><p class="splash-line" id="splash-line"></p></div>';
+    el.hidden = false; el.classList.add("is-on"); document.body.classList.add("has-splash");
+    var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var closed = false, timer = setTimeout(close, reduced ? 1200 : 2600);
+    function close() {
+      if (closed) return; closed = true; clearTimeout(timer);
+      el.classList.add("is-off");
+      setTimeout(function () { el.hidden = true; el.classList.remove("is-on", "is-off"); document.body.classList.remove("has-splash"); }, reduced ? 50 : 450);
+    }
+    el.addEventListener("click", close);
+    return { setLine: function (text) { var p = document.getElementById("splash-line"); if (p && text) { p.textContent = text; p.classList.add("is-in"); } } };
+  }
 
   function isApp() { return !!(window.AppBridge && window.AppBridge.isNative()); }
+  var splash = wantSplash() ? showSplash() : null;   // defer 스크립트 실행 시점(DOMContentLoaded 전)에 바로 띄운다 — 홈이 먼저 보이는 시간을 줄임
   function today() { return S.dateKey(new Date()); }
   function schedule() { return state.items.length ? window.Schedule.build(S.entries(state), core, S.overrides(state)) : { slots: [], notes: [] }; }
   function persist() { S.save(state); if (isApp()) { window.AppBridge.mirror(JSON.stringify(state)); window.AppBridge.requestSync(); } }
@@ -97,7 +122,8 @@
     Promise.all([D.core(), D.tips().catch(function () { return { items: [] }; }), D.longterm().catch(function () { return null; })]).then(function (res) {
       return (window.AppBridge ? window.AppBridge.ready() : Promise.resolve()).then(function () { return res; });   // 앱이면 런타임 로드·복원을 기다린다
     }).then(function (res) {
-      core = res[0]; tips = (res[1] && res[1].items) || []; ltRules = res[2];
+      core = res[0]; tips = (res[1] && res[1].items) || []; splashList = (res[1] && res[1].splash) || []; ltRules = res[2];
+      if (splash) splash.setLine(T.splashLine(splashList, new Date()));
       state = S.load();
       var pr = S.pruneUnknown(state, core.byId);
       if (pr.removed.length) { state = pr.state; persist(); }

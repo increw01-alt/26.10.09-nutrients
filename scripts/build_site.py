@@ -1188,15 +1188,16 @@ def validate_tips(data: dict) -> None:
     items = (data or {}).get("items") or []
     if not items:
         raise ValueError("data/tips.json: items 가 비어 있습니다")
-    for i, t in enumerate(items):
-        text = str((t or {}).get("text", "")).strip()
-        if not 10 <= len(text) <= 120:
-            raise ValueError(f"data/tips.json[{i}]: 문장은 10~120자여야 합니다: {text[:30]}")
-        for w in TIP_FORBIDDEN:
-            if w in text:
-                raise ValueError(f"data/tips.json[{i}]: 금칙어 '{w}' 가 들어 있습니다: {text[:30]}")
-        if not str((t or {}).get("source", "")).strip():
-            raise ValueError(f"data/tips.json[{i}]: source 가 없습니다")
+    for key in ("items", "splash"):   # splash: 앱 시작 화면 한 마디(source 불필요)
+        for i, t in enumerate((data or {}).get(key) or []):
+            text = str((t or {}).get("text", "")).strip()
+            if not 10 <= len(text) <= 120:
+                raise ValueError(f"data/tips.json {key}[{i}]: 문장은 10~120자여야 합니다: {text[:30]}")
+            for w in TIP_FORBIDDEN:
+                if w in text:
+                    raise ValueError(f"data/tips.json {key}[{i}]: 금칙어 '{w}' 가 들어 있습니다: {text[:30]}")
+            if key == "items" and not str((t or {}).get("source", "")).strip():
+                raise ValueError(f"data/tips.json[{i}]: source 가 없습니다")
 
 
 def build_finder(core: dict, cfg: dict, guides: dict) -> None:

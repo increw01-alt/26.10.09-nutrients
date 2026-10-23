@@ -42,6 +42,8 @@
     state.domReady = waitForScripts(document);   // defer 스크립트 실행 중이라 DOMContentLoaded 가 아직 안 났다 — 여기서 만들어 둬야 놓치지 않는다
     if (!state.mode) { state.ready = Promise.resolve(); return; }
     document.documentElement.classList.add("is-app");
+    var root0 = document.documentElement.getAttribute("data-root") || "./";
+    if (coldStart(root0)) { state.ready = new Promise(function () {}); return; }   // 홈으로 이동 중 — 이 페이지의 스크립트는 더 진행하지 않는다
     if (!(window.SITE && window.SITE.appShopping)) document.documentElement.classList.add("app-noshop");   // 쇼핑 버튼·안내·고지 숨김(.app-hide), config.js 의 appShopping 으로 켬
     document.addEventListener("DOMContentLoaded", function () { document.body.classList.add("is-app"); });
     var root = document.documentElement.getAttribute("data-root") || "./";
@@ -102,6 +104,23 @@
   }
   if (typeof document !== "undefined") document.addEventListener("DOMContentLoaded", function () { startup(); });
 
+  /* 앱 첫 실행(세션당 한 번): 옛 빌드는 시작 주소가 /my 라 내 영양제로 열리므로 홈(today.html)으로 보낸다 — 순수(tests/app.test.mjs).
+     env = { native, page(data-page), started(sessionStorage yj.started), hash(location.hash+search) }. 가져오기 링크(#import=)는 그대로 둔다 */
+  function coldStartTarget(env) {
+    if (!env || !env.native || env.started) return null;
+    if (/[?&#]import=/.test(env.hash || "")) return null;
+    return env.page === "my" ? "today.html" : null;
+  }
+  function coldStart(root) {
+    try {
+      var ss = window.sessionStorage, started = !!ss.getItem("yj.started");
+      var target = coldStartTarget({ native: true, page: document.body ? document.body.getAttribute("data-page") : "", started: started, hash: window.location.hash + window.location.search });
+      if (!started) ss.setItem("yj.started", "1");
+      if (target) { window.location.replace(root + target); return true; }
+    } catch (e) { /* 저장소 차단 등 — 그대로 진행 */ }
+    return false;
+  }
+
   /* 알림 동작을 어디로 보낼지 — 순수 함수(tests/app.test.mjs). env.dispatch(detail) 가 true(내 영양제 페이지의 리스너가 받음)면 끝.
      아니면 env.store(detail) 로 보관하고(리스너가 아직 안 붙은 콜드 스타트도 여기), 내 영양제 페이지가 아니면 env.navigate() */
   function routeAction(detail, env) {
@@ -150,7 +169,7 @@
   }
 
   var AppBridge = {
-    detect: detect, routeAction: routeAction, requestSync: requestSync, restoreIfEmpty: restoreIfEmpty, waitForScripts: waitForScripts, startup: startup, VENDOR_VERSION: VENDOR_VERSION,
+    detect: detect, routeAction: routeAction, coldStartTarget: coldStartTarget, requestSync: requestSync, restoreIfEmpty: restoreIfEmpty, waitForScripts: waitForScripts, startup: startup, VENDOR_VERSION: VENDOR_VERSION,
     mode: function () { return state.mode; },
     isNative: function () { return state.mode === "native" || state.mode === "dev"; },
     isReal: function () { return state.mode === "native"; },
