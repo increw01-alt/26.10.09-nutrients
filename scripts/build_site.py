@@ -1151,6 +1151,25 @@ def render_finder(data: dict, core: dict, cfg: dict) -> str:
     return head + body
 
 
+TIP_FORBIDDEN = ("치료", "예방", "완치", "진단", "AI가 분석")
+
+
+def validate_tips(data: dict) -> None:
+    """오늘의 한 줄 일반 팁(data/tips.json): 비어 있지 않고, 각 문장은 10~120자, 금칙어(질병 치료·예방·완치·진단, 'AI가 분석')가 없어야 한다."""
+    items = (data or {}).get("items") or []
+    if not items:
+        raise ValueError("data/tips.json: items 가 비어 있습니다")
+    for i, t in enumerate(items):
+        text = str((t or {}).get("text", "")).strip()
+        if not 10 <= len(text) <= 120:
+            raise ValueError(f"data/tips.json[{i}]: 문장은 10~120자여야 합니다: {text[:30]}")
+        for w in TIP_FORBIDDEN:
+            if w in text:
+                raise ValueError(f"data/tips.json[{i}]: 금칙어 '{w}' 가 들어 있습니다: {text[:30]}")
+        if not str((t or {}).get("source", "")).strip():
+            raise ValueError(f"data/tips.json[{i}]: source 가 없습니다")
+
+
 def build_finder(core: dict, cfg: dict, guides: dict) -> None:
     data = read_json(DATA_DIR / "finder.json", None)
     if not data:
@@ -2659,6 +2678,11 @@ def main() -> int:
     guides = build_guides(core, cfg)
     build_charts(core, cfg)
     build_finder(core, cfg, guides)
+    tips = read_json(DATA_DIR / "tips.json", None)
+    if tips:
+        validate_tips(tips)   # 오늘 홈의 일반 팁 — 금칙어·길이 검사
+    else:
+        log.warning("data/tips.json 이 없어 오늘의 한 줄 일반 팁 검증을 건너뜁니다")
     function_ids = write_functions(core, cfg, guides)
     compare_slugs = write_compares(core, cfg, guides)
     drug_guide_ids = write_drug_guides(core, cfg, guides)

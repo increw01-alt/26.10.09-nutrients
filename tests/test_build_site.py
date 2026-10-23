@@ -846,3 +846,17 @@ class GlossaryTests(unittest.TestCase):
         it = self.core["by_id"]["iron"]
         ihtml = B.render_page(it, self.core, self.cfg)
         self.assertIn("assets/js/terms.js", ihtml)
+
+
+class TipsTests(unittest.TestCase):
+    """오늘의 한 줄 일반 팁(data/tips.json) 검증 — 금칙어·길이·개수."""
+
+    def test_validate_tips_rejects_forbidden_words_and_accepts_data_file(self):
+        import json
+        with self.assertRaises(ValueError):
+            B.validate_tips({"items": [{"text": "이 성분은 질병을 치료합니다", "source": "x"}]})
+        with self.assertRaises(ValueError):
+            B.validate_tips({"items": []})
+        data = json.loads((B.ROOT / "data" / "tips.json").read_text(encoding="utf-8"))
+        B.validate_tips(data)
+        self.assertGreaterEqual(len(data["items"]), 10)
