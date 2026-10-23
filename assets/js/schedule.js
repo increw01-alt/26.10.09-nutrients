@@ -43,7 +43,7 @@
   function build(entries, core, overrides, opts) {
     overrides = overrides || {}; opts = opts || {};
     var resolvePair = opts.resolvePair || (typeof window !== "undefined" && window.Data ? window.Data.resolvePair : null);
-    var items = normalize(entries, core), assign = {}, notes = [];
+    var items = normalize(entries, core), assign = {}, notes = [], moves = [];   // moves: 간격 때문에 옮긴 항목 { key, slot, because: 상대 key }
     items.forEach(function (x) {
       assign[x.key] = overrides[x.key] || (x.kind === "product" ? productSlot(x.ings, core) : ((x.it.timing && x.it.timing.slot) || "morning_after"));
     });
@@ -76,6 +76,7 @@
           assign[x.key] = alts[i];
           if (!conflicts(x).length) {
             moved = true;
+            moves.push({ key: x.key, slot: alts[i], because: cf[0].key });
             notes.push(nameOf(x) + "은(는) " + nameOf(cf[0]) + "과(와) 간격을 두기 위해 " + SLOT_META[alts[i]].label + "(으)로 옮겼습니다.");
             return;
           }
@@ -98,7 +99,7 @@
       }) };
     }).filter(function (s) { return s.items.length; });
 
-    return { slots: slots, assign: assign, notes: notes.filter(function (n, i, a) { return a.indexOf(n) === i; }) };   // assign: key → 실제 배정 시간대
+    return { slots: slots, assign: assign, moves: moves, notes: notes.filter(function (n, i, a) { return a.indexOf(n) === i; }) };   // assign: key → 실제 배정 시간대, moves: 옮긴 항목
   }
 
   var Schedule = { build: build, productSlot: productSlot, SLOT_META: SLOT_META, SLOT_ORDER: SLOT_ORDER };

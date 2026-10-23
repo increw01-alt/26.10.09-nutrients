@@ -231,3 +231,8 @@ test("load: pausedAt·ltCheckedAt 은 ISO 문자열이면 보존, 아니면 버�
   const it = S.load({ getItem: () => raw }).items[0];
   assert.equal(it.pausedAt, "2026-10-20T00:00:00.000Z"); assert.equal("ltCheckedAt" in it, false);
 });
+test("pruneUnknown: 제품 안 성분을 뺐으면 changed 로 알려 호출 쪽이 저장하게 한다", () => {
+  const s = S.addItems(S.empty(), [{ id: "p:1", name: "x", ings: ["zinc", "gone"] }]).state;
+  assert.equal(S.pruneUnknown(s, { zinc: {} }).changed, true);
+  assert.equal(S.pruneUnknown(s, { zinc: {}, gone: {} }).changed, false);
+});

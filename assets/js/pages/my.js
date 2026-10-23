@@ -349,7 +349,7 @@
     return '<section class="my-section" id="my-transfer"><h2><i data-lucide="arrow-right"></i>다른 기기로 옮기기</h2>' +
       '<p class="my-sub">내 영양제 목록(제품 포함)·알림 설정·내 정보를 링크·QR·텍스트 코드로 옮길 수 있어요. 복용 기록은 포함되지 않습니다.</p>' +
       '<div class="my-actions"><button type="button" class="btn-primary btn-sm" data-export-open' + (state.items.length ? "" : " disabled") + '>' + (ui.exportOpen ? "내보내기 닫기" : "내보내기") + "</button></div>" + exportPanel +
-      '<div class="my-field"><label for="my-import-text">가져오기 — 링크나 텍스트 코드를 붙여넣기</label><div class="my-copy"><textarea id="my-import-text" placeholder="YJ1-… 또는 my.html?import=… 링크">' + esc(ui.importText) + '</textarea><button type="button" class="btn-outline btn-sm" data-import-parse>불러오기</button></div>' +
+      '<div class="my-field"><label for="my-import-text">가져오기 — 링크나 텍스트 코드를 붙여넣기</label><div class="my-copy"><textarea id="my-import-text" placeholder="YJ1-… 또는 …/my#import=… 링크">' + esc(ui.importText) + '</textarea><button type="button" class="btn-outline btn-sm" data-import-parse>불러오기</button></div>' +
       (ui.importError ? '<p class="my-error">' + esc(ui.importError) + "</p>" : "") + "</div>" +
       (ui.importPreview ? previewCard(ui.importPreview, "text") : "") + "</section>";
   }
@@ -358,7 +358,7 @@
     var prods = payload.items.filter(function (it) { return isProd(it.id); });
     var needIndex = prods.length ? allProducts() : Promise.resolve(null);
     var needFinder = payload.profile ? D.finder().catch(function () { return null; }) : Promise.resolve(null);
-    Promise.all([needIndex, needFinder]).then(function (res) {
+    Promise.all([needIndex, needFinder]).catch(function () { return [null, null]; }).then(function (res) {   // 색인·질문을 못 받아도 성분 없이 가져온다
       var productIngs = {}, missing = 0;
       prods.forEach(function (it) { var row = res[0] ? productRow(it.id.slice(2)) : null; if (row && row.ings.length) productIngs[it.id] = row.ings; else missing++; });
       var r = S.merge(state, payload, mode, core.byId, { productIngs: productIngs, finderData: res[1] || undefined });
@@ -485,7 +485,8 @@
       return c;
     }).then(function (c) {
       var pr = S.pruneUnknown(state, core.byId);
-      if (pr.removed.length) { state = pr.state; persist(); ui.notice = "성분 사전에서 사라진 항목 " + pr.removed.length + "개를 목록에서 뺐어요."; }
+      if (pr.removed.length || pr.changed) { state = pr.state; persist(); }
+      if (pr.removed.length) ui.notice = "성분 사전에서 사라진 항목 " + pr.removed.length + "개를 목록에서 뺐어요.";
       /* 가져오기 링크(#import=, 옛 ?import=)는 읽자마자 주소에서 지운다 — 목록이 주소에 남아 공유·기록되지 않게.
          이미 열린 페이지에서 조각만 바뀌는 이동(hashchange)도 같은 길로 처리한다 */
       function readImportFromUrl() {

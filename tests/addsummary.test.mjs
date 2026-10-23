@@ -41,3 +41,13 @@ test("성분 정보 없는 제품: 부제·ok 로 '성분 정보 없음'", () =>
   const s3 = A.build(core, [{ id: "p:9", name: "이름만", ings: [] }, "magnesium", "calcium"], "p:9", { assign: { "p:9": "morning_after", magnesium: "bedtime", calcium: "morning_after" }, notes: [] }, opts);
   assert.deepEqual(s3.pairs, []); assert.deepEqual(s3.okNames, []); assert.deepEqual(s3.unknownNames, ["마그네슘", "칼슘"]);
 });
+
+// ---- 최종 검토 미룬 지적 #5: 배정 이유는 moves 로 판정 — 상대로만 언급된 메모를 고르지 않는다 ----
+test("이유: sched.moves 가 있으면 그것으로만 판정하고(상대로 언급된 메모 무시), 옮긴 항목은 옮긴 이유 문장", () => {
+  const sched2 = { assign: { calcium: "morning_after", magnesium: "evening_after" }, notes: ["마그네슘은(는) 칼슘과(와) 간격을 두기 위해 저녁 식후(으)로 옮겼습니다."], moves: [{ key: "magnesium", slot: "evening_after", because: "calcium" }] };
+  const o = Object.assign({}, opts, { times: { morning_after: "08:00", evening_after: "19:00" }, slotLabel: { morning_after: "아침 식후", evening_after: "저녁 식후" } });
+  const cal = A.build(core, ["calcium", "magnesium"], "calcium", sched2, o);
+  assert.equal(cal.reason.indexOf("옮겼"), -1);   // 칼슘은 옮겨지지 않았다
+  const mag = A.build(core, ["calcium", "magnesium"], "magnesium", sched2, o);
+  assert.ok(mag.reason.indexOf("칼슘") >= 0 && mag.reason.indexOf("저녁 식후") >= 0 && mag.reason.indexOf("옮겼") >= 0);
+});

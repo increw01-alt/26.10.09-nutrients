@@ -60,7 +60,14 @@
     var time = (opts.times && opts.times[slotKey]) || "";
 
     var subtitle = me.kind === "product" ? (me.ings.length ? "제품 · 한 알에 " + me.ings.length + "가지" : "제품 · 성분 정보 없음") : "";
-    var note = ((sched && sched.notes) || []).filter(function (n) { return n.indexOf(me.name) >= 0; })[0];
+    var note = null;
+    if (sched && Array.isArray(sched.moves)) {   // 구조화된 이동 기록이 있으면 그것으로만(상대로 언급된 메모를 잘못 고르지 않게)
+      var mv = sched.moves.filter(function (m) { return m.key === key; })[0];
+      if (mv) {
+        var other = items.filter(function (x) { return x.key === mv.because; })[0];
+        note = withJosa(opts, me.name, "은는") + " " + withJosa(opts, other ? other.name : mv.because, "과와") + " 간격을 두기 위해 " + ((opts.slotLabel && opts.slotLabel[mv.slot]) || mv.slot) + "(으)로 옮겼어요.";
+      }
+    } else note = ((sched && sched.notes) || []).filter(function (n) { return n.indexOf(me.name) >= 0; })[0];
     var reason;
     if (note) reason = note;
     else if (me.kind === "ingredient") { var t = core.byId[key].timing || {}; reason = t.note || ((t.label || slotLabel) + " 권장"); }

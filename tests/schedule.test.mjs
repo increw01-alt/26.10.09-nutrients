@@ -37,3 +37,10 @@ test("build: 성분 정보 없는 제품(ings 빈 배열)도 아침 식후에 �
 test("build: 모르는 성분 id 는 건너뛴다(기존 동작 유지)", () => {
   const r = Sch.build(["nope", "magnesium"], core, {}, { resolvePair }); assert.deepEqual(Object.keys(r.assign), ["magnesium"]);
 });
+
+// ---- 최종 검토 미룬 지적 #5: 옮긴 항목을 구조화된 moves 로 돌려준다 ----
+test("build: moves 에 옮긴 항목(key)·새 시간대·상대(because)가 담긴다, 안 옮기면 빈 배열", () => {
+  const r = Sch.build(["zinc", { id: "p:2", name: "칼슘제", ings: ["calcium"] }], core, { zinc: "evening_after" }, { resolvePair });
+  assert.deepEqual(r.moves, [{ key: "p:2", slot: r.assign["p:2"], because: "zinc" }]);
+  assert.deepEqual(Sch.build(["magnesium"], core, {}, { resolvePair }).moves, []);
+});

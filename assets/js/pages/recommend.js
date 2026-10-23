@@ -5,16 +5,7 @@
   "use strict";
   var D = window.Data, S = window.Store, F = window.Finder, esc = D.esc;
   var core = null, data = null, guides = null, state = null, ui = { editing: false };
-  var FLAG_TEXT = {
-    kids: { title: "어린이 기준으로 추천했어요", body: "어린이 가이드의 성분 범위 안에서만 골랐습니다. 제품 라벨의 연령 표시와 섭취량을 꼭 확인하고, 보호자가 판단해 주세요.", link: "kids-by-age" },
-    teens: { title: "청소년 기준으로 추천했어요", body: "청소년·수험생 가이드의 성분 범위 안에서만 골랐습니다. 성장기에는 식사가 우선이며 제품 라벨의 연령 표시를 확인하세요.", link: "teens" },
-    pregnancy: { title: "임신·수유·출산 후에는 더 신중하게", body: "해당 가이드의 성분 범위 안에서만 추천했습니다. 새 영양제를 시작하기 전에 반드시 산부인과·약사와 상의하세요.", link: "pregnancy" },
-    meds: { title: "약을 복용 중이라면", body: "약과 영양제의 상호작용이 있을 수 있어 약 복용자 가이드를 함께 보여드립니다. 복용 간격과 주의 성분을 확인하고 의사·약사와 상의하세요.", link: "with-medication" },
-    cancer: { title: "항암 치료 중에는 담당 의료진과 먼저", body: "치료 중 영양제는 치료 반응에 영향을 줄 수 있어 담당 의료진의 확인이 먼저입니다. 가이드는 참고용입니다.", link: "cancer-treatment" },
-    kidney: { title: "신장질환·투석 중에는 제한이 많아요", body: "칼륨·마그네슘·비타민 등 일부 성분은 제한될 수 있습니다. 담당 의료진과 영양사의 안내를 우선하세요.", link: "kidney" },
-    surgery: { title: "수술 전에는 중단할 성분이 있어요", body: "출혈 경향이 있는 성분(오메가3·은행잎·마늘·비타민E·홍삼·커큐민·나토키나제 등)은 추천에서 뺐습니다. 수술 일정을 의료진에게 알리고 복용 중인 영양제의 중단·재개 시점을 상의하세요.", link: "surgery" },
-    bleeding: { title: "항응고제·항혈소판제를 드신다면 출혈 경향 성분은 뺐어요", body: "혈소판·응고에 작용하는 성분(은행잎·나토키나제·오메가3·비타민E·홍삼·마늘·커큐민 등)과 와파린 효과를 바꾸는 성분(비타민K·코엔자임Q10·클로렐라)은 추천에서 제외했습니다. 새 영양제는 반드시 의사·약사와 상의하고 임의로 시작·중단하지 마세요.", link: "with-medication" }
-  };
+  var FLAG_TEXT = F.FLAG_TEXT;   // 셀프체크와 같은 주의 상자 문구(finder.js)
 
   function isApp() { return !!(window.AppBridge && window.AppBridge.isNative()); }
   function hideShop() { return !!(window.AppBridge && window.AppBridge.hideShopping()); }

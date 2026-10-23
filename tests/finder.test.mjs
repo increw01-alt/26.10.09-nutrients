@@ -146,3 +146,9 @@ test("reasons: 추천 가이드를 고른 규칙의 조건 가운데 내가 답�
   assert.deepEqual(F.reasons({ age: ["40s"], concern: ["eye"] }, data, ["eye"]), ["40대", "눈 건강"]);
   assert.deepEqual(F.reasons({ age: ["40s"], concern: ["sleep"] }, data, ["sleep"]), ["수면"]);   // 수면 가이드를 고른 규칙은 셋째뿐
 });
+
+// ---- 최종 검토 미룬 지적 #10: 주의 상자 문구를 셀프체크·맞춤 추천이 공유 ----
+test("FLAG_TEXT: 규칙의 flags 가 모두 문구를 갖고, 각 문구에 title·body·link 가 있다", () => {
+  const flags = new Set(); data.rules.forEach(r => (r.flags || []).forEach(f => flags.add(f)));
+  for (const f of flags) { const t = F.FLAG_TEXT[f]; assert.ok(t, f); assert.ok(t.title && t.body && t.link, f); }
+});

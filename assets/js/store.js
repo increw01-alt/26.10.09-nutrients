@@ -216,12 +216,16 @@
   /* 성분 사전에서 사라진 id 를 조용히 제거하고 알려 준다 */
   /* 사전에 없는 성분 항목은 빼고, 제품 항목은 남기되 안의 모르는 성분만 뺀다 */
   function pruneUnknown(state, byId) {
-    var out = clone(state), removed = [];
+    var out = clone(state), removed = [], changed = false;
     out.items = out.items.filter(function (it) {
-      if (isProduct(it.id)) { it.ings = (it.ings || []).filter(function (id) { return !!(byId && byId[id]); }); return true; }
+      if (isProduct(it.id)) {
+        var kept = (it.ings || []).filter(function (id) { return !!(byId && byId[id]); });
+        if (kept.length !== (it.ings || []).length) changed = true;
+        it.ings = kept; return true;
+      }
       if (byId && byId[it.id]) return true; removed.push(it.id); return false;
     });
-    return { state: out, removed: removed };
+    return { state: out, removed: removed, changed: changed };   // changed: 제품 안 성분을 뺀 경우(호출 쪽이 저장)
   }
 
   /* ---- 복용 기록: 날짜 키는 기기의 현지 날짜 ---- */
