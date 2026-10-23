@@ -1,10 +1,38 @@
-/* 내 영양제 페이지 — 목록·검색 추가·시간대 변경·오늘 시간표·복용 기록·알림 설정·다른 기기로 옮기기.
-   상태는 store.js(기기 내 localStorage)가 들고, 바뀔 때마다 통째로 다시 그린다(검색어·선택 날짜 같은 화면 상태만 모듈 변수로 유지). */
+/* 내 영양제 페이지 — 목록·검색 추가(성분·제품)·추가 직후 요약 창·시간대 변경·오늘 시간표·복용 기록·알림 설정·다른 기기로 옮기기.
+   상태는 store.js(기기 내 localStorage)가 들고, 바뀔 때마다 통째로 다시 그린다(검색어·선택 날짜 같은 화면 상태만 모듈 변수로 유지).
+   제품은 한 줄(id "p:…", name, ings)로 저장되고 시간대는 제품째 하나(schedule.js), 추가 직후 요약은 addsummary.js 가 계산한다. */
 (function () {
   "use strict";
   var D = window.Data, S = window.Store, esc = D.esc;
   var core = null, state = null;
-  var ui = { q: "", open: false, cursor: -1, focusSearch: false, selectedDay: null, notice: "", importPayload: null, exportOpen: false, importError: "", importPreview: null, importText: "" };
+  var ui = { q: "", open: false, cursor: -1, focusSearch: false, selectedDay: null, notice: "", importPayload: null, exportOpen: false, importError: "", importPreview: null, importText: "", sheet: null };
+  /* 제품 검색 색인(data/products/names.json + 과거분) — 검색창에 처음 입력할 때 한 번만 받는다 */
+  var extra = { products: null, prodMatch: null, loading: null };
+  function loadProducts() {
+    if (extra.loading) return extra.loading;
+    extra.loading = D.productNames().then(function (n) {
+      extra.products = n && n.p ? n : { i: [], c: [], p: [] };
+      extra.prodMatch = D.productMatcher(extra.products);
+      if (extra.products.more) extra.products.more.then(function () { extra.prodMatch = D.productMatcher(extra.products); if (ui.open) renderSearchList(); });   // 과거 제품이 합쳐지면 다시 그리기
+      return extra.products;
+    }).catch(function () { extra.products = { i: [], c: [], p: [] }; extra.prodMatch = null; return extra.products; });
+    return extra.loading;
+  }
+  /* 모든 제품(과거분 포함)이 합쳐진 색인을 돌려준다 — 가져오기에서 제품 성분을 복원할 때 */
+  function allProducts() {
+    return loadProducts().then(function (n) { return n.more ? n.more.then(function () { return n; }) : n; });
+  }
+  function productRow(pid) {   // 색인에서 제품 행 찾기 → { id:"p:…", name, ings, maker } | null
+    var n = extra.products; if (!n) return null;
+    for (var i = 0; i < n.p.length; i++) if (n.p[i][0] === pid) return productEntry(n.p[i]);
+    return null;
+  }
+  function productEntry(pp) {
+    var n = extra.products;
+    return { id: "p:" + pp[0], pid: pp[0], name: pp[1], ings: pp[2].map(function (k) { return n.i[k]; }).filter(function (k) { return !!core.byId[k]; }), maker: (n.c || [])[pp[3]] || "" };
+  }
+  function isProd(id) { return S.isProduct(id); }
+  function itemName(row) { return isProd(row.id) ? row.name : (byId(row.id) ? byId(row.id).name : row.id); }
 
   function thumb(it, cls) {
     var I = window.Illus;
@@ -88,31 +116,46 @@
     t.setAttribute("role", "status"); t.textContent = msg; document.body.appendChild(t); setTimeout(function () { t.remove(); }, 2200);
   }
   function schedule() {
-    return state.items.length ? window.Schedule.build(ids(), core, S.overrides(state)) : { slots: [], notes: [] };
+    return state.items.length ? window.Schedule.build(S.entries(state), core, S.overrides(state)) : { slots: [], notes: [] };
   }
 
   /* ---- 목록 + 검색 추가 ---- */
   function sectionList(sched) {
     var rows = state.items.map(function (row) {
-      var it = byId(row.id), d = defaultSlot(it), actual = (sched.assign && sched.assign[row.id]) || d;
+      var prod = isProd(row.id), it = prod ? null : byId(row.id);
+      var d = prod ? window.Schedule.productSlot(row.ings || [], core) : defaultSlot(it), actual = (sched.assign && sched.assign[row.id]) || d;
+      var name = itemName(row);
       /* 값 "" = 자동(권장 시간대 + 간격 규칙으로 배정, 현재 배정을 함께 표시). 사용자가 고른 시간대는 기본값과 같아도 그대로 저장해 자동 이동하지 않게 한다 */
       var opts = '<option value=""' + (row.slot ? "" : " selected") + '>자동 · ' + esc(label(actual)) + "</option>" + S.SLOT_ORDER.map(function (k) {
         return '<option value="' + k + '"' + (row.slot === k ? " selected" : "") + ">" + esc(label(k)) + (k === d ? " (권장)" : "") + "</option>";
       }).join("");
-      return '<div class="my-item">' + thumb(it) +
-        '<div class="my-item-main"><a href="' + D.ingredientUrl(it.id) + '">' + esc(it.name) + '</a><small>' + esc((it.timing && it.timing.label) || label(d)) + '</small></div>' +
-        '<select class="my-slot" data-id="' + esc(it.id) + '" aria-label="' + esc(it.name) + ' 복용 시간대">' + opts + '</select>' +
-        '<button type="button" class="my-icon-btn" data-remove="' + esc(it.id) + '" aria-label="' + esc(it.name) + ' 삭제"><i data-lucide="x"></i></button></div>';
+      var main;
+      if (prod) {   // 제품 한 줄: 이름 + 안의 성분 칩(앞 6개), 성분 정보가 없으면 안내
+        var names = (row.ings || []).map(function (id) { return byId(id); }).filter(Boolean).map(function (x) { return D.shortName(x); });
+        var chips = names.length ? names.slice(0, 6).map(function (n) { return '<span class="my-chip">' + esc(n) + "</span>"; }).join("") + (names.length > 6 ? '<span class="my-chip">+' + (names.length - 6) + "</span>" : "") : '<span class="my-chip is-muted">성분 정보 없음</span>';
+        main = '<div class="my-item-main"><a href="' + D.productUrl(row.id.slice(2)) + '">' + esc(name) + '</a><small>제품 · 한 알에 ' + names.length + '가지</small><div class="my-chips">' + chips + "</div></div>";
+      } else {
+        main = '<div class="my-item-main"><a href="' + D.ingredientUrl(it.id) + '">' + esc(it.name) + '</a><small>' + esc((it.timing && it.timing.label) || label(d)) + '</small></div>';
+      }
+      return '<div class="my-item">' + (prod ? '<span class="thumb thumb-sm my-prod-ic" aria-hidden="true"><i data-lucide="package"></i></span>' : thumb(it)) + main +
+        '<select class="my-slot" data-id="' + esc(row.id) + '" aria-label="' + esc(name) + ' 복용 시간대">' + opts + '</select>' +
+        '<button type="button" class="my-icon-btn" data-remove="' + esc(row.id) + '" aria-label="' + esc(name) + ' 삭제"><i data-lucide="x"></i></button></div>';
     }).join("");
-    var empty = '<div class="my-empty">아직 저장한 영양제가 없어요.<br>아래 검색창에서 성분을 추가하거나, <a class="font-semibold text-brand-700" href="compatibility.html">궁합 체크</a>에서 고른 성분을 한 번에 저장할 수 있어요.</div>';
+    var empty = '<div class="my-empty">아직 저장한 영양제가 없어요.<br>아래 검색창에서 성분이나 제품을 추가하거나, <a class="font-semibold text-brand-700" href="compatibility.html">궁합 체크</a>에서 고른 성분을 한 번에 저장할 수 있어요.</div>';
     return '<section class="my-section" id="my-list"><h2><i data-lucide="pill"></i>먹고 있는 영양제 <span class="my-count">' + state.items.length + '개</span></h2>' +
       '<p class="my-sub">시간대는 성분의 권장 시간과 궁합 간격 규칙으로 자동 배정돼요. 직접 고르면 그 시간대로 고정됩니다.</p>' +
       (rows || empty) +
-      '<div class="my-search"><i data-lucide="search"></i><input id="my-search" type="text" autocomplete="off" role="combobox" aria-expanded="' + (ui.open ? "true" : "false") + '" aria-controls="my-search-list" placeholder="성분 이름으로 추가 (예: 마그네슘)" value="' + esc(ui.q) + '"><div id="my-search-list" role="listbox" aria-label="추가할 성분"></div></div>' +
+      '<div class="my-search"><i data-lucide="search"></i><input id="my-search" type="text" autocomplete="off" role="combobox" aria-expanded="' + (ui.open ? "true" : "false") + '" aria-controls="my-search-list" placeholder="성분·제품 이름으로 추가 (예: 마그네슘, 센트룸)" value="' + esc(ui.q) + '"><div id="my-search-list" role="listbox" aria-label="추가할 성분·제품"></div></div>' +
       "</section>";
   }
+  /* 검색 결과: 성분(최대 6) + 제품(최대 4). 제품 색인은 처음 입력할 때 받고, 받기 전에는 성분만 */
   function searchHits() {
-    return ui.q.trim() ? D.search(core.items, ui.q, 8) : [];
+    var q = ui.q.trim();
+    if (!q) return [];
+    var hits = D.search(core.items, q, 6).map(function (it) { return { kind: "ing", key: it.id, it: it, name: it.name }; });
+    if (!extra.products) loadProducts().then(function () { if (ui.open) renderSearchList(); });
+    else if (extra.prodMatch) extra.prodMatch(q, 4).idx.forEach(function (i) { var e = productEntry(extra.products.p[i]); hits.push({ kind: "prod", key: e.id, name: e.name, ings: e.ings, maker: e.maker }); });
+    return hits;
   }
   function renderSearchList() {
     var box = document.getElementById("my-search-list"), input = document.getElementById("my-search");
@@ -121,18 +164,55 @@
     if (!ui.open || !hits.length) { box.innerHTML = ""; box.className = ""; if (input) input.setAttribute("aria-expanded", "false"); return; }
     var have = {}; state.items.forEach(function (i) { have[i.id] = true; });
     box.className = "my-search-list";
-    box.innerHTML = hits.map(function (it, i) {
-      return '<button type="button" role="option" data-add="' + esc(it.id) + '" class="' + (i === ui.cursor ? "is-active " : "") + (have[it.id] ? "is-added" : "") + '" aria-selected="' + (i === ui.cursor ? "true" : "false") + '">' + thumb(it, "thumb-xs") + '<span>' + esc(it.name) + '</span><small>' + (have[it.id] ? "이미 있음" : esc(label(defaultSlot(it)))) + '</small></button>';
+    box.innerHTML = hits.map(function (h, i) {
+      var sub = have[h.key] ? "이미 있어요" : (h.kind === "prod" ? "제품 · 성분 " + h.ings.length + "가지" + (h.maker ? " · " + h.maker : "") : "");
+      var art = h.kind === "prod" ? '<span class="thumb thumb-xs my-prod-ic" aria-hidden="true"><i data-lucide="package"></i></span>' : thumb(h.it, "thumb-xs");
+      return '<button type="button" role="option" data-add="' + esc(h.key) + '" class="' + (i === ui.cursor ? "is-active " : "") + (have[h.key] ? "is-added" : "") + '" aria-selected="' + (i === ui.cursor ? "true" : "false") + '">' + art + '<span>' + esc(h.name) + '</span><small>' + esc(sub) + "</small></button>";
     }).join("");
     if (input) input.setAttribute("aria-expanded", "true");
     D.icons(box);
   }
-  function add(id) {
-    var r = S.addItems(state, [id]);
-    ui.q = ""; ui.open = false; ui.cursor = -1; ui.focusSearch = true;
+  function add(key) {
+    var entry = key;
+    if (isProd(key)) {   // 제품은 검색 결과(또는 색인)에서 이름·성분을 가져와 객체로 넣는다
+      var hit = searchHits().filter(function (h) { return h.key === key; })[0] || productRow(key.slice(2));
+      if (!hit) { toast("제품 정보를 찾지 못했어요"); return; }
+      entry = { id: key, name: hit.name, ings: hit.ings };
+    }
+    var r = S.addItems(state, [entry]);
+    ui.q = ""; ui.open = false; ui.cursor = -1; ui.focusSearch = false;
     if (!r.added.length) { toast("이미 내 영양제에 있어요"); render(); return; }
+    ui.sheet = key;   // 추가 직후 요약 창(배정 시간대·궁합)
     commit(r.state);
-    toast(D.josa(byId(id).name, "을를") + " 추가했어요");   // 받침·숫자·영문 끝 이름의 조사는 data.js josa 가 판별
+  }
+
+  /* ---- 추가 직후 요약 창 (바텀 시트): addsummary.js 가 계산, #my-sheet 에 그린다 (#my-app 밖이라 목록을 다시 그려도 남는다) ---- */
+  function renderSheet() {
+    var box = document.getElementById("my-sheet"); if (!box) return;
+    var key = ui.sheet, row = key ? state.items.filter(function (i) { return i.id === key; })[0] : null;
+    if (!row || !window.AddSummary) { box.hidden = true; box.innerHTML = ""; document.body.classList.remove("has-sheet"); return; }
+    var s = window.AddSummary.build(core, S.entries(state), key, schedule(), { times: state.settings.times, slotLabel: S.SLOT_LABEL });
+    if (!s) { ui.sheet = null; box.hidden = true; return; }
+    var pairs = s.pairs.map(function (p) { return '<li class="my-sheet-pair is-' + p.kind + '"><span class="dot"></span><div><b>' + esc(p.title) + "</b>" + (p.detail ? "<small>" + esc(p.detail) + "</small>" : "") + "</div></li>"; }).join("");
+    if (s.okNames.length) pairs += '<li class="my-sheet-pair is-ok"><span class="dot"></span><div><b>' + (s.okNames.length === 1 ? esc(s.okNames[0]) + " — 무난해요" : "나머지 " + s.okNames.length + "개 — 무난해요") + "</b>" + (s.okNames.length > 1 ? "<small>" + esc(s.okNames.join(" · ")) + "</small>" : "") + "</div></li>";
+    if (!pairs) pairs = '<li class="my-sheet-pair is-ok"><span class="dot"></span><div><b>아직 비교할 다른 영양제가 없어요</b><small>하나 더 추가하면 궁합을 알려 드려요</small></div></li>';
+    var nIngs = isProd(key) ? (row.ings || []).length : 0;
+    box.innerHTML = '<div class="my-sheet-backdrop" data-sheet-close></div>' +
+      '<div class="my-sheet" role="dialog" aria-modal="true" aria-labelledby="my-sheet-title"><div class="my-sheet-handle"></div>' +
+      '<h2 id="my-sheet-title">' + esc(s.title) + (s.subtitle ? ' <small>' + esc(s.subtitle) + "</small>" : "") + "</h2>" +
+      '<div class="my-sheet-assign"><span class="k">배정된 시간대</span><b>' + esc(s.slotLabel) + (s.time ? " · " + esc(s.time) : "") + "</b><small>" + esc(s.reason) + "</small></div>" +
+      '<div class="my-sheet-pairs"><p class="k">내 영양제와의 궁합' + (nIngs ? " · 성분 " + nIngs + "가지 기준" : "") + '</p><ul>' + pairs + "</ul></div>" +
+      '<div class="my-actions"><button type="button" class="btn-outline btn-sm" data-sheet-slot="' + esc(key) + '">시간대 바꾸기</button><button type="button" class="btn-primary btn-sm" data-sheet-close>확인</button></div></div>';
+    box.hidden = false; document.body.classList.add("has-sheet");
+    D.icons(box);
+    var ok = box.querySelector("[data-sheet-close].btn-primary"); if (ok) ok.focus();
+  }
+  function closeSheet(focusKey) {
+    ui.sheet = null; renderSheet();
+    if (focusKey) {
+      var sel = document.querySelector('select.my-slot[data-id="' + focusKey + '"]');
+      if (sel) { sel.scrollIntoView({ block: "center", behavior: "smooth" }); sel.focus({ preventScroll: true }); }
+    }
   }
 
   /* ---- 오늘 시간표 ---- */
@@ -140,7 +220,10 @@
     if (!state.items.length) return "";
     var slots = sched.slots.map(function (s) {
       return '<div class="my-sched-slot"><div class="t"><span>' + esc(label(s.key)) + '</span><time data-slot="' + s.key + '">' + esc(state.settings.times[s.key] || "") + '</time></div><ul>' +
-        s.items.map(function (it) { return '<li><a class="font-bold hover:text-brand-700" href="' + D.ingredientUrl(it.id) + '">' + esc(it.name) + '</a> <small>' + esc((it.timing && (it.timing.note || it.timing.label)) || "") + '</small></li>'; }).join("") + "</ul></div>";
+        s.items.map(function (it) {
+          if (it.kind === "product") return '<li><a class="font-bold hover:text-brand-700" href="' + D.productUrl(it.id.slice(2)) + '">' + esc(it.name) + '</a> <small>' + (it.ings.length ? "제품 · " + esc(it.ings.slice(0, 4).map(function (x) { return D.shortName(x); }).join(" · ")) + (it.ings.length > 4 ? " 외 " + (it.ings.length - 4) : "") : "제품") + '</small></li>';
+          return '<li><a class="font-bold hover:text-brand-700" href="' + D.ingredientUrl(it.id) + '">' + esc(it.name) + '</a> <small>' + esc((it.timing && (it.timing.note || it.timing.label)) || "") + '</small></li>';
+        }).join("") + "</ul></div>";
     }).join("");
     var notes = sched.notes.length ? '<div class="mt-3 rounded-2xl border border-amber-200 bg-amber-50 p-4"><p class="text-sm font-bold text-amber-800">시간표 메모</p><ul class="list-warn mt-1 text-sm text-amber-900">' + sched.notes.map(function (n) { return "<li>" + esc(n) + "</li>"; }).join("") + "</ul></div>" : "";
     return '<section class="my-section" id="my-schedule"><h2><i data-lucide="calendar-check"></i>오늘 시간표</h2>' +
@@ -182,6 +265,13 @@
     if (!state.items.length || state.settings.logEnabled !== null) return "";
     return '<section class="my-card" id="my-ask-log"><h3>복용 기록도 남길까요?</h3><p>시간대마다 \'먹었어요\'를 체크하고 연속 일수를 볼 수 있어요. 기록은 이 기기에만 남아요.</p>' +
       '<div class="my-actions"><button type="button" class="btn-primary btn-sm" data-log-enable="true">네, 남길게요</button><button type="button" class="btn-outline btn-sm" data-log-enable="false">아니요</button></div></section>';
+  }
+  /* 내 정보 · 맞춤 추천 링크 (내 정보 입력·추천은 recommend.html) */
+  function sectionProfile() {
+    var prof = S.profile(state), n = prof ? Object.keys(prof).filter(function (k) { return k !== "updatedAt"; }).length : 0;
+    return '<section class="my-card my-profile-link" id="my-profile"><h3><i data-lucide="sparkles"></i>내 정보 · 맞춤 추천</h3>' +
+      '<p>' + (n ? "연령대·고민 등 " + n + "개 항목이 저장돼 있어요. 내 정보에 맞는 성분을 근거와 함께 보여 드려요." : "연령대·성별·고민·생활 상황·복용 중인 약을 저장하면 맞춤 추천을 받아요. 이 기기에만 저장됩니다.") + "</p>" +
+      '<div class="my-actions"><a class="btn-primary btn-sm" href="recommend.html">' + (n ? "맞춤 추천 보기" : "내 정보 입력하기") + '</a></div></section>';
   }
   function dayClass(key, t) {
     var st = S.dayStats(state, key);
@@ -225,9 +315,10 @@
     return svg ? '<div class="my-qr" role="img" aria-label="가져오기 링크 QR 코드">' + svg + "</div>" : '<p class="my-muted">목록이 길어 QR 코드에 담기지 않아요. 링크나 텍스트 코드를 복사해 옮겨 주세요.</p>';
   }
   function previewCard(payload, source) {
-    var known = payload.items.filter(function (it) { return byId(it.id); }), unknown = payload.items.length - known.length;
+    var known = payload.items.filter(function (it) { return isProd(it.id) || byId(it.id); }), unknown = payload.items.length - known.length;
+    var nProd = known.filter(function (it) { return isProd(it.id); }).length;
     return '<section class="my-card" id="' + (source === "url" ? "my-import" : "my-import-preview") + '"><h3>' + (source === "url" ? "링크로 받은 내 영양제 목록" : "가져올 목록") + '</h3>' +
-      '<p>' + (known.length ? esc(known.map(function (it) { return byId(it.id).name; }).join(", ")) + " (" + known.length + "개)" : "가져올 수 있는 성분이 없어요") + (unknown ? ' · 모르는 항목 ' + unknown + '개는 건너뜁니다' : "") + "</p>" +
+      '<p>' + (known.length ? esc(known.map(function (it) { return isProd(it.id) ? it.name + "(제품)" : byId(it.id).name; }).join(", ")) + " (" + known.length + "개" + (nProd ? ", 제품 " + nProd : "") + ")" : "가져올 수 있는 성분이 없어요") + (unknown ? ' · 모르는 항목 ' + unknown + '개는 건너뜁니다' : "") + (payload.profile ? " · 내 정보 포함" : "") + "</p>" +
       '<p class="my-muted">합치기는 지금 목록을 유지하고 새 성분만 더하고, 바꾸기는 가져온 목록으로 교체해요. 복용 기록은 그대로 둡니다.</p>' +
       '<div class="my-actions"><button type="button" class="btn-primary btn-sm" data-import-apply="merge" data-import-source="' + source + '"' + (known.length ? "" : " disabled") + '>합치기</button><button type="button" class="btn-outline btn-sm" data-import-apply="replace" data-import-source="' + source + '"' + (known.length ? "" : " disabled") + '>바꾸기</button><button type="button" class="btn-outline btn-sm" data-import-cancel="' + source + '">취소</button></div></section>';
   }
@@ -241,18 +332,26 @@
         '<div class="my-field"><label for="my-export-code">텍스트 코드 (앱의 가져오기 칸에 붙여넣기)</label><div class="my-copy"><textarea id="my-export-code" readonly>' + esc(code) + '</textarea><button type="button" class="btn-outline btn-sm" data-copy="my-export-code">복사</button></div></div>';
     }
     return '<section class="my-section" id="my-transfer"><h2><i data-lucide="arrow-right"></i>다른 기기로 옮기기</h2>' +
-      '<p class="my-sub">내 영양제 목록과 알림 설정을 링크·QR·텍스트 코드로 옮길 수 있어요. 복용 기록은 포함되지 않습니다.</p>' +
+      '<p class="my-sub">내 영양제 목록(제품 포함)·알림 설정·내 정보를 링크·QR·텍스트 코드로 옮길 수 있어요. 복용 기록은 포함되지 않습니다.</p>' +
       '<div class="my-actions"><button type="button" class="btn-primary btn-sm" data-export-open' + (state.items.length ? "" : " disabled") + '>' + (ui.exportOpen ? "내보내기 닫기" : "내보내기") + "</button></div>" + exportPanel +
       '<div class="my-field"><label for="my-import-text">가져오기 — 링크나 텍스트 코드를 붙여넣기</label><div class="my-copy"><textarea id="my-import-text" placeholder="YJ1-… 또는 my.html?import=… 링크">' + esc(ui.importText) + '</textarea><button type="button" class="btn-outline btn-sm" data-import-parse>불러오기</button></div>' +
       (ui.importError ? '<p class="my-error">' + esc(ui.importError) + "</p>" : "") + "</div>" +
       (ui.importPreview ? previewCard(ui.importPreview, "text") : "") + "</section>";
   }
+  /* 가져오기: 제품이 있으면 제품 색인(과거분 포함)에서 성분을 복원하고, 내 정보가 있으면 셀프체크 질문으로 검증해 저장 */
   function applyImport(payload, mode, source) {
-    var r = S.merge(state, payload, mode, core.byId);
-    if (source === "url") ui.importPayload = null;
-    else { ui.importPreview = null; ui.importText = ""; }
-    commit(r.state);
-    toast((mode === "replace" ? "목록을 바꿨어요" : r.added.length + "개 추가했어요") + (r.skipped.length ? " · " + r.skipped.length + "개 건너뜀" : ""));
+    var prods = payload.items.filter(function (it) { return isProd(it.id); });
+    var needIndex = prods.length ? allProducts() : Promise.resolve(null);
+    var needFinder = payload.profile ? D.finder().catch(function () { return null; }) : Promise.resolve(null);
+    Promise.all([needIndex, needFinder]).then(function (res) {
+      var productIngs = {}, missing = 0;
+      prods.forEach(function (it) { var row = res[0] ? productRow(it.id.slice(2)) : null; if (row && row.ings.length) productIngs[it.id] = row.ings; else missing++; });
+      var r = S.merge(state, payload, mode, core.byId, { productIngs: productIngs, finderData: res[1] || undefined });
+      if (source === "url") ui.importPayload = null;
+      else { ui.importPreview = null; ui.importText = ""; }
+      commit(r.state);
+      toast((mode === "replace" ? "목록을 바꿨어요" : r.added.length + "개 추가했어요") + (r.skipped.length ? " · " + r.skipped.length + "개 건너뜀" : "") + (missing ? " · 성분 정보 없는 제품 " + missing + "개(다시 검색해 추가하면 채워져요)" : ""));
+    });
   }
   function copyFrom(id) {
     var el = document.getElementById(id); if (!el) return;
@@ -281,12 +380,13 @@
     }
     var keep = focusKey(document.activeElement);
     app.innerHTML = (ui.notice ? '<div class="my-notice" role="status">' + esc(ui.notice) + "</div>" : "") +
-      sectionImport() + sectionAskLog() + sectionList(sched) + sectionSchedule(sched) + sectionLog(sched) + sectionReminders(sched) + sectionTransfer();
+      sectionImport() + sectionAskLog() + sectionList(sched) + sectionProfile() + sectionSchedule(sched) + sectionLog(sched) + sectionReminders(sched) + sectionTransfer();
     ui.renderedDay = tk;
     D.icons(app);
     renderSearchList();
+    renderSheet();
     if (ui.focusSearch) { var inp = document.getElementById("my-search"); if (inp) { inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); } ui.focusSearch = false; }
-    else if (keep) { var again = app.querySelector(keep); if (again) again.focus(); }
+    else if (keep && !ui.sheet) { var again = app.querySelector(keep); if (again) again.focus(); }   // 요약 창이 열렸으면 포커스는 창의 '확인'에 둔다(검색창으로 되돌리면 키보드가 창을 가린다)
   }
 
   function bind(app) {
@@ -342,10 +442,18 @@
       var hits = searchHits();
       if (e.key === "ArrowDown") { e.preventDefault(); ui.open = true; ui.cursor = Math.min(ui.cursor + 1, hits.length - 1); renderSearchList(); }
       else if (e.key === "ArrowUp") { e.preventDefault(); ui.cursor = Math.max(ui.cursor - 1, -1); renderSearchList(); }
-      else if (e.key === "Enter") { e.preventDefault(); var pick = hits[ui.cursor >= 0 ? ui.cursor : 0]; if (pick) add(pick.id); }
+      else if (e.key === "Enter") { e.preventDefault(); var pick = hits[ui.cursor >= 0 ? ui.cursor : 0]; if (pick) add(pick.key); }
       else if (e.key === "Escape") { ui.open = false; renderSearchList(); }
     });
     document.addEventListener("click", function (e) { if (!e.target.closest(".my-search") && ui.open) { ui.open = false; renderSearchList(); } });
+    var sheet = document.getElementById("my-sheet");
+    if (sheet) {
+      sheet.addEventListener("click", function (e) {
+        var t = e.target.closest("[data-sheet-close],[data-sheet-slot]"); if (!t) return;
+        if (t.hasAttribute("data-sheet-slot")) closeSheet(t.getAttribute("data-sheet-slot")); else closeSheet(null);
+      });
+      document.addEventListener("keydown", function (e) { if (e.key === "Escape" && ui.sheet) { e.preventDefault(); closeSheet(null); } });
+    }
   }
 
   document.addEventListener("DOMContentLoaded", function () {

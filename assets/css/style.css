@@ -141,6 +141,8 @@ html.app-noshop .app-hide, html.app-noshop #sec-shop, html.app-noshop #shop { di
 .my-search-list button:hover, .my-search-list button.is-active { background: #eff5ec; }
 .my-search-list button small { color: #6b7a71; font-size: .75rem; margin-left: auto; white-space: nowrap; }
 .my-search-list .is-added { opacity: .55; }
+.my-search-list button > span:not(.thumb) { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }   /* 긴 제품명·제조사는 줄이지 않고 말줄임 */
+.my-search-list button small { max-width: 45%; overflow: hidden; text-overflow: ellipsis; }
 .my-sched { margin-top: .75rem; display: grid; gap: .6rem; }
 .my-sched-slot { border-radius: 1rem; background: #f6f8f6; padding: .75rem .9rem; }
 .my-sched-slot .t { display: flex; justify-content: space-between; align-items: baseline; font-size: .85rem; font-weight: 800; color: #1f5a3c; }
@@ -201,6 +203,39 @@ html.app-noshop .app-hide, html.app-noshop #sec-shop, html.app-noshop #shop { di
 .my-field .my-copy { display: flex; gap: .5rem; }
 .my-field input, .my-field textarea { flex: 1; width: 100%; font: inherit; font-size: .85rem; padding: .55rem .75rem; border-radius: .75rem; border: 1.5px solid #d3e0ca; background: #fafcf9; color: #27322a; }
 .my-field textarea { min-height: 5.5rem; resize: vertical; font-family: ui-monospace, Menlo, Consolas, monospace; word-break: break-all; }
+/* 제품 행·검색 결과의 제품 아이콘과 성분 칩 */
+.my-prod-ic { display: grid; place-items: center; color: #246d4b; background: #eef5ef; }
+.my-prod-ic svg { width: 55%; height: 55%; }
+.my-chips { display: flex; flex-wrap: wrap; gap: .25rem; margin-top: .3rem; }
+.my-chip { font-size: .68rem; font-weight: 700; color: #1f5a3c; background: #eef5ec; border-radius: 9999px; padding: .12rem .5rem; }
+.my-chip.is-muted { color: #6b7a71; background: #f0f3f1; }
+.my-profile-link h3 { display: flex; align-items: center; gap: .4rem; }
+.my-profile-link h3 svg { width: 18px; height: 18px; color: #246d4b; }
+/* 추가 직후 요약 창(바텀 시트) — #my-sheet 는 #my-app 밖에 있어 목록을 다시 그려도 남는다 */
+.my-sheet-backdrop { position: fixed; inset: 0; z-index: 60; background: rgba(21,41,29,.45); }
+.my-sheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 61; max-height: 85vh; overflow-y: auto; background: #f6f8f6; border-radius: 1.4rem 1.4rem 0 0; padding: .6rem 1rem calc(1rem + env(safe-area-inset-bottom)); box-shadow: 0 -12px 40px rgba(0,0,0,.25); }
+@media (min-width: 640px) { .my-sheet { left: 50%; right: auto; width: min(32rem, 100%); transform: translateX(-50%); border-radius: 1.4rem 1.4rem 0 0; } }
+.my-sheet-handle { width: 38px; height: 4px; border-radius: 2px; background: #c9d6c6; margin: 0 auto .6rem; }
+.my-sheet h2 { font-size: 1.05rem; font-weight: 800; color: #15291d; }
+.my-sheet h2 small { font-size: .75rem; font-weight: 600; color: #6b7a71; margin-left: .35rem; }
+.my-sheet .k { font-size: .72rem; letter-spacing: .03em; color: #6b7a71; }
+.my-sheet-assign { margin-top: .6rem; background: #0b3d2a; color: #fff; border-radius: 1rem; padding: .75rem .9rem; }
+.my-sheet-assign .k { color: rgba(255,255,255,.75); }
+.my-sheet-assign b { display: block; font-size: 1.05rem; margin-top: .1rem; }
+.my-sheet-assign small { display: block; margin-top: .3rem; font-size: .78rem; line-height: 1.45; color: rgba(255,255,255,.85); }
+.my-sheet-pairs { margin-top: .6rem; background: #fff; border: 1px solid #e3ebdc; border-radius: 1rem; padding: .6rem .9rem; }
+.my-sheet-pairs ul { margin-top: .2rem; display: grid; gap: .1rem; }
+.my-sheet-pair { display: flex; gap: .55rem; align-items: flex-start; padding: .4rem 0; font-size: .85rem; border-top: 1px solid #f0f3f1; }
+.my-sheet-pair:first-child { border-top: 0; }
+.my-sheet-pair .dot { width: 9px; height: 9px; border-radius: 50%; margin-top: .35rem; flex-shrink: 0; background: #c9d4cc; }
+.my-sheet-pair.is-dup .dot { background: #c0392b; }
+.my-sheet-pair.is-care .dot { background: #d98a1f; }
+.my-sheet-pair.is-good .dot { background: #2f7d4f; }
+.my-sheet-pair b { display: block; color: #15291d; }
+.my-sheet-pair small { display: block; margin-top: .1rem; font-size: .75rem; color: #6b7a71; line-height: 1.4; }
+.my-sheet .my-actions { margin-top: .8rem; }
+.my-sheet .my-actions .btn-primary { flex: 1; justify-content: center; }
+body.has-sheet { overflow: hidden; }
 .my-qr { margin-top: .75rem; display: grid; place-items: center; }
 .my-qr svg { width: min(220px, 70vw); height: auto; }
 .my-error { margin-top: .5rem; font-size: .85rem; color: #b23a3a; }
