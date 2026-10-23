@@ -3,7 +3,7 @@
 (function () {
   "use strict";
   var D = window.Data, S = window.Store, T = window.Today, esc = D.esc;
-  var core = null, state = null, tips = [], renderedDay = null;
+  var core = null, state = null, tips = [], ltRules = null;
 
   function isApp() { return !!(window.AppBridge && window.AppBridge.isNative()); }
   function today() { return S.dateKey(new Date()); }
@@ -64,18 +64,19 @@
       return '<li class="today-tl' + (r.done ? " is-done" : "") + (r.isNext ? " is-next" : "") + '"><span class="dot"></span><div><b>' + esc(r.time) + " " + esc(r.label) + "</b><small>" + esc(names(r.names)) + "</small></div>" +
         (r.reminderOff ? '<i data-lucide="bell-off" class="off" aria-label="알림 꺼짐"></i>' : "") + tag + "</li>";
     }).join("");
+    var due = (ltRules && window.LongTerm) ? window.LongTerm.check(state, ltRules, core, now) : [];
+    var ltCard = due.length ? '<a class="today-card today-lt" href="my.html#my-longterm"><p class="k">장기 복용 점검</p><b>' + esc(due[0].name) + (due.length > 1 ? " 외 " + (due.length - 1) + "개" : "") + " — 점검해 볼 때예요</b><small>내 영양제에서 쉬어 갈지, 계속 먹을지 골라 보세요 ›</small></a>" : "";
     var ids = S.ingredientIds(state);
     var compat = { href: "compatibility.html?items=" + ids.slice(0, 8).map(encodeURIComponent).join(","), icon: "heart-handshake", label: "궁합 체크", sub: ids.length > 8 ? "앞 8개" : "" };
     return '<p class="today-date">' + esc(T.dateLabel(now)) + '</p><h1 class="today-hello">' + esc(T.greeting(now)) + ' 👋</h1>' + card +
       '<section class="today-card"><p class="k">오늘 시간표 · ' + doneCount + " / " + tl.length + ' 완료</p><ul class="today-timeline">' + rows + "</ul></section>" +
-      tipCard(tip) +
+      ltCard + tipCard(tip) +
       shortcuts([{ href: "my.html", icon: "pill", label: "내 영양제" }, compat, { href: "recommend.html", icon: "sparkles", label: "맞춤 추천" }, { href: "help.html", icon: "book-open", label: "사용 설명" }]);
   }
 
   function render() {
     var app = document.getElementById("today-app"), now = new Date();
     app.innerHTML = state.items.length ? renderHome(now) : renderStart(now);
-    renderedDay = today();
     D.icons(app);
   }
   function markDone(slot) {
@@ -93,10 +94,10 @@
   document.addEventListener("DOMContentLoaded", function () {
     var app = document.getElementById("today-app");
     if (!app || !S || !T) return;
-    Promise.all([D.core(), D.tips().catch(function () { return { items: [] }; })]).then(function (res) {
+    Promise.all([D.core(), D.tips().catch(function () { return { items: [] }; }), D.longterm().catch(function () { return null; })]).then(function (res) {
       return (window.AppBridge ? window.AppBridge.ready() : Promise.resolve()).then(function () { return res; });   // 앱이면 런타임 로드·복원을 기다린다
     }).then(function (res) {
-      core = res[0]; tips = (res[1] && res[1].items) || [];
+      core = res[0]; tips = (res[1] && res[1].items) || []; ltRules = res[2];
       state = S.load();
       var pr = S.pruneUnknown(state, core.byId);
       if (pr.removed.length) { state = pr.state; persist(); }

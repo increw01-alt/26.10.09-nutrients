@@ -364,6 +364,19 @@ body.has-sheet { overflow: hidden; }
 .fig-rec .chips span { font-size: .66rem; font-weight: 700; padding: .15rem .5rem; border-radius: 9999px; background: #eef2ef; color: #15291d; }
 .fig-rec .chips .why { color: #8a5a12; background: #fff6e8; border: 1px solid #f1dfc0; } .fig-rec .chips .mfds { color: #175136; background: #e3efdc; }
 .help-cta { margin-top: 1.75rem; display: flex; flex-wrap: wrap; gap: .6rem; }
+/* 장기 복용 점검 카드·쉬는 항목 */
+.my-lt { margin-top: .75rem; border: 1px solid #f1dfc0; border-left: 4px solid #d98a1f; border-radius: 1rem; background: #fffaf2; padding: .8rem .95rem; }
+.my-lt b { display: block; font-size: .92rem; color: #15291d; line-height: 1.45; }
+.my-lt p { margin-top: .35rem; font-size: .85rem; line-height: 1.55; color: #33433a; }
+.my-lt small { display: block; margin-top: .3rem; font-size: .72rem; color: #6b7a71; }
+.my-lt small a { text-decoration: underline; }
+.my-lt .my-actions { margin-top: .6rem; }
+.my-paused { display: inline-flex; align-items: center; gap: .4rem; flex-wrap: wrap; }
+.my-chip.is-paused { color: #8a5a12; background: #fff6e8; border: 1px solid #f1dfc0; }
+.my-item.is-paused .my-item-main, .my-item.is-paused .thumb { opacity: .55; }
+.today-lt { display: block; border-left: 4px solid #d98a1f; text-decoration: none; color: inherit; }
+.today-lt b { display: block; margin-top: .15rem; font-size: .95rem; color: #15291d; }
+.today-lt small { display: block; margin-top: .2rem; font-size: .78rem; color: #6b7a71; }
 .my-qr { margin-top: .75rem; display: grid; place-items: center; }
 .my-qr svg { width: min(220px, 70vw); height: auto; }
 .my-error { margin-top: .5rem; font-size: .85rem; color: #b23a3a; }

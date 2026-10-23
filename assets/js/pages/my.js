@@ -4,7 +4,7 @@
 (function () {
   "use strict";
   var D = window.Data, S = window.Store, esc = D.esc;
-  var core = null, state = null;
+  var core = null, state = null, ltRules = null;   // ltRules: 장기 복용 점검 근거 표(data/longterm.json), 첫 그리기 뒤에 받는다
   var ui = { q: "", open: false, cursor: -1, focusSearch: false, selectedDay: null, notice: "", importPayload: null, exportOpen: false, importError: "", importPreview: null, importText: "", sheet: null };
   /* 제품 검색 색인(data/products/names.json + 과거분) — 검색창에 처음 입력할 때 한 번만 받는다 */
   var extra = { products: null, prodMatch: null, loading: null };
@@ -127,8 +127,10 @@
       } else {
         main = '<div class="my-item-main"><a href="' + D.ingredientUrl(it.id) + '">' + esc(it.name) + '</a><small>' + esc((it.timing && it.timing.label) || label(d)) + '</small></div>';
       }
-      return '<div class="my-item">' + (prod ? '<span class="thumb thumb-sm my-prod-ic" aria-hidden="true"><i data-lucide="package"></i></span>' : thumb(it)) + main +
-        '<select class="my-slot" data-id="' + esc(row.id) + '" aria-label="' + esc(name) + ' 복용 시간대">' + opts + '</select>' +
+      var control = S.isPaused(row)
+        ? '<span class="my-paused"><span class="my-chip is-paused">쉬는 중 · ' + daysSince(row.pausedAt) + '일째</span><button type="button" class="btn-outline btn-sm" data-resume="' + esc(row.id) + '">다시 먹기</button></span>'
+        : '<select class="my-slot" data-id="' + esc(row.id) + '" aria-label="' + esc(name) + ' 복용 시간대">' + opts + '</select>';
+      return '<div class="my-item' + (S.isPaused(row) ? " is-paused" : "") + '">' + (prod ? '<span class="thumb thumb-sm my-prod-ic" aria-hidden="true"><i data-lucide="package"></i></span>' : thumb(it)) + main + control +
         '<button type="button" class="my-icon-btn" data-remove="' + esc(row.id) + '" aria-label="' + esc(name) + ' 삭제"><i data-lucide="x"></i></button></div>';
     }).join("");
     var empty = '<div class="my-empty">아직 저장한 영양제가 없어요.<br>아래 검색창에서 성분이나 제품을 추가하거나, <a class="font-semibold text-brand-700" href="compatibility.html">궁합 체크</a>에서 고른 성분을 한 번에 저장할 수 있어요.</div>';
@@ -259,6 +261,26 @@
     return '<section class="my-card" id="my-ask-log"><h3>복용 기록도 남길까요?</h3><p>시간대마다 \'먹었어요\'를 체크하고 연속 일수를 볼 수 있어요. 기록은 이 기기에만 남아요.</p>' +
       '<div class="my-actions"><button type="button" class="btn-primary btn-sm" data-log-enable="true">네, 남길게요</button><button type="button" class="btn-outline btn-sm" data-log-enable="false">아니요</button></div></section>';
   }
+  /* ---- 장기 복용 점검: 근거 표(longterm.json)의 점검 시점이 지난 항목만 — 쉬기·계속 먹기·다른 성분 보기 ---- */
+  function daysSince(iso) { return Math.max(1, Math.floor((Date.now() - new Date(iso)) / 86400000) + 1); }
+  function elapsedLabel(weeks) { return weeks >= 8 ? Math.floor(weeks / 4) + "개월째" : weeks + "주째"; }
+  function sectionLongTerm() {
+    if (!ltRules || !window.LongTerm) return "";
+    var due = window.LongTerm.check(state, ltRules, core, new Date());
+    if (!due.length) return "";
+    var cards = due.map(function (d) {
+      var who = (d.viaProduct ? esc(d.viaProduct) + " 안의 " : "") + esc(D.josa(d.name, "을를"));   // 조사는 받침·숫자·영문 끝을 data.js josa 가 판별
+      var head = who + " " + elapsedLabel(d.elapsedWeeks) + " 먹고 있어요 — " + (d.kind === "limit" ? "연속 섭취 기간을 한 번 보세요" : d.kind === "review" ? "효과를 판단해 볼 때예요" : "양을 한 번 점검해 보세요");
+      return '<div class="my-lt"><b>' + head + "</b><p>" + esc(d.note) + "</p>" +
+        (d.sourceTitle ? '<small>근거: ' + (d.sourceUrl ? '<a href="' + esc(d.sourceUrl) + '" target="_blank" rel="noopener">' + esc(d.sourceTitle) + "</a>" : esc(d.sourceTitle)) + "</small>" : "") +
+        '<div class="my-actions"><button type="button" class="btn-outline btn-sm" data-lt-pause="' + esc(d.key) + '"><i data-lucide="pause"></i>' + (d.viaProduct ? "제품 잠시 쉬기" : "잠시 쉬기") + '</button>' +
+        '<button type="button" class="btn-primary btn-sm" data-lt-ok="' + esc(d.key) + '"><i data-lucide="check"></i>계속 먹기 · ' + d.weeks + '주 뒤 다시 점검</button>' +
+        '<a class="btn-outline btn-sm" href="recommend.html"><i data-lucide="sparkles"></i>다른 성분 보기</a></div></div>';
+    }).join("");
+    return '<section class="my-section" id="my-longterm"><h2><i data-lucide="calendar-clock"></i>장기 복용 점검 <span class="my-count">' + due.length + '건</span></h2>' +
+      '<p class="my-sub">오래 먹는 성분은 가끔 점검해 보면 좋아요. 근거 있는 점검 시점이 지난 것만 알려 드리고, 쉬어 가도 괜찮아요. 판단이 어려우면 약사·의사와 이야기해 보세요.</p>' + cards + "</section>";
+  }
+
   /* 내 정보 · 맞춤 추천 링크 (내 정보 입력·추천은 recommend.html) */
   function sectionProfile() {
     var prof = S.profile(state), n = prof ? Object.keys(prof).filter(function (k) { return k !== "updatedAt"; }).length : 0;
@@ -355,7 +377,7 @@
   }
 
   /* 다시 그린 뒤에도 키보드 포커스를 잃지 않도록, 포커스된 요소를 id 또는 data-* 조합으로 기억했다가 되찾는다 */
-  var FOCUS_ATTRS = ["data-id", "data-slot", "data-slot-on", "data-setting", "data-check", "data-day", "data-remove", "data-add", "data-log-enable", "data-import-apply", "data-copy"];
+  var FOCUS_ATTRS = ["data-id", "data-slot", "data-slot-on", "data-setting", "data-check", "data-day", "data-remove", "data-add", "data-log-enable", "data-import-apply", "data-copy", "data-lt-pause", "data-lt-ok", "data-resume"];
   function focusKey(el) {
     if (!el || el === document.body) return null;
     if (el.id) return "#" + el.id;
@@ -373,7 +395,7 @@
     }
     var keep = focusKey(document.activeElement);
     app.innerHTML = (ui.notice ? '<div class="my-notice" role="status">' + esc(ui.notice) + "</div>" : "") +
-      sectionImport() + sectionAskLog() + sectionList(sched) + sectionProfile() + sectionSchedule(sched) + sectionLog(sched) + sectionReminders(sched) + sectionTransfer();
+      sectionImport() + sectionAskLog() + sectionList(sched) + sectionLongTerm() + sectionProfile() + sectionSchedule(sched) + sectionLog(sched) + sectionReminders(sched) + sectionTransfer();
     ui.renderedDay = tk;
     D.icons(app);
     renderSearchList();
@@ -384,7 +406,7 @@
 
   function bind(app) {
     app.addEventListener("click", function (e) {
-      var t = e.target.closest("[data-add],[data-remove],[data-log-enable],[data-check],[data-day],[data-log-clear],[data-export-open],[data-copy],[data-import-parse],[data-import-apply],[data-import-cancel]");
+      var t = e.target.closest("[data-lt-pause],[data-lt-ok],[data-resume],[data-add],[data-remove],[data-log-enable],[data-check],[data-day],[data-log-clear],[data-export-open],[data-copy],[data-import-parse],[data-import-apply],[data-import-cancel]");
       if (!t) return;
       if (t.hasAttribute("data-export-open")) { ui.exportOpen = !ui.exportOpen; render(); return; }
       if (t.hasAttribute("data-copy")) { copyFrom(t.getAttribute("data-copy")); return; }
@@ -400,6 +422,9 @@
         render(); return;
       }
       if (t.hasAttribute("data-add")) add(t.getAttribute("data-add"));
+      else if (t.hasAttribute("data-lt-pause")) { commit(S.pauseItem(state, t.getAttribute("data-lt-pause"))); toast("잠시 쉬어 가요. 시간표와 알림에서 빠졌어요"); }
+      else if (t.hasAttribute("data-lt-ok")) { commit(S.markChecked(state, t.getAttribute("data-lt-ok"))); toast("알겠어요. 다음 점검 때 다시 알려 드릴게요"); }
+      else if (t.hasAttribute("data-resume")) { commit(S.resumeItem(state, t.getAttribute("data-resume"))); toast("다시 시작했어요. 시간표에 돌아왔어요"); }
       else if (t.hasAttribute("data-remove")) { var id = t.getAttribute("data-remove"); commit(S.removeItem(state, id)); toast("삭제했어요"); }
       else if (t.hasAttribute("data-log-enable")) commit(S.setSetting(state, "logEnabled", t.getAttribute("data-log-enable") === "true"));
       else if (t.hasAttribute("data-check")) {   // 자정을 넘긴 채 열려 있던 화면에서도 체크가 사라지지 않게, 오늘 due 를 먼저 기록한다
@@ -477,6 +502,7 @@
       document.addEventListener("visibilitychange", function () { if (!document.hidden && ui.renderedDay && ui.renderedDay !== today()) render(); });   // 자정을 넘겨 다시 열면 오늘 기준으로
       bind(app);
       render();
+      D.longterm().then(function (r) { ltRules = r; render(); }).catch(function () { /* 표가 없으면 점검 섹션 없이 */ });   // 장기 복용 점검 표는 첫 그리기 뒤에
       initAppReminders();
       scheduleMidnight();
       window.addEventListener("storage", function (e) { if (!e.key || e.key === S.KEY) { state = S.load(); render(); } });   // 다른 탭·창에서 바꾼 내용을 바로 반영
