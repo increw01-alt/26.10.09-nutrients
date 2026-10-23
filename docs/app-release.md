@@ -157,3 +157,7 @@ https://xn--og5b1hx9c.kr/my#import=YJ1-eyJ2IjoxLCJpdGVtcyI6W1sidml0YW1pbi1kIiwwX
 ## 시작 화면(2026-10-23 이후 빌드)
 
 앱의 시작 주소는 `app/capacitor.config.json` 의 `server.url` = `https://xn--og5b1hx9c.kr/today`(오늘 홈)다. 2026-10-23 이전에 올린 빌드(안드로이드 내부 테스트 6, TestFlight 12)는 `/my` 로 열리지만 사이트가 같은 것을 보여 주므로 하단 홈 탭으로 오늘 홈에 갈 수 있다. 새 빌드를 올리면 처음부터 오늘 홈으로 열린다. 스토어 심사 메모·스크린샷을 다시 낼 때는 홈(오늘) 화면을 첫 장으로 쓴다.
+
+## 스크린샷(2026-10-23 기준)
+
+`app/store/screenshots/01~06.png`(1080×1920)은 로컬 브라우저의 앱 모드 렌더(데모 데이터)를 `python scripts/build_store_assets.py --screens <폴더>` 로 맞춘 것이다. 순서: 오늘 홈 → 제품 추가 요약 창 → 맞춤 추천 → 궁합 결과 → 내 영양제 목록 → 알림 설정. 콘솔(스토어 등록정보 → 휴대전화 스크린샷)에 그대로 올리면 되고, 실기기 캡처를 받으면 같은 명령으로 다시 만든다.

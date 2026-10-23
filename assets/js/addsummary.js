@@ -26,9 +26,9 @@
     if (!me.ings.length || !other.ings.length) return { kind: "unknown", title: other.name + " — 성분 정보 없음", detail: "" };
     var shared = me.ings.filter(function (id) { return other.ings.indexOf(id) >= 0; });
     if (shared.length) {
-      var first = core.byId[shared[0]], upper = first && first.dosage && first.dosage.upper;
+      var first = core.byId[shared[0]], upper = shared.length === 1 && first && first.dosage && first.dosage.upper;   // 여럿이면 특정 성분 상한을 쓰지 않는다
       return { kind: "dup", title: other.name + " — 같은 성분이 겹쳐요",
-        detail: shared.map(function (id) { return nameOf(core, id); }).join("·") + "이(가) 둘 다 들어 있어요" + (upper ? " · 합쳐서 상한(" + upper + ") 안이면 괜찮아요" : "") };
+        detail: shared.map(function (id) { return nameOf(core, id); }).join("·") + "이(가) 둘 다 들어 있어요" + (upper ? " · 합쳐서 상한(" + upper + ") 안이면 괜찮아요" : (shared.length > 1 ? " · 성분마다 상한을 넘지 않는지 라벨을 확인해 보세요" : "")) };
     }
     var best = null;   // 성분 쌍 가운데 가장 강한 관계: 주의(1) > 시너지(2) > 무난(3), 주의끼리는 간격이 긴 것
     me.ings.forEach(function (a) {

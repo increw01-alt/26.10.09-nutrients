@@ -51,3 +51,9 @@ test("이유: sched.moves 가 있으면 그것으로만 판정하고(상대로 �
   const mag = A.build(core, ["calcium", "magnesium"], "magnesium", sched2, o);
   assert.ok(mag.reason.indexOf("칼슘") >= 0 && mag.reason.indexOf("저녁 식후") >= 0 && mag.reason.indexOf("옮겼") >= 0);
 });
+
+test("겹쳐요: 겹치는 성분이 여럿이면 특정 성분의 상한을 쓰지 않고 '성분마다 상한 확인'으로", () => {
+  const a = { id: "p:1", name: "A", ings: ["vitamin-d", "magnesium"] }, b = { id: "p:2", name: "B", ings: ["vitamin-d", "magnesium"] };
+  const s = A.build(core, [a, b], "p:1", { assign: { "p:1": "morning_after", "p:2": "morning_after" }, notes: [] }, opts);
+  assert.equal(s.pairs[0].kind, "dup"); assert.equal(s.pairs[0].detail.indexOf("4,000"), -1); assert.ok(s.pairs[0].detail.indexOf("성분마다") >= 0);
+});
