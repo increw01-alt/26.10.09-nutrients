@@ -95,20 +95,10 @@
   function initAppReminders() {
     if (!isApp() || !window.Reminders) return;
     window.addEventListener("yj:notification-action", function (e) { e.preventDefault(); onNotificationAction(e.detail); });   // preventDefault = "받았음" (app.js 가 보관하지 않게)
-    var ln = LN();
-    if (ln) {
-      window.Reminders.ensureChannel(ln);   // 안드로이드 채널('복용 알림') — 예약(sync·30분 뒤)도 각자 확인하지만, 열 때 만들어 두면 설정 화면에 바로 보인다
-      if (ln.registerActionTypes) Promise.resolve(ln.registerActionTypes(window.Reminders.actionTypes())).catch(function () { /* 무시 */ });
-      /* 앱을 열었거나(이 페이지가 앱의 홈) 백그라운드에서 돌아오면 알림창에 남은 우리 알림을 정리 — 같은 번호가 남아 있으면 다음 알림이 소리 없이 갱신된다 */
-      var clear = function () { window.Reminders.clearDelivered(ln).catch(function () { /* 무시 */ }); };
-      clear();
-      document.addEventListener("visibilitychange", function () { if (document.visibilityState === "visible") clear(); });
-    }
+    /* 채널 보장·알림 버튼 등록·알림창 정리·열 때 동기화는 app.js 의 startup() 이 모든 앱 화면에서 한다. 여기서는 알림 동작(먹었어요·30분 뒤)만 처리 */
     var pending = null;
     try { pending = JSON.parse(sessionStorage.getItem("yj.pendingAction") || "null"); sessionStorage.removeItem("yj.pendingAction"); } catch (e) { /* 무시 */ }
     if (pending) onNotificationAction(pending);
-    if (!ln) return;
-    if (state.settings.remindersOn) scheduleSync();   // 시간표가 바뀌어 있을 수 있으니 열 때 한 번 맞춘다
   }
   function toast(msg) {
     var t = document.createElement("div");
@@ -463,12 +453,7 @@
       return (window.AppBridge ? window.AppBridge.ready() : Promise.resolve()).then(function () { return c; });   // 앱이면 런타임 로드를 기다린다
     }).then(function (c) {
       core = c;
-      state = S.load();
-      var hasLocal = false;
-      try { hasLocal = !!localStorage.getItem(S.KEY); } catch (e) { /* 무시 */ }
-      if (isApp() && !hasLocal) {   // 웹뷰 저장소가 비어 있으면(재설치·백업 복원) 앱 저장소 복제본에서 되살린다
-        return window.AppBridge.restore().then(function (json) { if (json) { state = S.load({ getItem: function () { return json; } }); persist(); } return c; });
-      }
+      state = S.load();   // 앱이면 AppBridge.ready() 가 복제본 복원까지 마친 뒤라 복원된 상태가 읽힌다
       return c;
     }).then(function (c) {
       var pr = S.pruneUnknown(state, core.byId);

@@ -31,3 +31,17 @@ test("VENDOR_VERSION 은 app/package.json 의 @capacitor/core 버전과 같다(�
   const pkg = JSON.parse(readFileSync(join(here, "..", "app", "package.json"), "utf8"));
   assert.equal(A.VENDOR_VERSION, pkg.dependencies["@capacitor/core"]);
 });
+
+// ---- 앱 시작: 웹뷰 저장소가 비면 앱 저장소 복제본에서 복원 (10-23) ----
+test("restoreIfEmpty: 로컬에 있으면 복원하지 않는다", async () => {
+  let wrote = null; const ok = await A.restoreIfEmpty({ hasLocal: () => true, restore: async () => "{}", write: (j) => { wrote = j; } });
+  assert.equal(ok, false); assert.equal(wrote, null);
+});
+test("restoreIfEmpty: 비어 있고 복제본이 있으면 써 넣고 true", async () => {
+  let wrote = null; const ok = await A.restoreIfEmpty({ hasLocal: () => false, restore: async () => '{"v":2}', write: (j) => { wrote = j; } });
+  assert.equal(ok, true); assert.equal(wrote, '{"v":2}');
+});
+test("restoreIfEmpty: 복제본이 없거나 restore 가 실패해도 false 로 끝난다", async () => {
+  assert.equal(await A.restoreIfEmpty({ hasLocal: () => false, restore: async () => null, write: () => {} }), false);
+  assert.equal(await A.restoreIfEmpty({ hasLocal: () => { throw new Error("x"); }, restore: async () => { throw new Error("y"); }, write: () => {} }), false);
+});

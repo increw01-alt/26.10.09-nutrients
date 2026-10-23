@@ -1,7 +1,10 @@
 /* 앱 모드 브리지 — Capacitor 네이티브(안드로이드·iOS 앱) 안에서 열렸는지 감지하고, 앱일 때만 Capacitor 런타임·플러그인 복사본
    (assets/js/vendor/capacitor/*.js, npm 에서 `npm run vendor:cap` 으로 복사)을 동적으로 싣는다. 웹 방문자에게는 이 파일 하나만 더해진다.
    로컬 확인: localhost 에서 주소에 ?app=1 을 붙이면 localStorage appDev=1 로 앱을 흉내 낸다(dev 모드, 런타임은 싣지 않음), ?app=0 으로 끈다. 운영 도메인에서는 무시.
-   다른 스크립트는 window.AppBridge.isNative() 로 앱 모드를 묻고, 플러그인은 AppBridge.ready() 뒤 AppBridge.plugin("LocalNotifications") 로 얻는다. */
+   다른 스크립트는 window.AppBridge.isNative() 로 앱 모드를 묻고, 플러그인은 AppBridge.ready() 뒤 AppBridge.plugin("LocalNotifications") 로 얻는다.
+   앱을 열 때 하던 일(웹뷰 저장소가 비면 Preferences 복제본에서 복원, 알림창의 우리 알림 정리, 알림 버튼 종류 등록, 알림이 켜져 있으면 한 번 동기화)은
+   여기(ready → startup)서 모든 앱 화면에서 한다 — 시작 주소가 /today 라 내 영양제 페이지를 거치지 않아도 되게. 복원은 ready() 안에서 끝나므로
+   페이지 스크립트는 AppBridge.ready() 뒤에 Store.load() 하면 복원된 상태를 읽는다. */
 (function () {
   "use strict";
   var VENDOR = ["capacitor.js", "local-notifications.js", "preferences.js"];
@@ -41,12 +44,58 @@
     if (!(window.SITE && window.SITE.appShopping)) document.documentElement.classList.add("app-noshop");   // 쇼핑 버튼·안내·고지 숨김(.app-hide), config.js 의 appShopping 으로 켬
     document.addEventListener("DOMContentLoaded", function () { document.body.classList.add("is-app"); });
     var root = document.documentElement.getAttribute("data-root") || "./";
-    if (state.mode !== "native") { state.ready = Promise.resolve(); return; }
+    if (state.mode !== "native") { state.ready = Promise.resolve().then(function () { return restoreLocal(); }); return; }   // dev 모드도 같은 흐름(가짜 Preferences)
     state.ready = VENDOR.reduce(function (p, f) {
       return p.then(function () { return loadScript(root + "assets/js/vendor/capacitor/" + f + "?v=" + VENDOR_VERSION); });
-    }, Promise.resolve()).catch(function (e) { if (window.console) console.warn("[app] 런타임 로드 실패:", e.message); });
+    }, Promise.resolve()).catch(function (e) { if (window.console) console.warn("[app] 런타임 로드 실패:", e.message); })
+      .then(function () { return restoreLocal(); });   // 복원까지 끝나야 ready
     state.ready.then(function () { listenNotifications(root); });
   }
+
+  /* 웹뷰 저장소(localStorage)가 비어 있으면(재설치·백업 복원) 앱 저장소 복제본을 써 넣는다 — 순수 로직은 restoreIfEmpty(tests/app.test.mjs) */
+  function restoreIfEmpty(env) {
+    return Promise.resolve().then(function () {
+      if (env.hasLocal()) return false;
+      return Promise.resolve(env.restore()).then(function (json) { if (!json) return false; env.write(json); return true; });
+    }).catch(function () { return false; });
+  }
+  /* defer 스크립트(store.js 등)가 모두 실행된 뒤(DOMContentLoaded)를 기다린다 — app.js 는 그보다 먼저 실행되므로 */
+  function whenScripts() {
+    return new Promise(function (resolve) {
+      if (document.readyState !== "loading") resolve();
+      else document.addEventListener("DOMContentLoaded", function () { resolve(); });
+    });
+  }
+  function restoreLocal() {
+    return whenScripts().then(function () {
+      if (!AppBridge.isNative() || !window.Store) return false;
+      var key = window.Store.KEY;
+      return restoreIfEmpty({
+        hasLocal: function () { return !!window.localStorage.getItem(key); },
+        restore: function () { return AppBridge.restore(); },
+        write: function (json) { window.localStorage.setItem(key, json); }
+      });
+    });
+  }
+
+  /* 앱 화면이 열릴 때마다: 채널 보장·알림 버튼 등록·알림창 정리(열 때와 돌아올 때)·알림이 켜져 있으면 한 번 동기화. 같은 페이지에서 한 번만 */
+  var started = false;
+  function startup() {
+    if (started || !AppBridge.isNative()) return Promise.resolve();
+    started = true;
+    return AppBridge.ready().then(function () {
+      var LN = AppBridge.plugin("LocalNotifications"), R = window.Reminders;
+      if (!LN || !R) { started = false; return; }   // 플러그인이 아직 없으면(dev 모드에서 가짜를 나중에 넣는 경우) 다시 부를 수 있게
+      R.ensureChannel(LN);
+      if (LN.registerActionTypes) Promise.resolve(LN.registerActionTypes(R.actionTypes())).catch(function () { /* 무시 */ });
+      var clear = function () { R.clearDelivered(LN).catch(function () { /* 무시 */ }); };
+      clear();
+      document.addEventListener("visibilitychange", function () { if (document.visibilityState === "visible") clear(); });
+      var st = window.Store ? window.Store.load() : null;
+      if (st && st.settings && st.settings.remindersOn && window.Schedule && window.Data) return requestSync();
+    }).catch(function (e) { if (window.console) console.warn("[app] 시작 처리 실패:", e && e.message); });
+  }
+  if (typeof document !== "undefined") document.addEventListener("DOMContentLoaded", function () { startup(); });
 
   /* 알림 동작을 어디로 보낼지 — 순수 함수(tests/app.test.mjs). env.dispatch(detail) 가 true(내 영양제 페이지의 리스너가 받음)면 끝.
      아니면 env.store(detail) 로 보관하고(리스너가 아직 안 붙은 콜드 스타트도 여기), 내 영양제 페이지가 아니면 env.navigate() */
@@ -89,14 +138,14 @@
       var LN = AppBridge.plugin("LocalNotifications");
       if (!LN || !st.settings.remindersOn || !window.Reminders || !window.Schedule) return;
       return window.Data.core().then(function (core) {
-        var sched = window.Schedule.build(st.items.map(function (i) { return i.id; }), core, window.Store.overrides(st));
+        var sched = window.Schedule.build(window.Store.entries(st), core, window.Store.overrides(st));
         return window.Reminders.sync(LN, st, sched, { shortName: window.Data.shortName });
       });
     }).catch(function (e) { if (window.console) console.warn("[app] 알림 재예약 실패:", e && e.message); });
   }
 
   var AppBridge = {
-    detect: detect, routeAction: routeAction, requestSync: requestSync, VENDOR_VERSION: VENDOR_VERSION,
+    detect: detect, routeAction: routeAction, requestSync: requestSync, restoreIfEmpty: restoreIfEmpty, startup: startup, VENDOR_VERSION: VENDOR_VERSION,
     mode: function () { return state.mode; },
     isNative: function () { return state.mode === "native" || state.mode === "dev"; },
     isReal: function () { return state.mode === "native"; },
