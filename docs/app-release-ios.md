@@ -122,3 +122,7 @@ python scripts/build_store_assets.py --ios-phone "C:/Users/OK/Pictures/ios-phone
 - **같은 빌드 번호 거부**: 실행을 Re-run 하지 말고 새로 Run workflow(실행 번호가 커진다).
 - **Xcode 버전 오류**: Capacitor 8 은 Xcode 26 이상. `macos-latest` 러너 이미지가 바뀌면 워크플로의 `runs-on` 을 `macos-26` 처럼 명시.
 - **`.p8` 분실**: 2절에서 키를 새로 만들어(기존 키는 폐기) Secrets 재등록.
+
+## 시작 화면(2026-10-23 이후 빌드)
+
+앱의 시작 주소는 `app/capacitor.config.json` 의 `server.url` = `https://xn--og5b1hx9c.kr/today`(오늘 홈)다. 2026-10-23 이전에 올린 빌드(안드로이드 내부 테스트 6, TestFlight 12)는 `/my` 로 열리지만 사이트가 같은 것을 보여 주므로 하단 홈 탭으로 오늘 홈에 갈 수 있다. 새 빌드를 올리면 처음부터 오늘 홈으로 열린다. 스토어 심사 메모·스크린샷을 다시 낼 때는 홈(오늘) 화면을 첫 장으로 쓴다.

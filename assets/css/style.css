@@ -328,6 +328,7 @@ body.has-sheet { overflow: hidden; }
 .help-tip { font-size: .82rem; color: #4f6b54; background: #f6f8f6; border-radius: .9rem; padding: .6rem .8rem; }
 .help-list { margin-top: .6rem; display: grid; gap: .35rem; font-size: .88rem; line-height: 1.55; color: #33433a; }
 .help-list li { display: flex; gap: .5rem; align-items: flex-start; }
+.help-list li b { white-space: nowrap; flex-shrink: 0; }   /* 분류 이름이 세로로 쪼개지지 않게 */
 .help-list .dot { width: 10px; height: 10px; border-radius: 50%; margin-top: .45rem; flex-shrink: 0; background: #c9d4cc; }
 .help-list .dot.is-dup { background: #c0392b; } .help-list .dot.is-care { background: #d98a1f; } .help-list .dot.is-good { background: #2f7d4f; }
 .help-list.plain li { display: list-item; margin-left: 1.1rem; list-style: disc; }

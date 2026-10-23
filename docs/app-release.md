@@ -153,3 +153,7 @@ https://xn--og5b1hx9c.kr/my#import=YJ1-eyJ2IjoxLCJpdGVtcyI6W1sidml0YW1pbi1kIiwwX
 - **정확 알람 권한 질문**: 알림은 모두 비정확 예약(`assets/js/reminders.js` 의 `isExactNotification: false`)이라 `SCHEDULE_EXACT_ALARM` 을 매니페스트에서 제거했고(`app/android/app/src/main/AndroidManifest.xml` 의 `tools:node="remove"`), 번들 검사가 남아 있지 않음을 확인한다.
 - **Secrets 오류로 멈춤**: 2절의 이름 4개가 정확한지 `gh secret list` 로 확인.
 - **빌드 실패**: 실행 로그의 'Gradle 빌드' 단계를 본다. 디버그 빌드(`build-android.yml`)는 서명 없이 돌므로 먼저 그쪽이 성공하는지 보면 서명 문제인지 코드 문제인지 가릴 수 있다.
+
+## 시작 화면(2026-10-23 이후 빌드)
+
+앱의 시작 주소는 `app/capacitor.config.json` 의 `server.url` = `https://xn--og5b1hx9c.kr/today`(오늘 홈)다. 2026-10-23 이전에 올린 빌드(안드로이드 내부 테스트 6, TestFlight 12)는 `/my` 로 열리지만 사이트가 같은 것을 보여 주므로 하단 홈 탭으로 오늘 홈에 갈 수 있다. 새 빌드를 올리면 처음부터 오늘 홈으로 열린다. 스토어 심사 메모·스크린샷을 다시 낼 때는 홈(오늘) 화면을 첫 장으로 쓴다.
