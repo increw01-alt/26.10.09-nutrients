@@ -2,7 +2,7 @@
   "_meta": {
     "source": "live",
     "sourceLabel": "구글 뉴스 RSS",
-    "updatedAt": "2026-10-24T06:21:11+09:00",
+    "updatedAt": "2026-10-25T05:43:28+09:00",
     "queries": [
       "건강기능식품",
       "영양제",
@@ -15,6 +15,39 @@
   },
   "items": [
     {
+      "id": "716c348a4d957cc9",
+      "title": "후기는 좋은데 연구는 왜 다를까…건강 광고 읽는 기준",
+      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE1HSHlfc2V4Zl9EN2hLNFhVUC1XRU1RUkpNVDNhN2VxT0Z0M3NWZkRmY0VZRnI0WDZLVlRVYWhhc3ZyX18xUUJPY2pLaHl0T3RxZnp0RHBSOXFobGFsOFRnOQ?oc=5",
+      "source": "제주교통복지신문",
+      "publishedAt": "2026-10-24T20:54:57+09:00",
+      "summary": "",
+      "category": "research",
+      "query": "식약처 건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "2990b2afdbe8e781",
+      "title": "청소년키영양제 그로우틴즈, 퍼스트브랜드 대상 1위…7차 물량 연속 완판",
+      "link": "https://news.google.com/rss/articles/CBMiU0FVX3lxTE8wYzBOMTN4MmFGeGVkdWlLUHg2Nlctb1lXaUlEMmFBdlRBTDhGWDE5ZGlhMVBWZF9RTkVHZG03eF9HNXlSN1ZWVVpYZnRiekVMSzRn?oc=5",
+      "source": "유스연합",
+      "publishedAt": "2026-10-24T15:52:27+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "fef47c1920df4ee0",
+      "title": "건강기능식품 기능성 원료 안전관리 강화･ 영양성분 원료 확대 등 기준 정비",
+      "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE9UanRoQ3BJdlMxVDk5OVdyYTlpZXF2bF9nTzhCaU9uaEhyeXNFLUZxZGVVaGdlelREUG0tc09kNnY3bEM2Y0t6amVjS21MN3JxRkE?oc=5",
+      "source": "투위복지뉴스",
+      "publishedAt": "2026-10-24T10:49:09+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
       "id": "4c7426206592ea49",
       "title": "건강기능식품 원료 혼합 기준 강화…식약처, 안전관리 개정안 행정예고",
       "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE8ySW54NDFya3N2bXNEbXk5UGlZSkJMbk5qRHJpLWhTOVBZcS1TeWlOWUNua3Y2VVdBeGF0R1ExV0xpRzRBUXA0ZnNkRWFieGxweElQaTdTV1A1bWhFWGdQMTJ4VmZNZTA?oc=5",
@@ -26,14 +59,25 @@
       "provider": "google"
     },
     {
-      "id": "a47d7224a1ec2462",
-      "title": "건강기능식품 기능성 원료 안전관리 강화･영양성분 원료 확대 등 기준 정비",
-      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE1ERmdHZ2hqaTFEeGNYRHRBaFhVa3lMdTlWbjZwQXNRbEFIcUJLUUU4YWRnbjJMYnVKNjIzR0xWekZDUzl4ZW92eEtvVXB4S012WS1LaFlKc0szY3o3enFQaU1BekQ1VWNyX2U1YQ?oc=5",
-      "source": "푸드아이콘",
-      "publishedAt": "2026-10-23T23:51:03+09:00",
+      "id": "95928094be0e42a0",
+      "title": "[건강기능식품] 기도 염증과 면역 불균형에 대한 영양학적 접근",
+      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTFB0ODZrSmh2SE54ZHF6c0dYc3ZjdzJITDlxU1NOMDliM2JlWFl4ZVFlV0ZOaXk5aEw3Z3hkY3ZCUl8xUDdXeE5IWWRQcXlFRXB2cnI3b3JKak16WkN0dVV0Q0JBQms2VGdiOGJMaQ?oc=5",
+      "source": "약사공론",
+      "publishedAt": "2026-10-24T05:49:00+09:00",
       "summary": "",
       "category": "news",
       "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "6ee363955a75a3d6",
+      "title": "건기식 영양 성분·원료 사용 범위 확대…제조·일일섭취량 기준 정비",
+      "link": "https://news.google.com/rss/articles/CBMiREFVX3lxTE9hR1NST1pUdXo4X1Jza09lNjVfaEQ2dFBKblNjQWdSQU81QVVKQnZRMEFLaHJiLUIxMTdIeWVsM1FQX25T?oc=5",
+      "source": "뉴스맥",
+      "publishedAt": "2026-10-23T23:33:00+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "식약처 건강기능식품",
       "provider": "google"
     },
     {
@@ -44,7 +88,7 @@
       "publishedAt": "2026-10-23T21:22:49+09:00",
       "summary": "",
       "category": "mfds",
-      "query": "건강기능식품",
+      "query": "식약처 건강기능식품",
       "provider": "google"
     },
     {
@@ -81,11 +125,22 @@
       "provider": "google"
     },
     {
-      "id": "6e1b6ad39b0b70f1",
+      "id": "63ff318dd8e5697c",
       "title": "'식품 사용 금지' 수입 알로에 추출분말 회수 확대…완제품 유통됐나",
-      "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE9hSlktSTk2akFUel9jZDdab3k5ZVA4YndDZ0NzZFQ3SUI4c0llcWRleE1FV0ExbHBKQUlYc3VtUE9KYVpZaThoRXNNckxkVTU1M1ZVbkI4WEozc21zdXJpYnZaNUFWckJK?oc=5",
+      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE1zWU1BUVRwZkV4SGtiM0hacVhRcThmekgwSHVwWGxLMUk4RXFwQWYwZ0JJWHltN3NNUm9SbFNmT1RLMXNQT0U0X2VrQWRqWW1tWTBYUjIyM1lPS18tWGdZZ0hiUmo0Zw?oc=5",
       "source": "푸드투데이",
       "publishedAt": "2026-10-23T19:03:27+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "식약처 건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "4c828ac10678a76f",
+      "title": "[더나은미래 경제브리핑] SK하이닉스, ‘중복상장’ 논란에 솔리다임 美 상장 철회...애플 첫 폴더블 ‘아이폰 듀오’ 국내 출시",
+      "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE1VTHpNZ0tjb0JKelhnOE1JY1FxQ1J1NXlLeTFVOW8zUl9jOXlwUTZjVV9zMGtKTGJsc3dOblhhUERRQXIxNV83dlFvamNzMTJ5S0E?oc=5",
+      "source": "더나은미래",
+      "publishedAt": "2026-10-23T18:38:00+09:00",
       "summary": "",
       "category": "news",
       "query": "식약처 건강기능식품",
@@ -99,17 +154,6 @@
       "publishedAt": "2026-10-23T18:38:00+09:00",
       "summary": "",
       "category": "mfds",
-      "query": "식약처 건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "4c828ac10678a76f",
-      "title": "[더나은미래 경제브리핑] SK하이닉스, ‘중복상장’ 논란에 솔리다임 美 상장 철회...애플 첫 폴더블 ‘아이폰 듀오’ 국내 출시",
-      "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE1VTHpNZ0tjb0JKelhnOE1JY1FxQ1J1NXlLeTFVOW8zUl9jOXlwUTZjVV9zMGtKTGJsc3dOblhhUERRQXIxNV83dlFvamNzMTJ5S0E?oc=5",
-      "source": "더나은미래",
-      "publishedAt": "2026-10-23T18:38:00+09:00",
-      "summary": "",
-      "category": "news",
       "query": "식약처 건강기능식품",
       "provider": "google"
     },
@@ -257,6 +301,17 @@
       "provider": "google"
     },
     {
+      "id": "c88da0eab4947966",
+      "title": "식약처, 건강기능식품 안전관리 강화… 기능성 원료 혼합 금지 신설",
+      "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTFBMQkZMWnM1c1p5Umx3MGVuS2F3TG0wSzJJRC0wdFV1S3Z3RGVsaWtwdjNSUlpKQlVHekZuZzBZeDdpa2VpRkFDZUsxZlhkOEEwN2dpNkJYVGIwMGNN?oc=5",
+      "source": "피디언뉴스",
+      "publishedAt": "2026-10-23T16:04:15+09:00",
+      "summary": "",
+      "category": "mfds",
+      "query": "식약처 건강기능식품",
+      "provider": "google"
+    },
+    {
       "id": "71caf64928698377",
       "title": "남원 기회발전특구 ‘1호 투자’ 한미양행, 191억 원 규모 투자협약 체결",
       "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE5xcVlaaDc5UzJtZF9NdDlNY2d5SDlVMzhOUkQxai1nbFRvSHpnWnA5YWpObmZzWFRLSUx1eGc4d2F5RC1PaEFCb0Y4WElSSTNrSUh1UTVoSF9iZTF1UTV0QnNmRFhBU0tVT1lRSg?oc=5",
@@ -286,7 +341,7 @@
       "publishedAt": "2026-10-23T15:42:39+09:00",
       "summary": "",
       "category": "news",
-      "query": "식약처 건강기능식품",
+      "query": "건강기능식품",
       "provider": "google"
     },
     {
@@ -323,14 +378,14 @@
       "provider": "google"
     },
     {
-      "id": "4e359005ba19b011",
+      "id": "ef88846f122126f7",
       "title": "간 건강 관련 주의사항 포함 기능성 원료, 혼합 사용 막는다",
-      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE8ydGY0eWowSnVFWjNRdnBocklmQzlWOHBlYTY5Y0VQVmJIRTBkTWJpV3pZbzBwSTIzSlVhUURDczQ0RmtsbWRESEtBMGRkT2hyQ3JBU2ROR1pUb0xPMW16TDNhRWJaM0E1OEx2Uw?oc=5",
+      "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTE9rOWRIWjBDdlNJMVc5c2xPQXkxRHB4cjk4X1ctckpXLTFBXzBReGplYnc4clhUa3MzYzRyaEJ6bk5WbWV2QU1mUnJKdnlXd3Z3dmlRa2JSajRXRzFmRTVsc2tjbV95V0dLa3lXaGl3?oc=5",
       "source": "식품저널 foodnews",
       "publishedAt": "2026-10-23T15:33:42+09:00",
       "summary": "",
       "category": "research",
-      "query": "건강기능식품",
+      "query": "식약처 건강기능식품",
       "provider": "google"
     },
     {
@@ -408,6 +463,17 @@
       "summary": "",
       "category": "news",
       "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "731199dc8dd68d2d",
+      "title": "해피문데이, 자체 영양제 판매량 653% 증가…월경 건강 데이터 기반 제품 확대",
+      "link": "https://news.google.com/rss/articles/CBMiT0FVX3lxTFAzSzFqUjZUMXBnQmlvVDBxcFA2aG9qZ05ZOG0wOHpRc0lhc0oyR3hNdi1VZTVQbU1Fa3AzS3kyYWlJakdYbEY3QThwVFJGNDA?oc=5",
+      "source": "벤처스퀘어",
+      "publishedAt": "2026-10-23T13:58:40+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
       "provider": "google"
     },
     {
@@ -543,6 +609,17 @@
       "provider": "google"
     },
     {
+      "id": "7df6b119e89eb9c4",
+      "title": "약학회, 건강기능식품연구회 출범…\"과학적 근거 기반, 약학계 앞장서야\"",
+      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTFA0S0dYT3BqWlJHN08zR3d4V0Q3X0Y2VUpFRzktc20tX0JzQjAySGlFYzB5UE9DVFhtUHBhdXAycGhXek91U3YtRTlIa0pIZm11aFZpQ1ZqNHJ5aHNCT0dNVE5DQ1JuN2RmSFFz?oc=5",
+      "source": "메디파나뉴스",
+      "publishedAt": "2026-10-22T18:36:05+09:00",
+      "summary": "",
+      "category": "research",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
       "id": "136b95a30f21ec62",
       "title": "치료받아 살 뺀 60대女⋯영양제도 먹었는데, 왜 정신혼란·발열?",
       "link": "https://news.google.com/rss/articles/CBMiQkFVX3lxTFBxYlNJNVBTSzUtckNkVm9FN2dtQ0owU2Y5bVBYUkpKWkZoLVA3VEd5NWpQcHZXUnVCNEVGQVl1MFJMUQ?oc=5",
@@ -587,91 +664,14 @@
       "provider": "google"
     },
     {
-      "id": "061bdd62e79f47a3",
+      "id": "2a641e4ef69a90d8",
       "title": "대한약학회, 건강기능식품연구회 출범…\"과학적 근거·안전성 검증 이끈다\"",
-      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE00MVgxNV9RbXF6dnJFbFNTbEJXVmRMVkFsYXRUc3NUMHVTc1dfRWxFUGgzZldhbFM4RmYxT3JHdjctRGt4aXJnMWlYLVBqMm5wbmdLVTM4XzlabXpncmxnTmU4X3otZw?oc=5",
+      "link": "https://news.google.com/rss/articles/CBMickFVX3lxTE10Nm54NTZrWXNtV3B1MXI2RmwtRGNTM0hCR0diZVVYUzNrXzdFbUhVbk1zQUxoTk1TUlh5djVseEMzWVh3NnJMRnF3LTA1SnJTWV9ibDNUVnJjbXFZYlRERlUzS2tCa3NzbWx4S0ViR3Yxdw?oc=5",
       "source": "약업신문",
       "publishedAt": "2026-10-22T16:01:00+09:00",
       "summary": "",
       "category": "research",
       "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "3120120a92cb28b1",
-      "title": "대치동 수험생 영양제로 소문난 피로회복제…온누리약국 PB '글루콤' 판매 1억병 넘었다",
-      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFB3YUNVdGltWGRXOWhsNE10OTY5S3lEZzZwYTdCV3duYXQzMXNqY1J0U29taDhrQndZOU9EM2xUbHNjZmxRUWZSUmdPUlJUUzFfTk5zVmhtSTJOQQ?oc=5",
-      "source": "한국경제",
-      "publishedAt": "2026-10-22T15:56:56+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "f5f22bc466723ac7",
-      "title": "웰스트리트 약국, 서울 마곡에 175평 규모 대형 매장 개점",
-      "link": "https://news.google.com/rss/articles/CBMiW0FVX3lxTFBjQ1c4dkRmN2RjcUswU3k0Y0pXNlRFdnI0UDJwSXBpTmlSSWx5OVAzUnhQMjBDTndmNXlqRmR5Z2VIUDlUV1ltVVhIeHUxbno0Qk83aHdQTXNUcUHSAWBBVV95cUxOd19vZC1CRE5FTkN3T0ZHdXBTamx0LWkyVktfQWVTajNhbndrbTU3djhXSW9QbUE4QWtvcURSSzhfX0FfWUd0QjF5aFd1WDZKT0k5MklXODNIUHlEZnBmYWc?oc=5",
-      "source": "연합뉴스",
-      "publishedAt": "2026-10-22T15:31:17+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "9c90a18979eb569b",
-      "title": "달서구, 저소득층 250명에 영양제 지원",
-      "link": "https://news.google.com/rss/articles/CBMiX0FVX3lxTFBiV0dJMzJERENENG5CbjNFY3M1NzdSSlI2NDJEYXhlRUpNdEVJb1FZdmF6Yk5VNnlMdVlLLS1PNHBmaWxTRlNIcEo3X19UZDlsT1A4UHVPLWlxTTZRTXdj?oc=5",
-      "source": "푸른신문와이드인",
-      "publishedAt": "2026-10-22T14:58:28+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "c1414e3bd52dae5f",
-      "title": "헬스헬퍼, 가을철 체지방 관리 위한 건강기능식품 구매·섭취 가이드 발표",
-      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE80SnZ2TnpyY0lxQlpFT29sUlh1QlFPUy04Vms4clVHS1VBSXN4NzhBRlJ5LXJlOEtIb1lxS0s3cW84c0NQS2hhR211UWphNDBCS3g5RUF0dUgxQQ?oc=5",
-      "source": "한국경제",
-      "publishedAt": "2026-10-22T14:44:54+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "5def2a243cc913d9",
-      "title": "헬스헬퍼, 건강기능식품 구매 시 기능성 원료·섭취 기준 살펴야",
-      "link": "https://news.google.com/rss/articles/CBMidEFVX3lxTE93RmtMNWZYWl80MkJXdElVTFRyNzhzbnNvejMwLTdNSHlJQm9JWWRYZTJaclNJS2oyakV5MDBpT3oxdHJWd2Z6aThnWFh1TWNuSDNCcEc2b2drbkRsckpQSlRsYVozbHdaMUtpRE56MXpGa3lF?oc=5",
-      "source": "스타데일리뉴스",
-      "publishedAt": "2026-10-22T13:53:49+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "9b88205d62d2153d",
-      "title": "KIA 김도영·박재현, 유기견 위해 사료·영양제 후원…그라운드 밖 따뜻한 나눔",
-      "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTFBPRDkzT09EbnFWSnVxMWhzdWhPLWRXcUxETVRvelU4UjJ0c2dNSmI3NFhoNTdienN1dWRrQmp4QzRBMkVCQ040RUo4d0k5bzhXTmlUa1B2X1FzZW8yekh1SVl1WjJmNmNkeFpUQVhocw?oc=5",
-      "source": "전남일보",
-      "publishedAt": "2026-10-22T10:09:57+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "bf54620d811506f2",
-      "title": "“한 번에 열다섯 알”… 브라이언의 ‘위험한’ 영양제 복용법",
-      "link": "https://news.google.com/rss/articles/CBMif0FVX3lxTE1qUWxkc1I5V3FPaGd6ejBPaE9zR0RvN3RfaEVBZEdfbGxWRzNrS3EzU0htVmg2WkVjNTZ2NlB6WDM0dlVJVWN0bFZnS2dLeWl6S0RUQzBQT1ptWEx6RnpBanZEOUE0dmM5UWFhSlhZZGI0aUZqblpoNXN0bXp1WEk?oc=5",
-      "source": "헬스조선",
-      "publishedAt": "2026-10-22T05:00:00+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
       "provider": "google"
     }
   ]
