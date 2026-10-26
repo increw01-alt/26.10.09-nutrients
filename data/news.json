@@ -2,7 +2,7 @@
   "_meta": {
     "source": "live",
     "sourceLabel": "구글 뉴스 RSS",
-    "updatedAt": "2026-10-26T05:46:44+09:00",
+    "updatedAt": "2026-10-27T07:36:57+09:00",
     "queries": [
       "건강기능식품",
       "영양제",
@@ -14,6 +14,182 @@
     "total": 60
   },
   "items": [
+    {
+      "id": "067c8192be852396",
+      "title": "자녀 ‘키’, “운동 종류보다 지속성, 영양제보다 균형잡힌 식습관에 신경을”",
+      "link": "https://news.google.com/rss/articles/CBMiTkFVX3lxTE5PNkdZQ3h4bHR0bVVMd2hVU0VZZVFDMFY1T3piQ0FKcXdiRmR4ejhNM0NLWElPU2gtcU5FY0FYdU9UUDNtSms0enJBZVBqQQ?oc=5",
+      "source": "www.dt.co.kr",
+      "publishedAt": "2026-10-27T06:00:00+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "743df81ba46a0083",
+      "title": "홍삼에서 비타민·오메가3까지…건기식업계, 성장동력 다변화 승부수",
+      "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE5tV2c5Ni1aXzludlR0clZoUlVfNENRUTZqS2ExUXhtMXR4eldYajJoREU2QlFNUl9XTlBJR0NmOEI1d2M0RW9WMzZNZjlzWXRvbW0zS0Jub0NLZTdsdkxjT3ltS0lFYU13c2RBMl9NUUvSAXRBVV95cUxOMHhhZjFPcDlPUlcxV0lQSU8wb3dHbnd4MmhCMTVpTERiVUV3Qm1mU3dRMG5uVUk3dlVSUFpWRWpDUm9CbC14NlFTcDdZdlg5MlN3WlVHWFFUN2ZuYXZUYVlCbmhtazJtdWQxSDJBaG1lUzk3bQ?oc=5",
+      "source": "포인트데일리",
+      "publishedAt": "2026-10-27T01:05:00+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "오메가3 유산균",
+      "provider": "google"
+    },
+    {
+      "id": "e43d3c0b7e2c811e",
+      "title": "중구약사회, 대전 중구 취약계층 청소년에 영양제 100세트 전달",
+      "link": "https://news.google.com/rss/articles/CBMickFVX3lxTE83WUtGOXlzcFRsakVJVU8wRzBNbHFxbTMwMXVaeHNLeDNlNWF6cnRFYUc0dE5qaTlPY3lCb0JDOFRrYVdCZ3NBdmFDYUllcTkzYi1TWXFvalk5VjdsR3BZTnNsWDBlZ3FhR0JEUy02M0dKZw?oc=5",
+      "source": "웹이코노미",
+      "publishedAt": "2026-10-26T19:09:39+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "c2d1a4024cffc17f",
+      "title": "영양제 한 알에 담은 이웃사랑… 중구약사회 나눔 이어가",
+      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTFBBNWJ2ZWRQVVZGbUJQc3FHTHFPblpzakwyT1V3dXZxVFgtVXktRDhQVk5HRUhHbGxGNnZWS21CZFdGM1R1ak40QU5VdW85eDBoRjMwdFBLUlVJeEFIVk56WmNGZm92Q1VuQTlqcg?oc=5",
+      "source": "충청도민일보",
+      "publishedAt": "2026-10-26T17:04:29+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "a324757652fa455f",
+      "title": "중구약사회, 대전 중구 취약계층 청소년에 영양제 100세트 기탁",
+      "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTFBtU1dqMEhENVdEZUI1Ym84NTl0VFpBakM5bFpPdFc0bDBLOFdXRlpfUF8yRkx3TnJGaGRUNWhRV2R0TTFGVkRNclBFcldYcllTOTJnY256Zzl5bHhDclF1OEFaMTNJZnNpdkE?oc=5",
+      "source": "충청매일",
+      "publishedAt": "2026-10-26T14:30:13+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "f38fbe561d4a58bb",
+      "title": "대전 중구약사회, 취약계층 청소년에 영양제 100세트 기탁",
+      "link": "https://news.google.com/rss/articles/CBMiREFVX3lxTE5tMVJCeXdjRXBlb3BYUTU3ZnA0Wno4dk1LTTF4eU15Z1Zma01lUjB5NEdmTUplaWVvaS1yZmxUbzh0bFZh?oc=5",
+      "source": "뉴스파고",
+      "publishedAt": "2026-10-26T13:45:00+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "1ae849a61c7b125e",
+      "title": "중구약사회, 대전 중구 취약계층 청소년 위한 영양제 기탁",
+      "link": "https://news.google.com/rss/articles/CBMipAFBVV95cUxOREJNbGRZaWJIS0kwNXN3TDZVZEJiV19XazRvT1RsSnAyRFpRbU8xNTZ2Z1JQVDFnQ0xLWElYLVRiNXUtWXc3TU5obVI3LVpSNFVJUjluOFZHaWxpTTc2WWVvLXpBS1ZKUEVuLUsycnlMSGxEaEJ0UlZoTXloZHFKbU9GTi1aZ0ZCaE1iMkJRLWtNYWNJSlhWZF9zVGZSclR3Q05JYQ?oc=5",
+      "source": "미디어투데이",
+      "publishedAt": "2026-10-26T13:13:00+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "8817d5ab435e45af",
+      "title": "청소년 건강 챙기는 따뜻한 손길…대전 중구약사회 3년째 나눔",
+      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE9Da3VBQzdxVHU5UnBVSmhuamRkZUZjeG5qUzg1cEpPbkc1WFF1dUFWcnJCT3pWeE82V0xZLVVsQ0hOeWQ3a2JFMHFVVkpoZTNmb0xhck9YOFlTRTJJbWl5M1MzTWZrMmxnZWhr?oc=5",
+      "source": "충청시사신문",
+      "publishedAt": "2026-10-26T13:05:18+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "0b02c04eaa6a48c6",
+      "title": "CJ웰케어, 츄어블 이너뷰티 ‘이너비 브이캔디’ 출시",
+      "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9PMDNTMHZBVWFwN3A3M2V1VG50RGZ3QXhzaFZ3NEc3R2Q0QlBwdkpydWo4ZEV6WEEyd0dWOUlsWUx3RHg0Zl95WGtuS08zSXFZc3A0OHNTc1lnNjV1SVdramM3SWkyNFE?oc=5",
+      "source": "한국식품의약신문",
+      "publishedAt": "2026-10-26T12:10:19+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "6db636d812e5a01e",
+      "title": "“알로에 페록스 실태조사 거쳐 필요하면 기준·규격 마련 검토”",
+      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE1JVVlldV9zdXprTjgxME1sU3d1V0FzM0VvbGgwaG02bHJvSTZUczF6QkNpQ2lnTlhBbVJTMDFzN09oOGxyRmlfSDlYX1F1NW5LTjF0djFYNV92bnNhR2NVQ0c5bUFDQVFhZTQtWg?oc=5",
+      "source": "약사공론",
+      "publishedAt": "2026-10-26T12:00:00+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "식약처 건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "fa608063b3443aab",
+      "title": "'세계 최대 건강기능식품 시장 잡아라'… 금산 인삼기업 북미 최대 건강식품 박람회 참여",
+      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTFA5SklCS1d3eHRucTdNLVFtcGtOcVdTQXM0YzFQVjAyYWFJSVJoZTUwNnNnR0RwV2FjeEtHSk05cmt4cDVsTUhyRW1pek83XzRtdlliUjJhamxMR21xUFotS0w1OWI?oc=5",
+      "source": "중도일보",
+      "publishedAt": "2026-10-26T11:03:37+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "1f8201ef02c3c624",
+      "title": "\"내 건강함은 5000원을 넘지 않지\"…다이소로 몰리는 제약사들",
+      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE9acklZaDJPNHBYUmRDRFpmekt6ZFIxNzdZLWxweWNGeExiSXIyT2ZQN2ZNd1ZiZjhmODJha3JhY0RnQktKZEtaLVZlb2tHS2FQQVRJQjNtVGd4NGlCMDhOMS1ucTlKRFJlNjdabA?oc=5",
+      "source": "매경헬스",
+      "publishedAt": "2026-10-26T11:00:00+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "d8574e0080d14151",
+      "title": "면역강화·기억력 개선, 일상 속 활력↑",
+      "link": "https://news.google.com/rss/articles/CBMiY0FVX3lxTE1Ia0s4UlJLclNMSlNJWWlLOFVOdVEwM2pPaThTeGdLNTZsS0tHbVRHU2wwUmFiMUM4ckE4U0RSWC1UMkcxWlIyeTVaVmZUZk1YWEhxYlZyUXVBbWJENlpPRENCOA?oc=5",
+      "source": "보건신문",
+      "publishedAt": "2026-10-26T10:11:14+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "ed1722ba2b6f3460",
+      "title": "위바이옴, 피로 개선 건강기능식품 ‘트라이포텐 A3 시너지 포뮬러샷’ 출시",
+      "link": "https://news.google.com/rss/articles/CBMifEFVX3lxTE5tWWxXdUhUY0taNWhxR3JqWXFYSm16Y0oyWmk5ZEVaS3YtTGcwMUU1UmhOZjVLQldmZ0FSRFRwX2FPOXBjejA5ZEZSdGVETjNoWnVrYWtpMEx0NEhpa1hDLVpRamVXUTJtVGFoSWkxSVpONHlUWnJ4eExOaS0?oc=5",
+      "source": "비욘드포스트",
+      "publishedAt": "2026-10-26T09:54:16+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "dfd3c28785459588",
+      "title": "㈜함소아제약, ‘홍키통키 튼튼홍삼젤리’ 리뉴얼 출시",
+      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFBCOTN3bDdaX0J3ZEx6eUVmVC1wNW9GcThDUlROdHp5UTh1SmgySDA5d2gyNzN2NTN0T29JdUpoLWppVllGMnQtMEs1S0F0R3A5X1gtVTZndHFjUQ?oc=5",
+      "source": "한국경제",
+      "publishedAt": "2026-10-26T09:27:07+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "056251980670ed19",
+      "title": "평택 고덕 메가허브약국, 환절기 건강관리 품목 확대…11월 영양제 세트 할인",
+      "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTE1sU0ZtaVRNRE5jREllSXlfSWQ3enFTaGJsNTNUZktpVm13V0Q5RndBMXFDNzVBMXJwZWo5ZERBRnc2S1JVUjNyQ21WWWNuUmM2NW5EU2pYeTV6SUNTTW0xZlYxclU4ejR0WkkyQktn?oc=5",
+      "source": "국제뉴스",
+      "publishedAt": "2026-10-26T08:00:00+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
     {
       "id": "17e7af9e93124089",
       "title": "콜마스크 매각·화장품 사업 양도…콜마비앤에이치, 건강기능식품 ODM에 집중",
@@ -55,7 +231,7 @@
       "publishedAt": "2026-10-25T11:18:00+09:00",
       "summary": "",
       "category": "news",
-      "query": "건강기능식품",
+      "query": "영양제",
       "provider": "google"
     },
     {
@@ -121,7 +297,7 @@
       "publishedAt": "2026-10-24T10:49:09+09:00",
       "summary": "",
       "category": "news",
-      "query": "건강기능식품",
+      "query": "식약처 건강기능식품",
       "provider": "google"
     },
     {
@@ -209,7 +385,7 @@
       "publishedAt": "2026-10-23T19:42:52+09:00",
       "summary": "",
       "category": "news",
-      "query": "건강기능식품",
+      "query": "식약처 건강기능식품",
       "provider": "google"
     },
     {
@@ -341,7 +517,7 @@
       "publishedAt": "2026-10-23T16:51:43+09:00",
       "summary": "",
       "category": "news",
-      "query": "건강기능식품",
+      "query": "식약처 건강기능식품",
       "provider": "google"
     },
     {
@@ -352,7 +528,7 @@
       "publishedAt": "2026-10-23T16:25:44+09:00",
       "summary": "",
       "category": "news",
-      "query": "건강기능식품",
+      "query": "식약처 건강기능식품",
       "provider": "google"
     },
     {
@@ -363,7 +539,7 @@
       "publishedAt": "2026-10-23T16:24:19+09:00",
       "summary": "",
       "category": "mfds",
-      "query": "건강기능식품",
+      "query": "식약처 건강기능식품",
       "provider": "google"
     },
     {
@@ -385,7 +561,7 @@
       "publishedAt": "2026-10-23T16:12:25+09:00",
       "summary": "",
       "category": "news",
-      "query": "건강기능식품",
+      "query": "식약처 건강기능식품",
       "provider": "google"
     },
     {
@@ -396,7 +572,7 @@
       "publishedAt": "2026-10-23T16:12:06+09:00",
       "summary": "",
       "category": "mfds",
-      "query": "건강기능식품",
+      "query": "식약처 건강기능식품",
       "provider": "google"
     },
     {
@@ -429,7 +605,7 @@
       "publishedAt": "2026-10-23T15:42:39+09:00",
       "summary": "",
       "category": "news",
-      "query": "식약처 건강기능식품",
+      "query": "건강기능식품",
       "provider": "google"
     },
     {
@@ -440,7 +616,7 @@
       "publishedAt": "2026-10-23T15:37:38+09:00",
       "summary": "",
       "category": "news",
-      "query": "건강기능식품",
+      "query": "식약처 건강기능식품",
       "provider": "google"
     },
     {
@@ -473,7 +649,7 @@
       "publishedAt": "2026-10-23T15:33:42+09:00",
       "summary": "",
       "category": "research",
-      "query": "식약처 건강기능식품",
+      "query": "건강기능식품",
       "provider": "google"
     },
     {
@@ -484,7 +660,7 @@
       "publishedAt": "2026-10-23T15:16:26+09:00",
       "summary": "",
       "category": "mfds",
-      "query": "건강기능식품",
+      "query": "식약처 건강기능식품",
       "provider": "google"
     },
     {
@@ -496,182 +672,6 @@
       "summary": "",
       "category": "news",
       "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "eba4b9996816a725",
-      "title": "식약처, 건강기능식품 제조기준 개선안 행정 예고…간질환 관련 원료 혼합 금지",
-      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE45UTFoYXZ2SE9CcjVTZlE2QkVzRmZQUmU1bkVZRU4xWm1hR21WSEJWcXpfdEtRS1pVUmFqYV9WWm1iVVAxN0ZqSGhwVEtRUjVZZHI0WTliMmlWOTFVNFBSOXVLVS1pS21HUDdF?oc=5",
-      "source": "BBS불교방송",
-      "publishedAt": "2026-10-23T15:04:27+09:00",
-      "summary": "",
-      "category": "mfds",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "ff2ccdf279068e95",
-      "title": "\"고양이 영양제는 미국으로, 엑소좀은 동물병원으로\"…제약사들의 펫시장 실험",
-      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE1KOHViNXBnTmVtQXdaeUo3bVNtMXBBc0E2X2RPckFlZXJmemVrX1poTFcyOHlJZ1h6SklYT3JHVDhZT0ZoOUw1bWMyWmhUZlA1UUFpUDNYamZkR2IyT0NybWtabEdYMFU0M2J2aQ?oc=5",
-      "source": "매경헬스",
-      "publishedAt": "2026-10-23T15:00:00+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "c846d5c4e2e16ec2",
-      "title": "한미양행, 남원에 191억 투자해 화장품·건강식품 생산공장 건립",
-      "link": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE5ELUpHN2V0Wk5pUmh3LVVZcTNkeVFEVWVLZ2VjMmpiOUE2NDVjdERSdkp5d0JEWFBiNnlnWjRudFA4bTY3b1dMazByUE9DYmxzWUdBX3lTNlR4N0XSAWBBVV95cUxQaU1BeHpDMURHaFV3eXFGSmNUdUNtWHhYczIxNU5mSDJ2Zm9YNUptcU1BR1dtdmJlbE9pWUZpVElIbWZzR21Td1VSdmg2OFVGYXRlMGJSX245bTNIVUo4d2M?oc=5",
-      "source": "연합뉴스",
-      "publishedAt": "2026-10-23T14:51:01+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "b376b36a0e986217",
-      "title": "해피문데이, 자체 영양제 판매량 6개월간 653% 증가",
-      "link": "https://news.google.com/rss/articles/CBMiekFVX3lxTE8xdGJCRHRwX3FpRlBtODBnblBOZEpRNHo5SHNPOGViNTR6b2xlQVA2TXRraTF3OU5IY21KQlRQSTNicVZyY0syamlnVFk2VjIzc05JMUtSWUI4VHpaeGx3bmFpMWJVV2VHR3RlbXFNYUZiYjhmbThkQWtB?oc=5",
-      "source": "로이슈",
-      "publishedAt": "2026-10-23T14:30:26+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "2d9f679d503d3dd6",
-      "title": "한미양행, 남원에 191억원 투자…화장품·건강기능식품 공장 건립",
-      "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTE1ObG52OUhmOGdaLUk1bWVMRFBLOHdzd0ZqMnRILXVlZmNJdGpucmMwSHJfQlo3Yy1mQUpXM0RyQnV0Vms4WHh5RTFNZVRJa0p0X29kSG5EYXZCVnJORC1PYTFlVFU0ZXZUdDJkckVB?oc=5",
-      "source": "아시아투데이",
-      "publishedAt": "2026-10-23T14:08:28+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "731199dc8dd68d2d",
-      "title": "해피문데이, 자체 영양제 판매량 653% 증가…월경 건강 데이터 기반 제품 확대",
-      "link": "https://news.google.com/rss/articles/CBMiT0FVX3lxTFAzSzFqUjZUMXBnQmlvVDBxcFA2aG9qZ05ZOG0wOHpRc0lhc0oyR3hNdi1VZTVQbU1Fa3AzS3kyYWlJakdYbEY3QThwVFJGNDA?oc=5",
-      "source": "벤처스퀘어",
-      "publishedAt": "2026-10-23T13:58:40+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "729928baa958d85a",
-      "title": "(주)한미양행, 남원일반산업단지 191억원 규모 화장품&건강기능식품 생산공장 건립",
-      "link": "https://news.google.com/rss/articles/CBMihwFBVV95cUxQSmI2cjZLejRFbXhDMF92aXFHYVViLThON2tjNk9JWTI0bk1rQmp3X3F2Z0NndEVXQTVvZHB5anNKZVEwS1ZZdFgtaGdGVUxhR3JYMzVRb1UtQzF0S1k4aTl3aVZQOG9Fa2I5XzRhelRuWDlDc3pTV1dXUGdYVzh0M1YtMjdCS3c?oc=5",
-      "source": "전북도민일보",
-      "publishedAt": "2026-10-23T13:29:00+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "8f75050cc89460e1",
-      "title": "다림바이오텍 '올퓨어 멀티비타민 구미', 누적 판매 10만 개 넘어",
-      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTFBiZWswNHZrTW9PbzJzeG9Rb1FUWXNMYkFGaHpQQkt1amxTQzdqazRZc3pib3laMXpDOF96eXdTdzREcmRNdmZINkdiN3dzNVBxc0xMS3B6TEN6dmlJbDhGY1FuMDBaN3Uwc09aRg?oc=5",
-      "source": "메디컬투데이",
-      "publishedAt": "2026-10-23T12:19:30+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "7a9577b72ea278d5",
-      "title": "한미양행, 남원일반산업단지 191억원 규모 화장품&건강기능식품 생산공장 건립",
-      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE1vSUFGVlFkOVhxTXdNVEtWdy1DTXpmNmxybEFOZmdST1gtY1lGVDhkNWtYTkhxRjgzUjZ3c0JiTS1LQzdmTEhuN2pFbnlnUThuRkU4cC1GaG9BZk43OFI5cERzb2NTMXNpeENIdA?oc=5",
-      "source": "한국미디어뉴스통신",
-      "publishedAt": "2026-10-23T12:16:27+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "e5eb1312e3014f41",
-      "title": "식약처, 건기식 기능성 원료 혼합 제한 … 간 안전성 관리 강화",
-      "link": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE5lNHpXT1VfcG9rajhiVW05anNTV21ac0ZNazVEdkhCRW5jQzFyOUg0eTBqYWxWWVB2SE9MWW5RVDQwVnBCU1Y0Mm1WUVFCeFFpeUx3MVZYNjk?oc=5",
-      "source": "헬스오",
-      "publishedAt": "2026-10-23T12:10:54+09:00",
-      "summary": "",
-      "category": "mfds",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "667d6255cc83353d",
-      "title": "남원 기회발전특구 ‘1호 투자’…한미양행, 화장품·건강기능식품 생산 예정",
-      "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTFBvM3pPTlJNejkwbWF6cVlGd0xIb2VvODE3a3RVTFN5YVpMV1Q2MmxtVjFndGozT1FjMUd3cTVLM3BhUV9qSlhVT3RvOHRDaS1ETTloUEt0cHQ0YkZmV0lOeFhod0NOR0xrM3RUcGdkVQ?oc=5",
-      "source": "서울신문",
-      "publishedAt": "2026-10-23T12:00:00+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "68147103448f95ee",
-      "title": "인천스카이동물메디컬센터, 엑소좀 활용 반려동물 영양제 개발한다",
-      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE8yckFRTUNicHVvRUtHSTRVaFV4YVJOSnZpQzh6YTItTzM5cEpsVDNweVl1elFkVnNEX3NLV2NYUVNuWENTNGpyUVpTZ3RLcTJxLXkxUjg4SlZJN0JjSl9hcnptZ2I?oc=5",
-      "source": "뉴스1",
-      "publishedAt": "2026-10-23T11:59:59+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "f08386a88e0e7bf4",
-      "title": "2026 눈 영양제 추천 가성비 성분별 비교 가이드 : 건강",
-      "link": "https://news.google.com/rss/articles/CBMiS0FVX3lxTFBpT3ZPeVN3R3g3cnhEQWxvNmVfWXpXSUkwVWNaUXgxOGZZSGRfZ3B4aHIzai1pT0NiYUFJTjY1ZnFQYzRVR3Y1LXdJNA?oc=5",
-      "source": "재경일보",
-      "publishedAt": "2026-10-23T11:30:35+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "71f086a6d32fa5ce",
-      "title": "초저가 생활용품 시장 커진다…뷰티·건강도 가성비 경쟁",
-      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTFA2RVJoVndzMXhBM2p1UXVFd21nY052VVJva0M5Rm9WVndid1BYTDdOX0hiTjNNaTVfQ29fY2lOTnJYbzZWcTR4Y1hrRm1mbTZDSmFwSDFkMkk5SWlMUGZyRGdlT1RFb2djaXZDbw?oc=5",
-      "source": "매경헬스",
-      "publishedAt": "2026-10-23T11:02:13+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "edf46d54a3ed3bf6",
-      "title": "종근당건강, 추석 시즌 홍삼 판매 확대… 카카오선물하기 매출 52% 증가",
-      "link": "https://news.google.com/rss/articles/CBMigAFBVV95cUxQLVJtR3EyZFpPRFROcUI3XzN4SlJwNWhFSzktRGxSZ1o3UVJvdjl1M0hEY2V1by1Mc1E2WjBJWjhfR01mSlQxYlhYcW9MVm9Fa3RFQnJFTUtjVnkySmt5dWtqenVfYW84VTBWNkZCOWtoUkNITjBxNFRSeTlZSk9MWA?oc=5",
-      "source": "이데일리",
-      "publishedAt": "2026-10-23T10:38:20+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "cde22f30be40cf7e",
-      "title": "키 성장 인정 굴 발효 원료, 갱년기 여성 뼈 건강까지 입증…AI 기반 ′디지털 임상′ 시대 연다",
-      "link": "https://news.google.com/rss/articles/CBMiY0FVX3lxTE93RGlJdW5KWlBYS1BoZ191alVwajhXbE9qUUdBeXhLYXdRSHczcGg1SzVUWk9jRV9iREV1RFFHMDAtdkxPV1QtenI2anBPWUlDdEVWZkhDU09wcmpkTnpmbmdxUdIBbEFVX3lxTE1QeXVCdEd1Tml4akFBUWt1d1hzN0ZtUDR6MGw1OTVLN1p3ekZCTUpNTm5kZ0NxMnFMRmdfMUZhTzF5UEFXQy1DY1d2X1hwX0RBSWE1U2hCN1owTmV2ODlVc0x1Wl9RUC02clJRdQ?oc=5",
-      "source": "소셜밸류",
-      "publishedAt": "2026-10-23T08:30:00+09:00",
-      "summary": "",
-      "category": "research",
-      "query": "건강기능식품",
       "provider": "google"
     }
   ]
