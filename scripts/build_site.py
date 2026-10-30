@@ -485,7 +485,7 @@ def render_page(it: dict, core: dict, cfg: dict) -> str:
   <div id="site-header"></div>
   <main id="main">
     <div id="ingredient-app" class="hidden">
-      <div id="ingredient-hero" class="page-hero"></div>
+      <div id="ingredient-hero" class="page-hero"{hero_photo_attrs(it, core)}></div>
       <div class="mx-auto max-w-7xl px-4 pb-8 sm:px-6">
       <div id="ingredient-quick"></div>
       <div class="mt-8 grid gap-6 lg:grid-cols-12">
@@ -1174,9 +1174,10 @@ LONGTERM_KINDS = ("limit", "review", "upper")
 LONGTERM_FORBIDDEN = ("치료", "예방", "완치", "진단", "중단하세요")
 
 
-PHOTO_DIR = ROOT / "assets" / "images" / "ingredients"   # 성분 실사 사진(640×640 WebP) — scripts/convert_photos.py 가 만든다
+PHOTO_DIR = ROOT / "assets" / "images" / "ingredients"   # 성분 실사 사진 WebP 3종(PHOTO_SIZES) — scripts/convert_photos.py 가 만든다
 PHOTO_FORBIDDEN = ("치료", "예방", "완치", "진단", "항염", "빈혈", "구내염", "비대", "골다공증", "암", "당뇨", "고혈압")   # 카드 금색 한 줄(claim) 금칙어
 PHOTO_CLAIM_MAX = 14
+PHOTO_SIZES = (("", 640), ("-m", 360), ("-s", 160))   # 사진 3종(접미사, 한 변) — 640 가이드 카드·성분 상세 상단, -m 성분 사전 목록 띠, -s 작은 카드 썸네일. scripts/convert_photos.py SIZES 와 같아야 한다
 
 
 def validate_photos(data: dict, valid_ids: set[str]) -> None:
@@ -1213,16 +1214,41 @@ def validate_photos(data: dict, valid_ids: set[str]) -> None:
 def prepare_photos(data: dict, valid_ids: set[str], photo_dir: Path = PHOTO_DIR) -> dict:
     """성분별 실제 사진 파일 유무를 미리 정리한다(render_guide 는 이 표만 본다 — 파일 시스템을 안 봐 테스트가 쉬움).
     files: id → '<id>.webp'(있음) 또는 '_default.webp', claims: id → 금색 한 줄, default_missing: 기본 사진도 없음(check_site 가 실패하므로 경고용), dir: 사진 폴더."""
-    files, claims, scopes = {}, {}, {}
+    files, claims, scopes, missing = {}, {}, {}, []
+
+    def complete(iid: str) -> bool:   # 3종(640·-m·-s)이 다 있어야 그 성분 사진을 쓴다 — 하나라도 없으면 목록·썸네일이 404 가 되므로
+        return all((photo_dir / f"{iid}{suffix}.webp").exists() for suffix, _ in PHOTO_SIZES)
+
     for it in (data or {}).get("items") or []:
         iid = it["id"]
         if iid not in valid_ids:
             continue
-        files[iid] = f"{iid}.webp" if (photo_dir / f"{iid}.webp").exists() else "_default.webp"
+        if complete(iid):
+            files[iid] = f"{iid}.webp"
+        else:
+            files[iid] = "_default.webp"
+            if (photo_dir / f"{iid}.webp").exists():
+                missing.append(iid)   # 640 은 있는데 -m·-s 가 없는 옛 변환 → python scripts/convert_photos.py 로 다시
         claims[iid] = str(it.get("claim", "")).strip()
         if it.get("scope") == "individual":
             scopes[iid] = "individual"
-    return {"files": files, "claims": claims, "scopes": scopes, "default_missing": not (photo_dir / "_default.webp").exists(), "dir": photo_dir}
+    return {"files": files, "claims": claims, "scopes": scopes, "missing_sizes": sorted(missing), "default_missing": not complete("_default"), "dir": photo_dir}
+
+
+def photo_src(photos: dict, iid: str, suffix: str = "") -> str:
+    """사진 표의 파일명 + 크기 접미사 + ?v=내용해시 — '<id>-s.webp?v=1a2b3c4d' (파일이 없으면 _default)."""
+    fname = photos["files"].get(iid, "_default.webp").replace(".webp", f"{suffix}.webp")
+    return f"{fname}?v={asset_digest(Path(photos.get('dir') or PHOTO_DIR) / fname)}"
+
+
+def hero_photo_attrs(it: dict, core: dict) -> str:
+    """성분 상세(i/<id>.html) #ingredient-hero 의 data-photo·data-photo-claim·data-photo-scope — pages/ingredient.js 가 읽어
+    병 그림 자리에 사진(640)과 금색 한 줄을 그린다. 사진 표가 없는 빌드에선 빈 문자열(JS 는 사진만 그림)."""
+    photos = core.get("photos")
+    if not photos:
+        return ""
+    scope = ' data-photo-scope="individual"' if photos.get("scopes", {}).get(it["id"]) == "individual" else ""
+    return f' data-photo="{photo_src(photos, it["id"])}" data-photo-claim="{esc(photos["claims"].get(it["id"], ""))}"{scope}'
 
 
 def validate_longterm(data: dict, valid_ids: set[str]) -> None:
@@ -1403,7 +1429,7 @@ def render_function(entry: dict, model: dict, core: dict, cfg: dict, guides_type
     def ing_card(i: dict) -> str:
         cat = cats.get(i["category"], {})
         t = (i.get("timing") or {}).get("label", "")
-        return (f'<article class="ing-card"><div class="flex items-start gap-3"><span class="finder-thumb">{photo_img(i["category"])}</span><div class="min-w-0 flex-1">'
+        return (f'<article class="ing-card"><div class="flex items-start gap-3"><span class="finder-thumb">{ing_thumb_img(i, core.get("photos"))}</span><div class="min-w-0 flex-1">'
                 f'<span class="badge {cat_class(cat.get("color", ""))}">{esc(cat.get("label", ""))}</span><h3 class="mt-1 text-base font-extrabold text-ink-900"><a class="hover:text-brand-700" href="../i/{esc(i["id"])}.html">{esc(i["name"])}</a></h3>'
                 f'<p class="mt-1 text-sm text-ink-700">{esc(i.get("mfdsFunction") or "")}</p>'
                 f'<p class="mt-2 text-xs text-ink-500"><i data-lucide="clock" class="inline h-3.5 w-3.5 text-brand-600"></i> {esc(t)}{" · " + esc((i.get("dosage") or {}).get("daily", "")) if (i.get("dosage") or {}).get("daily") else ""}</p>'
@@ -1592,6 +1618,14 @@ def photo_img(category: str) -> str:
     return f'<img src="../assets/images/home/{file}.webp" alt="" width="56" height="56" loading="lazy" decoding="async" class="h-full w-full object-cover">'
 
 
+def ing_thumb_img(i: dict, photos: dict | None) -> str:
+    """작은 카드(.finder-thumb — 기능성·비교·약별·용어 페이지)의 성분 썸네일 — 사진 표(prepare_photos)가 있으면 그 성분 사진 160px(`-s`, ?v=내용해시),
+    없으면 분류별 알약 그림. JS 쪽 같은 역할은 assets/js/illus.js 의 Illus.ingThumb."""
+    if not photos:
+        return photo_img(i.get("category", ""))
+    return f'<img src="../assets/images/ingredients/{photo_src(photos, i["id"], "-s")}" alt="" width="160" height="160" loading="lazy" decoding="async" class="h-full w-full object-cover">'
+
+
 # ---------------------------------------------------------------- 성분 비교 (compare.html · compare/<slug>.html — data/compares.json 수동 본문 + 성분 사전·집계 자동 행)
 COMPARE_DIR = ROOT / "compare"
 COMPARES_HUB = "compare.html"
@@ -1706,7 +1740,7 @@ def render_compare(entry: dict, core: dict, cfg: dict, guides_types: dict, updat
 
     def mini(i: dict) -> str:
         cat = cats.get(i["category"], {})
-        return (f'<a class="cmp-mini" href="../i/{esc(i["id"])}.html"><span class="finder-thumb">{photo_img(i["category"])}</span><span class="min-w-0"><span class="badge {cat_class(cat.get("color", ""))}">{esc(cat.get("label", ""))}</span>'
+        return (f'<a class="cmp-mini" href="../i/{esc(i["id"])}.html"><span class="finder-thumb">{ing_thumb_img(i, core.get("photos"))}</span><span class="min-w-0"><span class="badge {cat_class(cat.get("color", ""))}">{esc(cat.get("label", ""))}</span>'
                 f'<span class="mt-1 block text-base font-extrabold text-ink-900">{esc(i["name"])}</span><span class="mt-0.5 block text-sm text-ink-600">{esc(points.get(i["id"], {}).get("line", i.get("summary", "")))}</span></span></a>')
     head_cells = "".join(f'<th scope="col"><a href="../i/{esc(i["id"])}.html">{esc(i["name"])}</a></th>' for i in ings)
     body_rows = "".join(
@@ -1715,7 +1749,7 @@ def render_compare(entry: dict, core: dict, cfg: dict, guides_types: dict, updat
     table_html = f'<div class="timing-table-wrap"><table class="timing-table cmp-table"><caption class="sr-only">{esc(" vs ".join(names))} 비교표</caption><thead><tr><th scope="col">항목</th>{head_cells}</tr></thead><tbody>{body_rows}</tbody></table></div>'
 
     picks_html = "".join(
-        f'<article class="finder-card"><div class="flex items-start gap-3"><span class="finder-thumb">{photo_img(i["category"])}</span><div class="min-w-0 flex-1"><h3 class="text-base font-extrabold text-ink-900"><a class="hover:text-brand-700" href="../i/{esc(i["id"])}.html">{esc(i["name"])}</a></h3>'
+        f'<article class="finder-card"><div class="flex items-start gap-3"><span class="finder-thumb">{ing_thumb_img(i, core.get("photos"))}</span><div class="min-w-0 flex-1"><h3 class="text-base font-extrabold text-ink-900"><a class="hover:text-brand-700" href="../i/{esc(i["id"])}.html">{esc(i["name"])}</a></h3>'
         f'<p class="mt-1 text-sm text-ink-600">{term_html(core, points.get(i["id"], {}).get("line", ""), st)}</p><ul class="list-check mt-2 text-sm text-ink-700">{"".join(f"<li>{term_html(core, w, st)}</li>" for w in points.get(i["id"], {}).get("pick", []))}</ul>'
         f'<div class="mt-3 flex flex-wrap gap-2"><a class="btn-outline btn-sm" href="../i/{esc(i["id"])}.html">자세히</a><button type="button" class="btn-outline btn-sm" data-my-add="{esc(i["id"])}"><i data-lucide="plus"></i>내 영양제에 추가</button></div></div></div></article>'
         for i in ings)
@@ -2006,7 +2040,7 @@ def render_form_compare(entry: dict, core: dict, cfg: dict, guides_types: dict, 
     head = head_html(cfg, title=title, desc=it["description"], path=path, root="../", keywords=", ".join(it.get("keywords", [])), og_type="article",
                      extra_scripts='<script src="../assets/js/pages/compare.js" defer></script>', ld=ld)
     keys = [fm["f"]["key"] for fm in forms]
-    mini = (f'<a class="cmp-mini" href="../i/{esc(ing["id"])}.html"><span class="finder-thumb">{photo_img(ing["category"])}</span><span class="min-w-0"><span class="badge {cat_class(cat.get("color", ""))}">{esc(cat.get("label", ""))}</span>'
+    mini = (f'<a class="cmp-mini" href="../i/{esc(ing["id"])}.html"><span class="finder-thumb">{ing_thumb_img(ing, core.get("photos"))}</span><span class="min-w-0"><span class="badge {cat_class(cat.get("color", ""))}">{esc(cat.get("label", ""))}</span>'
             f'<span class="mt-1 block text-base font-extrabold text-ink-900">{esc(ing["name"])} 성분 사전</span><span class="mt-0.5 block text-sm text-ink-600">효능·권장량·궁합·먹는 시간 — 형태와 관계없이 같은 기준 · 수집 제품 {entry["base_total"]:,}건</span></span></a>')
     head_cells = "".join(f'<th scope="col">{esc(fm["f"]["label"])}</th>' for fm in forms)
     body_rows = "".join(f'<tr><th scope="row">{esc(r["label"])}</th>' + "".join(f'<td>{esc((r.get("cells") or {}).get(k, "—"))}</td>' for k in keys) + "</tr>" for r in it["rows"])
@@ -2245,7 +2279,7 @@ def render_drug_guide(entry: dict, core: dict, cfg: dict, guides_types: dict, up
     def good_card(g: dict) -> str:
         i = by_id[g["id"]]
         cat = cats.get(i["category"], {})
-        return (f'<article class="ing-card"><div class="flex items-start gap-3"><span class="finder-thumb">{photo_img(i["category"])}</span><div class="min-w-0 flex-1">'
+        return (f'<article class="ing-card"><div class="flex items-start gap-3"><span class="finder-thumb">{ing_thumb_img(i, core.get("photos"))}</span><div class="min-w-0 flex-1">'
                 f'<span class="badge {cat_class(cat.get("color", ""))}">{esc(cat.get("label", ""))}</span><h3 class="mt-1 text-base font-extrabold text-ink-900"><a class="hover:text-brand-700" href="../i/{esc(i["id"])}.html">{esc(i["name"])}</a></h3>'
                 f'<p class="mt-1.5 text-sm leading-relaxed text-ink-700">{term_html(core, g["why"], st)}</p>'
                 + (f'<p class="mt-1 text-xs font-bold text-amber-700">{esc(_dg_hours(g["hours"]))}</p>' if g.get("hours") else "")
@@ -2583,7 +2617,7 @@ def render_term(entry: dict, model: dict, core: dict, cfg: dict, guides_types: d
     ings = entry["ingredients"]
     cats_i = core["categories"]
     ing_html = (f'<section id="ingredients" class="scroll-mt-24"><h2 class="text-lg font-extrabold text-ink-900">관련 성분</h2><div class="mt-3 grid gap-3 md:grid-cols-2">' + "".join(
-        f'<a class="cmp-mini" href="../i/{esc(i["id"])}.html"><span class="finder-thumb">{photo_img(i["category"])}</span><span class="min-w-0"><span class="badge {cat_class(cats_i.get(i["category"], {}).get("color", ""))}">{esc(cats_i.get(i["category"], {}).get("label", ""))}</span><span class="mt-1 block text-base font-extrabold text-ink-900">{esc(i["name"])}</span><span class="mt-0.5 line-clamp-2 block text-sm text-ink-600">{esc(i.get("mfdsFunction") or i.get("summary") or "")}</span></span></a>'
+        f'<a class="cmp-mini" href="../i/{esc(i["id"])}.html"><span class="finder-thumb">{ing_thumb_img(i, core.get("photos"))}</span><span class="min-w-0"><span class="badge {cat_class(cats_i.get(i["category"], {}).get("color", ""))}">{esc(cats_i.get(i["category"], {}).get("label", ""))}</span><span class="mt-1 block text-base font-extrabold text-ink-900">{esc(i["name"])}</span><span class="mt-0.5 line-clamp-2 block text-sm text-ink-600">{esc(i.get("mfdsFunction") or i.get("summary") or "")}</span></span></a>'
         for i in ings) + '</div></section>') if ings else ""
     gds = entry["guides"]
     guides_html = (f'<section id="guides" class="scroll-mt-24"><h2 class="text-lg font-extrabold text-ink-900">관련 가이드</h2><div class="mt-3 grid gap-4 md:grid-cols-2 lg:grid-cols-3">{"".join(guide_card(g, guides_types, "../") for g in gds)}</div></section>') if gds else ""
@@ -2760,6 +2794,19 @@ def main() -> int:
     prepare_glossary(core, core["guides"])     # 용어 사전 모델 + 본문 자동 링크기 (가이드·성분·비교·약별·기능성 페이지가 쓴다)
     prepare_form_compares(core, core["guides"])  # 제형·형태 비교 모델 — 성분 비교 모델에 forms 로 더함 (용어 사전 뒤, 성분 페이지 앞)
 
+    photos_data = read_json(DATA_DIR / "ingredient-photos.json", None)   # 성분 실사 사진 표 — 성분 페이지(hero data-photo)·가이드 카드·작은 카드 썸네일이 쓰므로 성분 페이지보다 먼저
+    if photos_data:
+        validate_photos(photos_data, set(core["by_id"].keys()))   # id 전수·claim 금칙어
+        core["photos"] = prepare_photos(photos_data, set(core["by_id"].keys()))
+        have = sum(1 for v in core["photos"]["files"].values() if v != "_default.webp")
+        if core["photos"]["default_missing"]:
+            log.warning("assets/images/ingredients/_default*.webp 3종이 없어 check_site 가 실패합니다 — python scripts/convert_photos.py <원본 폴더>")
+        if core["photos"]["missing_sizes"]:
+            log.warning("사진 3종(640·-m·-s)이 다 없어 기본 사진으로 그리는 성분 %d: %s — python scripts/convert_photos.py 로 다시 변환", len(core["photos"]["missing_sizes"]), ", ".join(core["photos"]["missing_sizes"]))
+        log.info("성분 실사 사진 %d/%d장 (나머지는 기본 사진)", have, len(core["photos"]["files"]))
+    else:
+        log.warning("data/ingredient-photos.json 이 없어 가이드 핵심 성분을 기존 카드로, 작은 카드는 분류별 알약 그림으로 그립니다")
+
     OUT_DIR.mkdir(exist_ok=True)
     wanted = set()
     for it in ingredients["items"]:
@@ -2772,16 +2819,6 @@ def main() -> int:
             log.info("삭제된 성분 페이지 정리: %s", stale.name)
     log.info("성분 페이지 %d개 생성 (i/)", len(wanted))
 
-    photos_data = read_json(DATA_DIR / "ingredient-photos.json", None)
-    if photos_data:
-        validate_photos(photos_data, set(core["by_id"].keys()))   # 가이드 실사 카드 사진 표 — id 전수·claim 금칙어
-        core["photos"] = prepare_photos(photos_data, set(core["by_id"].keys()))
-        have = sum(1 for v in core["photos"]["files"].values() if v != "_default.webp")
-        if core["photos"]["default_missing"]:
-            log.warning("assets/images/ingredients/_default.webp 가 없어 check_site 가 실패합니다 — python scripts/convert_photos.py <원본 폴더>")
-        log.info("성분 실사 사진 %d/%d장 (나머지는 기본 사진)", have, len(core["photos"]["files"]))
-    else:
-        log.warning("data/ingredient-photos.json 이 없어 가이드 핵심 성분을 기존 카드로 그립니다")
     guides = build_guides(core, cfg)
     build_charts(core, cfg)
     build_finder(core, cfg, guides)

@@ -7,13 +7,13 @@
   function card(it, cats) {
     var cat = cats[it.category] || {};
     var I = window.Illus;
-    return '<a href="' + D.ingredientUrl(it.id) + '" class="ing-card group fade-up">' +
-      '<div class="flex items-start justify-between gap-2"><div class="ing-photo left">' + (I ? I.photoImg(it.category) : "") + '</div><span class="rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-bold ring-1 ' + D.catClass(cat.color) + '">' + esc(cat.label || "") + '</span></div>' +
-      '<h2 class="mt-2 text-[17px] font-extrabold tracking-tight text-ink-900 group-hover:text-brand-700">' + esc(it.name) + '</h2>' +
-      '<p class="text-xs font-medium text-ink-400">' + esc(it.en) + '</p>' +
-      '<p class="mt-2 line-clamp-2 text-sm leading-relaxed text-ink-600">' + esc(it.summary) + '</p>' +
+    // 카드 위 사진 띠(B-1, Illus.ingBand — 성분명·영문명·분류 배지가 사진 위에) + 본문(.ing-card-body)
+    return '<a href="' + D.ingredientUrl(it.id) + '" class="ing-card ing-card-photo group fade-up">' +
+      (I ? I.ingBand(it, { tag: "h2", badge: '<span class="rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-bold ring-1 ' + D.catClass(cat.color) + '">' + esc(cat.label || "") + '</span>' }) : "") +
+      '<div class="ing-card-body">' +
+      '<p class="line-clamp-2 text-sm leading-relaxed text-ink-600">' + esc(it.summary) + '</p>' +
       '<div class="mt-3 flex flex-wrap gap-1.5">' + (it.tags || []).slice(0, 3).map(function (t) { return '<span class="rounded-full bg-white/80 px-2 py-0.5 text-[11px] font-semibold text-ink-500 ring-1 ring-[#e3ebdc]">#' + esc(t) + '</span>'; }).join("") + '</div>' +
-      '<div class="mt-auto flex items-center justify-between border-t border-[#ece9df] pt-3 text-xs text-ink-500"><span class="inline-flex items-center gap-1"><i data-lucide="clock" class="h-3.5 w-3.5"></i>' + esc(it.timing.label) + '</span><span class="inline-flex items-center gap-1 font-bold text-brand-700">성분 정보 보기 <i data-lucide="arrow-right" class="h-3.5 w-3.5 transition group-hover:translate-x-0.5"></i></span></div></a>';
+      '<div class="mt-auto flex items-center justify-between border-t border-[#ece9df] pt-3 text-xs text-ink-500"><span class="inline-flex items-center gap-1"><i data-lucide="clock" class="h-3.5 w-3.5"></i>' + esc(it.timing.label) + '</span><span class="inline-flex items-center gap-1 font-bold text-brand-700">성분 정보 보기 <i data-lucide="arrow-right" class="h-3.5 w-3.5 transition group-hover:translate-x-0.5"></i></span></div></div></a>';
   }
 
   function render(core) {

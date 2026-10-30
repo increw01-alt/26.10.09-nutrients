@@ -10,7 +10,7 @@
   function qs(sel, root) { return (root || document).querySelector(sel); }
   function qsa(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
   function guideOf(slug) { return guides.filter(function (g) { return g.slug === slug; })[0]; }
-  function thumb(it, cls) { return '<span class="' + cls + '">' + (I ? I.photoImg(it.category, "h-full w-full object-cover") : "") + "</span>"; }
+  function thumb(it, cls) { return '<span class="' + cls + '">' + (I ? I.ingThumb(it, "h-full w-full object-cover") : "") + "</span>"; }
 
   /* ---------- 폼 ---------- */
   function collect() {

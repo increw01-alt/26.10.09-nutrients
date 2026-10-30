@@ -927,6 +927,73 @@ class LongTermTests(unittest.TestCase):
         self.assertGreaterEqual(len(data["items"]), 10)
 
 
+def _photo_files(p: Path, iid: str, data: bytes = b"x") -> None:
+    """사진 3종(640·-m 360·-s 160)을 가짜로 만든다 — prepare_photos 가 셋을 다 요구한다."""
+    for suffix, _ in B.PHOTO_SIZES:
+        (p / f"{iid}{suffix}.webp").write_bytes(data)
+
+
+class IngredientPhotoTests(unittest.TestCase):
+    """성분 사진 3종 — prepare_photos 가 셋을 요구, SSR 작은 카드 썸네일(ing_thumb_img), 성분 상세 hero 의 data-photo 속성."""
+
+    @classmethod
+    def setUpClass(cls):
+        ingredients = B.read_json(B.DATA_DIR / "ingredients.json")
+        cls.ids = {i["id"] for i in ingredients["items"]}
+        cls.data = B.read_json(B.DATA_DIR / "ingredient-photos.json")
+        cls.core = {"categories": ingredients["_meta"]["categories"], "by_id": {i["id"]: i for i in ingredients["items"]}, "guides": [], "pairs": [], "types": {}}
+        cls.cfg = {"name": "테스트", "url": "https://example.test"}
+
+    def test_prepare_photos_requires_all_three_sizes(self):
+        import tempfile
+        self.assertEqual(B.PHOTO_SIZES, (("", 640), ("-m", 360), ("-s", 160)))   # scripts/convert_photos.py SIZES 와 같다
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d); _photo_files(p, "_default"); _photo_files(p, "omega-3")
+            (p / "zinc.webp").write_bytes(b"z")   # 640 만 있고 -m·-s 가 없는 옛 변환 → 기본 사진 + 다시 변환하라는 목록
+            got = B.prepare_photos(self.data, self.ids, p)
+            self.assertEqual(got["files"]["omega-3"], "omega-3.webp")
+            self.assertEqual(got["files"]["zinc"], "_default.webp")
+            self.assertEqual(got["missing_sizes"], ["zinc"])
+            self.assertFalse(got["default_missing"])
+            (p / "_default-s.webp").unlink()
+            self.assertTrue(B.prepare_photos(self.data, self.ids, p)["default_missing"])
+
+    def test_ing_thumb_img_uses_small_photo_or_category_pill(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d); _photo_files(p, "_default"); _photo_files(p, "omega-3")
+            photos = B.prepare_photos(self.data, self.ids, p)
+            html = B.ing_thumb_img(self.core["by_id"]["omega-3"], photos)
+            self.assertIn('src="../assets/images/ingredients/omega-3-s.webp?v=', html)
+            self.assertIn('width="160" height="160"', html); self.assertIn('loading="lazy"', html); self.assertIn('class="h-full w-full object-cover"', html)
+            self.assertIn('src="../assets/images/ingredients/_default-s.webp?v=', B.ing_thumb_img(self.core["by_id"]["zinc"], photos))
+        plain = B.ing_thumb_img(self.core["by_id"]["omega-3"], None)
+        self.assertIn("assets/images/home/softgel-amber.webp", plain)   # 사진 표가 없으면 분류별 알약 그림
+
+    def test_render_page_puts_photo_data_on_hero(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d); _photo_files(p, "_default"); _photo_files(p, "omega-3")
+            core = dict(self.core, photos=B.prepare_photos(self.data, self.ids, p))
+            html = B.render_page(self.core["by_id"]["omega-3"], core, self.cfg)
+            m = re.search(r'<div id="ingredient-hero" class="page-hero"([^>]*)>', html)
+            self.assertIsNotNone(m); attrs = m.group(1)
+            self.assertIn(' data-photo="omega-3.webp?v=', attrs)
+            self.assertIn(' data-photo-claim="혈행 · 중성지질"', attrs)
+            self.assertNotIn("data-photo-scope", attrs)
+            self.assertIn(' data-photo-scope="individual"', B.render_page(self.core["by_id"]["arginine"], core, self.cfg))   # 일부 개별인정형만 해당
+            self.assertIn(' data-photo="_default.webp?v=', B.render_page(self.core["by_id"]["zinc"], core, self.cfg))
+        plain = B.render_page(self.core["by_id"]["omega-3"], self.core, self.cfg)
+        self.assertNotIn("data-photo", plain)   # 사진 표가 없는 빌드에선 속성 없음 — pages/ingredient.js 는 사진만 그린다
+
+    def test_style_has_band_hero_and_thumb_classes(self):
+        css = (B.ROOT / "assets" / "css" / "style.css").read_text(encoding="utf-8")
+        for cls in (".ing-band {", ".ing-band::after", ".ing-band-badge", ".ing-band-title", ".ing-band-name", ".ing-card-photo", ".ing-card-body",
+                    ".ing-hero-photo {", ".ing-hero-photo::after", ".ing-hero-claim", ".thumb.thumb-photo"):
+            self.assertIn(cls, css, cls)
+        self.assertNotIn(".photo-badge", css)   # 상세 상단의 알약 배지는 사진으로 대체돼 스타일도 지운다
+
+
 class PhotoCardTests(unittest.TestCase):
     """가이드 핵심 성분 실사 카드 — 사진 표 검증·준비·렌더."""
 
@@ -963,7 +1030,7 @@ class PhotoCardTests(unittest.TestCase):
             empty = B.prepare_photos(self.data, self.ids, p)
             self.assertTrue(empty["default_missing"])
             self.assertEqual(empty["files"]["omega-3"], "_default.webp")
-            (p / "_default.webp").write_bytes(b"x"); (p / "omega-3.webp").write_bytes(b"y")
+            _photo_files(p, "_default", b"x"); _photo_files(p, "omega-3", b"y")
             got = B.prepare_photos(self.data, self.ids, p)
             self.assertFalse(got["default_missing"])
             self.assertEqual(got["files"]["omega-3"], "omega-3.webp")
@@ -980,7 +1047,7 @@ class PhotoCardTests(unittest.TestCase):
         gd["ingredients"] = [{"id": "omega-3", "why": "혈행에 도움."}, {"id": "no-such", "why": "x"}, {"id": "zinc", "why": "면역에 필요."}]
         cfg = {"name": "테스트", "url": "https://example.test"}
         with tempfile.TemporaryDirectory() as d:
-            p = Path(d); (p / "_default.webp").write_bytes(b"d1"); (p / "omega-3.webp").write_bytes(b"o1")
+            p = Path(d); _photo_files(p, "_default", b"d1"); _photo_files(p, "omega-3", b"o1")
             core["photos"] = B.prepare_photos(self.data, self.ids, p)
             html = B.render_guide(gd, gmodel, core, cfg)
             self.assertIn('class="pc-card"', html)

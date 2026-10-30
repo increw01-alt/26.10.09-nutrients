@@ -81,17 +81,19 @@
     var ogd = document.querySelector('meta[property="og:description"]'); if (ogd) ogd.content = it.summary;
 
     var I = window.Illus;
-    var label = ((it.en || it.name).split("(")[0].replace(/[^A-Za-z0-9 \-·]/g, "").trim() || it.name).slice(0, 14);
-    var art = I ? I.bottle(label, I.colorFor(it.category), { sub: it.name, id: it.id }) : "";
+    // 상단 사진: 빌드가 #ingredient-hero 에 넣은 data-photo(파일명?v=해시)·data-photo-claim(금색 한 줄)·data-photo-scope 를 읽는다 (scripts/build_site.py hero_photo_attrs).
+    // 속성이 없는 옛 빌드면 해시 없는 주소로 사진만.
+    var hero = document.getElementById("ingredient-hero"), ds = hero.dataset || {};
+    var photoSrc = ds.photo ? D.url("assets/images/ingredients/" + ds.photo) : (I ? I.ingPhotoUrl(it.id) : "");
+    var claimHtml = ds.photoClaim ? '<p class="ing-hero-claim">' + esc(ds.photoClaim) + '<small>' + (ds.photoScope === "individual" ? "개별인정 원료 기준 식약처 인정 기능성" : "식약처 인정 기능성") + ' · 대표 급원 사진</small></p>' : "";
     var cut = it.summary.indexOf("다. ");
     var tagline = (cut > 0 ? it.summary.slice(0, cut + 2) : it.summary).slice(0, 70);
-    var hero = document.getElementById("ingredient-hero");
     hero.innerHTML =
       '<div class="mx-auto max-w-7xl px-4 pb-10 pt-8 sm:px-6 sm:pt-10">' +
       '<nav class="text-xs text-ink-500" aria-label="경로"><a class="hover:text-brand-700" href="' + D.url("index.html") + '">홈</a> › <a class="hover:text-brand-700" href="' + D.url("ingredients.html") + '">성분 사전</a> › <a class="hover:text-brand-700" href="' + D.url("ingredients.html?category=" + it.category) + '">' + esc(cat.label || "") + '</a> › <span class="text-ink-800">' + esc(it.name) + '</span></nav>' +
       '<div class="mt-5 grid gap-8 lg:grid-cols-12 lg:items-start">' +
-        '<div class="lg:col-span-5"><div class="illus-box relative aspect-square w-full rounded-3xl">' + art + '<span class="photo-badge" aria-hidden="true">' + (I ? I.photoImg(it.category) : "") + '</span></div>' +
-          '<div class="mt-3 flex gap-2"><div class="thumb"><img src="' + (I ? I.photoFor(it.category) : "") + '" alt="" width="54" height="48" style="mix-blend-mode:multiply;object-fit:contain;width:44px;height:38px"></div><div class="thumb">' + (I ? I.forCategory(it.category) : "") + '</div><div class="thumb"><i data-lucide="' + esc(it.icon || cat.icon || "pill") + '" class="h-7 w-7 text-brand-700"></i></div></div></div>' +
+        '<div class="lg:col-span-5"><div class="ing-hero-photo"><img src="' + photoSrc + '" alt="" width="640" height="640" fetchpriority="high" decoding="async">' + claimHtml + '</div>' +
+          '<div class="mt-3 flex gap-2"><div class="thumb thumb-photo">' + (I ? I.ingThumb(it, "h-full w-full object-cover") : "") + '</div><div class="thumb">' + (I ? I.forCategory(it.category) : "") + '</div><div class="thumb"><i data-lucide="' + esc(it.icon || cat.icon || "pill") + '" class="h-7 w-7 text-brand-700"></i></div></div></div>' +
         '<div class="lg:col-span-7">' +
           '<p class="eyebrow-kicker"><i data-lucide="leaf"></i> 성분 사전 <span class="text-ink-300">·</span> <span class="rounded-full px-2.5 py-0.5 text-[11px] font-bold ring-1 ' + D.catClass(cat.color) + '">' + esc(cat.label || "") + '</span></p>' +
           '<h1 class="page-title mt-3">' + esc(it.name) + '</h1>' +

@@ -53,7 +53,7 @@
     if (ings.length) html += section("sec-ingredients", "성분", "pill", ings.length + "건",
       '<ul class="mt-3 divide-y divide-ink-100">' + ings.map(function (it) {
         var cat = core.categories[it.category] || {};
-        return '<li class="flex items-center gap-3 py-3"><div class="h-11 w-11 shrink-0 overflow-hidden rounded-xl bg-cream-200">' + (I ? I.photoImg(it.category, "h-full w-full object-cover") : "") + '</div>' +
+        return '<li class="flex items-center gap-3 py-3"><div class="h-11 w-11 shrink-0 overflow-hidden rounded-xl bg-cream-200">' + (I ? I.ingThumb(it, "h-full w-full object-cover") : "") + '</div>' +
           '<div class="min-w-0 flex-1"><a class="text-[15px] font-bold text-ink-900 hover:text-brand-700" href="' + D.ingredientUrl(it.id) + '">' + D.markMatch(it.name, q) + '</a><span class="ml-2 rounded-full px-2 py-0.5 text-[11px] font-bold ring-1 ' + D.catClass(cat.color) + '">' + esc(cat.label || "") + '</span><p class="mt-0.5 line-clamp-1 text-xs text-ink-500">' + esc(it.summary || "") + '</p></div>' +
           '<a class="shrink-0 text-xs font-bold text-brand-700 hover:underline" href="' + D.productsUrl(it.id) + '">함유 제품</a></li>';
       }).join("") + '</ul>');

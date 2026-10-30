@@ -1,6 +1,8 @@
 /* 간단한 SVG 일러스트 (사진 대신 사용) — 병·캡슐·소프트젤·정제·잎·분말 */
 (function () {
   "use strict";
+  /* 사이트 루트(하위 폴더 페이지는 ../) — data.js 가 있을 때만, Node 테스트(window 없음)에선 빈 문자열 */
+  function siteRoot() { return (typeof window !== "undefined" && window.Data && window.Data.url) ? window.Data.url("") : ""; }
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
   var leaf = function (x, y, s, rot, c) {
     return '<g transform="translate(' + x + ' ' + y + ') rotate(' + rot + ') scale(' + s + ')"><path d="M0 0 C 18 -30, 54 -34, 70 -10 C 52 10, 18 18, 0 0 Z" fill="' + c + '"/><path d="M4 -2 C 24 -12, 44 -16, 62 -10" stroke="rgba(255,255,255,.55)" stroke-width="2" fill="none" stroke-linecap="round"/></g>';
@@ -53,11 +55,29 @@
     /* 성분 분류 → 실사 알약 사진 경로 (메인 시안의 연출 이미지, assets/images/home/) */
     photoFor: function (key) {
       var file = { vitamin: "capsule-yellow", mineral: "tablet-beige", "fatty-acid": "softgel-amber", probiotic: "capsule-blue", herbal: "capsule-green", amino: "capsule-violet", joint: "capsule-orange", beauty: "capsule-pink" }[key] || "tablet-beige";
-      var root = (window.Data && window.Data.url) ? window.Data.url("") : "";
-      return root + "assets/images/home/" + file + ".webp";
+      return siteRoot() + "assets/images/home/" + file + ".webp";
     },
     photoImg: function (key, cls) {
       return '<img src="' + Illus.photoFor(key) + '" alt="" width="54" height="48" loading="lazy" decoding="async"' + (cls ? ' class="' + esc(cls) + '"' : "") + '>';
+    },
+    /* 성분별 실사 사진(assets/images/ingredients/<id>.webp 3종 — scripts/convert_photos.py): size "" 640(상세 상단·가이드), "m" 360(목록 띠), "s" 160(썸네일).
+       JS 가 그리는 사진은 ?v= 해시 없이 쓴다(_headers 7일 캐시 + 서비스워커 재검증) — 빌드(SSR)는 build_site.py photo_src 가 해시를 붙인다 */
+    ingPhotoUrl: function (id, size) {
+      return siteRoot() + "assets/images/ingredients/" + encodeURIComponent(String(id)) + (size ? "-" + size : "") + ".webp";
+    },
+    /* 작은 목록(검색 결과·셀프체크 결과·상세 작은 칸)의 160px 썸네일 — build_site.py ing_thumb_img 와 같은 모양 */
+    ingThumb: function (it, cls) {
+      return '<img src="' + Illus.ingPhotoUrl(it.id, "s") + '" alt="" width="160" height="160" loading="lazy" decoding="async"' + (cls ? ' class="' + esc(cls) + '"' : "") + '>';
+    },
+    /* 성분 카드 위 사진 띠(B-1): 360px 사진(고해상도·휴대폰은 srcset 의 640) + 아래쪽 그라데이션(CSS .ing-band::after) + 분류 배지 + 성분명·영문명을 사진 위에.
+       opts: tag(h2 기본|h3), href(있으면 성분명을 링크로), badge(배지 HTML). 스타일은 style.css .ing-band* */
+    ingBand: function (it, opts) {
+      opts = opts || {};
+      var tag = opts.tag || "h2", m = Illus.ingPhotoUrl(it.id, "m"), full = Illus.ingPhotoUrl(it.id);
+      var name = opts.href ? '<a href="' + esc(opts.href) + '">' + esc(it.name) + "</a>" : esc(it.name);
+      return '<div class="ing-band"><img class="ing-band-img" src="' + m + '" srcset="' + m + ' 360w, ' + full + ' 640w" sizes="(min-width: 768px) 360px, 100vw" alt="" width="360" height="360" loading="lazy" decoding="async">' +
+        (opts.badge ? '<span class="ing-band-badge">' + opts.badge + "</span>" : "") +
+        '<div class="ing-band-title"><' + tag + ' class="ing-band-name">' + name + "</" + tag + ">" + (it.en ? '<p class="ing-band-en">' + esc(it.en) + "</p>" : "") + "</div></div>";
     },
     /* 성분 분류(category) → 아이콘 */
     forCategory: function (key) {
@@ -78,5 +98,6 @@
       return { vitamin: "#e09a2e", mineral: "#5f7f9c", "fatty-acid": "#d9a21b", probiotic: "#2f6fb3", herbal: "#3a7d44", amino: "#7d62b8", joint: "#d08a4a", beauty: "#d97b93" }[key] || "#3a7d44";
     }
   };
-  window.Illus = Illus;
+  if (typeof window !== "undefined") window.Illus = Illus;
+  if (typeof module !== "undefined") module.exports = Illus;   // node --test tests/illus.test.mjs
 })();
