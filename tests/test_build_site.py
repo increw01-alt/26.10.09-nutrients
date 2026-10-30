@@ -965,3 +965,38 @@ class PhotoCardTests(unittest.TestCase):
             self.assertEqual(got["files"]["omega-3"], "omega-3.webp")
             self.assertEqual(got["files"]["zinc"], "_default.webp")
             self.assertEqual(got["claims"]["omega-3"], "혈행 · 중성지질")
+
+    def test_render_guide_uses_photo_or_default_and_numbering(self):
+        import tempfile
+        guides = B.read_json(B.DATA_DIR / "guides.json"); interactions = B.read_json(B.DATA_DIR / "interactions.json")
+        ingredients = B.read_json(B.DATA_DIR / "ingredients.json")
+        core = {"categories": ingredients["_meta"]["categories"], "by_id": {i["id"]: i for i in ingredients["items"]}, "guides": guides["items"], "pairs": interactions["pairs"], "types": interactions["_meta"]["types"]}
+        gmodel = {"_meta": guides["_meta"], "items": guides["items"], "by_id": {g["id"]: g for g in guides["items"]}}
+        gd = dict(next(g for g in guides["items"] if g["slug"] == "50s-plus"))
+        gd["ingredients"] = [{"id": "omega-3", "why": "혈행에 도움."}, {"id": "no-such", "why": "x"}, {"id": "zinc", "why": "면역에 필요."}]
+        cfg = {"name": "테스트", "url": "https://example.test"}
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d); (p / "_default.webp").write_bytes(b"d1"); (p / "omega-3.webp").write_bytes(b"o1")
+            core["photos"] = B.prepare_photos(self.data, self.ids, p)
+            html = B.render_guide(gd, gmodel, core, cfg)
+            self.assertIn('class="pc-card"', html)
+            self.assertIn('src="../assets/images/ingredients/omega-3.webp?v=', html)
+            self.assertIn('src="../assets/images/ingredients/_default.webp?v=', html)
+            self.assertIn('<span class="pc-num">01</span>', html); self.assertIn('<span class="pc-num">02</span>', html)
+            self.assertNotIn('<span class="pc-num">03</span>', html)       # 사전에 없는 id 는 건너뛰고 번호가 이어진다
+            self.assertIn("혈행 · 중성지질", html)
+            v1 = html.split("omega-3.webp?v=")[1][:8]
+            (p / "omega-3.webp").write_bytes(b"o2-changed")
+            html2 = B.render_guide(gd, gmodel, core, cfg)
+            self.assertNotEqual(v1, html2.split("omega-3.webp?v=")[1][:8])  # 사진을 바꾸면 ?v= 가 바뀐다
+        core.pop("photos")
+        plain = B.render_guide(gd, gmodel, core, cfg)
+        self.assertNotIn("pc-card", plain)                                   # photos 가 없으면 기존 카드
+
+    def test_cards_have_no_forbidden_words_across_all_guides(self):
+        css = (B.ROOT / "assets" / "css" / "style.css").read_text(encoding="utf-8")
+        for cls in (".pc-band", ".pc-card", ".pc-photo", ".pc-num", ".pc-claim"):
+            self.assertIn(cls, css)
+        for it in self.data["items"]:
+            for w in B.PHOTO_FORBIDDEN:
+                self.assertNotIn(w, it["claim"], f"{it['id']}: {w}")

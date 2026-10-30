@@ -625,18 +625,34 @@ def render_guide(gd: dict, guides: dict, core: dict, cfg: dict) -> str:
     head = head_html(cfg, title=f"{gd['title']} | {cfg['name']}", desc=desc, path=path, root="../", keywords=", ".join(gd["keywords"]),
                      extra_scripts='<script src="../assets/js/pages/guide.js" defer></script>', ld=ld)
 
-    # 핵심 성분
+    # 핵심 성분 — core["photos"](prepare_photos) 가 있으면 어두운 띠의 실사 사진 카드(.pc-*), 없으면 기존 흰 카드
+    photos = core.get("photos")
     ing_html = ""
+    n = 0
     for x in gd["ingredients"]:
         it = by_id.get(x["id"])
         if not it:
             continue
         cat = cats.get(it["category"], {})
+        if photos:
+            n += 1
+            fname = photos["files"].get(it["id"], "_default.webp")
+            ver = asset_digest(Path(photos.get("dir") or PHOTO_DIR) / fname)   # 사진을 바꾸면 ?v= 가 바뀌어 서비스워커·브라우저 캐시가 갱신된다
+            mfds = it.get("mfdsFunction") or ""
+            ing_html += (f'<article class="pc-card"><img class="pc-photo" src="../assets/images/ingredients/{fname}?v={ver}" alt="" width="640" height="640" loading="lazy" decoding="async">'
+                         f'<div class="pc-head"><span class="pc-num">{n:02d}</span><a class="pc-name" href="../i/{esc(it["id"])}.html">{esc(it["name"])}</a></div>'
+                         f'<p class="pc-claim">{esc(photos["claims"].get(it["id"], ""))}</p>'
+                         f'<p class="pc-mfds">{esc(mfds[:70])}{"…" if len(mfds) > 70 else ""}</p>'
+                         f'<p class="pc-desc">{term_html(core, x["why"], st)}</p>'
+                         f'<p class="pc-meta"><i data-lucide="clock" class="pc-ico"></i>{esc(it["timing"]["label"])} · 하루 {esc(it["dosage"]["daily"][:40])}</p></article>')
+            continue
         ing_html += (f'<div class="flex gap-4 rounded-2xl border border-ink-100 bg-white p-5 shadow-card"><a href="../i/{esc(it["id"])}.html" class="grid h-12 w-12 shrink-0 place-items-center rounded-xl ring-1 {cat_class(cat.get("color", ""))}"><i data-lucide="{esc(it.get("icon") or cat.get("icon", "pill"))}" class="h-6 w-6"></i></a>'
                      f'<div class="min-w-0"><a href="../i/{esc(it["id"])}.html" class="font-extrabold text-ink-900 hover:text-brand-700">{esc(it["name"])}</a>'
                      f'<p class="mt-0.5 text-xs text-brand-800">{esc((it.get("mfdsFunction") or "")[:70])}{"…" if len(it.get("mfdsFunction") or "") > 70 else ""}</p>'
                      f'<p class="mt-2 text-sm leading-relaxed text-ink-700">{term_html(core, x["why"], st)}</p>'
                      f'<p class="mt-2 text-xs text-ink-500"><i data-lucide="clock" class="mr-1 inline h-3.5 w-3.5 align-text-bottom"></i>{esc(it["timing"]["label"])} · 하루 {esc(it["dosage"]["daily"][:40])}</p></div></div>')
+
+    ing_wrap = f'<div class="mt-4 pc-band"><div class="pc-grid">{ing_html}</div></div>' if photos else f'<div class="mt-4 grid gap-4 md:grid-cols-2">{ing_html}</div>'
 
     # 조합
     combo_html = ""
@@ -677,7 +693,7 @@ def render_guide(gd: dict, guides: dict, core: dict, cfg: dict) -> str:
       <p class="mt-4 text-xs text-ink-400">식약처 인정 기능성 표현을 기준으로 작성한 일반 건강 정보이며 의학적 조언이 아닙니다 · 최종 수정 {esc(guides['_meta'].get('updatedAt', ''))}</p>
     </div></section>
     <div class="mx-auto max-w-5xl space-y-8 px-4 py-10 sm:px-6">
-      <section id="ingredients" class="scroll-mt-24"><h2 class="text-2xl font-extrabold tracking-tight text-ink-900">핵심 성분</h2><p class="mt-1 text-sm text-ink-500">각 성분을 누르면 효능·권장량·주의사항과 함유 제품을 볼 수 있습니다.</p><div class="mt-4 grid gap-4 md:grid-cols-2">{ing_html}</div>
+      <section id="ingredients" class="scroll-mt-24"><h2 class="text-2xl font-extrabold tracking-tight text-ink-900">핵심 성분</h2><p class="mt-1 text-sm text-ink-500">각 성분을 누르면 효능·권장량·주의사항과 함유 제품을 볼 수 있습니다.</p>{ing_wrap}
         <button type="button" class="btn-outline mt-4" data-my-add="{all_ids}"><i data-lucide="plus"></i>이 성분들을 내 영양제에 추가</button>
         <a href="../compatibility.html?items={all_ids}" class="btn-primary mt-4"><i data-lucide="heart-handshake"></i>이 성분들로 궁합·복용 시간표 만들기 <i data-lucide="arrow-right"></i></a></section>
       {('<section id="combos" class="scroll-mt-24"><h2 class="text-2xl font-extrabold tracking-tight text-ink-900">함께 먹으면 좋은 조합</h2><div class="mt-4 grid gap-4 md:grid-cols-2">' + combo_html + '</div></section>') if combo_html else ''}
@@ -2752,6 +2768,16 @@ def main() -> int:
             log.info("삭제된 성분 페이지 정리: %s", stale.name)
     log.info("성분 페이지 %d개 생성 (i/)", len(wanted))
 
+    photos_data = read_json(DATA_DIR / "ingredient-photos.json", None)
+    if photos_data:
+        validate_photos(photos_data, set(core["by_id"].keys()))   # 가이드 실사 카드 사진 표 — id 전수·claim 금칙어
+        core["photos"] = prepare_photos(photos_data, set(core["by_id"].keys()))
+        have = sum(1 for v in core["photos"]["files"].values() if v != "_default.webp")
+        if core["photos"]["default_missing"]:
+            log.warning("assets/images/ingredients/_default.webp 가 없어 check_site 가 실패합니다 — python scripts/convert_photos.py <원본 폴더>")
+        log.info("성분 실사 사진 %d/%d장 (나머지는 기본 사진)", have, len(core["photos"]["files"]))
+    else:
+        log.warning("data/ingredient-photos.json 이 없어 가이드 핵심 성분을 기존 카드로 그립니다")
     guides = build_guides(core, cfg)
     build_charts(core, cfg)
     build_finder(core, cfg, guides)

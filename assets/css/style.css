@@ -364,6 +364,23 @@ body.has-sheet { overflow: hidden; }
 .fig-rec .chips span { font-size: .66rem; font-weight: 700; padding: .15rem .5rem; border-radius: 9999px; background: #eef2ef; color: #15291d; }
 .fig-rec .chips .why { color: #8a5a12; background: #fff6e8; border: 1px solid #f1dfc0; } .fig-rec .chips .mfds { color: #175136; background: #e3efdc; }
 .help-cta { margin-top: 1.75rem; display: flex; flex-wrap: wrap; gap: .6rem; }
+/* 가이드 '핵심 성분' 실사 카드(build_site.py render_guide, core["photos"]) — 어두운 띠 + 금색 번호·한 줄 + 오른쪽 아래 사진 */
+.pc-band { border-radius: 20px; padding: 18px; background: radial-gradient(120% 80% at 50% 0%, #1b1b1b 0%, #0b0b0b 70%); color: #fff; }
+.pc-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.pc-card { position: relative; overflow: hidden; min-height: 196px; border-radius: 14px; border: 1px solid #3a3a3a; background: #141414; box-shadow: 0 10px 30px rgba(0,0,0,.5); padding: 14px 14px 12px; }
+.pc-photo { position: absolute; right: 0; bottom: 0; width: 60%; height: 72%; object-fit: cover; pointer-events: none; -webkit-mask-image: linear-gradient(135deg, transparent 0%, #000 45%); mask-image: linear-gradient(135deg, transparent 0%, #000 45%); }
+.pc-head { position: relative; z-index: 1; display: flex; align-items: center; gap: 8px; }
+.pc-num { flex: none; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-weight: 900; font-size: 13px; color: #2b1d00; background: linear-gradient(180deg, #ffe39a, #d9a62a); box-shadow: 0 2px 6px rgba(0,0,0,.5); }
+.pc-name { font-size: 1.15rem; font-weight: 900; letter-spacing: -.01em; color: #fff; line-height: 1.25; }
+.pc-name:hover { text-decoration: underline; color: #ffe9a3; }
+.pc-claim { position: relative; z-index: 1; margin: 4px 0 0 38px; color: #ffd466; font-weight: 800; font-size: .85rem; }
+.pc-mfds { position: relative; z-index: 1; margin: 2px 0 0 38px; max-width: 58%; font-size: .72rem; line-height: 1.4; color: #a8a391; }
+.pc-desc { position: relative; z-index: 1; margin: 10px 0 0; max-width: 58%; font-size: .82rem; line-height: 1.55; color: #e9e4d6; }
+.pc-desc a { color: #ffe9a3; text-decoration: underline; }
+.pc-meta { position: relative; z-index: 1; margin: 10px 0 0; display: flex; align-items: center; gap: 4px; font-size: .72rem; color: #9a9483; }
+.pc-ico { width: .85rem; height: .85rem; }
+@media (max-width: 767px) { .pc-band { padding: 12px; } .pc-grid { grid-template-columns: 1fr; } .pc-photo { width: 52%; } .pc-desc, .pc-mfds { max-width: 62%; } }
+@media print { .pc-band, .pc-card { background: #fff; color: #000; border-color: #ddd; box-shadow: none; } .pc-photo { display: none; } .pc-name, .pc-desc { color: #000; } .pc-claim { color: #7a5a00; } }
 /* 푸터 바로가기 접기(layout.js renderFooter): 처음엔 FOOTER_SHOW(6)개만, '더 보기'로 펼침 — nth-child 기준은 layout.js 의 FOOTER_SHOW 와 같아야 한다 */
 .footer-links.is-collapsed > li:nth-child(n+7) { display: none; }
 .footer-more { display: inline-flex; align-items: center; gap: .25rem; margin-top: .75rem; padding: .25rem 0; font-size: .875rem; font-weight: 700; color: var(--brand); }

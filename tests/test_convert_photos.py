@@ -19,10 +19,11 @@ class ConvertPhotosTests(unittest.TestCase):
             src = Path(d) / "omega-3.png"
             Image.new("RGB", (1254, 1000), (200, 80, 40)).save(src)
             w, h = C.convert_one(src, Path(d) / "omega-3.webp")
-            out = Image.open(Path(d) / "omega-3.webp")
+            with Image.open(Path(d) / "omega-3.webp") as out:   # with: Windows 에서 열린 파일은 임시 폴더 정리를 막는다
+                size, fmt = out.size, out.format
             self.assertEqual((w, h), (1254, 1000))
-            self.assertEqual(out.size, (640, 640))
-            self.assertEqual(out.format, "WEBP")
+            self.assertEqual(size, (640, 640))
+            self.assertEqual(fmt, "WEBP")
 
     def test_main_skips_unknown_ids(self):
         import convert_photos as C
