@@ -925,3 +925,43 @@ class LongTermTests(unittest.TestCase):
         ids = {it["id"] for it in json.loads((B.ROOT / "data" / "ingredients.json").read_text(encoding="utf-8"))["items"]}
         B.validate_longterm(data, ids)
         self.assertGreaterEqual(len(data["items"]), 10)
+
+
+class PhotoCardTests(unittest.TestCase):
+    """가이드 핵심 성분 실사 카드 — 사진 표 검증·준비·렌더."""
+
+    @classmethod
+    def setUpClass(cls):
+        ingredients = B.read_json(B.DATA_DIR / "ingredients.json")
+        cls.ids = {i["id"] for i in ingredients["items"]}
+        cls.data = B.read_json(B.DATA_DIR / "ingredient-photos.json")
+
+    def test_validate_photos_accepts_data_and_rejects_bad(self):
+        import copy
+        B.validate_photos(self.data, self.ids)
+        bad = copy.deepcopy(self.data); bad["items"][0]["id"] = "no-such"
+        with self.assertRaises(ValueError):
+            B.validate_photos(bad, self.ids)
+        bad = copy.deepcopy(self.data); bad["items"].pop()          # 빠진 성분
+        with self.assertRaises(ValueError):
+            B.validate_photos(bad, self.ids)
+        bad = copy.deepcopy(self.data); bad["items"][0]["claim"] = "관절 · 항염"
+        with self.assertRaises(ValueError):
+            B.validate_photos(bad, self.ids)
+        bad = copy.deepcopy(self.data); bad["items"][0]["claim"] = "가나다라마바사아자차카타파하가"   # 15자
+        with self.assertRaises(ValueError):
+            B.validate_photos(bad, self.ids)
+
+    def test_prepare_photos_falls_back_to_default(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d)
+            empty = B.prepare_photos(self.data, self.ids, p)
+            self.assertTrue(empty["default_missing"])
+            self.assertEqual(empty["files"]["omega-3"], "_default.webp")
+            (p / "_default.webp").write_bytes(b"x"); (p / "omega-3.webp").write_bytes(b"y")
+            got = B.prepare_photos(self.data, self.ids, p)
+            self.assertFalse(got["default_missing"])
+            self.assertEqual(got["files"]["omega-3"], "omega-3.webp")
+            self.assertEqual(got["files"]["zinc"], "_default.webp")
+            self.assertEqual(got["claims"]["omega-3"], "혈행 · 중성지질")

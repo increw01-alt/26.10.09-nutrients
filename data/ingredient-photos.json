@@ -1,0 +1,447 @@
+{
+  "_meta": {
+    "updatedAt": "2026-10-30",
+    "note": "가이드 '핵심 성분' 실사 카드의 사진 표(수동). template 의 {SUBJECT} 에 subject 를 넣어 ChatGPT(사용자 계정)로 같은 결의 사진을 만들고 scripts/convert_photos.py 로 assets/images/ingredients/<id>.webp(640×640)를 만든다. 없는 성분은 _default.webp. claim 은 카드의 금색 한 줄로, mfdsFunction 의 인정 표현을 14자 이하로 줄인 것만 쓴다(빌드 validate_photos 가 금칙어·길이·누락을 검사). subject 는 사진 소재일 뿐 기능성 주장이 아니다. 사진에 글자·브랜드·사람 얼굴 금지."
+  },
+  "template": "Create a photorealistic square image (1024x1024), no text, no letters, no watermark. Professional food-photography style: {SUBJECT}, placed on a dark slate stone surface, deep black background, dramatic warm studio lighting from the upper left, shallow depth of field, rich natural colors, high detail, premium supplement advertisement look. Subject centered with empty dark space around it.",
+  "default": {
+    "subject": "a loose scattering of assorted supplement capsules, softgels and tablets in amber, white, deep green and soft yellow, a few resting in a small wooden spoon"
+  },
+  "items": [
+    {
+      "id": "vitamin-c",
+      "subject": "a halved orange, two kiwi slices, a wedge of red bell pepper and three orange tablets, with a few water droplets",
+      "claim": "항산화 · 철 흡수"
+    },
+    {
+      "id": "vitamin-d",
+      "subject": "a cracked egg with a bright orange yolk, a few sun-dried shiitake mushrooms and three small yellow softgel capsules, with a soft warm sunbeam falling across the scene",
+      "claim": "뼈 건강 · 칼슘 흡수"
+    },
+    {
+      "id": "vitamin-a",
+      "subject": "two fresh carrots with green tops, a slice of roasted sweet potato, a few spinach leaves and three amber softgel capsules",
+      "claim": "시각 적응 · 피부 점막"
+    },
+    {
+      "id": "vitamin-e",
+      "subject": "a handful of almonds and sunflower seeds, half an avocado, a small glass bottle of golden oil and three amber softgels",
+      "claim": "항산화 · 세포 보호"
+    },
+    {
+      "id": "vitamin-k",
+      "subject": "fresh kale and broccoli florets, a small dish of natto fermented soybeans and three small green capsules",
+      "claim": "혈액 응고 · 뼈 구성"
+    },
+    {
+      "id": "vitamin-b-complex",
+      "subject": "a small bowl of brown rice and oats, a boiled egg cut in half, a slice of lean pork and three yellow tablets",
+      "claim": "에너지 생성 · 대사"
+    },
+    {
+      "id": "vitamin-b12",
+      "subject": "a slice of lean beef, a few steamed clams in their shells, a boiled egg and three small red tablets",
+      "claim": "엽산 대사"
+    },
+    {
+      "id": "folate",
+      "subject": "fresh spinach leaves, three asparagus spears, half an avocado and three small green tablets",
+      "claim": "세포 · 혈액 생성"
+    },
+    {
+      "id": "biotin",
+      "subject": "a boiled egg cut in half, a handful of almonds and walnuts, a few button mushrooms and three small white tablets",
+      "claim": "영양소 대사 · 에너지"
+    },
+    {
+      "id": "calcium",
+      "subject": "a glass of milk, a wedge of hard cheese, a few broccoli florets, a spoon of sesame seeds and three white tablets",
+      "claim": "뼈 · 치아 형성"
+    },
+    {
+      "id": "magnesium",
+      "subject": "a small heap of roasted almonds and pumpkin seeds, two squares of dark chocolate, a few fresh spinach leaves and three white tablets",
+      "claim": "에너지 이용 · 신경 근육"
+    },
+    {
+      "id": "zinc",
+      "subject": "three fresh oysters on the half shell with a lemon wedge, a scattering of pumpkin seeds and three small white tablets",
+      "claim": "면역 · 정상 세포분열"
+    },
+    {
+      "id": "iron",
+      "subject": "a thick slice of lean red beef, a handful of fresh spinach leaves, a small bowl of lentils and three dark red tablets",
+      "claim": "산소 운반 · 혈액 생성"
+    },
+    {
+      "id": "selenium",
+      "subject": "three Brazil nuts, a slice of seared tuna, a boiled egg cut in half and three small white tablets",
+      "claim": "항산화 · 세포 보호"
+    },
+    {
+      "id": "copper",
+      "subject": "a small handful of cashews and sesame seeds, a piece of dark chocolate, a few shiitake mushrooms and three small copper-colored tablets",
+      "claim": "철 운반 · 항산화"
+    },
+    {
+      "id": "omega-3",
+      "subject": "a fresh salmon fillet with a few amber omega-3 softgel capsules beside it",
+      "claim": "혈행 · 중성지질"
+    },
+    {
+      "id": "probiotics",
+      "subject": "a small glass bowl of thick plain yogurt, a small ceramic dish of Korean kimchi and three white capsules",
+      "claim": "장 건강 · 배변"
+    },
+    {
+      "id": "lutein",
+      "subject": "a few fresh kale leaves, a small bowl of corn kernels, a boiled egg yolk and three small orange softgels",
+      "claim": "눈 건강 · 황반색소"
+    },
+    {
+      "id": "coq10",
+      "subject": "a few grilled sardines, a slice of lean beef, a small handful of peanuts and three orange softgel capsules",
+      "claim": "항산화 · 혈압"
+    },
+    {
+      "id": "milk-thistle",
+      "subject": "two purple milk thistle flower heads with spiky leaves, a small heap of milk thistle seeds and three brown capsules",
+      "claim": "간 건강"
+    },
+    {
+      "id": "red-ginseng",
+      "subject": "whole red ginseng roots and a few slices of red ginseng on a small wooden tray, a tiny cup of dark ginseng extract and three brown capsules",
+      "claim": "면역 · 피로 개선"
+    },
+    {
+      "id": "glucosamine",
+      "subject": "a few fresh whole shrimp and a crab shell, three white tablets",
+      "claim": "관절 · 연골 건강"
+    },
+    {
+      "id": "msm",
+      "subject": "a few fresh garlic cloves, a halved onion, broccoli florets and three white tablets",
+      "claim": "관절 · 연골 건강"
+    },
+    {
+      "id": "collagen",
+      "subject": "a small glass bowl of fine white collagen peptide powder with a wooden scoop, a small bowl of clear bone broth and three white capsules",
+      "claim": "피부 보습 · 자외선"
+    },
+    {
+      "id": "green-tea-extract",
+      "subject": "a cup of green tea, fresh green tea leaves, a small dish of matcha powder and three green capsules",
+      "claim": "항산화 · 체지방"
+    },
+    {
+      "id": "curcumin",
+      "subject": "pieces of fresh turmeric root, one cut open showing bright orange flesh, a small bowl of turmeric powder and three orange capsules",
+      "claim": "간 건강 · 근력"
+    },
+    {
+      "id": "arginine",
+      "subject": "a handful of pumpkin seeds and peanuts, a slice of roasted turkey breast and three white tablets",
+      "claim": "혈관 이완 · 혈행"
+    },
+    {
+      "id": "theanine",
+      "subject": "a cup of steaming green tea with a few fresh tea leaves beside it and three white capsules",
+      "claim": "긴장 완화 · 스트레스"
+    },
+    {
+      "id": "saw-palmetto",
+      "subject": "a cluster of dark saw palmetto berries with a green palm frond and three brown softgels",
+      "claim": "전립선 건강 유지"
+    },
+    {
+      "id": "garcinia",
+      "subject": "three small yellow-green garcinia cambogia fruits, one cut open, and three white tablets",
+      "claim": "체지방 감소"
+    },
+    {
+      "id": "ginkgo",
+      "subject": "a few fresh fan-shaped ginkgo leaves with a handful of ginkgo nuts and three white tablets",
+      "claim": "기억력 · 혈행"
+    },
+    {
+      "id": "psyllium",
+      "subject": "a small bowl of psyllium husk, a glass of water with husk swirling inside and three brown capsules",
+      "claim": "배변 · 콜레스테롤"
+    },
+    {
+      "id": "l-carnitine",
+      "subject": "a lean red beef steak slice, a small glass of milk and three white capsules",
+      "claim": "지구력 증진"
+    },
+    {
+      "id": "boswellia",
+      "subject": "a small plate of pale amber boswellia frankincense resin tears and three brown capsules",
+      "claim": "관절 건강"
+    },
+    {
+      "id": "phosphatidylserine",
+      "subject": "a small bowl of soybeans, a boiled egg cut in half, a small fish fillet and three white softgels",
+      "claim": "인지력 개선"
+    },
+    {
+      "id": "propolis",
+      "subject": "a piece of honeycomb, a small dish of dark propolis resin, a dropper bottle and three brown capsules",
+      "claim": "항산화 · 구강 항균"
+    },
+    {
+      "id": "multivitamin",
+      "subject": "a colorful arrangement of orange slices, blueberries, broccoli florets and carrot sticks with a small dish of assorted multivitamin tablets",
+      "claim": "영양소 균형 보충"
+    },
+    {
+      "id": "chromium",
+      "subject": "broccoli florets, a small bowl of whole grains, a glass of grape juice and three small white tablets",
+      "claim": "영양소 대사 관여"
+    },
+    {
+      "id": "vitamin-b6",
+      "subject": "a banana, a small bowl of chickpeas, a slice of seared tuna and three yellow tablets",
+      "claim": "단백질 대사 · 혈액"
+    },
+    {
+      "id": "hyaluronic-acid",
+      "subject": "a clear dropper bottle with a glossy drop of gel, a few fresh soybeans and three clear softgels, with water droplets on the stone",
+      "claim": "피부 보습"
+    },
+    {
+      "id": "astaxanthin",
+      "subject": "a few cooked red shrimp, a small heap of red krill and three deep-red softgel capsules",
+      "claim": "눈 피로 개선"
+    },
+    {
+      "id": "policosanol",
+      "subject": "a few cut sugarcane stalks with green leaves and three white tablets",
+      "claim": "콜레스테롤 개선"
+    },
+    {
+      "id": "rhodiola",
+      "subject": "pieces of rhodiola rosea root with a few small yellow rhodiola flowers and three brown capsules",
+      "claim": "스트레스 피로 개선"
+    },
+    {
+      "id": "gla",
+      "subject": "yellow evening primrose flowers with seed pods, a small glass bottle of golden oil and three amber softgels",
+      "claim": "혈행 · 콜레스테롤"
+    },
+    {
+      "id": "aloe-gel",
+      "subject": "a cut aloe vera leaf showing its clear gel, a small bowl of aloe gel cubes and three white capsules",
+      "claim": "피부 · 장 건강"
+    },
+    {
+      "id": "cla",
+      "subject": "orange safflower flowers, a small glass bottle of golden safflower oil and three amber softgels",
+      "claim": "체지방 감소"
+    },
+    {
+      "id": "red-yeast-rice",
+      "subject": "a small bowl of deep red yeast rice grains with a wooden spoon and three red capsules",
+      "claim": "콜레스테롤 개선"
+    },
+    {
+      "id": "fos",
+      "subject": "a few chicory roots, a halved onion, a banana, asparagus spears and three white capsules",
+      "claim": "유익균 · 배변"
+    },
+    {
+      "id": "banaba",
+      "subject": "large oval banaba leaves with a purple banaba flower and three green capsules",
+      "claim": "식후 혈당 상승 억제"
+    },
+    {
+      "id": "indigestible-dextrin",
+      "subject": "a small bowl of fine white powder with a scoop, a small bowl of corn kernels, a glass of water and three white capsules",
+      "claim": "배변 · 식후 혈당"
+    },
+    {
+      "id": "garlic",
+      "subject": "whole black garlic bulbs, one cut open showing dark glossy cloves, a few white garlic cloves and three black capsules",
+      "claim": "콜레스테롤 · 혈압 조절"
+    },
+    {
+      "id": "bitter-melon",
+      "subject": "a whole fresh bitter melon and a few slices showing the seeds, and three green capsules",
+      "claim": "식후 혈당 상승 억제"
+    },
+    {
+      "id": "octacosanol",
+      "subject": "a bundle of golden wheat stalks, a small bowl of wheat germ and three white softgels",
+      "claim": "지구력 증진"
+    },
+    {
+      "id": "soy-isoflavone",
+      "subject": "a bowl of dried soybeans, a few edamame pods, a glass of soy milk and three white tablets",
+      "claim": "뼈 건강"
+    },
+    {
+      "id": "chondroitin",
+      "subject": "a small bowl of clear cartilage broth, a roasted chicken drumstick, a few fresh shrimp and three white tablets",
+      "claim": "관절 · 연골 건강"
+    },
+    {
+      "id": "green-lipped-mussel",
+      "subject": "a few opened green-lipped mussels with green-edged shells, a small glass bottle of golden oil and three amber softgels",
+      "claim": "관절 건강"
+    },
+    {
+      "id": "sophora",
+      "subject": "a branch with clusters of small cream-yellow sophora japonica flowers and seed pods, and three brown capsules",
+      "claim": "갱년기 여성 건강"
+    },
+    {
+      "id": "lactium",
+      "subject": "a glass of warm milk, a small bowl of white milk protein powder with a scoop and three white capsules",
+      "claim": "수면의 질 · 긴장 완화"
+    },
+    {
+      "id": "cynanchum",
+      "subject": "dried knobby light-brown cynanchum wilfordii roots on a wooden tray and three brown capsules",
+      "claim": "갱년기 여성 건강"
+    },
+    {
+      "id": "ecklonia",
+      "subject": "dark brown ecklonia cava seaweed fronds, a small bowl of dried seaweed and three dark brown capsules",
+      "claim": "수면의 질 · 긴장 완화"
+    },
+    {
+      "id": "pomegranate",
+      "subject": "a halved pomegranate with glistening ruby seeds, a small glass of pomegranate juice and three red capsules",
+      "claim": "갱년기 여성 건강"
+    },
+    {
+      "id": "chitosan",
+      "subject": "a crab shell and a few shrimp shells, a small bowl of white chitosan powder and three white capsules",
+      "claim": "콜레스테롤 · 체지방"
+    },
+    {
+      "id": "pycnogenol",
+      "subject": "pieces of rough pine bark, a few pine needles and a small pine cone, and three brown capsules",
+      "claim": "항산화 · 갱년기 건강"
+    },
+    {
+      "id": "pga",
+      "subject": "a small bowl of natto fermented soybeans with sticky strands lifted on chopsticks and three white capsules",
+      "claim": "칼슘 흡수 촉진"
+    },
+    {
+      "id": "ginseng",
+      "subject": "fresh whole ginseng roots with fine rootlets on a wooden tray and three brown capsules",
+      "claim": "면역 · 피로 개선"
+    },
+    {
+      "id": "spirulina",
+      "subject": "a small bowl of deep green spirulina powder, a heap of dark green tablets and a glass of green smoothie",
+      "claim": "항산화 · 콜레스테롤"
+    },
+    {
+      "id": "chlorella",
+      "subject": "a small bowl of bright green chlorella powder, a heap of small green tablets and a glass of green water",
+      "claim": "피부 · 항산화 · 면역"
+    },
+    {
+      "id": "phytosterol",
+      "subject": "a handful of almonds and sunflower seeds, a small bottle of vegetable oil, a few soybeans and three softgels",
+      "claim": "콜레스테롤 개선"
+    },
+    {
+      "id": "coleus-forskohlii",
+      "subject": "a coleus forskohlii plant with purple flowers and its thick roots, and three brown capsules",
+      "claim": "체지방 감소"
+    },
+    {
+      "id": "pu-erh",
+      "subject": "a compressed cake of dark aged pu-erh tea, a cup of dark tea and three dark brown capsules",
+      "claim": "체지방 · 콜레스테롤"
+    },
+    {
+      "id": "manganese",
+      "subject": "a small heap of pecans and hazelnuts, a bowl of oats, two pineapple slices and three small white tablets",
+      "claim": "뼈 형성 · 에너지"
+    },
+    {
+      "id": "molybdenum",
+      "subject": "a small bowl of lentils and green peas, a few almonds and three small white tablets",
+      "claim": "산화 환원 효소"
+    },
+    {
+      "id": "iodine",
+      "subject": "strips of dried kelp, a small heap of seaweed, a piece of white fish and three small white tablets",
+      "claim": "갑상선 호르몬 합성"
+    },
+    {
+      "id": "potassium",
+      "subject": "a banana, a baked potato cut open, half an avocado, a small bowl of spinach and three white tablets",
+      "claim": "물 · 전해질 균형"
+    },
+    {
+      "id": "vitamin-b1",
+      "subject": "a bowl of brown rice and whole grains, a slice of lean pork, a few sunflower seeds and three yellow tablets",
+      "claim": "탄수화물 · 에너지 대사"
+    },
+    {
+      "id": "vitamin-b2",
+      "subject": "a glass of milk, a boiled egg, a few button mushrooms, a handful of almonds and three yellow tablets",
+      "claim": "에너지 생성"
+    },
+    {
+      "id": "niacin",
+      "subject": "a slice of seared tuna, a few peanuts, a slice of chicken breast and three white tablets",
+      "claim": "에너지 생성"
+    },
+    {
+      "id": "pantothenic-acid",
+      "subject": "a few button mushrooms, half an avocado, a boiled egg, a piece of roasted chicken and three white tablets",
+      "claim": "영양소 대사 · 에너지"
+    },
+    {
+      "id": "creatine",
+      "subject": "a small bowl of white creatine powder with a scoop, a lean beef steak and three white capsules",
+      "claim": "운동 수행 능력"
+    },
+    {
+      "id": "fgo",
+      "subject": "fresh oysters on the half shell, a small glass of cloudy fermented liquid and three brown capsules",
+      "claim": "어린이 키 성장"
+    },
+    {
+      "id": "ht042",
+      "subject": "dried astragalus root slices on a wooden tray with a few dried herbs and three brown capsules",
+      "claim": "어린이 키 성장"
+    },
+    {
+      "id": "lycopene",
+      "subject": "ripe red tomatoes, one halved, a small bowl of tomato paste and three red softgels",
+      "claim": "항산화"
+    },
+    {
+      "id": "bilberry",
+      "subject": "a heap of fresh dark blue bilberries with small leaves and three dark purple capsules",
+      "claim": "눈 피로 개선"
+    },
+    {
+      "id": "glutamine",
+      "subject": "a small bowl of white glutamine powder with a scoop, a boiled egg, a slice of beef and three white capsules",
+      "claim": "신체 저항능력"
+    },
+    {
+      "id": "nattokinase",
+      "subject": "a bowl of natto fermented soybeans with sticky strands on a wooden spoon and three brown capsules",
+      "claim": "혈액 흐름 원활"
+    },
+    {
+      "id": "hovenia",
+      "subject": "twisted brown hovenia dulcis fruit stalks on a small plate and three brown capsules",
+      "claim": "알코올 간 보호"
+    },
+    {
+      "id": "lactoferrin",
+      "subject": "a glass of milk, a small bowl of fine white powder with a scoop and three white capsules",
+      "claim": "체지방 · 면역"
+    }
+  ]
+}

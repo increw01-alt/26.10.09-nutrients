@@ -1158,6 +1158,53 @@ LONGTERM_KINDS = ("limit", "review", "upper")
 LONGTERM_FORBIDDEN = ("치료", "예방", "완치", "진단", "중단하세요")
 
 
+PHOTO_DIR = ROOT / "assets" / "images" / "ingredients"   # 성분 실사 사진(640×640 WebP) — scripts/convert_photos.py 가 만든다
+PHOTO_FORBIDDEN = ("치료", "예방", "완치", "진단", "항염", "빈혈", "구내염", "비대", "골다공증", "암", "당뇨", "고혈압")   # 카드 금색 한 줄(claim) 금칙어
+PHOTO_CLAIM_MAX = 14
+
+
+def validate_photos(data: dict, valid_ids: set[str]) -> None:
+    """가이드 핵심 성분 실사 카드의 사진 표(data/ingredient-photos.json): template 에 {SUBJECT}, default.subject,
+    items 는 성분 사전 id 전부를 한 번씩(모르는 id·중복·누락은 실패), subject 비어 있지 않음, claim 은 1~14자·금칙어 없음."""
+    data = data or {}
+    if "{SUBJECT}" not in str(data.get("template", "")):
+        raise ValueError("data/ingredient-photos.json: template 에 {SUBJECT} 자리가 없습니다")
+    if not str(((data.get("default") or {}).get("subject", ""))).strip():
+        raise ValueError("data/ingredient-photos.json: default.subject 가 없습니다")
+    seen: set[str] = set()
+    for i, it in enumerate(data.get("items") or []):
+        iid = str((it or {}).get("id", ""))
+        if iid not in valid_ids:
+            raise ValueError(f"data/ingredient-photos.json[{i}]: 모르는 성분 id '{iid}'")
+        if iid in seen:
+            raise ValueError(f"data/ingredient-photos.json[{i}]: 중복 id '{iid}'")
+        seen.add(iid)
+        if not str(it.get("subject", "")).strip():
+            raise ValueError(f"data/ingredient-photos.json[{i}] {iid}: subject 가 비어 있습니다")
+        claim = str(it.get("claim", "")).strip()
+        if not 1 <= len(claim) <= PHOTO_CLAIM_MAX:
+            raise ValueError(f"data/ingredient-photos.json[{i}] {iid}: claim 은 1~{PHOTO_CLAIM_MAX}자여야 합니다: {claim}")
+        for w in PHOTO_FORBIDDEN:
+            if w in claim:
+                raise ValueError(f"data/ingredient-photos.json[{i}] {iid}: claim 에 금칙어 '{w}': {claim}")
+    missing = sorted(valid_ids - seen)
+    if missing:
+        raise ValueError(f"data/ingredient-photos.json: 사진 표에 빠진 성분 {missing[:5]}{' …' if len(missing) > 5 else ''}")
+
+
+def prepare_photos(data: dict, valid_ids: set[str], photo_dir: Path = PHOTO_DIR) -> dict:
+    """성분별 실제 사진 파일 유무를 미리 정리한다(render_guide 는 이 표만 본다 — 파일 시스템을 안 봐 테스트가 쉬움).
+    files: id → '<id>.webp'(있음) 또는 '_default.webp', claims: id → 금색 한 줄, default_missing: 기본 사진도 없음(check_site 가 실패하므로 경고용), dir: 사진 폴더."""
+    files, claims = {}, {}
+    for it in (data or {}).get("items") or []:
+        iid = it["id"]
+        if iid not in valid_ids:
+            continue
+        files[iid] = f"{iid}.webp" if (photo_dir / f"{iid}.webp").exists() else "_default.webp"
+        claims[iid] = str(it.get("claim", "")).strip()
+    return {"files": files, "claims": claims, "default_missing": not (photo_dir / "_default.webp").exists(), "dir": photo_dir}
+
+
 def validate_longterm(data: dict, valid_ids: set[str]) -> None:
     """장기 복용 점검 표(data/longterm.json): 성분 id 가 사전에 있고, kind 는 limit/review/upper, weeks 는 1~52 정수, note 는 20~200자에 금칙어 없음, source 는 _meta.sources 의 id."""
     items = (data or {}).get("items") or []
