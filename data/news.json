@@ -2,7 +2,7 @@
   "_meta": {
     "source": "live",
     "sourceLabel": "구글 뉴스 RSS",
-    "updatedAt": "2026-10-30T07:42:16+09:00",
+    "updatedAt": "2026-10-31T07:14:55+09:00",
     "queries": [
       "건강기능식품",
       "영양제",
@@ -14,6 +14,226 @@
     "total": 60
   },
   "items": [
+    {
+      "id": "7cdb7478bfaa8e89",
+      "title": "김치부터 어린이 영양제까지 101가구 생활 지원",
+      "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE9wYzM0YnJ5SjI0VVFhb3lBNUN1ZXlCX2tWM1FYVFE4c1RuZWYxRjdsY3dDQkxvbkJLNTI3WDVKMHFEVlZ4VGxjXzZYTE9CWjFaeUNwMGhPRGQ0TVdaSFRJbjZTVDN4Ym9hTVdHV3hmRUI?oc=5",
+      "source": "충청일보",
+      "publishedAt": "2026-10-31T03:55:42+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "b83e3ab66df439f2",
+      "title": "“영양제 먹다가 오히려 간 망가질라”… 약사가 경고한 ‘위험한 습관’",
+      "link": "https://news.google.com/rss/articles/CBMif0FVX3lxTE9HbEhRdFp1eXNzbEU0bFZuMG11NEg5MFlLeHc4WDNJc245LTgyUjVIbm1aNkFtTlRxdUgxZnRoOXZfYWF2N1lIVVZVcHMwTTBkNDROMXJMWDJ2bWRIRXY4OFY3VVRJaEg4LXdmQnc3bmhheXJmb244M3VOTTA1eGM?oc=5",
+      "source": "헬스조선",
+      "publishedAt": "2026-10-31T03:00:00+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "89868f0e5c9190ae",
+      "title": "\"외국인도 관심 갖는 맞춤 영양제\" 로즈마리약국 비결은?",
+      "link": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE5Sd1R2V0tza182QXpMZlRmQ1p2ckN5Yzg0Z3hDbDI0V01sbmc1NGZjR2FIMm96YmM1ZEluWjNqZHFJTU1PYzdZRFFTUmlka3BJSE9DMm5B?oc=5",
+      "source": "데일리팜",
+      "publishedAt": "2026-10-30T20:05:14+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "ee63948697c2aa43",
+      "title": "대웅바이오, 건강기능식품 진출…\"3년 내 매출 1천억 목표\"",
+      "link": "https://news.google.com/rss/articles/CBMiUEFVX3lxTFBSQlNQSmluZTN6ZHo3Z3lIMnJBY0xidXlWTVFEdEwxam45YTc3VllDSkw5RUdxM042bmowang0Um1vY2x1OU1RS3BpX053bHdP?oc=5",
+      "source": "매일경제 마켓",
+      "publishedAt": "2026-10-30T20:02:13+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "d5ee4ba9d2c2c0f8",
+      "title": "보람바이오, '차즈기추출물' 개별인정형 원료 승인…인지기능 개선 신제품 추진",
+      "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTE1EVEJMU0drX3o0V2JXZU9DWGlZSUZEWnBRN21fTWhDUG9LNWtjWTZMVHNUTU9XSzdGbmh6OXYxSzZEd3RMUzNSeU1rRkc2OGNUNkVaNHpTWWpqZjFFSTlIeW1kRGN2ZUJTeDFlR2d3?oc=5",
+      "source": "국제뉴스",
+      "publishedAt": "2026-10-30T16:24:29+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "2aee50ab36236f8b",
+      "title": "인천 제물포구 신포동, 취약계층 30세대에 영양제·과일꾸러미 전달",
+      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE5RVWtESmZmM1NhVkl1LXp6Xy1GcWlkNVo4Z3F6TGJMTUdyZ0lGLTdXNWtGTEMtTWotMXlLdHRWU2NXVG5OYUdqTzdMWlBocGtGdVFBMG03a080UQ?oc=5",
+      "source": "여성종합뉴스",
+      "publishedAt": "2026-10-30T16:06:56+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "a012243a1931f5fd",
+      "title": "부산시약사회, 아동·청소년 그룹홈에 300만원 상당 영양제·의약외품 전달",
+      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTFBLdXpmWVJ3alR3eGdYS0FrMm9WbjhadURiX2RFdzUzTEg5Q0tEWWtpY1VUUGNENld4amw5NFNLdFY3V20wUXp1U3BLODFGVm9hR0xJMklsUDFMTXlfSDFfZVk4dWdmeEdVLUFN?oc=5",
+      "source": "한국의약통신",
+      "publishedAt": "2026-10-30T15:50:11+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "51bb3134273b3535",
+      "title": "기온 하루 새 5도 ‘뚝’…환절기 건강관리에 ‘홍삼정’ 눈길",
+      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE5UOFIyXzE0UTZLdTFwOE91X2tjb2RrcWUyLW1WaTktWm04MlFHRmJnY0VTeUxpUEtzc2xMa1JzNXljSGd6X2ZUYmwtSy1EcG5jcnlsLTdWbHdCSzZXRGZJSERkQU4?oc=5",
+      "source": "서울경제TV",
+      "publishedAt": "2026-10-30T14:50:00+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "5ae98a1821b9d547",
+      "title": "일반경제신문 국민매일",
+      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE02QUN0SmFFSjRvU19CaTRVcDJPa1h0VzJjM0xEd0NWSTZ3UWZGYlpQNGJNMzJZOGlMLVRUZURZaWd4bTcyOFhGNVNuclRDRFNwV0RtOTVxNHN0TDFWVDBhRFlENHc?oc=5",
+      "source": "busynews.net",
+      "publishedAt": "2026-10-30T12:58:00+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "530b315c9295bc09",
+      "title": "전남대·마틸로AI, 식약처 AI 경진대회 최우수상 수상",
+      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE9tME84REZ3SmhUelVxUnU3UklKRy1kSEtJaTQ0eTR4WDllNHNjVGJ5Vzl3MDhKMnlDY1JxNVNKVXo0VGZXM0w2LWotVW45QzFTMmRsVjlYUVhuZWdPYWttX0lqQi1yRW0xRWxrMw?oc=5",
+      "source": "호남교육신문",
+      "publishedAt": "2026-10-30T12:56:40+09:00",
+      "summary": "",
+      "category": "mfds",
+      "query": "식약처 건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "220631bc216b48b1",
+      "title": "제물포구 신포동 지역사회보장협의체, 취약계층에 ‘과일·영양제’나눔",
+      "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTFBTbk1tbFhVSGFYYmFfbjRhd3lhTzlfY2JBMndmaTJ2M2FaalFhMDJ6cFR4Ql9uazAzQVIxckhOejlhOW1fR1hEV2Q4LUhpU3E5NmZwc09fVlY0YnNlLWRBWloxVTBzOEJSa0JtSzRR?oc=5",
+      "source": "세정포커스",
+      "publishedAt": "2026-10-30T12:23:35+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "e56a1691df477651",
+      "title": "aT, K-푸드 아시아 수출 확대 위한 비관세장벽 대응 지원",
+      "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9fMjRldDZBRFdxWm1TTVBrUkE1cmNTWE0wUXlOSHZUZ2FGaXdDelBJdXVPQkdXM0pndW9KZWVVMEcwUWNvUTF1MEk4MUVxZ3lvUFRtMWFsVnZwdXB0V3dlalE2OU8wZWc?oc=5",
+      "source": "한국식품의약신문",
+      "publishedAt": "2026-10-30T11:39:38+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "d5cb1d9ea820a732",
+      "title": "대웅제약, 수험생 절박함 노렸나?… 식약처, ‘에너씨슬 집중샷’ 허위·과장 적발",
+      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE0zS1gwZDhxODd3NHVCUE0wb3NtS05kWFFMWklEVXhIU0RadUthbjJIdGhGREhIdzQwdE5NbmJnT0VxZTdEbndCb19BZC1HY1R6dUxJQl9YaU96N3RXeXZ0Q0Jlc2RUWW11MFdv?oc=5",
+      "source": "데일리시사닷컴",
+      "publishedAt": "2026-10-30T11:13:13+09:00",
+      "summary": "",
+      "category": "mfds",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "d0617b7862ba2fb6",
+      "title": "노사연, 70세 앞둔 동안 비결은 \"하체 건강과 꾸준한 영양제 섭취\"",
+      "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTFBVX09LeW9HblluYWdCNlM5NUcyU00wZ3d0aDZTZEo4ckJJcWZhRHp2NGgtUFpRbzhlOGs2LWh5WlAxRmM0VWkzdk5kN29RVndSZFpaTmJnYXVxV0RrQnFMRGxOYU5GaVFxRzBIRW1R?oc=5",
+      "source": "www.famtimes.co.kr",
+      "publishedAt": "2026-10-30T10:31:00+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "76082d011c11fc0a",
+      "title": "헥토헬스케어, 코베 베이비페어서 영양제 선봬",
+      "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTE9TdE84eExFeEp0ODByUFEwLUdiUXNMWFNXNmpyd3h3LXZEREJTX002TDZGVkdLOUVwSXUyd1FSZThpLUlQWmRXV1k2ZlZVQ1NmaHc1ckFkRHB6bnl2eHRqT1RmZW94WE12OVJMUkhRai1YX3c?oc=5",
+      "source": "디지털투데이",
+      "publishedAt": "2026-10-30T10:30:04+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "c3ff908cf0f3eafa",
+      "title": "\"집중력·키 크는 영양제\"라더니… 해외직구 식품 10개 중 6개서 반입 금지 성분",
+      "link": "https://news.google.com/rss/articles/CBMie0FVX3lxTE9tNmlZdGFUVk1xN0VpMnlrLTJlbzlsUk5Dbi0zaHB6Sk00aFFmQnd6OXhVSXNsTW1UODFKTkE4aWpmeHZBQWstYnlYWUt5R2x1d0RCMURpc0pPNUswS3VIWjVBUFB1ZlJFbDBTeU5oeWdwaVhmNXp5X0hzSdIBgAFBVV95cUxNQmxjSGFPSUlIdUg2dWFhMzRqZFZWdGFBRm9Yd1hpZXR5MUFXQ0FlSkN4SFZtd2Nwa05vSVY4SWQ4WnlIaTVTY1pTejU3WWZNSW1UQjc5WFF2ckt3RE9OcC1hNmpfUHNYRDVqMlc1RmtLeTZmcm8wZC1TX1VweUV1dg?oc=5",
+      "source": "뉴데일리",
+      "publishedAt": "2026-10-30T10:02:00+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "5dd2749f4996b827",
+      "title": "헥토헬스케어 김석진LAB, 코베 베이비페어 참가…최대 50% 할인",
+      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE5GRkpXUU5hSUY0TXFMYnZhQ3R0aWIybGFSVkdLMDh6a2pvUFZGQzZfd09fYk5QWUwxcUh6WUI4c0JLMm1VUnZZOU1SdmpBSDFaOWV5QnVTNnRkWWZXbEo1aVpLMEU3UQ?oc=5",
+      "source": "푸드투데이",
+      "publishedAt": "2026-10-30T09:56:08+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "오메가3 유산균",
+      "provider": "google"
+    },
+    {
+      "id": "0691ec132d649d0a",
+      "title": "전남대-마틸로AI, 식약처 '식의약 공공데이터·AI 경진대회' 최우수상",
+      "link": "https://news.google.com/rss/articles/CBMiTkFVX3lxTE5QSUNfQ3B2R2Q2RGo3ZTltcE5YMVhVRm5YYWJVemF1N3U2aUZpcWV0VHRUQ1BVVTVfMTRSaGpUTGEtUndCd05WNFh6M2J4QQ?oc=5",
+      "source": "전자신문",
+      "publishedAt": "2026-10-30T08:45:23+09:00",
+      "summary": "",
+      "category": "mfds",
+      "query": "식약처 건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "47353a7c9ceab696",
+      "title": "\"집중력 높여준다더니\"...수험생 노린 '가짜 영양제'의 정체 [자막뉴스]",
+      "link": "https://news.google.com/rss/articles/CBMiY0FVX3lxTE9VUTBFSlllMF83dy1LeXpoVVdxN2N1T19uRlZ1LUc2UUhaeFBSWFRfMmtDejNpNTRSMVpoY2JKZnFydHdKS1JibG5fVWt1Y0tzS1dFY1JDVmFPQnAtcGV0VUpVaw?oc=5",
+      "source": "YTN",
+      "publishedAt": "2026-10-30T08:12:00+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "459f5c9620a8345b",
+      "title": "\"수험생 영양제인데\"‥직구식품서 위해 성분",
+      "link": "https://news.google.com/rss/articles/CBMiekFVX3lxTE9Xa2FFMXR6elUzR3ZLLVQyWlcwQXIxNGM4NkJuNDVmN1ZzSzAtM0JQZWdreTJnZ0t0R2tlem13UTZYS0F4R2RXOUY0Sm9oaUZiazA3Z3VaZTJLRjktZ0hSY00zUW93MVh4LVVDbFdld1c2SGNnenVmNXZB0gF6QVVfeXFMTWxlTk1vY1hUT1pSTmVqVFlrVDdiaVRqeVVSX0JsajlWN0M4WFUxS2FRV29USGxkempoaGVkYjJvaTJwOGxDS2xzQ3hHWVB2YTNEZFVSVVliY3ZsQkhZV3BWUTUxa1cya2Z3b1gwOXhoajVTWEpnZkFlTGc?oc=5",
+      "source": "MBC 뉴스",
+      "publishedAt": "2026-10-30T06:51:21+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
     {
       "id": "51ffcee9e4802fd7",
       "title": "오렌지, 몸에 얼마나 좋을까… 연구로 살펴본 놀라운 효능 4가지",
@@ -56,17 +276,6 @@
       "summary": "",
       "category": "news",
       "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "114df7514c9031bf",
-      "title": "전남대·마틸로AI, 식약처 식의약 공공데이터·AI 경진대회 최우수상",
-      "link": "https://news.google.com/rss/articles/CBMickFVX3lxTE02ZmctcW5KMVluSGt0eFFKRzJZbERRYkxXMnBzbFFoM29FM1AyeGF5ODA4SlZITFFRVHItbXJsMnRiUjBqV25jYlYzNThONzJiOFEtdVM4OU1nSWJsVmZOcThZQ3M0eWg5VUV6cmxidTFXUQ?oc=5",
-      "source": "웹이코노미",
-      "publishedAt": "2026-10-29T16:20:09+09:00",
-      "summary": "",
-      "category": "mfds",
-      "query": "식약처 건강기능식품",
       "provider": "google"
     },
     {
@@ -169,6 +378,17 @@
       "provider": "google"
     },
     {
+      "id": "7a423c1b5b6c6b19",
+      "title": "수험생 겨냥한 집중력 식품 광고 적발…71억원 판매",
+      "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTE95MzNQNjBwVUN6dllCcGdLY3N3WndJWV9FY1NYaWtlQ1lJMzFHd3IwM3lWUEZiSEl0ZjFQWGFpTmlGN1BvV25XcS1aMm9VZU43S2htNTlmUUN1aG9QMDlNVlM5SmJOV1dqaUpZZWdB?oc=5",
+      "source": "https://www.seoulilbo.co.kr/",
+      "publishedAt": "2026-10-29T13:58:00+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "식약처 건강기능식품",
+      "provider": "google"
+    },
+    {
       "id": "5be69cbbd02e740e",
       "title": "대웅제약 '집중샷' 부당광고 적발 … '수험생 영양제' 소비자 오인",
       "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTFBXUnY5d2pXTzM5SnpvQ0UzeEhTeldzazE3bmN4NnJ4aVVSb2toR1pkaW9USUhJWGVkWGJ5Qnh6UTZqWktESjhnbFhwbjhGeWxiR1ZOeDVCb1NHU3ZidnVqQ2JTYW91b2pIRUMxbGk1d9IBc0FVX3lxTE5xM1o2dnE4UldUaXduUURDSzBOTkNiUjFQTHJXNVYwMFV4a3FzTmpIWGdYeFlndkJjWGktaEtZUVlETFhTeTU0YUV2em9YUzJJWHFRXzBaNlBNOEJUVjlDdmhuTkNLTzRxZGozRnN3RVlXSzA?oc=5",
@@ -218,6 +438,17 @@
       "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE9UZDlsMFZNODVWZmgwcU1PYXVpZ0xmNTJTV3F1alhHTGtZUTJkVk9zS3ExZDY3MVUzNEp0THhmYThBOTcyUndXd0swczEtTXlweHlsTGF1OTFUZHJvZzlyUVVwOFlHQWZLakFz?oc=5",
       "source": "라이센스뉴스",
       "publishedAt": "2026-10-29T11:58:37+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "식약처 건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "5cfda6f29d5a6b08",
+      "title": "보람그룹, 바이오 사업 성과에 PC 나눔까지…상조 넘어 사업 확장",
+      "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE1hYmRMMXB5MEdhTW1pZW43dWw2VkhDRUJBNkhpc0VPOVE2VXVpaUtscVc0ZjFpWi00amN0d3dLWHo2Q29WNlZvVXk2ZlllTWhEYUxfX1Z5c3NTekVuT1lPZlprZXFXekJjZVE?oc=5",
+      "source": "상조장례뉴스",
+      "publishedAt": "2026-10-29T11:40:00+09:00",
       "summary": "",
       "category": "news",
       "query": "식약처 건강기능식품",
@@ -441,237 +672,6 @@
       "summary": "",
       "category": "news",
       "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "b71b92a515c9b7c2",
-      "title": "식약처, 수험생 대상 '집중력 향상' 등 부당광고한 23개 업소 적발",
-      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE5CUUR0TWR2VFBrTU5fMXV1YU1Mb1RXRjVJMElHMmdNeldvSmRPd0FkMVhUSzZYZUxoMDJaanZrM0hpUmFiNGRNVXJKd2MyUFBLNDdCTkZVQW80ZXdzbWR0eA?oc=5",
-      "source": "충남도민일보",
-      "publishedAt": "2026-10-29T06:56:12+09:00",
-      "summary": "",
-      "category": "mfds",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "b32266192091fab8",
-      "title": "[빅데이터로본다] 건강기능식품 2026년 10월 브랜드평판... 1위 고려은단, 2위 유한양행, 3위 LG생활건강",
-      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE8tVkcyeXlGdWk3UDBDQWVkX2ptZU8yc1k3SkJrQUZ2b2ttVFNHUDVEaHRNX1ZRYkFXU29YMkh5LUZaa2drQ2drckhuYjRlaDI4RVNseTkxMFNkY0l1aXd5TDNrSjhQbXFmdVpR?oc=5",
-      "source": "일간투데이",
-      "publishedAt": "2026-10-29T06:09:52+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "3f12e21eb79039be",
-      "title": "“수액세트 재질 따라 약물 손실”…항암제·항생제 흡착 연구 검토",
-      "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE9Oak1TUTFoTlFHLXRxdWtoaTRJNnF0SkRNM0V4bkxUa3lQQjJYMHFWMUMxbjFWaWxzd3FuSmVTQkQxRms5Y1ViZ3RpMDVseWNac3dlem8tZmZBLVEzdjEwNHBxOHJsOUZuamxYbGttTQ?oc=5",
-      "source": "뉴스더보이스헬스케어",
-      "publishedAt": "2026-10-29T06:08:00+09:00",
-      "summary": "",
-      "category": "research",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "1984a70188a67760",
-      "title": "﻿강남베드로병원-네오뉴트라 업무협약 체결",
-      "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTFBoSmUzNGM1Qzk5b2hMVmpPaWd0U2dDcmVudDJxOUU3RnVLQ3NSVjRYY0dTUkN6NVJPRTNUMXlfRUxKZnVmSFhzQWFLN2xIRVVhNC02TXNpRDc0S21CMUQtSlpaU09tTzBL?oc=5",
-      "source": "데일리메디",
-      "publishedAt": "2026-10-29T05:14:00+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "af05abb2eb0173f1",
-      "title": "건강기능식품 시장, 유산균과 식이섬유 결합 주목… 복합 원료 제품 개발 관심",
-      "link": "https://news.google.com/rss/articles/CBMiU0FVX3lxTE9fdTFDVDBtb0hzUW50REdZOGVIUUdWc3hrdVZwNU1waGZ1Y2lWYXR4VGdwTjhXREVrMVA3dUZKcEtZbnpLRTlIQjh2RzVwU1M1cHJB?oc=5",
-      "source": "유스연합",
-      "publishedAt": "2026-10-28T23:45:21+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "23fca44749296133",
-      "title": "‘대치동 영양제’에 ‘공부 약’까지…성적 불안 파고든 유혹",
-      "link": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE9JZzZNNFkzc0VYU2JqMDlrMUpzNlF5OW9RbHJNQm02Vk81RWtoMUd6RDBkd2RhT3NJVTA4ZmVjYXNlQ0RjYmxGQjBtMmFNTkplV0JjQTNhbWdQQmc?oc=5",
-      "source": "KBS 뉴스",
-      "publishedAt": "2026-10-28T21:36:00+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "04c5dbcc6a3191e4",
-      "title": "“수험생 영양제” “집중력 향상”…부당광고로 71억 챙긴 업체들 ‘철퇴’",
-      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE1HVUtXNDRHYmRVUnZacnY3SExKMmlrVVg1NXdfRmhDM2RIS2pSRDd6VmtoQy1HLWRWLVVfSnNoV2VtRTdkZnV0QjR2SFJ0YmtoanlxX3QtR0tldw?oc=5",
-      "source": "농민신문",
-      "publishedAt": "2026-10-28T19:50:00+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "c51bd34d8ebdfb22",
-      "title": "\"대치동 영양제\"…수험생 대상 부당광고 업체 무더기 적발",
-      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE5iLVBrc0Z3TXBqWk5GQVBGTVNhY0NZMGRRNlFNbERuTXpOWFNQa1N0NWI3VXBxay02ZmNPc29DUlZLYXRUY0Q0bHhVYjl5S29CMWJINEc5ZXBoVUlhZDVFd9IBYEFVX3lxTE5iLVBrc0Z3TXBqWk5GQVBGTVNhY0NZMGRRNlFNbERuTXpOWFNQa1N0NWI3VXBxay02ZmNPc29DUlZLYXRUY0Q0bHhVYjl5S29CMWJINEc5ZXBoVUlhZDVFdw?oc=5",
-      "source": "연합뉴스",
-      "publishedAt": "2026-10-28T18:58:42+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "926c6ad649326ad5",
-      "title": "사탕·젤리가 '수험생 영양제?'‥23개 업체 적발, 71억 원 어치 판매",
-      "link": "https://news.google.com/rss/articles/CBMid0FVX3lxTE85cWhkRmlFbHZsdk1OZmxwSWk3LTY4dmhrSmVNSFRPbTdmNS1xWG1DTXJSTVlzd1JRMHViUmVuaE50YVJ0NVZuWWlSM2RsVEVnamVxOHZLZzdXNGx4bGNDYjNDaUpCdkd1djVTb2xzRkVtcTVqTy0w0gF3QVVfeXFMUGdNZzM2WEhfVHdhM3FZLU5sWk5XTHU3Ny0waW1nVHBFUDVrQllucnpaWnRsUVhBTXM5OUpaRC1WWkV3bTJFN2JtcVlKbDk5VWhPVkVMbnNQM1VJcHQ1UDlTcDdHRUpScFZJOFZaUmc4ck8zX0JjM3c?oc=5",
-      "source": "MBC 뉴스",
-      "publishedAt": "2026-10-28T18:33:28+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "15d77ef34a7f9eb1",
-      "title": "젤리·캔디가 ‘대치동 영양제’로 둔갑…수능 앞둔 수험생 울린 업체들 적발",
-      "link": "https://news.google.com/rss/articles/CBMiTkFVX3lxTE42cmRnbkFab3NiZjVWQ05jTTZ3Rl80V0txN3pTUndZRFZGZ1B2aVhVc1ZmUXk0NmZFei1qS1VNNWpKQzdkUm8tYVplX181UQ?oc=5",
-      "source": "www.dt.co.kr",
-      "publishedAt": "2026-10-28T18:28:39+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "a0a67faba003c1c0",
-      "title": "'집중력·기억력↑' 수험생 속인 업체들...\"일반식품일 뿐\"",
-      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE1pUjFTQ2w4LVhWRXpyc3VtTzBrRzRna2VJMkhkczNPaFlQVDdiTDVPWkt5SE1uYWZ1VFBUdnBCTzF0ZjBtVnpDYncwX1lFRW9nZmxkWXhxM3EzRDE2QVE?oc=5",
-      "source": "YTN",
-      "publishedAt": "2026-10-28T18:27:00+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "d9e6bc8821cbd7d8",
-      "title": "’집중력 영양제’라더니…수험생 불안 파고든 부당광고 적발",
-      "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE55X0NsUjM4WUNLZWtzOGtyMmdKb1hhM21BRXp1eHJ5Y0ltM3BnWURnRjNQaFRYWUpuNGdURTA2TTI2V3JpSXRZUUFLZmpqcU4wVjU1Zzd5elE2RHpuWXVqLWhxd1JFLU0?oc=5",
-      "source": "연합뉴스TV",
-      "publishedAt": "2026-10-28T17:58:00+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "2a5ba79e304a3435",
-      "title": "'수험생 영양제'라더니 일반식품…71억 원어치 판 23개 업체 적발",
-      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE5keDlrdGluWkNibEFlckc0dDRlWERDV2VVVDc3ampCRDBBS1YzRWxocmU4VVpkRDRka2xWVUhRQ3JfR0d3aTdzb1prelBERVNHbE9LQ0ZfS0pob0FtTXlCbQ?oc=5",
-      "source": "KBC광주방송",
-      "publishedAt": "2026-10-28T17:52:05+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "552036cd1d9a5521",
-      "title": "소엽 추출물, 인지능력 개선에 도움…식약처 기능성 원료 최종 인정",
-      "link": "https://news.google.com/rss/articles/CBMidEFVX3lxTE1DZDdXZE1wcFQzeUlBdHZMS2V3REhZY1c2Sk5LYWFxNnFlMHFpR1BIV3F2Yk1QX3c0MUQ1LXNCZXYtVk8xNU5ZeVJoNFBiYmwzUG03OTlWQndNTmQzaXB5aGJRalQ0ajczemJENENFdEo5U3hG?oc=5",
-      "source": "부산일보",
-      "publishedAt": "2026-10-28T17:40:03+09:00",
-      "summary": "",
-      "category": "mfds",
-      "query": "식약처 건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "6c71cbc5742fe779",
-      "title": "관절혈통, ‘2026 올해의 우수브랜드 대상’ 건강기능식품 부문 1위 수상",
-      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE5OYnpyLWF5X2dXZk5VRVliemVoeGVGWHRnT0ExdG1nOTEzOVBKeHdjVll3UTdfOWNQLWJ1RVFGam1qN2JxTWlEUzI3YXlVd3BVYU1KMVg1dE9VSHllZWxaMUVOODNkZ3BTVlRj0gFmQVVfeXFMT3B1ZVB1Vm1aMzh3dUhNSTBvSXI0T093VkhjdnVEdnJfLUpKLW1adGVQVzBxTnY5bzBRcXlzVGNkc0hlTW5SNmxpVGc2QXFkU0JWOEp4bGY3c3BSb1FZZXBreVp1MnhR?oc=5",
-      "source": "동아일보",
-      "publishedAt": "2026-10-28T17:30:05+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "02aaf97b61c3e2ea",
-      "title": "일반 식품을 집중력 개선 제품처럼 광고···식약처, 대웅제약 등 23곳 적발",
-      "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE45d3BhVGhpamw3ZHdycXgxMEJYWVNCOXBmRk9LSUdLcTFpQnE1Wl84UDJEREh6NUQtaExCMXJlaXNycHdQOWExdWJvdTVKTG41QlZpYllvMVF3eGp3M3ZEbUw2UjhmOHVTMFE?oc=5",
-      "source": "서울파이낸스",
-      "publishedAt": "2026-10-28T17:30:02+09:00",
-      "summary": "",
-      "category": "mfds",
-      "query": "식약처 건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "869982f87d0f3f81",
-      "title": "\"먹으면 집중력 쑥쑥?\"…수능 앞두고 '허위 수험생 영양제' 적발",
-      "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE1oTUR0ay1rSWFka2NRelBBa0xENWJESDdvbmVxR0liaURZOFlPYV9vcmJwVFlYNlRYTGo1aG01ODVQdndqZmtEcXVJRzRGTzVteWtUbXNrMkZKQlpr?oc=5",
-      "source": "뉴스핌",
-      "publishedAt": "2026-10-28T17:14:00+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "6916c20a5101eada",
-      "title": "수능 앞두고 ‘집중력 영양제’ 주의보…일반식품 부당광고 23곳 적발",
-      "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE8tZlJ4bjlJWmNoQUdLNlk0b2ZlYlRndFgyNUxtREFfNS1CTUlVN2JWaExhUTRTelk3TlRGNkNjVzBxVkpUU3Zxa1Q2cEJXRVhfaUlKZWt6OGlCR3lZV0ZISjVqNmhnZzd1?oc=5",
-      "source": "키즈맘",
-      "publishedAt": "2026-10-28T17:08:07+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "efdcabbdbf224f87",
-      "title": "수험생 영양제·집중력 향상 허위 광고 23개 업체 적발…식약처, 고발·세무조사 의뢰",
-      "link": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE5JZlU2MUd1eFhpOFcxdzlwZEE5U2xzbjhuaTNqS2JjcExaQS13bWc0dkpBcVg3dDgtQng5N1kySXJ0UEFwUFNfcS1uY05xeGJzblpLbl8yUF9ENnc?oc=5",
-      "source": "경기일보",
-      "publishedAt": "2026-10-28T16:37:42+09:00",
-      "summary": "",
-      "category": "mfds",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "b4f9cdb679ac52a2",
-      "title": "'대치동 영양제' 알고 보니 일반 캔디류…업체들, 수험생 허위 광고해 71억 챙겨",
-      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTFAxRUowUWlMcHM2ek1UVm04VzB6dHF3VWZhN0N2UW5oc0JUaFRlOFhfTVg5UmlvZEZqUjBXdEtVTjdHcWlCSC15RWg1NEJmbUQ3dGdReTR6Nm9kaUdZZV8zdlJKLW9qVVE0YnZV?oc=5",
-      "source": "BBS불교방송",
-      "publishedAt": "2026-10-28T16:07:29+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "a5882e8f92b418dc",
-      "title": "직구족들에게 11월은 아이허브 영양제 쇼핑 매수 타이밍!",
-      "link": "https://news.google.com/rss/articles/CBMirAJBVV95cUxOYWRtX0EwNWFVOFVGVDBxd1dWNzBBaE9NLV90MFNYbFpseXRaSzBJNFJ3MHk2QnVGcmZ2a2ZyM1hyU19rTEJvTFgxU28tZjltU3Vrck9EbWVxZlNIczlrVTJtbjBxUHNFcml4LVpGc2FKZjloa3BsX1VXMzlsWlR5X1NObzdhU2ptd3ZBUUhSMmhaY3RqQXRiSjdGcXZBWWdieGhVRjh2YlV4WW9rQm5Sek5Gd1hfTnl1YmNzOWxOVGowdUtrb0ExRTJGVGJ4S3h6eEpGTWRZcVd2TXV1eGY5cWQtRVdBYWpUQW5zT25lUWJWN19zakswRHZwOG84MzZLeUxTdENSX1d1b1ozQ0VvbEU5STM2b24taXVkOWVEUmR4WWxVd1AtUGh3NHU?oc=5",
-      "source": "W Korea",
-      "publishedAt": "2026-10-28T16:07:20+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
       "provider": "google"
     }
   ]
