@@ -245,6 +245,8 @@ python scripts/build_site.py           # 성분·가이드 페이지·sitemap �
 
 ### 다른 PC 에서 이어서 작업하기 (10-23 기준)
 
+**10-30 추가** — 성분 사진 원본 PNG 88장은 이 PC 의 `C:/Users/OK/Pictures/영양제kr-성분사진-원본/` 에만 있다(저장소에는 WebP 3종만). 다른 PC 에서 새 성분 사진을 만들면 그 PC 의 임의 폴더에 `<id>.png` 로 두고 `python scripts/convert_photos.py <폴더> --ids <id>` 로 변환해 커밋하면 되고, 원본 묶음이 필요하면 이 폴더를 복사해 간다.
+
 같은 GitHub 저장소를 받으면 어디서든 이어서 할 수 있다. 대화 기록은 PC 마다 따로지만, 작업 맥락은 저장소 안의 `CLAUDE.md`(작업 지침)와 이 문서(현황·이력·다음 할 일)에 다 있으므로 새 PC 에서 Claude 에게 "docs/PROJECT-STATUS.md 7절을 읽고 다음작업" 이라고만 하면 된다.
 
 1. 설치(한 번만): Git(https://git-scm.com), Python 3.11 이상(https://python.org — 설치 때 'Add to PATH' 체크), Node.js 20 LTS 이상(https://nodejs.org), Claude 데스크톱 앱(같은 계정으로 로그인, Code 탭). GitHub Actions 를 손으로 돌릴 일(`gh workflow run …`)이 있으면 GitHub CLI(https://cli.github.com) 도 설치하고 `gh auth login`.
