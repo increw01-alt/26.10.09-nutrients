@@ -374,6 +374,7 @@ body.has-sheet { overflow: hidden; }
 .pc-name { font-size: 1.15rem; font-weight: 900; letter-spacing: -.01em; color: #fff; line-height: 1.25; }
 .pc-name:hover { text-decoration: underline; color: #ffe9a3; }
 .pc-claim { position: relative; z-index: 1; margin: 4px 0 0 38px; color: #ffd466; font-weight: 800; font-size: .85rem; }
+.pc-scope { display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 999px; border: 1px solid #6b5a2a; color: #d9c27a; font-size: .66rem; font-weight: 700; vertical-align: middle; }   /* 일부 개별인정형 원료에만 해당하는 기능성 */
 .pc-mfds { position: relative; z-index: 1; margin: 6px 0 0; max-width: 58%; font-size: .72rem; line-height: 1.4; color: #a8a391; }
 .pc-desc { position: relative; z-index: 1; margin: 10px 0 0; max-width: 58%; font-size: .82rem; line-height: 1.55; color: #e9e4d6; }
 .pc-desc a { color: #ffe9a3; text-decoration: underline; }

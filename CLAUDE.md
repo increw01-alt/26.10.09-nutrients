@@ -60,7 +60,7 @@ gh workflow run release-ios.yml       # iOS 서명 → IPA → TestFlight 업로
 - 기능성 문구·일일섭취량은 `data/materials.json`·신고 제품 표시·식약처 고시 보도로 확인한 값만 쓰고, 확인이 안 되면 추가하지 말고 `docs/PROJECT-STATUS.md` 다음 할 일에 보류 사유를 적는다.
 
 ## 새 성분·가이드 추가 절차
-1. `data/ingredients.json` 또는 `data/guides.json` 에 항목 추가 (성분 id 참조는 빌드 시 검증됨)
+1. `data/ingredients.json` 또는 `data/guides.json` 에 항목 추가 (성분 id 참조는 빌드 시 검증됨). 새 성분이면 `data/ingredient-photos.json` 에도 `{ id, subject(사진 소재), claim(14자 이하, mfdsFunction 의 인정 표현) }` 을 넣는다 — 빠지면 `validate_photos` 가 빌드를 실패시킨다. 기능성이 일부 개별인정형 원료에만 해당하면 `scope: "individual"`(카드에 '개별인정 원료' 배지). 사진은 나중에 채워도 되며 그때까지 `_default.webp` 로 보인다
 2. 궁합이 필요하면 `data/interactions.json` 에 쌍 추가
 3. 가이드를 추가했으면 `scripts/home_tabs.py` 의 `SHORT`(짧은 제목)·`ORDER`(탭별 순서)에 slug 를 넣고 `python scripts/home_tabs.py` 실행 (홈 탭 `home.js` 와 `index.html` 정적 카드 생성). 홈 탭은 데스크톱 12개·모바일 9개만 먼저 보이고 '더 보기'로 펼치는 구조(`home.css` `.is-collapsed`, `home.js` `updateMore`)라 카드 수가 늘어도 순서 앞쪽에 중요한 가이드를 두면 됨
 4. `python scripts/build_site.py` → 생성 파일 확인 → 로컬 서버에서 페이지 확인 → 커밋·푸시

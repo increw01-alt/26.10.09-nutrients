@@ -951,6 +951,10 @@ class PhotoCardTests(unittest.TestCase):
         bad = copy.deepcopy(self.data); bad["items"][0]["claim"] = "가나다라마바사아자차카타파하가"   # 15자
         with self.assertRaises(ValueError):
             B.validate_photos(bad, self.ids)
+        bad = copy.deepcopy(self.data); bad["items"][0]["scope"] = "everyone"   # scope 는 individual 만
+        with self.assertRaises(ValueError):
+            B.validate_photos(bad, self.ids)
+        self.assertTrue(any(it.get("scope") == "individual" for it in self.data["items"]))   # 일부 개별인정 원료만 해당하는 성분은 표시
 
     def test_prepare_photos_falls_back_to_default(self):
         import tempfile
@@ -985,6 +989,9 @@ class PhotoCardTests(unittest.TestCase):
             self.assertIn('<span class="pc-num">01</span>', html); self.assertIn('<span class="pc-num">02</span>', html)
             self.assertNotIn('<span class="pc-num">03</span>', html)       # 사전에 없는 id 는 건너뛰고 번호가 이어진다
             self.assertIn("혈행 · 중성지질", html)
+            self.assertNotIn("pc-scope", html)                                   # 고시형 성분엔 범위 배지 없음
+            gd2 = dict(gd); gd2["ingredients"] = [{"id": "arginine", "why": "혈행."}]
+            self.assertIn('<span class="pc-scope">개별인정 원료</span>', B.render_guide(gd2, gmodel, core, cfg))   # 일부 개별인정형만 해당
             v1 = html.split("omega-3.webp?v=")[1][:8]
             (p / "omega-3.webp").write_bytes(b"o2-changed")
             html2 = B.render_guide(gd, gmodel, core, cfg)

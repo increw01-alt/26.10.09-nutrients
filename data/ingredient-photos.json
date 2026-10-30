@@ -1,7 +1,7 @@
 {
   "_meta": {
     "updatedAt": "2026-10-30",
-    "note": "가이드 '핵심 성분' 실사 카드의 사진 표(수동). template 의 {SUBJECT} 에 subject 를 넣어 ChatGPT(사용자 계정)로 같은 결의 사진을 만들고 scripts/convert_photos.py 로 assets/images/ingredients/<id>.webp(640×640)를 만든다. 없는 성분은 _default.webp. claim 은 카드의 금색 한 줄로, mfdsFunction 의 인정 표현을 14자 이하로 줄인 것만 쓴다(빌드 validate_photos 가 금칙어·길이·누락을 검사). subject 는 사진 소재일 뿐 기능성 주장이 아니다. 사진에 글자·브랜드·사람 얼굴 금지."
+    "note": "가이드 '핵심 성분' 실사 카드의 사진 표(수동). template 의 {SUBJECT} 에 subject 를 넣어 ChatGPT(사용자 계정)로 같은 결의 사진을 만들고 scripts/convert_photos.py 로 assets/images/ingredients/<id>.webp(640×640)를 만든다. 없는 성분은 _default.webp. claim 은 카드의 금색 한 줄로, mfdsFunction 의 인정 표현을 14자 이하로 줄인 것만 쓴다(빌드 validate_photos 가 금칙어·길이·누락을 검사). subject 는 사진 소재일 뿐 기능성 주장이 아니다. 사진에 글자·브랜드·사람 얼굴 금지. scope: \"individual\" 은 그 기능성이 일부 개별인정형 원료(제품)에만 해당하는 성분 — 카드의 금색 한 줄 옆에 '개별인정 원료' 배지가 붙는다."
   },
   "template": "Create a photorealistic square image (1024x1024), no text, no letters, no watermark. Professional food-photography style: {SUBJECT}, placed on a dark slate stone surface, deep black background, dramatic warm studio lighting from the upper left, shallow depth of field, rich natural colors, high detail, premium supplement advertisement look. Subject centered with empty dark space around it.",
   "default": {
@@ -126,7 +126,8 @@
     {
       "id": "collagen",
       "subject": "a small glass bowl of fine white collagen peptide powder with a wooden scoop, a small bowl of clear bone broth and three white capsules",
-      "claim": "피부 보습 · 자외선"
+      "claim": "피부 보습 · 자외선",
+      "scope": "individual"
     },
     {
       "id": "green-tea-extract",
@@ -136,12 +137,14 @@
     {
       "id": "curcumin",
       "subject": "pieces of fresh turmeric root, one cut open showing bright orange flesh, a small bowl of turmeric powder and three orange capsules",
-      "claim": "간 건강 · 근력"
+      "claim": "간 건강 · 근력",
+      "scope": "individual"
     },
     {
       "id": "arginine",
       "subject": "a handful of pumpkin seeds and peanuts, a slice of roasted turkey breast and three white tablets",
-      "claim": "혈관 이완 · 혈행"
+      "claim": "혈관 이완 · 혈행",
+      "scope": "individual"
     },
     {
       "id": "theanine",
@@ -171,7 +174,8 @@
     {
       "id": "l-carnitine",
       "subject": "a lean red beef steak slice, a small glass of milk and three white capsules",
-      "claim": "지구력 증진"
+      "claim": "지구력 증진",
+      "scope": "individual"
     },
     {
       "id": "boswellia",
@@ -441,7 +445,8 @@
     {
       "id": "lactoferrin",
       "subject": "a glass of milk, a small bowl of fine white powder with a scoop and three white capsules",
-      "claim": "체지방 · 면역"
+      "claim": "체지방 · 면역",
+      "scope": "individual"
     }
   ]
 }

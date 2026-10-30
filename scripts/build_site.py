@@ -641,7 +641,7 @@ def render_guide(gd: dict, guides: dict, core: dict, cfg: dict) -> str:
             mfds = it.get("mfdsFunction") or ""
             ing_html += (f'<article class="pc-card"><img class="pc-photo" src="../assets/images/ingredients/{fname}?v={ver}" alt="" width="640" height="640" loading="lazy" decoding="async">'
                          f'<div class="pc-head"><span class="pc-num">{n:02d}</span><a class="pc-name" href="../i/{esc(it["id"])}.html">{esc(it["name"])}</a></div>'
-                         f'<p class="pc-claim">{esc(photos["claims"].get(it["id"], ""))}</p>'
+                         f'<p class="pc-claim">{esc(photos["claims"].get(it["id"], ""))}{"<span class=\"pc-scope\">개별인정 원료</span>" if photos.get("scopes", {}).get(it["id"]) == "individual" else ""}</p>'
                          f'<p class="pc-mfds">{esc(mfds[:70])}{"…" if len(mfds) > 70 else ""}</p>'
                          f'<p class="pc-desc">{term_html(core, x["why"], st)}</p>'
                          f'<p class="pc-meta"><i data-lucide="clock" class="pc-ico"></i>{esc(it["timing"]["label"])} · 하루 {esc(it["dosage"]["daily"][:40])}</p></article>')
@@ -1203,6 +1203,8 @@ def validate_photos(data: dict, valid_ids: set[str]) -> None:
         for w in PHOTO_FORBIDDEN:
             if w in claim:
                 raise ValueError(f"data/ingredient-photos.json[{i}] {iid}: claim 에 금칙어 '{w}': {claim}")
+        if it.get("scope") not in (None, "individual"):   # 일부 개별인정형 원료(제품)에만 해당하는 기능성 → 카드에 '개별인정 원료' 배지
+            raise ValueError(f"data/ingredient-photos.json[{i}] {iid}: scope 는 'individual' 만 쓸 수 있습니다: {it.get('scope')}")
     missing = sorted(valid_ids - seen)
     if missing:
         raise ValueError(f"data/ingredient-photos.json: 사진 표에 빠진 성분 {missing[:5]}{' …' if len(missing) > 5 else ''}")
@@ -1211,14 +1213,16 @@ def validate_photos(data: dict, valid_ids: set[str]) -> None:
 def prepare_photos(data: dict, valid_ids: set[str], photo_dir: Path = PHOTO_DIR) -> dict:
     """성분별 실제 사진 파일 유무를 미리 정리한다(render_guide 는 이 표만 본다 — 파일 시스템을 안 봐 테스트가 쉬움).
     files: id → '<id>.webp'(있음) 또는 '_default.webp', claims: id → 금색 한 줄, default_missing: 기본 사진도 없음(check_site 가 실패하므로 경고용), dir: 사진 폴더."""
-    files, claims = {}, {}
+    files, claims, scopes = {}, {}, {}
     for it in (data or {}).get("items") or []:
         iid = it["id"]
         if iid not in valid_ids:
             continue
         files[iid] = f"{iid}.webp" if (photo_dir / f"{iid}.webp").exists() else "_default.webp"
         claims[iid] = str(it.get("claim", "")).strip()
-    return {"files": files, "claims": claims, "default_missing": not (photo_dir / "_default.webp").exists(), "dir": photo_dir}
+        if it.get("scope") == "individual":
+            scopes[iid] = "individual"
+    return {"files": files, "claims": claims, "scopes": scopes, "default_missing": not (photo_dir / "_default.webp").exists(), "dir": photo_dir}
 
 
 def validate_longterm(data: dict, valid_ids: set[str]) -> None:
