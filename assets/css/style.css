@@ -374,12 +374,12 @@ body.has-sheet { overflow: hidden; }
 .pc-name { font-size: 1.15rem; font-weight: 900; letter-spacing: -.01em; color: #fff; line-height: 1.25; }
 .pc-name:hover { text-decoration: underline; color: #ffe9a3; }
 .pc-claim { position: relative; z-index: 1; margin: 4px 0 0 38px; color: #ffd466; font-weight: 800; font-size: .85rem; }
-.pc-mfds { position: relative; z-index: 1; margin: 2px 0 0 38px; max-width: 58%; font-size: .72rem; line-height: 1.4; color: #a8a391; }
+.pc-mfds { position: relative; z-index: 1; margin: 6px 0 0; max-width: 58%; font-size: .72rem; line-height: 1.4; color: #a8a391; }
 .pc-desc { position: relative; z-index: 1; margin: 10px 0 0; max-width: 58%; font-size: .82rem; line-height: 1.55; color: #e9e4d6; }
 .pc-desc a { color: #ffe9a3; text-decoration: underline; }
-.pc-meta { position: relative; z-index: 1; margin: 10px 0 0; display: flex; align-items: center; gap: 4px; font-size: .72rem; color: #9a9483; }
+.pc-meta { position: relative; z-index: 1; margin: 10px 0 0; max-width: 58%; display: flex; align-items: center; gap: 4px; font-size: .72rem; color: #9a9483; }
 .pc-ico { width: .85rem; height: .85rem; }
-@media (max-width: 767px) { .pc-band { padding: 12px; } .pc-grid { grid-template-columns: 1fr; } .pc-photo { width: 52%; } .pc-desc, .pc-mfds { max-width: 62%; } }
+@media (max-width: 767px) { .pc-band { padding: 12px; } .pc-grid { grid-template-columns: 1fr; } .pc-card { min-height: 176px; } .pc-photo { top: 0; bottom: auto; height: 100%; width: 44%; -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 40%); mask-image: linear-gradient(90deg, transparent 0%, #000 40%); } .pc-head { max-width: 58%; } .pc-claim, .pc-mfds, .pc-desc, .pc-meta { max-width: 58%; } }   /* 모바일: 사진을 오른쪽 세로 띠로 두고 글은 왼쪽 58% 안에 */
 @media print { .pc-band, .pc-card { background: #fff; color: #000; border-color: #ddd; box-shadow: none; } .pc-photo { display: none; } .pc-name, .pc-desc { color: #000; } .pc-claim { color: #7a5a00; } }
 /* 푸터 바로가기 접기(layout.js renderFooter): 처음엔 FOOTER_SHOW(6)개만, '더 보기'로 펼침 — nth-child 기준은 layout.js 의 FOOTER_SHOW 와 같아야 한다 */
 .footer-links.is-collapsed > li:nth-child(n+7) { display: none; }
