@@ -1248,7 +1248,7 @@ def hero_photo_attrs(it: dict, core: dict) -> str:
     if not photos:
         return ""
     scope = ' data-photo-scope="individual"' if photos.get("scopes", {}).get(it["id"]) == "individual" else ""
-    return f' data-photo="{photo_src(photos, it["id"])}" data-photo-claim="{esc(photos["claims"].get(it["id"], ""))}"{scope}'
+    return f' data-photo="{esc(photo_src(photos, it["id"]))}" data-photo-claim="{esc(photos["claims"].get(it["id"], ""))}"{scope}'
 
 
 def validate_longterm(data: dict, valid_ids: set[str]) -> None:

@@ -85,14 +85,15 @@
     // 속성이 없는 옛 빌드면 해시 없는 주소로 사진만.
     var hero = document.getElementById("ingredient-hero"), ds = hero.dataset || {};
     var photoSrc = ds.photo ? D.url("assets/images/ingredients/" + ds.photo) : (I ? I.ingPhotoUrl(it.id) : "");
-    var claimHtml = ds.photoClaim ? '<p class="ing-hero-claim">' + esc(ds.photoClaim) + '<small>' + (ds.photoScope === "individual" ? "개별인정 원료 기준 식약처 인정 기능성" : "식약처 인정 기능성") + ' · 대표 급원 사진</small></p>' : "";
+    var isDefault = /^_default\./.test(ds.photo || "");   // 아직 사진이 없어 기본 사진(알약)일 때는 '대표 급원 사진'이라고 적지 않는다
+    var claimHtml = ds.photoClaim ? '<p class="ing-hero-claim">' + esc(ds.photoClaim) + '<small>' + (ds.photoScope === "individual" ? "개별인정 원료 기준 식약처 인정 기능성" : "식약처 인정 기능성") + (isDefault ? "" : " · 대표 급원 사진") + '</small></p>' : "";
     var cut = it.summary.indexOf("다. ");
     var tagline = (cut > 0 ? it.summary.slice(0, cut + 2) : it.summary).slice(0, 70);
     hero.innerHTML =
       '<div class="mx-auto max-w-7xl px-4 pb-10 pt-8 sm:px-6 sm:pt-10">' +
       '<nav class="text-xs text-ink-500" aria-label="경로"><a class="hover:text-brand-700" href="' + D.url("index.html") + '">홈</a> › <a class="hover:text-brand-700" href="' + D.url("ingredients.html") + '">성분 사전</a> › <a class="hover:text-brand-700" href="' + D.url("ingredients.html?category=" + it.category) + '">' + esc(cat.label || "") + '</a> › <span class="text-ink-800">' + esc(it.name) + '</span></nav>' +
       '<div class="mt-5 grid gap-8 lg:grid-cols-12 lg:items-start">' +
-        '<div class="lg:col-span-5"><div class="ing-hero-photo"><img src="' + photoSrc + '" alt="" width="640" height="640" fetchpriority="high" decoding="async">' + claimHtml + '</div>' +
+        '<div class="lg:col-span-5"><div class="ing-hero-photo"><img src="' + photoSrc + '" alt="" width="640" height="640" fetchpriority="high" decoding="async"' + (I ? I.ingPhotoFallback() : "") + '>' + claimHtml + '</div>' +
           '<div class="mt-3 flex gap-2"><div class="thumb thumb-photo">' + (I ? I.ingThumb(it, "h-full w-full object-cover") : "") + '</div><div class="thumb">' + (I ? I.forCategory(it.category) : "") + '</div><div class="thumb"><i data-lucide="' + esc(it.icon || cat.icon || "pill") + '" class="h-7 w-7 text-brand-700"></i></div></div></div>' +
         '<div class="lg:col-span-7">' +
           '<p class="eyebrow-kicker"><i data-lucide="leaf"></i> 성분 사전 <span class="text-ink-300">·</span> <span class="rounded-full px-2.5 py-0.5 text-[11px] font-bold ring-1 ' + D.catClass(cat.color) + '">' + esc(cat.label || "") + '</span></p>' +

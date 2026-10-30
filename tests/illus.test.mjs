@@ -14,16 +14,24 @@ test("ingPhotoUrl: 크기 접미사 없음·m·s (Node 에선 루트 없이)", (
   assert.equal(Illus.ingPhotoUrl("garcinia", "s"), "assets/images/ingredients/garcinia-s.webp");
 });
 
-test("ingThumb: 160px 썸네일, lazy, 클래스 전달, id 이스케이프", () => {
+test("ingThumb: 160px 썸네일, lazy, 클래스 전달, id 이스케이프, 없는 사진은 onerror 로 _default-s", () => {
+  const fb = ' onerror="this.onerror=null;this.src=\'assets/images/ingredients/_default-s.webp\'"';
   assert.equal(Illus.ingThumb(IT, "h-full w-full object-cover"),
-    '<img src="assets/images/ingredients/garcinia-s.webp" alt="" width="160" height="160" loading="lazy" decoding="async" class="h-full w-full object-cover">');
-  assert.equal(Illus.ingThumb({ id: "zinc" }), '<img src="assets/images/ingredients/zinc-s.webp" alt="" width="160" height="160" loading="lazy" decoding="async">');
+    '<img src="assets/images/ingredients/garcinia-s.webp" alt="" width="160" height="160" loading="lazy" decoding="async"' + fb + ' class="h-full w-full object-cover">');
+  assert.equal(Illus.ingThumb({ id: "zinc" }), '<img src="assets/images/ingredients/zinc-s.webp" alt="" width="160" height="160" loading="lazy" decoding="async"' + fb + '>');
   assert.ok(!Illus.ingThumb({ id: 'a"b' }).includes('a"b'));
+});
+
+test("ingPhotoFallback: 사진 파일이 없는 새 성분은 404 대신 _default 로 (띠는 srcset 까지)", () => {
+  assert.equal(Illus.ingPhotoFallback("s"), ' onerror="this.onerror=null;this.src=\'assets/images/ingredients/_default-s.webp\'"');
+  assert.equal(Illus.ingPhotoFallback("m", true), ' onerror="this.onerror=null;this.srcset=\'assets/images/ingredients/_default-m.webp\';this.src=\'assets/images/ingredients/_default-m.webp\'"');
+  assert.equal(Illus.ingPhotoFallback(), ' onerror="this.onerror=null;this.src=\'assets/images/ingredients/_default.webp\'"');
+  assert.ok(Illus.ingBand(IT).includes(Illus.ingPhotoFallback("m", true)));
 });
 
 test("ingBand: 360 src + 640 srcset, 배지, 제목(h2 기본)·영문명", () => {
   const html = Illus.ingBand(IT, { badge: '<span class="badge">식물성·허브</span>' });
-  assert.ok(html.startsWith('<div class="ing-band"><img class="ing-band-img" src="assets/images/ingredients/garcinia-m.webp" srcset="assets/images/ingredients/garcinia-m.webp 360w, assets/images/ingredients/garcinia.webp 640w" sizes="(min-width: 768px) 360px, 100vw" alt="" width="360" height="360" loading="lazy" decoding="async">'));
+  assert.ok(html.startsWith('<div class="ing-band"><img class="ing-band-img" src="assets/images/ingredients/garcinia-m.webp" srcset="assets/images/ingredients/garcinia-m.webp 360w, assets/images/ingredients/garcinia.webp 640w" sizes="(min-width: 768px) 360px, 100vw" alt="" width="360" height="360" loading="lazy" decoding="async"' + Illus.ingPhotoFallback("m", true) + '>'));
   assert.ok(html.includes('<span class="ing-band-badge"><span class="badge">식물성·허브</span></span>'));
   assert.ok(html.endsWith('<div class="ing-band-title"><h2 class="ing-band-name">가르시니아 (HCA)</h2><p class="ing-band-en">Garcinia Cambogia (HCA)</p></div></div>'));
 });

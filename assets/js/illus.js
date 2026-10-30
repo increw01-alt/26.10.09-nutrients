@@ -65,9 +65,15 @@
     ingPhotoUrl: function (id, size) {
       return siteRoot() + "assets/images/ingredients/" + encodeURIComponent(String(id)) + (size ? "-" + size : "") + ".webp";
     },
+    /* 사진 파일이 아직 없는 새 성분(ingredients.json 에 넣고 사진은 나중에 채우는 경우) — JS 는 파일 유무 표가 없으므로 onerror 로 _default 로 바꿔 404 빈 칸을 막는다.
+       withSrcset 이면 srcset(띠의 640 후보)도 같이 바꾼다. 빌드(SSR)는 prepare_photos 가 미리 _default 로 정한다 */
+    ingPhotoFallback: function (size, withSrcset) {
+      var d = Illus.ingPhotoUrl("_default", size);
+      return ' onerror="this.onerror=null;' + (withSrcset ? "this.srcset='" + d + "';" : "") + "this.src='" + d + "'\"";
+    },
     /* 작은 목록(검색 결과·셀프체크 결과·상세 작은 칸)의 160px 썸네일 — build_site.py ing_thumb_img 와 같은 모양 */
     ingThumb: function (it, cls) {
-      return '<img src="' + Illus.ingPhotoUrl(it.id, "s") + '" alt="" width="160" height="160" loading="lazy" decoding="async"' + (cls ? ' class="' + esc(cls) + '"' : "") + '>';
+      return '<img src="' + Illus.ingPhotoUrl(it.id, "s") + '" alt="" width="160" height="160" loading="lazy" decoding="async"' + Illus.ingPhotoFallback("s") + (cls ? ' class="' + esc(cls) + '"' : "") + '>';
     },
     /* 성분 카드 위 사진 띠(B-1): 360px 사진(고해상도·휴대폰은 srcset 의 640) + 아래쪽 그라데이션(CSS .ing-band::after) + 분류 배지 + 성분명·영문명을 사진 위에.
        opts: tag(h2 기본|h3), href(있으면 성분명을 링크로), badge(배지 HTML). 스타일은 style.css .ing-band* */
@@ -75,7 +81,7 @@
       opts = opts || {};
       var tag = opts.tag || "h2", m = Illus.ingPhotoUrl(it.id, "m"), full = Illus.ingPhotoUrl(it.id);
       var name = opts.href ? '<a href="' + esc(opts.href) + '">' + esc(it.name) + "</a>" : esc(it.name);
-      return '<div class="ing-band"><img class="ing-band-img" src="' + m + '" srcset="' + m + ' 360w, ' + full + ' 640w" sizes="(min-width: 768px) 360px, 100vw" alt="" width="360" height="360" loading="lazy" decoding="async">' +
+      return '<div class="ing-band"><img class="ing-band-img" src="' + m + '" srcset="' + m + ' 360w, ' + full + ' 640w" sizes="(min-width: 768px) 360px, 100vw" alt="" width="360" height="360" loading="lazy" decoding="async"' + Illus.ingPhotoFallback("m", true) + '>' +
         (opts.badge ? '<span class="ing-band-badge">' + opts.badge + "</span>" : "") +
         '<div class="ing-band-title"><' + tag + ' class="ing-band-name">' + name + "</" + tag + ">" + (it.en ? '<p class="ing-band-en">' + esc(it.en) + "</p>" : "") + "</div></div>";
     },

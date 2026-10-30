@@ -988,9 +988,9 @@ class IngredientPhotoTests(unittest.TestCase):
 
     def test_style_has_band_hero_and_thumb_classes(self):
         css = (B.ROOT / "assets" / "css" / "style.css").read_text(encoding="utf-8")
-        for cls in (".ing-band {", ".ing-band::after", ".ing-band-badge", ".ing-band-title", ".ing-band-name", ".ing-card-photo", ".ing-card-body",
+        for cls in (".ing-band {", ".ing-band::after", ".ing-band-badge", ".ing-band-title", ".ing-band-name", ".ing-card.ing-card-photo { padding: 0", ".ing-card-body",
                     ".ing-hero-photo {", ".ing-hero-photo::after", ".ing-hero-claim", ".thumb.thumb-photo"):
-            self.assertIn(cls, css, cls)
+            self.assertIn(cls, css, cls)   # .ing-card.ing-card-photo: 뒤에 오는 .ing-card 의 padding 을 이기려면 클래스 둘짜리 선택자여야 한다
         self.assertNotIn(".photo-badge", css)   # 상세 상단의 알약 배지는 사진으로 대체돼 스타일도 지운다
 
 
