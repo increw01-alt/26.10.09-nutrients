@@ -2,7 +2,7 @@
   "_meta": {
     "source": "live",
     "sourceLabel": "구글 뉴스 RSS",
-    "updatedAt": "2026-11-01T06:28:50+09:00",
+    "updatedAt": "2026-11-02T06:58:08+09:00",
     "queries": [
       "건강기능식품",
       "영양제",
@@ -14,6 +14,50 @@
     "total": 60
   },
   "items": [
+    {
+      "id": "c037d2df03b635b0",
+      "title": "겨울을 잘 보내는 남자들이 챙겨 먹는 영양제 5",
+      "link": "https://news.google.com/rss/articles/CBMisgJBVV95cUxOTzRITnI3dDJKQnRwaFozLVJpbHFFQzJOc2M0RGx5dDh3WGpEQ1ZqRzR3MExKYmhSeEtqV3cxb3VqTlRzVFY2Yl9WZEpVdGhybkRyWFg0VDQ4cGZOZ2FuU2J0Q0gtS3NmTnBTRk5pMS1HT1RPU0RNUm5YaUloc3h5T1lUMGhaZGxyYW5MMFg2VkRIYUlqY3luOWtfaTVqb3NSa2V5VGhUNndVMVpnM3M1SkhKTUphUzRVdkZKcVBjRkNWY0ZBQTV5cGUzcEJhSjVtaHVUN0tMdE9MTmtYQ0psdmdxTk0xLVc2V19rVlR2NThFYVk1dUZzb0w2ODc1VGltb3lUMkpaQm1CRnJTZ0RPc0FVZFF6RnhPVGYxcjJKeUdXSmcxZVJiR1Z3WUk2MkI2R3c?oc=5",
+      "source": "지큐 코리아 (GQ Korea)",
+      "publishedAt": "2026-11-02T01:25:26+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "ee8e099766eae3d4",
+      "title": "제물포구 신포동 지역사회보장협의체, 취약계층에 ‘과일·영양제’나눔 > 뉴스",
+      "link": "https://news.google.com/rss/articles/CBMickFVX3lxTE5EX05tWWFYcmxwenR3bHlLRFZwdEFJaVJFTV9Xd2RGdXhOV0FvSlNYT0VLc2R2SlQ4WkZSU2R1MnRjSHk4b3p6bzIxZGFQenBaX3lYSnc5Q3MzNlRCOHBkSHg1NFR5V211MG1SSENiTzR0dw?oc=5",
+      "source": "더코리아",
+      "publishedAt": "2026-11-01T22:13:00+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "31fc0bc6e4d45efc",
+      "title": "제물포구 신포동 지역사회보장협의체, 취약계층에 ‘과일·영양제’ 나눔",
+      "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTE9RdGhEY1pQcE9nbnlhakFDM3pDU2kxUjgzQWxucHhZY1pKYVlxVDhyZmpsSFRWM2dFYlBYTVVCS01mY3ZENXNGdWpSREdWS0xWVG0xSUVXcm5tUzMwaVRlTzNXVUkySkdSTklNMUFB?oc=5",
+      "source": "전국매일신문",
+      "publishedAt": "2026-11-01T17:31:06+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "dac8458937f9b7ed",
+      "title": "디어유 임시주총서 건강기능식품·AI 사업목적 논의",
+      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE1nTElDZzF3dngtRFJEbm1kNUN2VzBYSFNvRnlQd05Wc1pUYnhZS0Z5a1RmcXJkekwzY1FBcVhDVTlaeTlyYmpvNEZjNWNPNERHdlVJTU5DbUxZQVhrYnZWR05BLW1iZw?oc=5",
+      "source": "비건뉴스",
+      "publishedAt": "2026-11-01T15:56:08+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
     {
       "id": "bee2916fdf7abe21",
       "title": "비타민 D와 노년층 치매 위험 사이의 놀라운 연관성?",
@@ -166,17 +210,6 @@
       "summary": "",
       "category": "mfds",
       "query": "식약처 건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "220631bc216b48b1",
-      "title": "제물포구 신포동 지역사회보장협의체, 취약계층에 ‘과일·영양제’나눔",
-      "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTFBTbk1tbFhVSGFYYmFfbjRhd3lhTzlfY2JBMndmaTJ2M2FaalFhMDJ6cFR4Ql9uazAzQVIxckhOejlhOW1fR1hEV2Q4LUhpU3E5NmZwc09fVlY0YnNlLWRBWloxVTBzOEJSa0JtSzRR?oc=5",
-      "source": "세정포커스",
-      "publishedAt": "2026-10-30T12:23:35+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
       "provider": "google"
     },
     {
@@ -345,9 +378,9 @@
       "provider": "google"
     },
     {
-      "id": "6ff70a099f640bb5",
+      "id": "a4401320e6cd568d",
       "title": "\"키 크는 영양제라더니\"…해외직구 제품서 사용 금지 성분",
-      "link": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE9Ud0JueFZldjViMEpsamRhNWY3UnlFOFNJSldpaGtBR01mR05MR1h6SkcyRUhxZ09HT2hXNEREekNxenAxbFFPc1pmUXc1NkpYTXVjWXQ1UjJ0RGfSAWBBVV95cUxNVndTallOR0s5U0VsM1RGNGNwamZLUEJTRDA1OE1DZWxvYkh6cFk0eXJjTGtBU3JJZl9wWXJySGdvY0l1RVVBeXYweTY4dV9QclUwb0xNRDlsbExXa2x0LVM?oc=5",
+      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE1Wd1NqWU5HSzlTRWwzVEY0Y3BqZktQQlNEMDU4TUNlbG9iSHpwWTR5cmNMa0FTcklmX3BZcnJIZ29jSXVFVUF5djB5Njh1X1ByVTBvTE1EOWxsTFdrbHQtU9IBYEFVX3lxTE1Wd1NqWU5HSzlTRWwzVEY0Y3BqZktQQlNEMDU4TUNlbG9iSHpwWTR5cmNMa0FTcklmX3BZcnJIZ29jSXVFVUF5djB5Njh1X1ByVTBvTE1EOWxsTFdrbHQtUw?oc=5",
       "source": "연합뉴스",
       "publishedAt": "2026-10-29T16:09:08+09:00",
       "summary": "",
@@ -636,39 +669,6 @@
       "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTFA5eDdTcDdyY3lGaU5PdFFIa09jRXpYZUlScXNSeGxzNlg1bWhhUTBQN0xfSUduX3hYc2ZSRHFZQ21VWW1fNzFMdUw2S20zUFZYU3BFWDQwWHVNdWdOTXlVSVhwdG0?oc=5",
       "source": "KBS 뉴스",
       "publishedAt": "2026-10-29T09:51:00+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "5b720bf31520328e",
-      "title": "‘수험생 영양제’ 내세워 71억 판매…대웅제약 등 부당광고 23곳 적발",
-      "link": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE5QdDRlWFJLQnJqUF9yMmR2bmV1SjlBc0VYVDJNQTNtTlNPUDBMYjdyQzF4VlREYllramhXQXRic3lJT3ZMSHRGVlBYRDluMS1jU3BWV0llZw?oc=5",
-      "source": "세계비즈",
-      "publishedAt": "2026-10-29T09:45:01+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "98b1da8580a9e99c",
-      "title": "휴럼, 日 헬스케어 유통기업에 20억 투자…해외시장 공략 본격화",
-      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE8yYU42X3U5Y240aU9jUFpaWHRCVE03aU03OEFuOTEzbW1jSjhHdkpwUXdOTVpLdWJOYVNUSGlWRC1pNVFEYXVGblo3OGtzTGJKZFBHZlc5QlNvZw?oc=5",
-      "source": "한국경제",
-      "publishedAt": "2026-10-29T09:34:33+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "0e9d32c8d932db1a",
-      "title": "대전 서구, 약사회서 500만원 상당 영양제 기탁받아",
-      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTFBueHBkdnplMmlpa2JoVmFYdXJmZllibExaUHllenZQRGRIbUNRUU1kX0ZsR0JaZlUyckhzWWg4U1hfeUVuYXVMTC1RZlF5NlM4U3FBZFdWdVNBM2JtcG9ERnA4OVVYSmUzeTRpMw?oc=5",
-      "source": "메가충청뉴스",
-      "publishedAt": "2026-10-29T09:11:00+09:00",
       "summary": "",
       "category": "news",
       "query": "영양제",
