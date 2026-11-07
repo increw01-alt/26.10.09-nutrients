@@ -2,7 +2,7 @@
   "_meta": {
     "source": "live",
     "sourceLabel": "구글 뉴스 RSS",
-    "updatedAt": "2026-11-07T08:04:36+09:00",
+    "updatedAt": "2026-11-08T06:44:58+09:00",
     "queries": [
       "건강기능식품",
       "영양제",
@@ -14,6 +14,39 @@
     "total": 60
   },
   "items": [
+    {
+      "id": "dd8f3f3efce6877f",
+      "title": "“아플까봐 먹어요”…6조 영양제 시장 불안이 키웠다",
+      "link": "https://news.google.com/rss/articles/CBMiYkFVX3lxTFA5bDRMSHJLcG1aMUxQWmg5TUFYQU1tSmJuMTRVU0txQmdIMHN2Vm96cjJXNHVLLWhsWmhEbW8welY5WWFUUkhlOFZ5a2tGaFJNek1sSk5OcDRoNGZ2aHVUd1B3?oc=5",
+      "source": "이코노미스트",
+      "publishedAt": "2026-11-08T03:22:16+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "8455ab3a144fe5fa",
+      "title": "한국건강식품연구소, 2026 푸드위크 코리아서 임산부·키즈 영양제 선보여... \"가족이 먹는 기준으로\"",
+      "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9XNlNUY0dUVzhkUFF6R01MSUJSTlFFR0JQSURVbmlDaXliVDFlLXRjTGRBUl92WmZDSnJudWYzZC1LX0xoWWhHdUZDSGM1UF9OVFJYUi1nZVNyTlNHOEcyNGtINnREQk0?oc=5",
+      "source": "에이빙",
+      "publishedAt": "2026-11-07T16:31:14+09:00",
+      "summary": "",
+      "category": "research",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "fc4ef75b1477bd60",
+      "title": "휴온스엔, 갱년기 이어 체지방까지…기능성 유산균 사업 확대",
+      "link": "https://news.google.com/rss/articles/CBMihwFBVV95cUxPMG9MUWVmMUFoVGVTdGFUVjNNRFpINzRzNGQ5dEJRMnlkek95OTlrRXpLTlQzUU1GSlRXRW8xazlZTm1BcGd2TTNfM29TQTRkRktKdWtuNjZLQ1VJVGdlakJHVm5hdWNJOWl4WnREaGhzT1NsMEgyZUJzdTNMODUtWU5ySzJRT3PSAZsBQVVfeXFMUEhVeXF3R1kzdkh0Tno0ZFFFbmJoQmkxTDNZWW9GdG1TanRPVXd1SHRWMExleXlVZDd6RF9Kd1hQejFDVVltd0RONEtHM2NWbFU1ME1MMi1GRm9hSHZTZENLUlYxN2NWYXZrcWVIcnBUc1ctUkd3cDlHZWhHUHItOFNubDZPZHFHSG5pc1NUNTN5czQ3a2Z5cUdNcUU?oc=5",
+      "source": "Chosunbiz",
+      "publishedAt": "2026-11-07T13:02:57+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
     {
       "id": "bb591aeaee9fa255",
       "title": "“잠 잘 오게 한다더니 간 손상까지”… 수면 영양제 속 숨은 부작용",
@@ -257,6 +290,17 @@
       "provider": "google"
     },
     {
+      "id": "da306f0e73bd7577",
+      "title": "약 대신 '한 병'…불붙는 제약사 이중제형 음료 경쟁",
+      "link": "https://news.google.com/rss/articles/CBMiTkFVX3lxTFBuQnFwY0d3NElWcHRtX096cXlCRWhzNHd1RVNwRHBhcUEtMnlJMEw4cHBNR0IxaE9BcFYxSGN0MlVyRFNLckc5eXRhcWcxUQ?oc=5",
+      "source": "전자신문",
+      "publishedAt": "2026-11-06T13:09:00+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
       "id": "9f23bc6dee0ad23c",
       "title": "한국콜마, 전북대와 항산화 소재 ‘TOT’ 공동 개발…신기술 지정",
       "link": "https://news.google.com/rss/articles/CBMickFVX3lxTE13aVo5SVJvZFViby16UVdWNk5HV1FkUllsajgySm4tQkNiUzZ1V21sVXBvNU1ucEk3ajVmTm5OUWJyMXNzZVQzaGcwNTBlWkpNUWZsZ2tic054QnhFSDNHNE0wT1dKTC1xYkFwcGFoQmduUQ?oc=5",
@@ -477,6 +521,17 @@
       "provider": "google"
     },
     {
+      "id": "b5bf8ed6daed0958",
+      "title": "“겉보기에 안전해 보이지만” 천연이라 믿은 영양제…간 수치 ‘29배’ 치솟았다, 알고 보니",
+      "link": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE8yZnhCR3R2QW5hWmNSbmJQY1hQMVBWVmFDMGxzdEdmNGczOEN4RUttYmJNY2FfNmExYTFUaE8wbldzdTBaNU9LbHRfVkt4ZWd4dDRFb3Z3?oc=5",
+      "source": "헤럴드경제",
+      "publishedAt": "2026-11-05T22:10:00+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
       "id": "a6d183b357aaacbf",
       "title": "유유헬스케어, 횡성 제2공장 준공…연 700억 생산체제 구축",
       "link": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE1Zc2VNWjd4MHZkQ0pZSS1Oa0RUZWJRNlhmUTB3OGlSV0RQWVk4S1c4Xzh1OGIzcl9FV3Z0TThwa25lQ2VXb3kzRTNqZmxuUDl1dEJpTU5R?oc=5",
@@ -617,61 +672,6 @@
       "summary": "",
       "category": "news",
       "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "07bd666a2d52b9f3",
-      "title": "고려은단, 5일 네이버서 건강기능식품 할인 행사…쇼핑라이브 운영",
-      "link": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE9aRmxCbXg1SG4yUVlPbm11Q1J6Nk9KVmJXWG9CX3BlZkg0UlhkaDQwWHpUd1BiUFpsenlKWnZFMjJhNjZHQlVQcHJVclJqd3RrZ1hieTBZRVpoSk0?oc=5",
-      "source": "에너지경제신문",
-      "publishedAt": "2026-11-05T16:11:10+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "732f400a58fa869f",
-      "title": "매출 12배 뛴 ‘웰니스존’…신세계면세점, 명동점도 확대",
-      "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTE1TRVZqYmk3WUJ5M3I0OVE3U0ZMQUdxQjFHVjViRnlHUFIyemRFMHl3dHR0cTVHYU4tQ1c0bXFBbDV5ejBfUzZJYzlvQjlFU0RXczJfV2ROa2tVWGdfUEQyZlR1OFNWWmRORllEVnFB?oc=5",
-      "source": "뉴스인사이드",
-      "publishedAt": "2026-11-05T16:03:42+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "5cb06a3e60a985cf",
-      "title": "신세계면세점, 명동점 11층 '웰니스존' 확대 개편…건기식 및 저당 디저트 브랜드 14개 추가 입점",
-      "link": "https://news.google.com/rss/articles/CBMieEFVX3lxTE8wV3RQaXVoaVVUSG1QUEM5RFBpbDRPYmsyS3pNUnhWZG9HbmtNeW1HSHJ1TDlmdE44aDY4bEp3QTlDdENvUkU1TnVUOUsybGlhaWtHNzNYV1kxRzBxLWdxUlRYUUVVSTY3eXlkNEw0RDZtTWdaNnd4Qw?oc=5",
-      "source": "스포츠조선",
-      "publishedAt": "2026-11-05T14:35:57+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "6b2a1c0a9e7b82cf",
-      "title": "신세계면세점, 명동점 웰니스존 확대…건기식·저당 디저트 강화",
-      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE5WcTZuYVc2R0x5RnhTanlMaEVpRjRjemk0Tk5kcnNWSnJHaWJ4VjFfTThlRkhHSzZ2M2R1RmhJNEt1UnlaMm5sYnhoMlFFQmJJTWF3VDdEMG9Wd9IBWEFVX3lxTE9UY3JnTV9vSUV1V3FtS0g4YmdCV1lzVjJqY0xWUVVwWmVmRlVPSXdWd281Uk91Z1IxUGtKZFBBaUhIV1BYVjg0alIwaFJYWUdDR1ZFUTFGLWM?oc=5",
-      "source": "아주경제",
-      "publishedAt": "2026-11-05T14:13:54+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "6437f480ac2a9c98",
-      "title": "'막장 대가' 임성한 작가 집 2주 합숙한 유튜버…\"영양제 반입금지\" - 머니투데이",
-      "link": "https://news.google.com/rss/articles/CBMigAFBVV95cUxQaXdtbWtKMEx3M21hZ2FxYThyR2ZsaF9JWmstVUNDUFlaNjRKNVhKT0RIZHNFQ19pcG1uMTBNODM5VnRuSTVyZjRHVkhObElmWXNOX0l4UWo3eFFJTERhbGN2Uk5kaFM5OWt5Zmt3VzhraTAwRHUyQnVaamtuRDI3etIBhgFBVV95cUxNT0RVaDJzaUU1YUpQcFJvUUwycDFLRWhjTTBMRXdEenZzbkR3dUhNTGdweDVoeG16d2xsdEx0VGN0eVk5VTVzUzZUTHFFdFFiOE11Y3FOZ3FzMGRTQVV6ekpudmV0ZWNkTG1tUXlUV3VZZFRzdU1VZzE3NmtRUTYxbHZfSTkyZw?oc=5",
-      "source": "머니투데이",
-      "publishedAt": "2026-11-05T13:53:21+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
       "provider": "google"
     }
   ]
