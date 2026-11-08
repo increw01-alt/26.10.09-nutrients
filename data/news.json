@@ -2,7 +2,7 @@
   "_meta": {
     "source": "live",
     "sourceLabel": "구글 뉴스 RSS",
-    "updatedAt": "2026-11-08T06:44:58+09:00",
+    "updatedAt": "2026-11-09T06:58:52+09:00",
     "queries": [
       "건강기능식품",
       "영양제",
@@ -14,6 +14,28 @@
     "total": 60
   },
   "items": [
+    {
+      "id": "7b808a56963c1a2f",
+      "title": "건기식 들고 “나도 먹는 중, 녹내장 치료된다” 전한길…불법 광고 혐의로도 송치",
+      "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE1TY0JpbXZUN2cxMnpmNXFVOVdRUmUyQ3hwRmJQLThLcy1tRklSSkhsaXBnMlRSS3JwbnZkNlJvLUlObjZXM1lkcHYtYXFueWdQOVHSAVNBVV95cUxPQ0ZLdWlfVE13TnJNaXRZT1ZIeHhlTTlTbmhoYTZxcEU1QzlQbF9hZS1IQ0JucUgwNnhJMnFtTFBFMEVrbE5hd2hwQWdNRlB2V0tCQQ?oc=5",
+      "source": "서울경제",
+      "publishedAt": "2026-11-08T12:49:57+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "eb1d559474084696",
+      "title": "닥터루템, '이시형 박사의 인생 마그네슘 영양제' 판매 500만 병…유통 채널 확대",
+      "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTE1uaXlINVhuNTJJSWY3VXBYbXBNOU1GZF9yZERsVkJxbEJqVzcxa2FmRFloU3JMUFRyRmpqUmRGYzVqTmQ3SkNMLUFCOU1RNzVHMkNIeUstdU1BU2FGRDRmZFVIR3lqdVRDcGVGazVB?oc=5",
+      "source": "국제뉴스",
+      "publishedAt": "2026-11-08T09:00:00+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
     {
       "id": "dd8f3f3efce6877f",
       "title": "“아플까봐 먹어요”…6조 영양제 시장 불안이 키웠다",
@@ -122,6 +144,17 @@
       "summary": "",
       "category": "news",
       "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "62d94addf214f14b",
+      "title": "정관장 ‘GLPro 코어’ 장관상…혈당 건기식 기술력 인정",
+      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTFBRZ0xKbGZGMl8yYnk4OHhoSFpCTGRka2s0eWpoLUlBN19iZ3duZ0xjM2RmeUhSVG44bnk1cGNqclhjOVEtVkNycmg2MlJ0b1ZKMmwyRlZjZXd6Njk1M3FwSUdLcXE?oc=5",
+      "source": "서울경제TV",
+      "publishedAt": "2026-11-06T18:56:02+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
       "provider": "google"
     },
     {
@@ -262,6 +295,17 @@
       "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE1JckFNMk03ejlsWmFBcXBHeDNhdDhHMm1hTFN3dmpxeVJYOVRWMENfcGp1ckRvSjd5c3ZhQTFRbkN4VnRjOWRPNzR3Y3pxYldXemg4V3oxRFdnemJSVTgtUHRTejRTSlRySUZoMw?oc=5",
       "source": "약사공론",
       "publishedAt": "2026-11-06T14:27:20+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "bf1e592bc469e2de",
+      "title": "이너뷰티 격전지 된 유통업계, 편의점·홈쇼핑 가세",
+      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE1ac2cwTGF6ZDgtY1FDbEhTNm9LQm5CS0xLOEhRZW9TeHMweWVxT3BncVBtcXBPN3NmeFRxU19SUEctS29Yems1MkxhcnlUZ0hhMEZCdWdaZDMyVHlBSHNyLWtjWnctQWRXc2xZ?oc=5",
+      "source": "https://www.kmjournal.net/",
+      "publishedAt": "2026-11-06T13:53:52+09:00",
       "summary": "",
       "category": "news",
       "query": "건강기능식품",
@@ -625,50 +669,6 @@
       "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE0tdjl3UEhfNjdMSlZYWkR1Ylg5bGdXU0kxWVc3bThDSTlYUm1VY1RBbk5hTnM5T2JuU05YN0xmVEtZQjdMcHgzY3IzU2dXeXdtcm12VmMwQWxHdjZwVEhTVzYxdDdFQlU4NzV2R9IBcEFVX3lxTFBnUWxLNDZrNkFVWVpnTTdBd2tGNm90RFVMXzhIYnEycUNnSmU1S1ZqMUVNQVp6Vk9JN2ZIX2VDeUd2ODZRQVp4MnhPRlp0LVpYd3U2Nlh0MGxaYXlTN3o5RnM3TUdvdENlcGRCLWd6Z2Y?oc=5",
       "source": "글로벌경제신문",
       "publishedAt": "2026-11-05T17:36:33+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "94d782559c977554",
-      "title": "유한양행, 관절 건강식품 ‘콘드로이친1200 골드스틱’ 출시…강황 더하고 섭취 편의성 높여",
-      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE1hU2NneHY1cTQwTHMyU1F0SkE4TjJrVlBSeEV4OVFKa0hBZXh2ZmxaTUtDWUJKSWp1b1ZfQ2NjSlYzN3YxNXA1WXVsNkxrTzJMNGFrMmsxb3hPMHZGekowUHlOV2hyZ2lnWTVRSw?oc=5",
-      "source": "나눔경제뉴스",
-      "publishedAt": "2026-11-05T17:21:33+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "54fe05146f6c6b48",
-      "title": "건강관리가 대세…신세계면세점, 명동점 웰니스존 강화",
-      "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE5CNHRiT2QyVU14UWRNeC1kNVNZOVlvTkVCRTFvRmtUcURBcE8xYXBIMmFkVFdDeFNHcmlzMFBzRTQ3ZTlaWU9NZWpHMXpuQmx1WHRRZWFlTXdMcXgz?oc=5",
-      "source": "세계비즈",
-      "publishedAt": "2026-11-05T17:05:39+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "4aaad4ee455f52c8",
-      "title": "신세계면세점, 명동점 웰니스 상품 확대…신규 브랜드 14개 입점",
-      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE90eDhGamJUUkxzaDE3NHhqTzVaVGtaenBOZXVJTk1fZXBRczU5Yk5DMmlHM043U285S3RrMkVkZklyc28yNDRCeDZma1pySEVWbHVlUjAzdzlTbEVtVktjRlpxMmxTMmlmeVFJdQ?oc=5",
-      "source": "미래경제",
-      "publishedAt": "2026-11-05T16:28:37+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "209899370a289a4d",
-      "title": "신세계면세점, 명동점 웰니스존 확대 개편",
-      "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTFBSSk1uVUdZZGhFTHpNUDNuVlRvaVBjeVREMjRKQWZ6aGRQbEl0SllESUFTcXlGMjFTZHFPaXB1Q2QySm5xMGR4NUFQTHFWTGhac3Y0NlkwN0VNcGZhbW40OUx2d0xacnlMLVIxcWVvRXBsTWvSAXdBVV95cUxQcGlhMkl6TF9SVm9yNzdNY2F1cERJdUJTXzc5N0pmekNoOG5uNDA3V3ViY1Vxc3c4djQ1dUpCZzNyRUtIaEdEZWtYRHFOajF2TGRVRHRGcTJDbHdRSENRSzIxRlR5WXRjWFJWb0lPcFVxSlpYc2F2cw?oc=5",
-      "source": "핀포인트뉴스",
-      "publishedAt": "2026-11-05T16:27:46+09:00",
       "summary": "",
       "category": "news",
       "query": "건강기능식품",
