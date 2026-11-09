@@ -28,7 +28,8 @@ def known_ids(root: Path = ROOT) -> set[str]:
 def convert_one(src: Path, dst: Path, size: int = 640, quality: int = 80) -> tuple[int, int]:
     """src 를 정사각형 size×size WebP 로 저장하고 원본 크기(w, h)를 돌려준다."""
     from PIL import Image
-    im = Image.open(src).convert("RGB")
+    with Image.open(src) as raw:   # 파일 핸들을 바로 닫는다(Windows 에서 원본 잠김 방지)
+        im = raw.convert("RGB")
     w, h = im.size
     s = min(w, h)
     left, top = (w - s) // 2, (h - s) // 2

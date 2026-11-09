@@ -1023,6 +1023,19 @@ class PhotoCardTests(unittest.TestCase):
             B.validate_photos(bad, self.ids)
         self.assertTrue(any(it.get("scope") == "individual" for it in self.data["items"]))   # 일부 개별인정 원료만 해당하는 성분은 표시
 
+    def test_validate_photos_treats_null_values_as_missing(self):
+        """null 항목·null 값(id·subject·claim)은 AttributeError 가 아니라 분명한 ValueError 로 실패해야 한다."""
+        import copy
+        for mutate in (
+            lambda d: d["items"].__setitem__(0, None),
+            lambda d: d["items"][0].__setitem__("id", None),
+            lambda d: d["items"][0].__setitem__("subject", None),
+            lambda d: d["items"][0].__setitem__("claim", None),
+        ):
+            bad = copy.deepcopy(self.data); mutate(bad)
+            with self.assertRaises(ValueError):
+                B.validate_photos(bad, self.ids)
+
     def test_prepare_photos_falls_back_to_default(self):
         import tempfile
         with tempfile.TemporaryDirectory() as d:

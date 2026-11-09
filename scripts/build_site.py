@@ -1190,15 +1190,16 @@ def validate_photos(data: dict, valid_ids: set[str]) -> None:
         raise ValueError("data/ingredient-photos.json: default.subject 가 없습니다")
     seen: set[str] = set()
     for i, it in enumerate(data.get("items") or []):
-        iid = str((it or {}).get("id", ""))
+        it = it or {}   # null 항목·null 값은 빈 값으로 보고 아래 검사에서 분명한 메시지로 실패시킨다
+        iid = str(it.get("id") or "")
         if iid not in valid_ids:
             raise ValueError(f"data/ingredient-photos.json[{i}]: 모르는 성분 id '{iid}'")
         if iid in seen:
             raise ValueError(f"data/ingredient-photos.json[{i}]: 중복 id '{iid}'")
         seen.add(iid)
-        if not str(it.get("subject", "")).strip():
+        if not str(it.get("subject") or "").strip():
             raise ValueError(f"data/ingredient-photos.json[{i}] {iid}: subject 가 비어 있습니다")
-        claim = str(it.get("claim", "")).strip()
+        claim = str(it.get("claim") or "").strip()
         if not 1 <= len(claim) <= PHOTO_CLAIM_MAX:
             raise ValueError(f"data/ingredient-photos.json[{i}] {iid}: claim 은 1~{PHOTO_CLAIM_MAX}자여야 합니다: {claim}")
         for w in PHOTO_FORBIDDEN:
