@@ -2,7 +2,7 @@
   "_meta": {
     "source": "live",
     "sourceLabel": "구글 뉴스 RSS",
-    "updatedAt": "2026-11-14T08:29:36+09:00",
+    "updatedAt": "2026-11-15T07:18:34+09:00",
     "queries": [
       "건강기능식품",
       "영양제",
@@ -14,6 +14,61 @@
     "total": 60
   },
   "items": [
+    {
+      "id": "458a3341a2240de0",
+      "title": "광명시, 건강기능식품 판매업소 현장 지도 점검 실시",
+      "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE84dzh6MVdPY0k1Rk00M3hQUmlvQVFObTNqNVBjUWN1RWtzUktmX2pvejRzc2VOanljUHBRcXRqd2x1SU9acnJUZFIxS2x3Sk9hRW1IOTdtc0d5ckoxTnZyVW1nVmMyYjdo?oc=5",
+      "source": "광교신문",
+      "publishedAt": "2026-11-15T01:49:30+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "5fd77fdd8d942bf2",
+      "title": "2026 직장인 영양제 가성비 추천 BEST 5 비교 : 건강",
+      "link": "https://news.google.com/rss/articles/CBMiS0FVX3lxTE1VZFBnbWJjTGtBVGdVdFpvSmtlcHY0SkF4Yk9MUi1oODUxbVZOSnk2ajd5dlAyRy1GdlJINmNGbXdSa0d3NVNSNlQ1Zw?oc=5",
+      "source": "재경일보",
+      "publishedAt": "2026-11-14T19:00:40+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "dce0bfdd3d08450a",
+      "title": "진주 중앙동 봉사단체협의회, 건강기능식품 기탁",
+      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE5lMWw3MERoTm00ZGNLOGRDNDZiaGV3LWRiSUJ4b3NWUjN4SUkxaldUTERRZGU2Vk9YSUU3LUJfbFdzTHNUTUxJZWpodDVTTGVGZ0pLR3FyUnp3OGhNeEZkbFhmMnVZZGVQOHQ4?oc=5",
+      "source": "경남일보",
+      "publishedAt": "2026-11-14T16:00:00+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "a7c2a71eef756adb",
+      "title": "이마트24 감포연동점·본사, 감포읍에 사랑의 영양제 기탁",
+      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE1UalNkZk1BRWxXeFZ2QzhFaC1vd292VWJDVjM1S294emNKTk9zY2pHS3M4VlZiNXN6Y3dnOXdhY0xxc0pTeGFCbnBmekYwSjMteGo1Wm03cElRaUVwM1FwbQ?oc=5",
+      "source": "경주시민신문",
+      "publishedAt": "2026-11-14T13:34:50+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "12832fd9faf8b157",
+      "title": "장흥도서관, 염혜진 약사 초청 건강 인문학 강연",
+      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTFBrS3RVQUpEMkg0UHdmU0FlLTllWXk1Q1BfVTVBYlFNM0VjRm5GSkxSVmVUMEY5V1JFR04wT2MzeHU4NU1GYV93SGo3Sm5BcjNCZTJnV2pVNUlLNUZyenpwaHdydnNvdTJ0ZXc5MA?oc=5",
+      "source": "호남교육신문",
+      "publishedAt": "2026-11-14T10:56:12+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
     {
       "id": "3ce2b3bbd6838de1",
       "title": "광명시, 건강기능식품 판매업소 32곳 현장 점검",
@@ -70,17 +125,6 @@
       "provider": "google"
     },
     {
-      "id": "7c740cda0befdeac",
-      "title": "이마트24 감포연동점·본사, 감포읍에 사랑의 영양제 기탁",
-      "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE90elh2Y0NyU2dGSkc1Q1o2cXpfdXJWdEJmRGhoSEwzVTlVTUF1NzJoNlRaWDZrRTh0Tm9ldGgzaHlxWFRoa2xFYUZFNU1KcTgwbk1IVTdEX3ZtTlVnWkxaT0RWa0hjWVNoZFIyLW5URQ?oc=5",
-      "source": "뉴스파이어",
-      "publishedAt": "2026-11-13T16:34:14+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
       "id": "321fbf89a653909f",
       "title": "광명시, 건강기능식품일반판매업소 32개소 대상 현장 안전관리 점검",
       "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE5VVGFyWXFuVG04cjhRLW90TnREUE5yZWVfdHo0Z3gwY3ZJYlRKemtqWEt6ZjhRNkI0bzlIcFloMHdrUjVBUWxTV25taDJjMzRVYm1OX2JXWlVaRDEzTnJUX09FenE?oc=5",
@@ -92,11 +136,11 @@
       "provider": "google"
     },
     {
-      "id": "1096898dc7b502d7",
-      "title": "광명시, 건강기능식품 판매업소 현장 지도 점검 실시",
-      "link": "https://news.google.com/rss/articles/CBMiYkFVX3lxTFBWb3M2UTBSOFZvOFV0aDBadG92cWVvRzIxdTFUOWFXRGR5QUdKc3F3ZUhLcG5DY0pLTmdNdnZ4LTNIdTlxRkhydnJaWVgtbjlWMWRYZGtOVFpMUHp0YThCaVpB?oc=5",
-      "source": "https://www.timess.co.kr/",
-      "publishedAt": "2026-11-13T15:30:14+09:00",
+      "id": "b7b45c30dd45163c",
+      "title": "유산균부터 기능성 원료까지…건강기능식품주 다시 주목을",
+      "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTE40bVZ5UXFZeEdqdVlpVE1xYjhXcmUybkY1MFdpT1J0NlNNSjRucUNEQVV6OWlHNVFlMVZaRU9Pb2tCMmJuZFN1Vmp5NHluWE5QR3dYdV9aczZPRGctU283UnFMM2xoWEV0Rl9oazlhRGtBMmPSAXdBVV95cUxOQldxS1NjcUJ3RUVLMzVfeXhHLUkxWFlzb1hUbmREWGZ0Z08wa1czWEZ6cnZRR056aWRkWWdDdXY0Q2NadV9kVmRDQW9TVk5PRkotU0lGdTlFd285SDBldm5hLTA2WDJ5RG9yM2VPNnBxcXM2V3NmZw?oc=5",
+      "source": "핀포인트뉴스",
+      "publishedAt": "2026-11-13T15:01:21+09:00",
       "summary": "",
       "category": "news",
       "query": "건강기능식품",
@@ -625,50 +669,6 @@
       "link": "https://news.google.com/rss/articles/CBMiY0FVX3lxTE95TFFUbkszQ3d6bWEtQktUbm9VWkpSVmR4aDB3Z1NndGtVTEN1VEV0b2l5R05CQkJkM2ZEWWxKR1A3VTNPbUhuYnV0b1hONl9qeVM0QVRFbjBSalhVbHd2Um5vQQ?oc=5",
       "source": "MHN스포츠",
       "publishedAt": "2026-11-11T15:39:01+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "0e34c45fdbb50899",
-      "title": "건강기능식품 지재권 허위 표시 597건…\"소멸 특허 최다\"",
-      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTFBJSmZOX1BubkZFMWpSNF9Pc3ZaSGprZ1FwSHA0a1hjd1IxRng4SmFPQXVUak0tZ1Q1a0VGb0N1U0FYd0JGZzRpVTl2SF9RR3ZvUmVYR01LTkFpdldoam1wYtIBeEFVX3lxTE1zUEx3NDdNMFVYOTdnNWVmdmZBZ3l6eTBTaTN6S3FhaWFtT1BqOWYwSWVtN1dUb2dPaHdSVXBqdHR5cWhwTFRhQl8tNzIxaTJSZWxsbUZ2Y09BYUgwdDRYMjZnU2lDMHdLVi1BMGNKT0ZlN1JxZ2ZnTg?oc=5",
-      "source": "뉴시스",
-      "publishedAt": "2026-11-11T15:18:33+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "1059c967565e7fc3",
-      "title": "'편스토랑' 이유리, 절친 박하나에 구두부터 영양제까지 나눔",
-      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE5iUlNyMVBISVJzTHVpc25oZFY3emxxSFJEYVQ5MWZkU250akdNbzRFZDQwa3cxU2xfUndabXhjZzUxNHdHZFlTY1p4b3RDb0VWcXQzeTIyR042WnJlT2pFXw?oc=5",
-      "source": "iMBC 연예",
-      "publishedAt": "2026-11-11T15:00:00+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "0a930513cead52a8",
-      "title": "건강식품 '특허 허위표시' 597건 적발…건강기능식품 최다",
-      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE11SDhGRGQ4dm5zb1RJSl9MTU9xaDF6Z1lTTmdHanFjWWVzQVhzOVA2Y0haUGptNVVTWWlHdXE4Yl9pZ3VJSS16R3ZvMTFzMXhCSm5sa0pJUGlSVTB0SklWc1NSamo3dw?oc=5",
-      "source": "푸드투데이",
-      "publishedAt": "2026-11-11T14:49:03+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "16a74e458a57ade5",
-      "title": "음성군 드림스타트, 아동 영양교육 및 맞춤형 영양제 지원 추진",
-      "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE5BQTNPM0lxNWpxOVVFb24wR1RHZUFYaWRBNENORGxJVndISGFWakY3TmVZZGd1UVVjaU9sMFRsS09oZXZGbG5JWXNETXBTeTdRa2pSWXBjRGQxUGx5WENxLUhYa2RETUlIdHNMMzdiY9IBc0FVX3lxTFBHMlJKTER3dUZ0ZEVBRjhzWlhBdUNEYjdiNXZLVWpnRjRWTHZKcGFxYl9pTmktYnFIYVRJcVdsTzJlTkV3bXpGc0NlX2tmWG9BTjVnQzVMNXpRN2daMzBNZ1Y0VlprckFvNTN4YjRjTjBDeWs?oc=5",
-      "source": "대전일보",
-      "publishedAt": "2026-11-11T14:19:49+09:00",
       "summary": "",
       "category": "news",
       "query": "영양제",
