@@ -2,7 +2,7 @@
   "_meta": {
     "source": "live",
     "sourceLabel": "구글 뉴스 RSS",
-    "updatedAt": "2026-11-15T07:18:34+09:00",
+    "updatedAt": "2026-11-16T07:45:36+09:00",
     "queries": [
       "건강기능식품",
       "영양제",
@@ -14,6 +14,83 @@
     "total": 60
   },
   "items": [
+    {
+      "id": "e48020e49759050f",
+      "title": "재고 보이면 무조건 담자…다이소서 재입고 된 '품절대란템'",
+      "link": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE5jaHNvakhtV0Y3MUxkOGdaeDEwTFk3TUU4TmtQX0g2QVFKMXFOWUV3MWdzc1lPTElNWE5Sb2QtUFR0NWF4NVlMWGc4WGI2Z2o1RmotMW1n?oc=5",
+      "source": "위키트리",
+      "publishedAt": "2026-11-15T20:31:00+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "3f35988a43c15dac",
+      "title": "‘회춘 영양제’ NAD의 배신... “건강하면 굳이 먹을 이유 없어”",
+      "link": "https://news.google.com/rss/articles/CBMigwFBVV95cUxPS0pzR3QydWN1UDlMdjFjdV9pUDFJc2hJc1pmNnFMOWFwcFB0THg2b1lRRXJjRVlQNVNJSWdkYzJEV1EwMkw0eW1YaVYtNlhkOTFkR1Y1TlpwLUR1YTlWRDY3YlViNVdaSFo2Yl9lSmZGTHA1MzZXYXNUNW8xSFpjRVo3WQ?oc=5",
+      "source": "조선일보",
+      "publishedAt": "2026-11-15T17:18:11+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "56035dac056f2e3c",
+      "title": "건기식도 '개인취식' …식품업계, R&D·브랜드로 정조준",
+      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTFBiTVRtbk9LVXJvanBlVXo1OE5mX0txQVhEVjM4SlBJMzZXTkl4ME1lTmdpQmUtMWVlTWRheEhHNE9iMTQ5emJ6aDQ5a1NyT1VzMU9LU01Kamo2VTF0Y0pqNQ?oc=5",
+      "source": "메트로신문",
+      "publishedAt": "2026-11-15T14:06:04+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "4fc957a35ec8d2fc",
+      "title": "눈 영양제 추천 가성비 비교 가이드 2026 : 건강",
+      "link": "https://news.google.com/rss/articles/CBMiS0FVX3lxTE1KNjE2S1g4ZGFURV82TWFnSjBlZUU5UDVlZlYzbHZ6Uksydy1sR3BuaDRlMXdTUmpURk9TeFBUWTQ4RTVzR09yZ0dIdw?oc=5",
+      "source": "재경일보",
+      "publishedAt": "2026-11-15T13:30:34+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "b658cc12efff341e",
+      "title": "서산시 고북면지역사회보장협의체, 지역아동센터 아동 35명에 영양제 전달",
+      "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE5WejJNampqNS1fWktTYW1fOG5jeXNxajBqMjhleU5Wem00Wk8tcjJWN3BCS1NFWE9vSHVfeU91Yzc2WmpIRDVaVzRCZnVkdWR5SnBsb0VfOVozMDdWbzB6MGVvQzJJLV9xNTE4UkM4RdIBc0FVX3lxTE91UFVrcE04S1F5ZklDNHV4Vmg5Z3kxX0VEU2s4bDhVNkdYQ1lNX1Y3VGlIZk03R0p2OG9XV3JZODJxMmhHUXcxMkE4VklXYVBFZUlhVUdHM0pWLVhoTzZNamd5R1E1YUI1QnZmSkZtcFJ6VlE?oc=5",
+      "source": "대전일보",
+      "publishedAt": "2026-11-15T13:29:23+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "aa94f9a9df46ee93",
+      "title": "\"건기식 먹는 집 늘어도\"…가구당 지출은 줄어",
+      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9jcFM4WWJwS1I5czRTMnhlVkFvUFZBeXN6WlZ4QUQ2VHJuOUZFUUo1RzNWVEEtYTNHclZLTHk1R19HRzl2VWV1LTZKblRPWkd2c3lLRFFZcHhZbEt1UmJMUdIBeEFVX3lxTE5hMUtibklEYnJETEloVHFkUDhNZzNxaW0ySzFpZWs3VmM2dUdGQm9sX2hWcVJtTUxRU3Q2V0lENXh6NFM2eXhtODltaGk2cGZBUDRmM2FSenl5NC1JRktFOGxIOENZbnRodnFMSTBOdGtBWVZDVkV4Nw?oc=5",
+      "source": "뉴시스",
+      "publishedAt": "2026-11-15T11:01:00+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "428b76a0e221f98d",
+      "title": "[단독]식약처 \"어린이 섭취 주의\" 경고에도…'3세 영아 두뇌 영양제'로 둔갑 판매 ...",
+      "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTE5HdnhqOXMwbnl3OFJlWDFoWkpYRHJaVDJWbmtYT0RLRWwtZEdnZ1VkSHJNN1FIMDhFb09zc1VEN3B5NHpILWxJVjVUV0xYT2lXWWZPc1Ryd0loUGhTWWc4NkxCWVFxLW1BRXVMd2xn?oc=5",
+      "source": "팜이데일리",
+      "publishedAt": "2026-11-15T08:00:06+09:00",
+      "summary": "",
+      "category": "mfds",
+      "query": "영양제",
+      "provider": "google"
+    },
     {
       "id": "458a3341a2240de0",
       "title": "광명시, 건강기능식품 판매업소 현장 지도 점검 실시",
@@ -119,6 +196,17 @@
       "link": "https://news.google.com/rss/articles/CBMiU0FVX3lxTFBrRjBmcWxjcmtQbHZ5UVU3WnRVc2F6eXpYbE1udHpXN3ZzNXVueWlNWTZMc1p4end3Y0YtMURpT1pRb0NqbHBsZlpzcGRiZ09vSTU0?oc=5",
       "source": "CBN뉴스",
       "publishedAt": "2026-11-13T17:01:06+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "e486b7875d2e7789",
+      "title": "수능 앞두고 판치는 ‘집중력 장사’… 가짜 영양제에 비대면 처방약까지",
+      "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE0tRlo1QTBrZkhNeTBfaHlXOWFwNURLQ014cV90Y0ZuS1YwdEEzR0hHdmdGVnZtX19ueElEcVhtVkNHcjlMbTJRM3lwdVlNbWlldUFETnVKQkV4WGJSYl8wa25XM3ZGcm5i?oc=5",
+      "source": "주간동아",
+      "publishedAt": "2026-11-13T17:00:00+09:00",
       "summary": "",
       "category": "news",
       "query": "영양제",
@@ -583,94 +671,6 @@
       "publishedAt": "2026-11-11T17:29:05+09:00",
       "summary": "",
       "category": "research",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "d44137f81e1d5c6e",
-      "title": "서산시 고북면지역사회보장협의체, 아동 35명에게 영양제 전달",
-      "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTFBuWS1qTmlwSmR6cDdfSDFvdEduOVZEMnBHaFk4cTdsTk9pQjJEVzl4SlQtNmRiRUNUUS1QSllnMjZaSUxUQWI4ckxLUWRuTUxqWVR5Wkc2aloxNWpUN3JYaXlmOTI3VVRzVTZZUERuMzlBcTg?oc=5",
-      "source": "충남일보",
-      "publishedAt": "2026-11-11T17:00:00+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "d1d890873c03d501",
-      "title": "충북약사회, 충북청소년종합진흥원에 청소년 영양제 지원",
-      "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE9UTDlOWXMtZlhSak1VN0xWZnRPNjE0WmxTRGdob1BLZ0Q4R0tsMWJ5LXNVcWN3eHdjODRVWWdHRGtpcW5HekxmUURkbkZteE9PejdmV3FpbEFyaTdNREVzMi02TEg0c3lhS292MHdYR0E?oc=5",
-      "source": "충청일보",
-      "publishedAt": "2026-11-11T16:55:26+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "a5b38d99d7fae527",
-      "title": "서원대, 건강기능식품 제조 현장 교육 강화",
-      "link": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE9MRENybTlxU0VTTVVZRl9UcXZHRGlmeDVSbV83MFN1emx4a2xTMzlLMTFfeXRsWFl2RndsRV9wd3d1QmY2VzdqdWZIdTR2RW5fTlZWbzlIMkZ6NFEzb2hNMHJ3?oc=5",
-      "source": "충북일보",
-      "publishedAt": "2026-11-11T16:39:07+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "41afbbf032219b4a",
-      "title": "JW생활건강, 이마트 초저가 전문 매장 ‘와우샵’에 건강기능식품 6종 입점",
-      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE1Yc0tDOUJnNW5TN0JjbUlnUjNDbzNSc2lxLWJCVGdQRXdtZkl5Y1RFZmxCcTJLNVlBMkRJREZWNkZXbWtTdk80cHRxRm9RSS04R0xTMEh3NENCbXptYUNKV1dzM3Q?oc=5",
-      "source": "뉴스엔뷰",
-      "publishedAt": "2026-11-11T16:04:19+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "1b23f4b760039732",
-      "title": "지금껏 없던 전립선 건강 신소재 적용",
-      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE1LV2FjMERFUzUyZU1zRnprZUY5Zk85dTB2UjFmblJVeDlYY2ZyV2NqbFJBWlRwS3RBUE9YUUNvTEk3dDJvRFFjbkR5dDgxYm1PRVVxUWtvck1rdw?oc=5",
-      "source": "한국경제",
-      "publishedAt": "2026-11-11T15:53:15+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "462e6802e80b36a5",
-      "title": "두드림, 시니어 건강기능식품 ‘활보원’ 출시",
-      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE1jaWdXVUs2bnphdTc2S2owUzAyNUdkUGFFTXVuTnRQU0dtelRfVUhpQmx0eEJYdzdkTElTYzlkeDZtcFpub0RnSVF6S0hQSU9yU2VhTXpfWDNnd0taMWczZW1yeEVPY2RRNXgtZQ?oc=5",
-      "source": "굿모닝경제",
-      "publishedAt": "2026-11-11T15:47:31+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "49e0a6dd6a7a3cc7",
-      "title": "[음성소식]6회 농업인 대회, 900여명 화합 행사 등",
-      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTFBNQ2hOeXhXMmgwVXFCaDhlVFFOVnAtam1scllqTmlHQUh0TDdubEJQVTRBRmVZRTNOUGtOS2dJRHYyclZBLVR6LXVPMk51UGkzR0lTLXo0UzhHakdvRGlMT9IBeEFVX3lxTE5GVllHcmQ4TlpNSWk0Z0dBcnRVdzV1UkxfWk1jdVlxVDdoYXdPSUlVdFR0WE5RUlRzcm5VenQ4OWp6UnlFSzB3djFDdWhCeWhfREJ0QlA3YzdzNTlqaWdZdWtnZjdYRGFfSjc0SzFQQW9NdHZkbWJYVw?oc=5",
-      "source": "뉴시스",
-      "publishedAt": "2026-11-11T15:45:54+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "f4072b00e6a5f787",
-      "title": "이유리, ’10년 인연’ 박하나 위해 하이힐·영양제 나눔… “역시 언니다” (‘편스토랑’)",
-      "link": "https://news.google.com/rss/articles/CBMiY0FVX3lxTE95TFFUbkszQ3d6bWEtQktUbm9VWkpSVmR4aDB3Z1NndGtVTEN1VEV0b2l5R05CQkJkM2ZEWWxKR1A3VTNPbUhuYnV0b1hONl9qeVM0QVRFbjBSalhVbHd2Um5vQQ?oc=5",
-      "source": "MHN스포츠",
-      "publishedAt": "2026-11-11T15:39:01+09:00",
-      "summary": "",
-      "category": "news",
       "query": "영양제",
       "provider": "google"
     }
