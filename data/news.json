@@ -2,7 +2,7 @@
   "_meta": {
     "source": "live",
     "sourceLabel": "구글 뉴스 RSS",
-    "updatedAt": "2026-11-17T10:51:17+09:00",
+    "updatedAt": "2026-11-18T09:55:34+09:00",
     "queries": [
       "건강기능식품",
       "영양제",
@@ -10,10 +10,263 @@
       "비타민 연구",
       "오메가3 유산균"
     ],
-    "errors": 2,
+    "errors": 0,
     "total": 60
   },
   "items": [
+    {
+      "id": "6bd7b1cca3dc4383",
+      "title": "\"AI 활용 식품위해평가\"…식약처, 발전방향 논의",
+      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE43akxsVUh4b2YtQXREeHUzQ0xXVXpYUTB5amVDZEJYSjJKVmxEcWVUbVRYazNMdDNncUc0UDNLbEVuNWlRekhaU2NneUg5RkNMU1BxTDcyTHd2dlZ3NVNDddIBeEFVX3lxTFB2SVdtRDdCS21BYUMxMktyUU05YmZkU1J3UWc3U0Q2a2pkU3RGanc4VzByOGZ1bmJiaVdEd3hGVzVSWGx1ZnlDaUFsSGhVUW5hQkdQWFNSY3FvSkZTUjQzNl9iVGlNQWpBakFpNWdOWXE3eHZRMTZqag?oc=5",
+      "source": "뉴시스",
+      "publishedAt": "2026-11-18T09:14:46+09:00",
+      "summary": "",
+      "category": "mfds",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "fc4c668e38951c56",
+      "title": "바디프랜드 헬스케어, 건강기능식품 6개 제품군 선보여",
+      "link": "https://news.google.com/rss/articles/CBMijAFBVV95cUxPcGVYUlFaSzJIbTZ0ZzU1MHpabEZOZ2JKUWJmNEN0OVdEcktZbTFmeEM1VlYwZHROSXdvR1Z6a3c2MVFVYTJDaG1kUWxfcTBKOUp4bU5Qc1RaVV9sRV9ubml1VDhseHJLeVloN2VzYnlLTUEyRk1PbWVGWmhKZHp5V3hZY2Z1dk52c0s2ONIBoAFBVV95cUxNWkxNOHFuNnhTMWRtT2FPSGJ3cjBkTVZ5X20wOFlzeWxrTDhXU09RaVo5YVFsaTN4NXdqME94ZDcyTUx2MDRWclh1c2RNZFpqcjZGRTl4S2ZpYmFSOF9QanZoOW8wekV4VEJYZmFEX1BWQ0FzXzZCTFZ5WUtjclpqMHFDeTJMRllsOXJLeWhxMndidHVwUnVudm1GdWlPVXpo?oc=5",
+      "source": "Chosunbiz",
+      "publishedAt": "2026-11-18T09:05:05+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "1ddc1e21a2f77d18",
+      "title": "2035년 프리바이오틱스 시장 전망: 장 건강과 면역 지원 수요가 성장 견인 - 뉴스 및 통계",
+      "link": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxQMW8wbnJfQ0w4LV9vNUMwckhidlFVWXhnaHBtYzMtQ0plWktMZ2phZ1p6d3pJVzVqVHZ6aENyX0NMbWxKeW1nOHRiYlNLVzhjOEV3LVJ5MkJKZDl1X1VWblBpeEpOeWYxTFFQVDBlMUJiUDZ3NVVyRkVFeTRPQ3lWY2tuNXIzSHZkeU9oMTQ2WFJpMzVlNVRKMjVXeDg5Z0tSaklTNG96ZENDUkg3VkpKSnBQaEJaNDBUaW9LZ3dqdlAzS2FSVEt2RlF1TmFLWXBKNEVwQW1NSXZiUQ?oc=5",
+      "source": "IndexBox",
+      "publishedAt": "2026-11-18T07:51:05+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "a482e31c7e30dfb1",
+      "title": "서울시약, 한부모가족 복지시설에 건강기능식품 후원",
+      "link": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE9aMWVzbThCb0xydWxrLTdYM1o3QzdjMUxIcXQwZlFfMTlZUm1RVl90cE85SXVFdGJqOGVRaV9qSGRUXzNhVG9jd2t5cG5mRGU2bEFtNVBR?oc=5",
+      "source": "데일리팜",
+      "publishedAt": "2026-11-18T07:46:37+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "31cb7be47b88c4c4",
+      "title": "아주헬스케어, '올키·올키 그로우·올레아' 간판제품으로 시장 확대",
+      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE9MTVo1WFhfZnpHZy1RX3luRUFsNFpONmxmY3JnRkVnZ2Q2aVZySkU3amloSUFUXzZoZ0Z4aVBMemhhVmRJbGMzYkhCMUJRX0ExalI4QnotVkJwcTRpb2VzRlNNLUp3VFJGeHh0eQ?oc=5",
+      "source": "팜뉴스",
+      "publishedAt": "2026-11-18T05:55:00+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "974e705cb9954db1",
+      "title": "햄·소시지 먹고 비타민C 섭취하면 뭐가 좋을까",
+      "link": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE5EdUhaNThNamR0ZGNLWmZlYmxMZ0NzVUowVk5lZTVBZ1dIZXhkMkxNLVJuU0FpNnc5V1BhNXRPY1paNnVTQkNiZFRwZ0NXXy1EWUdPbFVR?oc=5",
+      "source": "지디넷코리아",
+      "publishedAt": "2026-11-18T04:50:33+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "비타민 연구",
+      "provider": "google"
+    },
+    {
+      "id": "ddcf75926acb30f8",
+      "title": "제주남원농협, 고당도감귤 출하농가 대상 작물보호제·영양제 구입비 지원",
+      "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTE1xNUc2X3pBeWU4MGN5TmphbTNsSlJMY0RvNEZpVk5tZTA1T3lWWE9SLWVOYmR3NkFRM2kxRnk0b3BiMVhFS0hqYUIza3VoNW4zUUhibDhHNFQxclNRZEhuM1JXUFMwRmdiaTJoVVdR?oc=5",
+      "source": "지금제주",
+      "publishedAt": "2026-11-17T18:54:25+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "1d70c77ad81406e5",
+      "title": "“수능 하루 앞두고 집중력 높여볼까”…약물 오남용 주의보",
+      "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTE11VVJ5TlYxVTdSWkZ6UzFCQkVSb2FtLWFXNE1xXzJsdC1QMmxOZnEyNzZVNGtqSzJVbm5sS3AxcnI1ektDWW1DRGVoazdBV2NWdmRUNkJXWDFJMGVhdlgwTTFkTGRrWXhiT2QxLTNB?oc=5",
+      "source": "아시아투데이",
+      "publishedAt": "2026-11-17T18:15:05+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "d0495e72c4c7fea0",
+      "title": "\"필요한 영양제만 쏙\"...코웨이라이프솔루션, 시니어 영양관리 지원",
+      "link": "https://news.google.com/rss/articles/CBMidEFVX3lxTE5zOXpEdXhwMmtFYkVrd1hJSmNYeG1aYnhhY2c3U3VLTTVPNVk0VXlUanpab3pPQ1hfdVA3aEhEUFNLaUFRR0FZTTFycjY2VEtYNnJ4eFJrUTV0UWZtMlMzeDJGTERzNVpVQmFNVlVQUEtHckZW?oc=5",
+      "source": "파이낸셜리뷰",
+      "publishedAt": "2026-11-17T16:34:40+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "998af2bde90ff794",
+      "title": "“AI가 매일 필요한 영양제 조합”…코웨이라이프솔루션, 시니어 건강관리 서비스 확대",
+      "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTFB0VnQ0Z2w5a1JWQ3F0ZDBHdVM0TjdhZ2RodHpsemVqQTVTb2FCUzZKMWNxbzNHNm84OHRyYUNSMmpjVm13X2VDQ0RUN2p6a1c2cXVWM29MRjEwckJ5bFY1OW12U0FTVXR00gFsQVVfeXFMUEI2WElZSGN3TDh1bmlaLTNJSFl0cktGdThfNW1JcWpTaGd0TGV6Ylp0bTVaaHhrOXFhSk9kUXZYY0RfS3V4SzNoVXZ2Rjh3NlZSVHhucnlOODRuWWhYRkZSem9sWkQtT2I4ZVRC?oc=5",
+      "source": "더게이트",
+      "publishedAt": "2026-11-17T16:30:00+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "f6c250095d3f5fba",
+      "title": "약은 챙기면서 영양제는 따로 생각하고 있지 않나요",
+      "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE9CN0R3dFJMUjUzVWNjb2d6VlhzRW9MaDMtaTdhX1o0MTZwbDFBc0ttTEFJbzdXdHpxLW5DMGFtM0ZyeGlZNkYtZ1RLTlJ2VmQ5MGUxZ0pSbnZxdjRMVW82QW9sXy12b2VZOFNXaUJlS0Q?oc=5",
+      "source": "충청일보",
+      "publishedAt": "2026-11-17T16:22:56+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "ec2c3cb256d7b302",
+      "title": "\"K-헬스 기능식품 세계에 알린다\" 이룸생활건강, 남성 건강식품 해외시장 공략 추진…마늘 주효 성분 건강식품 '게르만센' 프리미엄 차별화로, 한국형 노하우 전파",
+      "link": "https://news.google.com/rss/articles/CBMieEFVX3lxTE9sWUhUSl85amhqVDBvR1pQUV84dzZkOWkyd2tyNFBXTndEN3pDWE51Sy0tUkxwZl95UTNnak5aNnFacHpGRFp2MDlXUkFxSGF3ZUROcEp4Nmo1djNhZnVzd2JsYl94Z0tJN1hqaXZQUkl1Q3J3UTQ3Mw?oc=5",
+      "source": "스포츠조선",
+      "publishedAt": "2026-11-17T16:22:32+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "a2d56d5446777ab3",
+      "title": "서울시약, 한부모가족복지시설에 건기식 후원",
+      "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE5sVm5yam1xS25udHQ1X3B6cFZfVjNXX2pHbFBXYXBkSjJjbEhkbFBIeUlRcEdOZ2V3VEM4bEN5aS1NQjBROVFsc3BrMU12ak1JMTZuTjJGLUZad0V5UWVkWW5jRWhaN21mZFE?oc=5",
+      "source": "의학신문",
+      "publishedAt": "2026-11-17T16:21:16+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "09da1adbf6eeac40",
+      "title": "코웨이라이프솔루션, 알고케어와 맞손…시니어 맞춤 영양관리 서비스 제공",
+      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE15Mlo4eWRkTXRSTGxLMkFvLUZpUnEtSHV1MU1jN2pzdU1UWW1aOGVNSVhwSGg2ejl6RXAtRWU2cG1wSmZ1Mi1lSzl4TUJyQ3p6aFlETVZHYnVsVGZyejBtSUM5dXhNT1hhb3Vj?oc=5",
+      "source": "서울타임즈뉴스",
+      "publishedAt": "2026-11-17T15:57:42+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "bd50544429526ffb",
+      "title": "‘AI가 영양제 골라준다’…코웨이라이프솔루션, 시니어 건강관리 확대",
+      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE5ETmlkUEVCZXl1bkFqdXVGY1I1YklUcHE3ZHc4OGczYTBRWmY0TnJsNFVMOWVSc1lSRW0wb280a1JTczNWZ0ZmUEJWV0Z1X0lWOWFLVVJWUjNwOUlaaXYwTjNWMkw?oc=5",
+      "source": "인더뉴스",
+      "publishedAt": "2026-11-17T15:54:42+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "e4cbf98c96ad229c",
+      "title": "건강식품·화장품 방문판매의 이면…판매원 10명 중 6명 수당 없어",
+      "link": "https://news.google.com/rss/articles/CBMiU0FVX3lxTE1zbE1PS0dYM2RYSlVmNzMxVGtyUk81X1hkY3VwY2FVNGdjOXdBUGQyRnA0RGFleHp0WkwtV1YxdnR1U2V1ejBzOUc1NF9BenF1MFVV?oc=5",
+      "source": "유스연합",
+      "publishedAt": "2026-11-17T15:19:14+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "68a0160f4f504527",
+      "title": "코웨이라이프솔루션, 알고케어와 제휴…시니어 맞춤형 영양관리 지원",
+      "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE83a19pNU9IRG90LXM1WmNMeHoyZ25SQ2tLUWFDZzdNa0lubUZiamRFbmdhWlVJQ2xDM2FXOG5YVVFFTWhFOUIwWWNVN0xNZE13YmNabEVLSjFCYUF3NE5oNENubENYT3VwOUp6SzBqVQ?oc=5",
+      "source": "이코노미사이언스",
+      "publishedAt": "2026-11-17T15:14:17+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "7ccf0b2e1e610ddd",
+      "title": "코웨이라이프솔루션 멤버십에 AI 영양제 관리 더해",
+      "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTFBMWEdPNVp2TEtyRzhtZ2lhRDRHTW1kbUNRb3hMTEpyc0tVWlRUUVVCTFB0by1vNjZRZ0FFNUpXaUNZWHdwbWVVdGhLM3hyV3ZEN0hfLUFaWXFNN1k0T0pHdjdyWkxVeHp6dXc?oc=5",
+      "source": "컨슈머타임스",
+      "publishedAt": "2026-11-17T14:06:59+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "b3700590ff107c1c",
+      "title": "서울시약, 한부모가정 건강관리 위한 영양제 후원",
+      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE9zaXJneUQ5cnYyWDdoLVJnV2JsMWJ0N2JQWExuWGtCMjlJeUhVX2RtYldFczR1ZFc1S1VUMl9xNElQTEtIWFVwVzBNVXZ4UzY0dVQyaW9mRmZHVXVHOUc1emdLRVpxOFlVTkZtSA?oc=5",
+      "source": "약사공론",
+      "publishedAt": "2026-11-17T13:49:29+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "64cc008870f492fb",
+      "title": "“밥먹고 비타민 C 섭취하면”…위에서 발암 물질 생성 막을 수 있다고?",
+      "link": "https://news.google.com/rss/articles/CBMiQkFVX3lxTFBNcmhnVVR0dkRtNlBLM0FZR2p2VmJtRHQ1bk9zS3A1NWFpUDdIcjRPdnNuTGEwMlN1ZlJNQ1FZbWJqUQ?oc=5",
+      "source": "코메디닷컴",
+      "publishedAt": "2026-11-17T12:02:00+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "비타민 연구",
+      "provider": "google"
+    },
+    {
+      "id": "deeef87b6e6d8beb",
+      "title": "[취재후일담] 건기식을 만병통치약처럼?…과장광고에 칼 빼든 방미심위",
+      "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTE9qc3lmdkNsSlBsTlBoUjJudW9vdTdjM0JWSWRwZU9Kak9QTDNESzJRSE1yYlBpMHYxUy1TeVJlSXpVdzY5eHk1NzhIanV0ZGgzYzVYT2loRFl4cm9DYWUtWFBxZVpNSEZVT0pLZ0F3?oc=5",
+      "source": "아시아투데이",
+      "publishedAt": "2026-11-17T11:39:06+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "23523e6eb77a7e67",
+      "title": "오라틱스 ‘잇몸유산균 오라틱스’, CJ·GS·롯데 등 주요 홈쇼핑 연이은 ‘전체 매진’",
+      "link": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE5qa3QzRHBSSFpMdlMzYWJPU0toQTJReFVQeTJMckU0eUdrSWx0REZRNGtlU0cyV0c1RTNDWmxGMVBLQ09PTG1QbTRsaE5sUjJZZVhBVXl6dThjZ2pBM3lwMlRB?oc=5",
+      "source": "경인뷰",
+      "publishedAt": "2026-11-17T11:38:50+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "a5d5bbc2de17a280",
+      "title": "'불닭' 삼양식품, 건기식 시장 넘본다…소지섭 앞세워 '스핀들' 인지도↑",
+      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE1YZktQQjE1NlZFd21Zb01PSEZLQVpJUTlhbDZsRWF3aG9QekdpVHBuLUxVOEUwdVJkNGpLcXFNQ0xid3d0ZlNQU05URGhFY1hPUWtuX3lSS3k4aS04Z0gwT9IBeEFVX3lxTE9wcThzWkg2bDdmRWpxeGZBQWJpYVVIcWdNZzF4Yndrb0hKM0JLcWlIdGctTHdSdXB4SzgxdC1WM3lpalhWMXhTV2hrVTBMT0l6TFhfOElOcjlzOU90YkNhVjloSXVrZmRVaG1iQThxcS10S3F6UE4tMA?oc=5",
+      "source": "뉴시스",
+      "publishedAt": "2026-11-17T11:07:26+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
     {
       "id": "55e2a4922a4d617b",
       "title": "유한양행, 잇몸 기능성 원료 넣은 '유한잇몸유산균 Q' 출시·유한ESG학술상 시상",
@@ -23,6 +276,17 @@
       "summary": "",
       "category": "news",
       "query": "식약처 건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "6bfcca2c3e04aeef",
+      "title": "서울시약사회, 한부모가족복지시설 '해오름빌'에 건강기능식품 후원",
+      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTFBnUjlBMmJVelZjRGJHdnRzZWpxZlV0ZV9kX0kydWNuakJMckctblFXN3JURnN0QU5XbGRkbHRNN0FsWUJOeEtibDVvY01KM3l6YTZUNzhVSzk3bjlCbTJuS01YR2QyVUwzMEd3?oc=5",
+      "source": "한국의약통신",
+      "publishedAt": "2026-11-17T09:59:32+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
       "provider": "google"
     },
     {
@@ -48,6 +312,17 @@
       "provider": "google"
     },
     {
+      "id": "a920ec3eca7f2147",
+      "title": "푸드올로지, 美 울타 뷰티 건기식 첫 입점…304개 매장 진출",
+      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE1JT09sOUFsbWhSMlhJZm14SDlYUEc3Z04tMUdWOHJtalFQNk1GYjNQQWxsbW5QdERoSXZncFI2UzJPT3RndnpibE9Bc2toUGxWY01KTVF3OVlQdE5VQ2hzNk81SXlWdw?oc=5",
+      "source": "푸드투데이",
+      "publishedAt": "2026-11-17T08:35:50+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
       "id": "89e6523a9e490ddd",
       "title": "유한양행, 식약처 인정 잇몸유산균 '유한잇몸유산균 Q' 출시",
       "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE5XR0J4enJrRzVpYTEwXzNQbVQ0NEl3Y0dnOEk5VE9sMFFUZWhGVlp1cTdxUWtKcmYyY3E4VHA0OVpwYTVabGktQ1BrNXZHaXVzSTR4SC0zdWZGYXJ2?oc=5",
@@ -66,7 +341,29 @@
       "publishedAt": "2026-11-17T08:18:56+09:00",
       "summary": "",
       "category": "news",
-      "query": "식약처 건강기능식품",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "1aa42fb75623d182",
+      "title": "유한양행, 국내 첫 개별인정형 잇몸유산균 출시…잇몸 염증·구취 관리 시장 공략",
+      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTFBOZVpGY3JNbFJGT1pfUi1NZDZvODh0cDg2dUVNbDdid1QwRVFkY1NZRnZFeVNWOF84TzFhcjFBeVN5NXl5SnUtRVRMQXlfRTBROHBQNV8xN3g3S0dNNjRZd1UzYk8yRXlfOVU0Wg?oc=5",
+      "source": "나눔경제뉴스",
+      "publishedAt": "2026-11-17T07:34:57+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "654456fa7cb84add",
+      "title": "비타민 B12, 희귀 유전질환 치료의 새로운 가능성",
+      "link": "https://news.google.com/rss/articles/CBMijAFBVV95cUxQWEdKZ25pdURYeUJHY0lFbE5Mc3hkendCbUg2b1VQNmh1alQ4UlpjcGEzTzZDTlBpeGNsYWxrcFZHOHZXSzRnRmlITll6WHhTXzFTN2p5ZHk3SWNtSENjeTJ3NnZVQ3dNUlZmaW1nczM5bHdvNFI0LTlqVnNPcktBVzdQMmRBeXhXR1lXSNIBjwFBVV95cUxPR0RRSXp1NnhZLXNMdk1JbDNraEhiYjdGWVRSYkZHTm1oeUxmTF9PREZJR0h6UGNKTFU3VHhQOUZxcU4taGVuTTM3b2U4cDh4azNGalF6bl9Tbm53N29EellLWmtUZWo5bUlyWHpadlJxS1ZIY2pYYmV5aFd6dGJlNTY0dTVVQlNvV01GU09Ccw?oc=5",
+      "source": "VOA 한국어 홈페이지",
+      "publishedAt": "2026-11-17T04:34:05+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "비타민 연구",
       "provider": "google"
     },
     {
@@ -92,6 +389,17 @@
       "provider": "google"
     },
     {
+      "id": "4a827d036d24225f",
+      "title": "한예총, 저소득 어르신에 김장김치 100박스·건강기능식품 170여 점 전달",
+      "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTFBqTG1hY3lNb1FrMDR0MjJGV2ZlVS02d3BIdVpHclh4S25PSFQ1TmtfbHlpU0FpWGJBOFlRUmJER0xJdXJXRDVUa2Z5aGMyMWNXVEF3US1qUHRnY1JQWko2eFZlczA2UW5paXRZVFlB?oc=5",
+      "source": "하나뉴스",
+      "publishedAt": "2026-11-16T18:40:12+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
       "id": "0e3cab27df27dcfc",
       "title": "\"비타민C 먹지 마세요\"…서울대 교수가 짚은 '영양제 시장'의 허구",
       "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE1GYnF0bWZDQ0VxQk01WkFsZTFjbERWdlRHX0QxVW9WUHJWbkowdEhoaG1Yb1BLQmRvUUNIWl9SMEViYVE3dnU3TmhtRlBfUlJRWl9EOTBRbFhicHBwVkQ0R9IBeEFVX3lxTE9Fb1QtR0JnVjNQMkEzenlDeldBTEs0ZHM0dnlldFI1Y2d5RlhFZzBmMWNlb1RoWFRNMmRRbGFkMlFXLXZpVTZ5Z01UQ21hU1lRX1VRMVFTaVpCYkxicm8xa1l5MnZBU0RfVGN4QWh0VTVHX0xRMVhKRA?oc=5",
@@ -110,7 +418,18 @@
       "publishedAt": "2026-11-16T17:55:27+09:00",
       "summary": "",
       "category": "news",
-      "query": "식약처 건강기능식품",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "b8317520ecf143a3",
+      "title": "유한양행, 잇몸 건강 기능성 유산균 '유한잇몸유산균 Q' 출시",
+      "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE05MU8tVkNNRG1VTFhQUmVyenktT20yc1JmNUtCYlhFYmZLUkRuSHYwWG9nSF9JdzN0cENlMkZqbEt2VzE3ZGZSbmZuMVZDWk5fQzlpVWFuV19nYWx1YkZjbUtUZEJjb1N5YzRPaEJERQ?oc=5",
+      "source": "스마트경제",
+      "publishedAt": "2026-11-16T17:46:12+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
       "provider": "google"
     },
     {
@@ -121,7 +440,7 @@
       "publishedAt": "2026-11-16T17:40:41+09:00",
       "summary": "",
       "category": "news",
-      "query": "식약처 건강기능식품",
+      "query": "건강기능식품",
       "provider": "google"
     },
     {
@@ -143,7 +462,7 @@
       "publishedAt": "2026-11-16T17:15:58+09:00",
       "summary": "",
       "category": "news",
-      "query": "식약처 건강기능식품",
+      "query": "건강기능식품",
       "provider": "google"
     },
     {
@@ -154,7 +473,7 @@
       "publishedAt": "2026-11-16T17:12:27+09:00",
       "summary": "",
       "category": "news",
-      "query": "식약처 건강기능식품",
+      "query": "건강기능식품",
       "provider": "google"
     },
     {
@@ -350,325 +669,6 @@
       "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTFBrS3RVQUpEMkg0UHdmU0FlLTllWXk1Q1BfVTVBYlFNM0VjRm5GSkxSVmVUMEY5V1JFR04wT2MzeHU4NU1GYV93SGo3Sm5BcjNCZTJnV2pVNUlLNUZyenpwaHdydnNvdTJ0ZXc5MA?oc=5",
       "source": "호남교육신문",
       "publishedAt": "2026-11-14T10:56:12+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "3ce2b3bbd6838de1",
-      "title": "광명시, 건강기능식품 판매업소 32곳 현장 점검",
-      "link": "https://news.google.com/rss/articles/CBMickFVX3lxTFBxbzBlMkpkaHU1QzNqaG1uYWtkajdnOGZUYWRfYU9MVllXdk9DTWplQ1NWb0JjU0tBaUVZUzdGbmVTZ0ZTUFdva2F5N05zdnpxU2p1N0s0bDIzcV83V29Cc0xFemx6eDJJZDh5RVZsYWV6Zw?oc=5",
-      "source": "웹이코노미",
-      "publishedAt": "2026-11-13T19:10:45+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "ec365ab0eb20893a",
-      "title": "명예 되찾자마자 날벼락..法 \"김수현, 광고주 11억 배상\" 판단 [Oh!쎈 이슈]",
-      "link": "https://news.google.com/rss/articles/CBMijwFBVV95cUxNWTE5YjN2LXhtMTRmeWFDcW5vcVRvSXEwcVk5MlRQeDh1MTlpWEY4Rnkxb25pSmhLZkVWZmRwRGJHT3loS2hIWlFDNEtSZ1NOVEk2XzV3M0xjRFU0UFlFT1VCZ3huVFlNblBwVmI0YnpHd2VCa0lXZDJBT1c1WFU4UmJFSFFiYVFqTjNPMnQwOA?oc=5",
-      "source": "조선일보",
-      "publishedAt": "2026-11-13T18:31:00+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "b0df46175cdf1de9",
-      "title": "영양제 아무때나 먹지 마세요... 시간표 잘 맞추면 같은 돈으로 흡수율 확 높일 수 있습니다",
-      "link": "https://news.google.com/rss/articles/CBMiTkFVX3lxTE9taURxWjJrVXYzb054MlV3bmtFZWQ0cFZRUEo1bXVoY1ZDVGs5VzhqMzN4WmdHTWdYWG5rMlFaTG9nMVZhcmdDbVdaeS1Udw?oc=5",
-      "source": "인사이트",
-      "publishedAt": "2026-11-13T17:53:21+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "992744ac890cf5cc",
-      "title": "김수현, 건강기능식품 업체에 11억 6000만원 배상 판결…39억 손배소 일부 패소",
-      "link": "https://news.google.com/rss/articles/CBMickFVX3lxTE44T1M4M21yWlV6RWJOTzhxSVhQV3ZtaWg1b18yVkFPWHZLeEJscWxnMDdGcWFPY2NPNE8tZE1xbHBlcW1GaXZrQTBFbWloTlBDUHYyOTEzMURIdlpMWlBEZVNzMzRUYUVtT0lha3RhNl93dw?oc=5",
-      "source": "톱스타뉴스",
-      "publishedAt": "2026-11-13T17:02:52+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "a055b39cd26e4a0f",
-      "title": "경주시 감포읍, 이마트24 감포연동점. 본사 `사랑의 영양제` 기탁",
-      "link": "https://news.google.com/rss/articles/CBMiU0FVX3lxTFBrRjBmcWxjcmtQbHZ5UVU3WnRVc2F6eXpYbE1udHpXN3ZzNXVueWlNWTZMc1p4end3Y0YtMURpT1pRb0NqbHBsZlpzcGRiZ09vSTU0?oc=5",
-      "source": "CBN뉴스",
-      "publishedAt": "2026-11-13T17:01:06+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "e486b7875d2e7789",
-      "title": "수능 앞두고 판치는 ‘집중력 장사’… 가짜 영양제에 비대면 처방약까지",
-      "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE0tRlo1QTBrZkhNeTBfaHlXOWFwNURLQ014cV90Y0ZuS1YwdEEzR0hHdmdGVnZtX19ueElEcVhtVkNHcjlMbTJRM3lwdVlNbWlldUFETnVKQkV4WGJSYl8wa25XM3ZGcm5i?oc=5",
-      "source": "주간동아",
-      "publishedAt": "2026-11-13T17:00:00+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "321fbf89a653909f",
-      "title": "광명시, 건강기능식품일반판매업소 32개소 대상 현장 안전관리 점검",
-      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE5VVGFyWXFuVG04cjhRLW90TnREUE5yZWVfdHo0Z3gwY3ZJYlRKemtqWEt6ZjhRNkI0bzlIcFloMHdrUjVBUWxTV25taDJjMzRVYm1OX2JXWlVaRDEzTnJUX09FenE?oc=5",
-      "source": "매일일보",
-      "publishedAt": "2026-11-13T16:02:02+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "b7b45c30dd45163c",
-      "title": "유산균부터 기능성 원료까지…건강기능식품주 다시 주목을",
-      "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTE40bVZ5UXFZeEdqdVlpVE1xYjhXcmUybkY1MFdpT1J0NlNNSjRucUNEQVV6OWlHNVFlMVZaRU9Pb2tCMmJuZFN1Vmp5NHluWE5QR3dYdV9aczZPRGctU283UnFMM2xoWEV0Rl9oazlhRGtBMmPSAXdBVV95cUxOQldxS1NjcUJ3RUVLMzVfeXhHLUkxWFlzb1hUbmREWGZ0Z08wa1czWEZ6cnZRR056aWRkWWdDdXY0Q2NadV9kVmRDQW9TVk5PRkotU0lGdTlFd285SDBldm5hLTA2WDJ5RG9yM2VPNnBxcXM2V3NmZw?oc=5",
-      "source": "핀포인트뉴스",
-      "publishedAt": "2026-11-13T15:01:21+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "d0f9624b7cc509b7",
-      "title": "유어벳, 홉 유래 CBD 담은 반려견 기관지 영양제 ‘이지 브레스 헬퍼’ 출시",
-      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTFBjYW1KdTJLN0dKa2dxU3BiRDZYcVUwWWI4LUFDUG9JOTZxcG1MY3g0Zm1Nak5URE5NUlcwdm1fSWpEQ1ktSzZlNmVIYmhCOXlUb1lUZDdXSVdvZkJ5clB1SFR5V1BGVllBVWk5cA?oc=5",
-      "source": "바이오타임즈",
-      "publishedAt": "2026-11-13T14:52:09+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "7d40a7bc1499f25b",
-      "title": "려원담, ‘2026 고객감동 우수브랜드 대상’ 건강기능식품 부문 1위 수상",
-      "link": "https://news.google.com/rss/articles/CBMidkFVX3lxTE8yLUQ5RWVjbUpIYWEtWjFyYm1UejBOOF9VWVlfdU45ZHd1TlRRa0dBNzNOR1JmZXVKaFFXZnRBWXRQTG84cW5PQ2NqaldNRWQxYlN4Z1NqaEZKRjN0ZHFXblRNZXltZU94SG1NYVRIU0Z6VkZmLVHSAWZBVV95cUxPNjNRYWhPWTVuNEdpdW05bFhRSG1QWEdvNTJLbkc4aTZ5Rm5nWVJDQzFEOEhRMlpmNHgzRWlCaUlFNlE4YzNnYUlVeXlNQVhGNkFMcDZuVUM0XzNlYjFiZ09IOThYMFE?oc=5",
-      "source": "동아일보",
-      "publishedAt": "2026-11-13T14:36:00+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "99247ceabac1ee0a",
-      "title": "닥터에잇, ‘2026 올해의 우수브랜드 대상’ 건강기능식품 부문 5년 연속 1위",
-      "link": "https://news.google.com/rss/articles/CBMidkFVX3lxTE96ZmdWVTA0bDFhUlBBUHhqZ3lhaDJiRlJ5VThQRnljSm85TjVxazVQU24xaVdEM1BXSDM3YjlPNEZfbTN5RjBscmRHZzd4VUZjNW5OYVJ6U19SaUhCZUdsMVRWWVFLM3FwVzNOelpGSmd5MC1QdEHSAWZBVV95cUxQNnUtaExpWGxfeDZyeHo2X2N2UlRkSldVb2JOWXpsVm1qOWJmSDBaRWlOVzRhZHpCamxvS1VTNkNKUi1TcndEV0hJRk05SWE2aFZVbzE0YVJTMUJ2SmFKWGFmUDhtZkE?oc=5",
-      "source": "동아일보",
-      "publishedAt": "2026-11-13T14:35:00+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "336c95c731bb0bb3",
-      "title": "오라틱스, ‘잇몸유산균 오라틱스’로 2026 한국식품연구원 식품기술대상 금상 수상",
-      "link": "https://news.google.com/rss/articles/CBMixgFBVV95cUxOYVVnWmVydzJtOVlXTmRiOEdDLXh3WTJmUXZSTTFnRFlGYXNCOUdua0s1YWE5ZHRBVUlDMmNUR1RWMk1VdVpKcGhBeXdvVUdkUVZzNnJTQnRHeWxFdFVuVmlHQjRiVFZ0RGp1UUxqLWFSMXZFSVVpTjk1S3RWTGJZcHhwQllFZGJCZEhJVy13VnNUX19JM2ZIMzl4MW9aNzNTME02XzFqQXhsWDNmUG9ablptVUhvb19ZQVgxSmRjUk1DTHM2UWc?oc=5",
-      "source": "SNS 타임즈",
-      "publishedAt": "2026-11-13T14:02:47+09:00",
-      "summary": "",
-      "category": "research",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "996bebe37fd039f9",
-      "title": "공복에 ‘이 영양제’ 많이 먹었더니…콩팥, 심장, 간 망가질 수도",
-      "link": "https://news.google.com/rss/articles/CBMiQkFVX3lxTFBzOEVBWDJpV2ZCQmlodzVRRnZQdnNTVWNHMTJ6cEd3czQzU3VEdkR0OHQxWDZmYjViTVo4NVhJRVgzZw?oc=5",
-      "source": "코메디닷컴",
-      "publishedAt": "2026-11-13T14:01:00+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "3f59f9a7cda75f2a",
-      "title": "내츄럴엔도텍, 갱년기 원료 '백수오등복합추출물' 남아공 첫 진출",
-      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE9QT2JuNlZMYm5yMnc3NWxzYjRZaTZyU2pzVktKZUt0Q2JxYUVmTWU3WVllUTd2d29QQm5td0ExX0J4MHU3SHZwekdZeXBIeG1ZbzUta3FvbF80TjBOdlMtVUFXblJaQQ?oc=5",
-      "source": "푸드투데이",
-      "publishedAt": "2026-11-13T11:58:18+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "식약처 건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "fde53bf28048bb59",
-      "title": "하얀 당근 ‘파스닙’, 장-간 건강 기능성 식품 소재 주목",
-      "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE81S0NVODNtbzh1dUJBTTJfMUlQLV8xTk83Sk81RXpDWGktNXpuakZOQnZnN1VHQjgzNi1jSThaU0RHX3RWQ1Y5RTlyd083Mk03WXBiZ2lHaHhEZ0o4aWd5WEd3djlEamZERUJ1Z0RBMA?oc=5",
-      "source": "식품음료신문",
-      "publishedAt": "2026-11-13T10:38:28+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "87dab69b810333a3",
-      "title": "내츄럴엔도텍 'EstroG-100®', 남아공 첫 적용 제품 출시… 아프리카 시장 진출 본격화",
-      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE10amtFZkduWl9Hanc0VERyLXRQcFdpdDZEc0tWemdwUEZsSnZmNG9XMUlMY1VWd0lsX3B0dnNTRE5PRTdoSHQ2cHUzeEpVcUxRdTZuUXoxU1BTZjFqVkI4SGljM1RsLThzVy01ZQ?oc=5",
-      "source": "푸드아이콘",
-      "publishedAt": "2026-11-13T10:27:45+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "aa34f0c55f489452",
-      "title": "에쓰씨엔지니어링, '스위치온' 소비자브랜드대상 수상",
-      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9ObURzXzhiMU5TN0hMempGUWVtbzFPekJYNW01QV9BSUxSMDU0U2QxbkVjZFdOTWdyX1d2eG9qaUpHMWpGeTVTakVLVVAwS3R1bnRsU2NrTWw2dUtrUmZDa9IBeEFVX3lxTE9CdWZVX0oxOVIwWExrMkpNWGE3YjNNWkZJMkZsVXVwSnh1UlFZY045RmpaYkE0TzFGcjNXOUN6bDh6WFpxdFVndEljWS1CVnhoclV6bzBJWkdEVldFMGxNay1ZN0toTHFZYkhqZWxHR3RxOTlDc2FEVw?oc=5",
-      "source": "뉴시스",
-      "publishedAt": "2026-11-13T09:40:10+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "식약처 건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "55576a385d45ff14",
-      "title": "건기식 구매, 약국 비중 4.5%로 회복",
-      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE9KcmxTbDNqWVpMMGh5SGZ4elBKX29zSUtqYm1ZNlEtcEpxdUY3WmtPYWp3Q1V2OXhBZklhTUZOazlMNjV3NG0wTno2VzJ2aFQ4bmxseE92M2w5cGRzRHZhNmh5YmdINVc4YWtCeg?oc=5",
-      "source": "약사공론",
-      "publishedAt": "2026-11-13T09:14:45+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "4be80f6336dd564b",
-      "title": "매일 먹는 종합비타민, 인지 노화 늦출까…2만 명 참여한 대규모 연구 주목",
-      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE40RDJKUmlWakdXMG5xUjNBcjRnVnJqalJoM0VIZ1JYQXlpTkR3WWcxVGw4LUVtM1hZWmpaNWNWTTdkM0tuMm1FM1dSY3drRlE1LU40U0h2TFdLWkN4czZUSmppYjQ3dnBHWTZjSQ?oc=5",
-      "source": "뉴스탭",
-      "publishedAt": "2026-11-13T08:37:52+09:00",
-      "summary": "",
-      "category": "research",
-      "query": "비타민 연구",
-      "provider": "google"
-    },
-    {
-      "id": "752a0dd875adbf77",
-      "title": "약사가 알려주는 혈관 석회화 30% 늦추는 영양제 꿀조합 (영상)",
-      "link": "https://news.google.com/rss/articles/CBMiTkFVX3lxTE5JaFlwSWVLc3JXMmhtQnpDUXowYVhad3U3ZUJOSXZWMml4ZUtONTVWNV96bFVER2hlQ1VSYmpHSXIzNG53aEN1SlhyRFlvdw?oc=5",
-      "source": "인사이트",
-      "publishedAt": "2026-11-13T04:00:00+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "c1b38f6d2db963e4",
-      "title": "환갑 앞둔 의사가 공개한 치매 예방 위해 실제로 먹는 영양제 (영상)",
-      "link": "https://news.google.com/rss/articles/CBMiTkFVX3lxTFB1UHZyM2c0eTFxcXhQbFNiN01Pa2diMnc2d1YtSlNONlZpQmxTMldLaFYtVUczQ29XVXM1QUJvTGpodzJKdlBlY2p1WWsydw?oc=5",
-      "source": "인사이트",
-      "publishedAt": "2026-11-13T01:05:01+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "f2e89f271182bfea",
-      "title": "헤일리온코리아, 대한기능의학회 추계학술대회서 영양·인지 건강 연구 공유",
-      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE9zUzE0dXdoSTFvRHotVGJNZzc3aU44WE00cWh1ZUdRRE5HYkpwM1g5OEVBOUgtWEQ0TFM5VVdMQVNZNURFVlp5WE53R29MZEF0Qnh1d2dqZ2poN3hQMk1FY1RqUU5UMFBHMWlN?oc=5",
-      "source": "헬스경향",
-      "publishedAt": "2026-11-12T20:23:06+09:00",
-      "summary": "",
-      "category": "research",
-      "query": "비타민 연구",
-      "provider": "google"
-    },
-    {
-      "id": "1456777ed137335b",
-      "title": "JW생활건강, 이마트 '와우샵'에 5000원 건강기능식품 6종 입점",
-      "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE1rSlU4WVBPMUlZeXgzUms4dFp1RktfNHY0NnBOTjNTLXVzME9SYl9PazlfT1M3X3B2aXkxc1pUWjVzUVNJX3RsNmt1bXIyQmF5RldRcGsxZFlSVFpSeE55TzB5QzBEUnkycWt3OThpbk4?oc=5",
-      "source": "비즈트리뷴",
-      "publishedAt": "2026-11-12T19:40:19+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "acd40fc553a6f54d",
-      "title": "헤일리온코리아, 학회서 종합비타민 인지기능 개선 연구 공유",
-      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTFB6eGkxSVVYVTVrekNvTHVhT0oySkpBSGpONEFNanhfTFRiX3VQYi1RallaVkNJM0xzcmI4dTNGdlVXd1BmeXVZb01lcUZqT1JJdTdFeG9vb0JPYTNlSXFzcFplNDRtWVJhOVNZ?oc=5",
-      "source": "히트뉴스",
-      "publishedAt": "2026-11-12T19:07:11+09:00",
-      "summary": "",
-      "category": "research",
-      "query": "비타민 연구",
-      "provider": "google"
-    },
-    {
-      "id": "20e538bb1c0de26d",
-      "title": "대원제약 대원헬스 '라임꿀샷' GS25 출시",
-      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE94dXNmbmNrcnBvYnRmYXY2TUJXNXJJUXp0NF9HZGxTUG5QTGw0dUJBRlRmRFp4R2c3Sm9tTUpUamc2UFJGekdKOFVScGstcF9JdllOWHU5QzJVNFZwT2szWHdsT3JWcl9YUlNF?oc=5",
-      "source": "마일드경제",
-      "publishedAt": "2026-11-12T18:33:00+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "6cb78710d7bee860",
-      "title": "올해 건강기능식품 시장 6조1280억원대",
-      "link": "https://news.google.com/rss/articles/CBMiY0FVX3lxTE5oS2VHc3JPU01GZ2R0TldEYWlBdF9pbUlzNG53eHFMbWtMN25TR3pFbDVrQjdRQWYyNXE3cmNHUkdISUFqVjV0Z09VdnNENGpjcnFJaENzQVBvNFlDVENoSlI3NA?oc=5",
-      "source": "보건신문",
-      "publishedAt": "2026-11-12T16:59:37+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "c0865bed7b4b73ca",
-      "title": "수능 특수 노리는 제약업계···건강제품으로 시장 공략",
-      "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE1aeTVRTi1Vc2g5czNxekVKR1h0cElnWmdUeWpYdmRNTGU2bEhsdkZTVllIalE2UDVQc3R1UnlrNTRBYl9ReWRaZlY1N2h3TXFIR3d4Y2hsa21Fc2pZc2l0a0FLU25jVUt6T3c?oc=5",
-      "source": "서울파이낸스",
-      "publishedAt": "2026-11-12T15:49:17+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "bb6997875ae7ae36",
-      "title": "국내 건강기능식품 시장 소폭 감소...구매경험률은 늘어",
-      "link": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE1MMXhBRzJIUHpSVVV6aVNRVzJMUmlja09IMHJkNW42aEtrUUs2aUNVdWRjdE9pVEdKSVhJNXVRVGNTZkpxaEdNQU1FcDVrYndiVVI5TThn?oc=5",
-      "source": "현대건강신문",
-      "publishedAt": "2026-11-12T15:17:00+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "3017d33998a12d37",
-      "title": "충북도, 충북약사회, 도내 청소년에 영양제 지원 외 수시분-3",
-      "link": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE5WNmtwTmtBUmZITHBOeUtjR0MwaTlCTTc4QU13dFFhQ2VieWFvSkpDTVhuXzdjRV85Q1ZDcWdhZEMzQ191X0d2RDBTbHFPanN1SjNMYWhFbXBDNkgyVlRyNkJ3?oc=5",
-      "source": "충북데일리",
-      "publishedAt": "2026-11-12T14:03:04+09:00",
       "summary": "",
       "category": "news",
       "query": "영양제",
