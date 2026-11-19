@@ -2,7 +2,7 @@
   "_meta": {
     "source": "live",
     "sourceLabel": "구글 뉴스 RSS",
-    "updatedAt": "2026-11-18T09:55:34+09:00",
+    "updatedAt": "2026-11-19T09:18:48+09:00",
     "queries": [
       "건강기능식품",
       "영양제",
@@ -14,6 +14,138 @@
     "total": 60
   },
   "items": [
+    {
+      "id": "bed41476898c660c",
+      "title": "2026 반려동물 영양제 추천 가성비 비교 가이드 : 소비자",
+      "link": "https://news.google.com/rss/articles/CBMiS0FVX3lxTE1iOTVRX1BDUUFDcVozTEZXQURqQ3dkcFFSYW44aUJiZFZQYVMwVWRTZ1R2Nlc1XzJpWExMUnZ3WXRidDlCVlZ6Rnp5dw?oc=5",
+      "source": "재경일보",
+      "publishedAt": "2026-11-19T06:30:00+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "525097c89bba1205",
+      "title": "“무심코 먹다가 간 망가진다”… 전문가들이 경고한 ‘이 영양제’",
+      "link": "https://news.google.com/rss/articles/CBMiQkFVX3lxTFBXeVlsMm8xOW9aYXRUYlNMWGloVy1TSzEtQ2M5Q2t3bUFLX2Iyd1owVVRsdjBRcDl0Y2ZGWDJZYTA0QQ?oc=5",
+      "source": "코메디닷컴",
+      "publishedAt": "2026-11-18T20:35:00+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "6ba6ec15d2d0503a",
+      "title": "국립부경대 연구실 개발 기술, 창업에 이어 장영실상까지",
+      "link": "https://news.google.com/rss/articles/CBMijgFBVV95cUxNSkNueHRNa1NBY25nYjJ6Zk9MSzdrNXVaYXpCNXlfYVdEa204cFNSaDltWUU3TlNveTBpNTc5TnNoQnJRZTRoT1dyOE1PUTBaQWJWN09MN0s2VG11RHlhX3RvVFJYOGxTVmExOU5yYlZHdEVnUGtuNzVQbE9qLWF4ZzFzN05JajY3NjcxYnpn?oc=5",
+      "source": "국제신문",
+      "publishedAt": "2026-11-18T17:43:00+09:00",
+      "summary": "",
+      "category": "research",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "663beed26783c55e",
+      "title": "식품 안전성 평가에도 AI 활용…위해물질 분석과 검증은 어떻게 달라지나",
+      "link": "https://news.google.com/rss/articles/CBMiQ0FVX3lxTFAyUm0wamNDSkJmV3o1bEZWOWwweEFzR29qSzdabk9ieWxhcHNORGtYZ3dSaF84YTJhYnJMS1BnZ2lrcnM?oc=5",
+      "source": "한국공공정책신문",
+      "publishedAt": "2026-11-18T17:12:35+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "식약처 건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "5494c67ea47a7a2a",
+      "title": "대전 동구약사회, 취약계층에 건강기능식품 2000만 원 상당 기탁",
+      "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE1TaGVlMG1Tc1djZEhCeWE5eVI4ZXlfZndJdWM4aGUyQUJ0VEloVW9jaVlVME1oS1lZb0xCWHR5UzJncW5NSVh4cWJUY21MNW9CbTA5UDZYM1NtN0VGdmVmZEVNUm1vRHow?oc=5",
+      "source": "뉴스밴드",
+      "publishedAt": "2026-11-18T15:59:41+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "32cfdd10079af4a2",
+      "title": "6조원대 건기식 시장 감소 전망에도… 규제 환경 대비 제약사, 수익 다각화 총력",
+      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE4zaVk3VkZ0QTdIby1abUVxNFY1cWVyeUpkV3lLX3hXZWw5d3F4Z0FVa012SU1Ec28wV1I2ZjRNTEUtcXZvS0VncFB3eFNhRjBqdURJT2EwREtnd9IBWEFVX3lxTFBrbXdfWjFUSDFnc0ZaNjB6dDBUSHY0UlA0VEFwNzN0WXBqODBzdW9CMUVVMEpDSUs2U21aaF8xOF9vcG9XTXBlWXFGenVfS1c3czZsQ2Rub0o?oc=5",
+      "source": "아주경제",
+      "publishedAt": "2026-11-18T14:40:16+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "5d17f38bac414cb7",
+      "title": "인물동정 ❙ 이왕재 박사, 120세 건강장수 강연",
+      "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTFB3MGg4Skw3aThfUEIzUHpqeFVrSkdraEgyeTA4dklPME1RaGlJZ1RjTlFpUnl5MThMVklmcHoyX1ZXb1A4VENNTlEtMlhfQnFrMGl0M0tTbndva3ZtUE5NUDRJbUg4dTRyZUE?oc=5",
+      "source": "뉴스앤넷",
+      "publishedAt": "2026-11-18T14:38:46+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "비타민 연구",
+      "provider": "google"
+    },
+    {
+      "id": "2ca77623ea11cddc",
+      "title": "식약처, AI·빅데이터 활용 식품안전관리 고도화…위해평가 기술 논의",
+      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTFA3bDRFdDJlcThrME5nVjViRGR2NDFTUXFTY090NDJQR0xYbmotbk11Sy1rQnZfVDJWdk05MG5LUjN0Ukk4VnNNVWJxcXZkeXF0T2hLbFRfb2taN3JFZl8zSlNrZ2s?oc=5",
+      "source": "매일일보",
+      "publishedAt": "2026-11-18T13:48:41+09:00",
+      "summary": "",
+      "category": "mfds",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "d104a8c878568723",
+      "title": "플러쉬퍼피코리아, 2026 메가주 참가… 제스티퍼스 영양제·그루밍 체험 선봬",
+      "link": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE9DY21OLUx2RGpUVFBmZFRGYTVWcnRsUldFYTM2MGgzQjdNeDl0bUhlTVNuSEV6ZDJZcFAxRVBweXZPZVBFNV9JTWVRYmt3aElFU0x6YllWU2I4MVYzbWFUYzJR?oc=5",
+      "source": "스포츠월드",
+      "publishedAt": "2026-11-18T10:29:06+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "4e45ed427898c8b0",
+      "title": "식약처, AI·빅데이터 접목한 '식품위해평가' 미래 모색…산·학·연 머리 맞댄다",
+      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTFBtWWx2MFNDbFhCT0Q4ejVCX2llZC1LZ3B3d09jMU84eVFlTEhPMFhuTmNoZGFFMU1pR1AtSE5oTmwtb0YxNVJZZnJGbmk2em5BZ0E3aXNDd1ZxNG8xVWQyYlNYRlkzdDBzZGJzUw?oc=5",
+      "source": "와이드경제",
+      "publishedAt": "2026-11-18T10:17:50+09:00",
+      "summary": "",
+      "category": "mfds",
+      "query": "식약처 건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "88b1d37437be165e",
+      "title": "오라틱스 '잇몸유산균', 대한구강보건협회 튼튼이마크 획득",
+      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE1sVm9QSmR6WXdFREpwdHRVUlZ3NVZqakN6Ymxka0JzRF9lMG9ybHVPeGxQVHpUTklXMHluYnRRTmtFMzNwLVkxZnNyTWk5SFl4QmtTY1BvbE12SGFzLVJKbHRCQ1lPdw?oc=5",
+      "source": "푸드투데이",
+      "publishedAt": "2026-11-18T10:12:10+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "df1372a7729593d9",
+      "title": "보리지 오일 시장 2035년 전망: GLA 함유 건강기능식품 수요가 성장 견인 - 뉴스 및 통계",
+      "link": "https://news.google.com/rss/articles/CBMitgFBVV95cUxPZmZuRGNJQVBhQV9uQkNnRzZaa0FIUm02aFZzOWVscjJzNDd1N2Z6bm1VYjY2YU9lVXlMdEhuR182TXJEcjhmQ244VUZPRG1QZ2RkYnZtRFRLVkpnOGd1LVdBT0Y5SGl2YUx1UnZoOFZWclFiekFMSndld0hUUlF0OVBFQ01Gb0NmdE0tdVBWa0tvYjZ2aFRyaDVWVmVoT21JZnVxRUxwTGw3Snd6dVFoOGFjTGZ4Zw?oc=5",
+      "source": "IndexBox",
+      "publishedAt": "2026-11-18T09:31:04+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
     {
       "id": "6bd7b1cca3dc4383",
       "title": "\"AI 활용 식품위해평가\"…식약처, 발전방향 논의",
@@ -31,6 +163,17 @@
       "link": "https://news.google.com/rss/articles/CBMijAFBVV95cUxPcGVYUlFaSzJIbTZ0ZzU1MHpabEZOZ2JKUWJmNEN0OVdEcktZbTFmeEM1VlYwZHROSXdvR1Z6a3c2MVFVYTJDaG1kUWxfcTBKOUp4bU5Qc1RaVV9sRV9ubml1VDhseHJLeVloN2VzYnlLTUEyRk1PbWVGWmhKZHp5V3hZY2Z1dk52c0s2ONIBoAFBVV95cUxNWkxNOHFuNnhTMWRtT2FPSGJ3cjBkTVZ5X20wOFlzeWxrTDhXU09RaVo5YVFsaTN4NXdqME94ZDcyTUx2MDRWclh1c2RNZFpqcjZGRTl4S2ZpYmFSOF9QanZoOW8wekV4VEJYZmFEX1BWQ0FzXzZCTFZ5WUtjclpqMHFDeTJMRllsOXJLeWhxMndidHVwUnVudm1GdWlPVXpo?oc=5",
       "source": "Chosunbiz",
       "publishedAt": "2026-11-18T09:05:05+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "52e04a398aa63801",
+      "title": "[넥스트 K-브랜드 대상] [건강기능식품 부문] 정관장, 중장년 넘어 젊은 층도 사로잡았다",
+      "link": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE4tUGFQMlNUSFVtejhJR1JqNnhIV2kzNHhDLVMwOWswbVNONmN6VlhRdVZ3aDAxNWdUOFU5OVhKSkNsVDF2Y1VFeW5NWUlxRVJVZktiNWx3?oc=5",
+      "source": "DealSite경제TV",
+      "publishedAt": "2026-11-18T08:00:36+09:00",
       "summary": "",
       "category": "news",
       "query": "건강기능식품",
@@ -341,7 +484,7 @@
       "publishedAt": "2026-11-17T08:18:56+09:00",
       "summary": "",
       "category": "news",
-      "query": "건강기능식품",
+      "query": "식약처 건강기능식품",
       "provider": "google"
     },
     {
@@ -440,7 +583,7 @@
       "publishedAt": "2026-11-16T17:40:41+09:00",
       "summary": "",
       "category": "news",
-      "query": "건강기능식품",
+      "query": "식약처 건강기능식품",
       "provider": "google"
     },
     {
@@ -526,149 +669,6 @@
       "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTFAwcUVvMUFfbGV0cFA3VTZXQktqTzk4THhiMkR6ZEc5SUF5Q01ocDM4V2Y4cGtGd0p2T0lhdnpPMWdEUmxxSi1GMFJDdUhPajhFWlZoczJJMW1sTERZNVcxYV9vSl9lVHpiU3B6cg?oc=5",
       "source": "파이낸스투데이",
       "publishedAt": "2026-11-16T09:00:00+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "2ccc514f52dc9c3b",
-      "title": "“젊어지려고 먹은 영양제, 효과는 글쎄”…노화 늦추는 진짜 방법 따로 있다고?",
-      "link": "https://news.google.com/rss/articles/CBMiQkFVX3lxTE5QNllIMmJYUk4yc0NfTTl5dlBqVEF0Z1JOWlZXOWkwaG5HWElESUNXZVVXSnRiYWV4RWU1WkdMdXR5QQ?oc=5",
-      "source": "코메디닷컴",
-      "publishedAt": "2026-11-16T08:05:00+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "e48020e49759050f",
-      "title": "재고 보이면 무조건 담자…다이소서 재입고 된 '품절대란템'",
-      "link": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE5jaHNvakhtV0Y3MUxkOGdaeDEwTFk3TUU4TmtQX0g2QVFKMXFOWUV3MWdzc1lPTElNWE5Sb2QtUFR0NWF4NVlMWGc4WGI2Z2o1RmotMW1n?oc=5",
-      "source": "위키트리",
-      "publishedAt": "2026-11-15T20:31:00+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "3f35988a43c15dac",
-      "title": "‘회춘 영양제’ NAD의 배신... “건강하면 굳이 먹을 이유 없어”",
-      "link": "https://news.google.com/rss/articles/CBMigwFBVV95cUxPS0pzR3QydWN1UDlMdjFjdV9pUDFJc2hJc1pmNnFMOWFwcFB0THg2b1lRRXJjRVlQNVNJSWdkYzJEV1EwMkw0eW1YaVYtNlhkOTFkR1Y1TlpwLUR1YTlWRDY3YlViNVdaSFo2Yl9lSmZGTHA1MzZXYXNUNW8xSFpjRVo3WQ?oc=5",
-      "source": "조선일보",
-      "publishedAt": "2026-11-15T17:18:11+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "56035dac056f2e3c",
-      "title": "건기식도 '개인취식' …식품업계, R&D·브랜드로 정조준",
-      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTFBiTVRtbk9LVXJvanBlVXo1OE5mX0txQVhEVjM4SlBJMzZXTkl4ME1lTmdpQmUtMWVlTWRheEhHNE9iMTQ5emJ6aDQ5a1NyT1VzMU9LU01Kamo2VTF0Y0pqNQ?oc=5",
-      "source": "메트로신문",
-      "publishedAt": "2026-11-15T14:06:04+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "4fc957a35ec8d2fc",
-      "title": "눈 영양제 추천 가성비 비교 가이드 2026 : 건강",
-      "link": "https://news.google.com/rss/articles/CBMiS0FVX3lxTE1KNjE2S1g4ZGFURV82TWFnSjBlZUU5UDVlZlYzbHZ6Uksydy1sR3BuaDRlMXdTUmpURk9TeFBUWTQ4RTVzR09yZ0dIdw?oc=5",
-      "source": "재경일보",
-      "publishedAt": "2026-11-15T13:30:34+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "b658cc12efff341e",
-      "title": "서산시 고북면지역사회보장협의체, 지역아동센터 아동 35명에 영양제 전달",
-      "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE5WejJNampqNS1fWktTYW1fOG5jeXNxajBqMjhleU5Wem00Wk8tcjJWN3BCS1NFWE9vSHVfeU91Yzc2WmpIRDVaVzRCZnVkdWR5SnBsb0VfOVozMDdWbzB6MGVvQzJJLV9xNTE4UkM4RdIBc0FVX3lxTE91UFVrcE04S1F5ZklDNHV4Vmg5Z3kxX0VEU2s4bDhVNkdYQ1lNX1Y3VGlIZk03R0p2OG9XV3JZODJxMmhHUXcxMkE4VklXYVBFZUlhVUdHM0pWLVhoTzZNamd5R1E1YUI1QnZmSkZtcFJ6VlE?oc=5",
-      "source": "대전일보",
-      "publishedAt": "2026-11-15T13:29:23+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "aa94f9a9df46ee93",
-      "title": "\"건기식 먹는 집 늘어도\"…가구당 지출은 줄어",
-      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9jcFM4WWJwS1I5czRTMnhlVkFvUFZBeXN6WlZ4QUQ2VHJuOUZFUUo1RzNWVEEtYTNHclZLTHk1R19HRzl2VWV1LTZKblRPWkd2c3lLRFFZcHhZbEt1UmJMUdIBeEFVX3lxTE5hMUtibklEYnJETEloVHFkUDhNZzNxaW0ySzFpZWs3VmM2dUdGQm9sX2hWcVJtTUxRU3Q2V0lENXh6NFM2eXhtODltaGk2cGZBUDRmM2FSenl5NC1JRktFOGxIOENZbnRodnFMSTBOdGtBWVZDVkV4Nw?oc=5",
-      "source": "뉴시스",
-      "publishedAt": "2026-11-15T11:01:00+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "428b76a0e221f98d",
-      "title": "[단독]식약처 \"어린이 섭취 주의\" 경고에도…'3세 영아 두뇌 영양제'로 둔갑 판매 ...",
-      "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTE5HdnhqOXMwbnl3OFJlWDFoWkpYRHJaVDJWbmtYT0RLRWwtZEdnZ1VkSHJNN1FIMDhFb09zc1VEN3B5NHpILWxJVjVUV0xYT2lXWWZPc1Ryd0loUGhTWWc4NkxCWVFxLW1BRXVMd2xn?oc=5",
-      "source": "팜이데일리",
-      "publishedAt": "2026-11-15T08:00:06+09:00",
-      "summary": "",
-      "category": "mfds",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "458a3341a2240de0",
-      "title": "광명시, 건강기능식품 판매업소 현장 지도 점검 실시",
-      "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE84dzh6MVdPY0k1Rk00M3hQUmlvQVFObTNqNVBjUWN1RWtzUktmX2pvejRzc2VOanljUHBRcXRqd2x1SU9acnJUZFIxS2x3Sk9hRW1IOTdtc0d5ckoxTnZyVW1nVmMyYjdo?oc=5",
-      "source": "광교신문",
-      "publishedAt": "2026-11-15T01:49:30+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "5fd77fdd8d942bf2",
-      "title": "2026 직장인 영양제 가성비 추천 BEST 5 비교 : 건강",
-      "link": "https://news.google.com/rss/articles/CBMiS0FVX3lxTE1VZFBnbWJjTGtBVGdVdFpvSmtlcHY0SkF4Yk9MUi1oODUxbVZOSnk2ajd5dlAyRy1GdlJINmNGbXdSa0d3NVNSNlQ1Zw?oc=5",
-      "source": "재경일보",
-      "publishedAt": "2026-11-14T19:00:40+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "dce0bfdd3d08450a",
-      "title": "진주 중앙동 봉사단체협의회, 건강기능식품 기탁",
-      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE5lMWw3MERoTm00ZGNLOGRDNDZiaGV3LWRiSUJ4b3NWUjN4SUkxaldUTERRZGU2Vk9YSUU3LUJfbFdzTHNUTUxJZWpodDVTTGVGZ0pLR3FyUnp3OGhNeEZkbFhmMnVZZGVQOHQ4?oc=5",
-      "source": "경남일보",
-      "publishedAt": "2026-11-14T16:00:00+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "a7c2a71eef756adb",
-      "title": "이마트24 감포연동점·본사, 감포읍에 사랑의 영양제 기탁",
-      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE1UalNkZk1BRWxXeFZ2QzhFaC1vd292VWJDVjM1S294emNKTk9zY2pHS3M4VlZiNXN6Y3dnOXdhY0xxc0pTeGFCbnBmekYwSjMteGo1Wm03cElRaUVwM1FwbQ?oc=5",
-      "source": "경주시민신문",
-      "publishedAt": "2026-11-14T13:34:50+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "영양제",
-      "provider": "google"
-    },
-    {
-      "id": "12832fd9faf8b157",
-      "title": "장흥도서관, 염혜진 약사 초청 건강 인문학 강연",
-      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTFBrS3RVQUpEMkg0UHdmU0FlLTllWXk1Q1BfVTVBYlFNM0VjRm5GSkxSVmVUMEY5V1JFR04wT2MzeHU4NU1GYV93SGo3Sm5BcjNCZTJnV2pVNUlLNUZyenpwaHdydnNvdTJ0ZXc5MA?oc=5",
-      "source": "호남교육신문",
-      "publishedAt": "2026-11-14T10:56:12+09:00",
       "summary": "",
       "category": "news",
       "query": "영양제",
