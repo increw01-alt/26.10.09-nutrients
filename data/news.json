@@ -2,7 +2,7 @@
   "_meta": {
     "source": "live",
     "sourceLabel": "구글 뉴스 RSS",
-    "updatedAt": "2026-11-22T08:09:30+09:00",
+    "updatedAt": "2026-11-23T08:34:24+09:00",
     "queries": [
       "건강기능식품",
       "영양제",
@@ -15,6 +15,61 @@
   },
   "items": [
     {
+      "id": "04fd032db81b441c",
+      "title": "건강 생각해서 추가했던 영양제, 무턱대고 섭취하면 오히려 ‘독’된다 [건강+]",
+      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE1wdG1tTmZJV0VCa1pLUUhmcXhyZlNyalZsd1gzd2FoMGhxeHgtSkVkWlVFTkp2SkRYQ1l1TElyeGFjd0l1TEhQZzFhZFNveUg4NGJVcWU0M1NXalhTLWktX0tDNzRfcHJaNWJF0gFUQVVfeXFMTXF4cFpBZzZOZUl5R2ktbW5MdVBhdFQ3Skd1Y0M2UkxKX3l5VEdtU2JJS0RWLUw3anBPWXFLbXc3SjJfM2YxZ2w3SEwzb2VmOUNtc3Jh?oc=5",
+      "source": "세계일보",
+      "publishedAt": "2026-11-23T07:00:00+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "2795ac57659670e9",
+      "title": "항암 돕는 '비타민B3' 효능에… 日도 경청 - 머니투데이",
+      "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTFBCTmZaeE96cEQtWVFMblpZZWQ4SjB6YzhJQ1UwTlNxYzFKWExHZkZ0YXBBNUVSbnBQcm5YUWRnLXE5eF8wS2ppR2ZZSTlUX2RYaVdiT1lrR3dQT3dnaDRwNU1Vck1yX2V2WnfSAW9BVV95cUxQQW1kSFlzMEQ1SnpHa0lGb3hfaW14UmVBNlBhUm8tdnFwSUdmR1JpNDBmd3ZDSy02cTRhLW1RX2FGZi1Vb0Y5eGpOQ3gyVVFFRzNEV2xJUm5LTDl0UXFSeU5tdVRxbXFMb0ZnT2lnY3M?oc=5",
+      "source": "머니투데이",
+      "publishedAt": "2026-11-23T03:50:00+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "비타민 연구",
+      "provider": "google"
+    },
+    {
+      "id": "454f307102ef9658",
+      "title": "비타민 C가 위에서 암과 관련된 화합물이 생성되는 것을 막을 수 있을까요?",
+      "link": "https://news.google.com/rss/articles/CBMipAFBVV95cUxNcGQ3aUhGQXl4ek9lb1F5TEtHX2RhX3V0amV5VE96aUozYnBpaWs5aFNEdGhKdm1HVktRUjl6N21tb1dYdkxJLTBpc2oyWEdQWjhYcDVTNUx6ZXA3UDVFaTk2MVdQYkJsMFNfRk1RV3g2Yk1oMjZ2TGZIcEo3UC15Zm5nZnl5TU5uNnJ0OFppSHc0OEVWTjNyZVdGbzBpZW52YXZodw?oc=5",
+      "source": "Vietnam.vn",
+      "publishedAt": "2026-11-22T11:52:53+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "비타민 연구",
+      "provider": "google"
+    },
+    {
+      "id": "baf6b6748bfbc541",
+      "title": "노화 늦추려 비싼 영양제 먹었는데…방법 따로 있었다, 51개 연구의 결론",
+      "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE9EWi1ZMF9uTTE5cURYc1VYcVJiaGRpekJWY0dSZmR1eUVnTFZpR0dqOGVnanpUVnZqTzJ4T1A5eE5Tdl9OYUxTaVh0THZWcDNRdEVESV9zNkthakRFR0VZa09Wanp6QW1ZNmfSAW5BVV95cUxNQnpGTU9MZ016TXhudUhhWGYyamozeEE2dGREZHFtRFptbHlYNEtiZUlibTh3WWZCWVk3ZnI5QVpmWnBieDY5bUJKVWZSZXB1Q0FqeklpTUpVUWlkRnc2aXhDSERfTVllMm92a3U3UQ?oc=5",
+      "source": "주간조선",
+      "publishedAt": "2026-11-22T09:08:30+09:00",
+      "summary": "",
+      "category": "research",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
+      "id": "8968b50c0c7cd907",
+      "title": "\"암 막는 유전자 불쏘시개, 비타민B3서 찾았다\" 일본이 주목한 '이것' - 머니투데이",
+      "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTFBuQTkxeHdQZktZbVNUQlB0aWM5WTFFZVpzZnpyaDJvUnV5ZWlvbTVLM0dfRDJJRGtUYmNSVWt2ckF5VFN5Ylk4VFdxMWdLSC14czlIdVNXZ0RVV29xckE0QTlGXzlFQXUwSlHSAW9BVV95cUxNRHJxOWN2TzNDazdGd3ZvM3hIRTFRSGhQWi01dGNYSVZmWkhSdV90ck9VUWRqUEpUMXBYc1RwRFMtUTV4RDI5dm50UUliVHFZYmRFTThvMHc3bGs1VXBlNDZOOEZQZDZISnlJZURscnM?oc=5",
+      "source": "머니투데이",
+      "publishedAt": "2026-11-22T09:00:00+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "비타민 연구",
+      "provider": "google"
+    },
+    {
       "id": "2ed1fafe84fecbbd",
       "title": "\"건기식 사는 곳 제각각\"…지역별 경향 살펴보니",
       "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9YcTlQV2xjaVZZZVlGVFY2dkFaT3ZObG5XTGlOT2UzR21lNHNXRFF5T0owR2JTSmExaUFyRGk5VzliYWNRMk5uekF3bGlPYVFrWDFTSERTT3c1bno1b3JnRNIBeEFVX3lxTFBMcUtCZHlLUTQwaE1WdnlLV3NtYk9uN3VUNmdNVjZIa0lJWkk2SWhFLVFYV1Z6MFNsVkNraldnVVRzQ19kcXZqdVlPYVQyaWRCYy03ZllnbHlhX241YVpSUnBUUVIzM0gzb29ReFVqRzNQVXNoRDNIZA?oc=5",
@@ -23,6 +78,17 @@
       "summary": "",
       "category": "news",
       "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "e2cd254affd21fa9",
+      "title": "착한팩토리 단백질폭탄 아이래쉬 세럼 속눈썹 영양제, 10ml, 2개",
+      "link": "https://news.google.com/rss/articles/CBMiQEFVX3lxTE8zVTZEVmJFek5DYkpMTHpqQkVPektrQzZCYnktcWNMS3AzSWdnbE9EREZwQjRTR1prRE5NdFg0aGw?oc=5",
+      "source": "toss.im",
+      "publishedAt": "2026-11-22T05:05:08+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
       "provider": "google"
     },
     {
@@ -191,9 +257,20 @@
       "provider": "google"
     },
     {
-      "id": "8059b82f104ae244",
+      "id": "1abf5790dd4a87e2",
+      "title": "천호엔케어, 치어팩 이중제형 건강기능식품 ‘액티브솔루션 혈당케어’ 출시",
+      "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE5nWnRySjBwX3JkTGc5QnJWOURPMEY3Wm5TX2VsT01xN0ZpWmlPS241ZjRoU2FWU0h6VFpOYUtPU0dLUEZTYmxoUUxFMk9UdERhYmNoRTJvR05nY1VIYk83Y3lqSlpmZWNoVC1oSkJ1SQ?oc=5",
+      "source": "서울신문",
+      "publishedAt": "2026-11-20T10:41:44+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
+      "id": "1801c054add01dbf",
       "title": "보릿고개 영양제 '삐콤씨' … 100년 유한양행, 63년 전 포장 되살렸다",
-      "link": "https://news.google.com/rss/articles/CBMie0FVX3lxTE1DcXhsNmhvWXBvYk9uektuZGdNdmZ3aXFjUjZwelFUeF9DZzFEUXhWcUtzQ3MxaU04a0RPX0c1UllKTzk5ZWRGOTN3a0Z1dGs2U3BHRllyT2RFVUJMbWJkeTUyM0VadUNUTG5VMHA0dVVmR19HQ0dnMFB4NNIBgAFBVV95cUxNMGRhcGYzbzYzQ2lleGhzQzZYM1NDa3BaUHdzZVgwRWNVbGFKaTgzaEJLeUJKNUhxOFlEV1hHWklpT1VRUWI5YlBVcXpGMWRDNmxBajNKMk9uS0xmX28wbWo0Y2ZnUVRlTzVVdVE1d3dhYmNHeG9vUUU0LVdIZmctVg?oc=5",
+      "link": "https://news.google.com/rss/articles/CBMigAFBVV95cUxNMGRhcGYzbzYzQ2lleGhzQzZYM1NDa3BaUHdzZVgwRWNVbGFKaTgzaEJLeUJKNUhxOFlEV1hHWklpT1VRUWI5YlBVcXpGMWRDNmxBajNKMk9uS0xmX28wbWo0Y2ZnUVRlTzVVdVE1d3dhYmNHeG9vUUU0LVdIZmctVtIBgAFBVV95cUxNMGRhcGYzbzYzQ2lleGhzQzZYM1NDa3BaUHdzZVgwRWNVbGFKaTgzaEJLeUJKNUhxOFlEV1hHWklpT1VRUWI5YlBVcXpGMWRDNmxBajNKMk9uS0xmX28wbWo0Y2ZnUVRlTzVVdVE1d3dhYmNHeG9vUUU0LVdIZmctVg?oc=5",
       "source": "뉴데일리 경제",
       "publishedAt": "2026-11-20T10:36:00+09:00",
       "summary": "",
@@ -301,6 +378,17 @@
       "provider": "google"
     },
     {
+      "id": "12f8890e4f14142e",
+      "title": "Hearts2Hearts社区帖子 - 예온아.. 평소에 꾸준히 챙겨 먹는 영양제 몇 개 정도 있어?",
+      "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTFBMaXNSRnhIMFFyRUlXZ2RpZXJka1ZzWFI4bTVNajVpa0JqQUlJbXF6QU1nTUR5QWY1QTlmWmpsRm5xRzBKVjBqWk1hV2xzZTNnRVlZblZxZDQ5a2NhOF9sTzBWT01BaTBXVGlUZmZn?oc=5",
+      "source": "Weverse",
+      "publishedAt": "2026-11-20T07:46:05+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "영양제",
+      "provider": "google"
+    },
+    {
       "id": "f96bb60d7ad0ad13",
       "title": "비타민 C 안정화, 폴리올보다 염기 결합이 좌우",
       "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE53OWtoamF3Zl9KbGdVSWhkRG9zYXlpbDV3VHFDSjN2azJQYy1aWjNLSDFEQW9LOVhadHZyU1BGYmVucDdZajF1cWVsNUlNRnRYZnFzcmFteEpJakhWUGVpZVdqSm5iUEVfSWc?oc=5",
@@ -309,6 +397,17 @@
       "summary": "",
       "category": "news",
       "query": "비타민 연구",
+      "provider": "google"
+    },
+    {
+      "id": "b0bc810b4c4dabbe",
+      "title": "일양약품, 다이클로와 손잡고 프리미엄 건강기능식품 9종 출시",
+      "link": "https://news.google.com/rss/articles/CBMiY0FVX3lxTE9zR1ZGalVpRWxMLTlENlpBaHU1c2VMSkg5MnpTbkwyXzdxY1JYcEhsUEhpYmdjUXdnN1d4bE9rNFoxbmVrdzlzY0FQOTFuQXpfd3ZiVEFVWDA5X1RvaWlaWGtSMA?oc=5",
+      "source": "쿠키뉴스",
+      "publishedAt": "2026-11-20T04:16:35+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
       "provider": "google"
     },
     {
@@ -532,6 +631,17 @@
       "provider": "google"
     },
     {
+      "id": "4437b678dd5aeb37",
+      "title": "건강기능식품, 구매 경험률↑‧가족 공동 섭취에서 개별 섭취로",
+      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE5XNXVaNktaU3FCNE5lMEt0bXdObVlfSGowaDhYM3o3NFJ4eDBnemp1LXNWQkZFRG4xcW1LSlZWbDhJdFNQQ3FMTmhuaGtCcEpZYlByTGg3ZlZmUlFrNkRYb3dPcWEwamZYWXl4WQ?oc=5",
+      "source": "전업농신문",
+      "publishedAt": "2026-11-19T14:15:00+09:00",
+      "summary": "",
+      "category": "news",
+      "query": "건강기능식품",
+      "provider": "google"
+    },
+    {
       "id": "5c0364a07cf8d803",
       "title": "아이허브 블랙프라이데이, 30% 세일 겨울 장바구니는 이렇게 채우세요",
       "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE1ob2dtOS14d2cyU3UtN1NjTzZSam9PV0dYa2tJbnNQZmI0cEdrSlBPTFEzOEFNbjFnSUpsNWhCQ0NKdDM2dWlhM3BPak9FMUpfRkRIMGdSOW9xQQ?oc=5",
@@ -562,116 +672,6 @@
       "summary": "",
       "category": "news",
       "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "dd247e893640408d",
-      "title": "'AI 주치의' 믿었다가 치료 차질…처방약 임의변경 절반 부작용",
-      "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE1zQ1VUVlFvYk1SQUVsdWxVbDdLeUlUd2dORlhwS0RTbnRxNjlxalhEMlFPNzVQVVJXbTBYSmpnOWVXRzBxcXp0MmZzVVVBbDk1eUE?oc=5",
-      "source": "매일경제 마켓",
-      "publishedAt": "2026-11-19T12:00:12+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "ff02052f5f6e04b4",
-      "title": "일양약품, 다이클로와 건기식 9종 출시…김장훈 모델 발탁",
-      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE9TRVRLVzYyMjA1ejhNQUVlTnhHTmZqeGZ2TS16RFZON20wRFhwbDVYVkp0alZ6c0tsUjRXbzhITTd6ajFwbTNINDlvZVhBUU5rbXZyTTVQOWRJTWVDS0VVUUF6c3E?oc=5",
-      "source": "PRESS9",
-      "publishedAt": "2026-11-19T12:00:00+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "33557e8c29bb3ef2",
-      "title": "바이오메카트로닉스학과 박진성 교수 연구팀, AI 최적화 기술로 초고감도 비타민 C 센서 개발",
-      "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTFBkS1ZBMlY4U0hLaE9NY1BEX3NIVEVpcjV6YXRzbFlaakNhcGNzZTZkRVlSVXpCQ0dWMU1ZY0ZvRW5RYjZQM0NDeEhjNmRTeGlGalV5U0ZzR0oxSW9fMXIxek5Yb0xLU29zdWpDUlhR?oc=5",
-      "source": "www.spressnews.com",
-      "publishedAt": "2026-11-19T11:37:40+09:00",
-      "summary": "",
-      "category": "research",
-      "query": "비타민 연구",
-      "provider": "google"
-    },
-    {
-      "id": "9197a5c2c16dee9c",
-      "title": "일양약품, 다이클로와 건강기능식품 9종 출시…모델에 김장훈 발탁",
-      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE1fdzUzR3VfQWx5TDBQN2hORkZXMk1MVGtxYVc0VkJQMzFoaFdKNnNocDV2MWcxSFBmVXdGcHdyQ3pKbmpFTmprMzhBbmdIRlFYb1pKWWhjNDl6QnZMU291SnNaRHB3N1RFQVlZ?oc=5",
-      "source": "한국의약통신",
-      "publishedAt": "2026-11-19T11:16:48+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "007cae43d4187631",
-      "title": "“25번의 실험으로 625가지 경우의 수를 꿰뚫다”… 성균관대 연구팀, AI 최적화 초고감도 비타민 C 센서 구현",
-      "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE11cXpsTzZoRjN2U2p1ZDEyejNveHBRcGo0c29MYWFNUERnSlBFTHd2NFU5bXRvM19CQmpNZ3hmbkNOMjZlUXowZ0xtNGFzNUJhOGNoUkZ4cHpWdkgzMWRscUQxaFBkNjVJanlQcjF4M0o?oc=5",
-      "source": "스마트경제",
-      "publishedAt": "2026-11-19T11:16:26+09:00",
-      "summary": "",
-      "category": "research",
-      "query": "비타민 연구",
-      "provider": "google"
-    },
-    {
-      "id": "691063f7e7b09f80",
-      "title": "건기식도 공동구매 매장으로…일양약품, 오프라인 판로 확대",
-      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE1oaHJMOGo1cTFBcVRJTWFQbS12NDN1TnRoR1dEeHU0U2p2VHRoSFlCTzZNZ0hQdHlHS3RHNVRJSzRSZzJoTkVWWGRJR0xUNmdSa29GQ2lKYVh5UQ?oc=5",
-      "source": "파이낸셜뉴스",
-      "publishedAt": "2026-11-19T10:55:23+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "8bc35701d097f15f",
-      "title": "성균관대 박진성 교수팀, AI로 625개 실험조건 분석, 초고감도 비타민 C 센서 개발",
-      "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE5pSjRsdGV3d3QySGxsLUtGQVdrSGxZMF9UcURLU2taZFVYTGxmcUpVZmEya1NMdzk4TmZFekpkd1draUhfcHhBLXdRSGRKMEpZNnI1TmlfQVByY0pjVkNzcFR5MkxMR2Z3WmROUUNWcjHSAXRBVV95cUxPdkJYck5DaTFPY0xIYW9pTGRfRzczNlF2TWhrYXpqeHRfdFN1NWk1d0ZLcXBkZDEzbExtLTV1UDlQckljYkM1dEt4YUZERUFoVHVfN2FqN0d5Zkp5Wnk1RmFyU0ZtTjcxdEhuU18zNjVkbkxNUA?oc=5",
-      "source": "이뉴스투데이",
-      "publishedAt": "2026-11-19T10:35:00+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "비타민 연구",
-      "provider": "google"
-    },
-    {
-      "id": "9d7398dd45f2ea1c",
-      "title": "일양약품, 다이클로와 손잡고 건기식 9종 론칭",
-      "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTFBiUlhXMGppd1N1S2lJWHFaOVJvMzdFa014YjMwRGZvUzNnNTMwYVNEZXF5cDI0dExmdl84R1Q5VHhXMFpkTDBxVDkyckp1UHVyWTdRUzU1cFU4NlhENXJ0X3BMYzdEaENZVFE?oc=5",
-      "source": "의학신문",
-      "publishedAt": "2026-11-19T10:12:25+09:00",
-      "summary": "",
-      "category": "news",
-      "query": "건강기능식품",
-      "provider": "google"
-    },
-    {
-      "id": "3bf385c32f127b0e",
-      "title": "라피끄, 비타민C 안정화 연구 국제학술지 게재",
-      "link": "https://news.google.com/rss/articles/CBMiekFVX3lxTE8xbUpyMUdwaFdjQ29WR0lCeHZXRnN1bUNVSndvVjZIdjdraTVhNWEwWXBhdE1XTkJCZGt2bk11bmVpN0dQUmZpSXhrc0JIN1dRdlUzUXJ2MllOSHYtTVVCZmMzQ1I2YnhYZ0NQOUx3MHg5Y1J3a0dKM3l3?oc=5",
-      "source": "약업신문",
-      "publishedAt": "2026-11-19T09:58:00+09:00",
-      "summary": "",
-      "category": "research",
-      "query": "비타민 연구",
-      "provider": "google"
-    },
-    {
-      "id": "71a39e397bc19e42",
-      "title": "성균관대 박진성 교수 연구팀, AI 최적화 기술로 초고감도 비타민 C 센서 개발",
-      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE1ZNlptUnlMT1hpYWlkZGpYMDA5Y3pWMU9oYkJMdGVyN0N1Y29MQ2U4NHBJdkRHdkl4YXpIT0M2TDNhYldGamlDWXFPZUZqLUc0eHhFVk1iLURKWExUR1draFhzenUxQQ?oc=5",
-      "source": "한국대학신문",
-      "publishedAt": "2026-11-19T09:34:57+09:00",
-      "summary": "",
-      "category": "research",
-      "query": "비타민 연구",
       "provider": "google"
     }
   ]
