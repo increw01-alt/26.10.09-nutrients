@@ -1,28 +1,28 @@
 {
-  "builtAt": "2026-11-24T13:11:06+09:00",
+  "builtAt": "2026-11-25T11:24:43+09:00",
   "ingredients": 87,
   "pairs": 735,
   "guides": 90,
   "products": {
     "source": "mfds",
-    "updatedAt": "2026-11-24T12:57:55+09:00",
-    "total": 9229
+    "updatedAt": "2026-11-25T11:22:37+09:00",
+    "total": 9242
   },
   "news": {
     "source": "live",
-    "updatedAt": "2026-11-24T12:56:32+09:00",
+    "updatedAt": "2026-11-25T11:21:14+09:00",
     "total": 60
   },
   "drugs": {
     "source": "mfds-drug",
-    "updatedAt": "2026-11-24T13:10:42+09:00",
+    "updatedAt": "2026-11-25T11:24:29+09:00",
     "total": 6828,
     "withNutrients": 1435
   },
   "materials": {
     "source": "mfds",
-    "updatedAt": "2026-11-24T12:56:37+09:00",
-    "total": 788,
+    "updatedAt": "2026-11-25T11:21:19+09:00",
+    "total": 792,
     "matched": 391,
     "ingredients": [
       "arginine",
