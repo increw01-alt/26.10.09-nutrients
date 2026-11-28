@@ -1,27 +1,27 @@
 {
-  "builtAt": "2026-11-27T10:45:49+09:00",
+  "builtAt": "2026-11-28T10:30:38+09:00",
   "ingredients": 87,
   "pairs": 735,
   "guides": 90,
   "products": {
     "source": "mfds",
-    "updatedAt": "2026-11-27T10:43:01+09:00",
-    "total": 9251
+    "updatedAt": "2026-11-28T10:27:13+09:00",
+    "total": 9252
   },
   "news": {
     "source": "live",
-    "updatedAt": "2026-11-27T10:41:40+09:00",
+    "updatedAt": "2026-11-28T10:25:48+09:00",
     "total": 60
   },
   "drugs": {
     "source": "mfds-drug",
-    "updatedAt": "2026-11-27T10:45:34+09:00",
+    "updatedAt": "2026-11-28T10:30:14+09:00",
     "total": 6828,
     "withNutrients": 1435
   },
   "materials": {
     "source": "mfds",
-    "updatedAt": "2026-11-27T10:41:45+09:00",
+    "updatedAt": "2026-11-28T10:25:54+09:00",
     "total": 796,
     "matched": 391,
     "ingredients": [
